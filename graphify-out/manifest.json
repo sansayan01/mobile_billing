@@ -1,8 +1,8 @@
 {
   ".claude/settings.local.json": {
-    "mtime": 1784281109.941985,
-    "ast_hash": "0a3e99ff8be593c11230a0f24755f706",
-    "semantic_hash": "0a3e99ff8be593c11230a0f24755f706"
+    "mtime": 1784322283.7796872,
+    "ast_hash": "f5d9e794419bc2179945967ad4990f3d",
+    "semantic_hash": ""
   },
   "android/app/build.gradle.kts": {
     "mtime": 1784269039.261703,
@@ -50,9 +50,9 @@
     "semantic_hash": "e07862ac930ed4d8479185d52c6cc66d"
   },
   "lib/config/routes/app_routes.dart": {
-    "mtime": 1784293689.555627,
-    "ast_hash": "c3491a5c081d2bd38568cf43272f4b5d",
-    "semantic_hash": "c3491a5c081d2bd38568cf43272f4b5d"
+    "mtime": 1784320690.525735,
+    "ast_hash": "01154ae0a80c5da0e67643b7019db40e",
+    "semantic_hash": ""
   },
   "lib/core/data/hive_database.dart": {
     "mtime": 1783355728.574142,
@@ -260,8 +260,8 @@
     "semantic_hash": "8adda6f555f9636bfdf735dc3c39a362"
   },
   "lib/features/product/presentation/pages/add_product_page.dart": {
-    "mtime": 1784319227.7676058,
-    "ast_hash": "11e49588b2ba2fac6116fb068f41b19c",
+    "mtime": 1784322758.4116812,
+    "ast_hash": "1764c06ca4b004ddf20147528ee4d46d",
     "semantic_hash": ""
   },
   "lib/features/product/presentation/pages/edit_product_page.dart": {
@@ -270,9 +270,9 @@
     "semantic_hash": ""
   },
   "lib/features/product/presentation/pages/product_list_page.dart": {
-    "mtime": 1784274144.9620397,
-    "ast_hash": "38284eb668105451703cf87b3aa3ba76",
-    "semantic_hash": "38284eb668105451703cf87b3aa3ba76"
+    "mtime": 1784322246.9406753,
+    "ast_hash": "751919cf4e96626e537f3a51c9cb8089",
+    "semantic_hash": ""
   },
   "lib/features/settings/data/repositories/printer_repository_impl.dart": {
     "mtime": 1783355728.811003,
@@ -410,8 +410,8 @@
     "semantic_hash": "e175e436acacf76c814d83532d0b662c"
   },
   "memory.md": {
-    "mtime": 1784319253.1890335,
-    "ast_hash": "988e10c558354887fcc90ed38f58c7f7",
+    "mtime": 1784321835.8640635,
+    "ast_hash": "56fda6de9a0e5394f8e12a7d26131344",
     "semantic_hash": ""
   },
   "phases.md": {
@@ -725,8 +725,8 @@
     "semantic_hash": "bfd44e79359721e6bd5186667ca7822a"
   },
   "lib/features/dashboard/presentation/pages/dashboard_page.dart": {
-    "mtime": 1784319232.419002,
-    "ast_hash": "face00c1e7464fbc8a4d61f41fcfab72",
+    "mtime": 1784322295.5729544,
+    "ast_hash": "7edd1d4c8685faac7fbd4bcaa3ab8c27",
     "semantic_hash": ""
   },
   "lib/core/widgets/app_back_button.dart": {
@@ -827,6 +827,11 @@
   "run_log.txt": {
     "mtime": 1784307316.5651484,
     "ast_hash": "2aef2ee257e29a26d68c68b35598d423",
+    "semantic_hash": ""
+  },
+  "lib/features/product/presentation/pages/product_detail_page.dart": {
+    "mtime": 1784321803.7697518,
+    "ast_hash": "fd9c94d43cac8dd6a638924d9cc11bac",
     "semantic_hash": ""
   }
 }

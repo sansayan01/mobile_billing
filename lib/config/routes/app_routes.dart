@@ -11,6 +11,7 @@ import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/product/presentation/pages/product_list_page.dart';
 import '../../features/product/presentation/pages/add_product_page.dart';
 import '../../features/product/presentation/pages/edit_product_page.dart';
+import '../../features/product/presentation/pages/product_detail_page.dart';
 import '../../features/product/presentation/pages/qr_generator_page.dart';
 import '../../features/report/presentation/pages/reports_home_page.dart';
 import '../../features/report/presentation/pages/bill_history_page.dart';
@@ -115,6 +116,16 @@ GoRouter createRouter() {
                     return const ProductListPage();
                   }
                   return EditProductPage(product: product);
+                },
+              ),
+              GoRoute(
+                path: 'detail/:id',
+                builder: (context, state) {
+                  final product = state.extra as Product?;
+                  if (product == null) {
+                    return const ProductListPage();
+                  }
+                  return ProductDetailPage(product: product);
                 },
               ),
               GoRoute(

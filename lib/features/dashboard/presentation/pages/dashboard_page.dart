@@ -3,6 +3,8 @@ import 'package:billing_app/core/widgets/dashboard_action_card.dart';
 import 'package:billing_app/core/widgets/stat_card.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:billing_app/features/product/presentation/bloc/product_bloc.dart';
+import 'package:billing_app/features/product/domain/entities/product.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_state.dart';
@@ -54,7 +56,12 @@ class _DashboardViewState extends State<_DashboardView> {
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.notifications_none_rounded,
-                color: Colors.black87),
+            color: Colors.black87),
+          ),
+          IconButton(
+            onPressed: () => _showProductSearch(context),
+            icon: const Icon(Icons.search_rounded, color: Colors.black87),
+            tooltip: 'Search products',
           ),
         ],
       ),
@@ -95,14 +102,21 @@ class _DashboardViewState extends State<_DashboardView> {
     );
   }
 
+  void _showProductSearch(BuildContext context) {
+    showSearch(
+      context: context,
+      delegate: _ProductSearchDelegate(),
+    );
+  }
+
   Widget _sectionTitle(String text) => Text(
-        text,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.black87,
-        ),
-      );
+    text,
+    style: const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+      color: Colors.black87,
+    ),
+  );
 
   Widget _buildQuickTiles(BuildContext context) {
     final tiles = <Widget>[
@@ -200,21 +214,23 @@ class _Greeting extends StatelessWidget {
       },
     );
   }
+}
 
-  String _greetingPrefix() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning,';
-    if (hour < 17) return 'Good afternoon,';
-    return 'Good evening,';
-  }
+String _greetingPrefix() {
+  final hour = DateTime.now().hour;
+  if (hour < 12) return 'Good morning,';
+  if (hour < 17) return 'Good afternoon,';
+  return 'Good evening,';
 }
 
 class _TodaysSales extends StatelessWidget {
   const _TodaysSales();
 
-  String _formatCurrency(double v) =>
-      NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 0)
-          .format(v);
+  String _formatCurrency(double v) => NumberFormat.currency(
+    locale: 'en_IN',
+    symbol: '₹',
+    decimalDigits: 0,
+  ).format(v);
 
   @override
   Widget build(BuildContext context) {
@@ -223,9 +239,8 @@ class _TodaysSales extends StatelessWidget {
         final sales = state.dailySales;
         final loading = state.status == ReportStatus.loading && sales == null;
 
-        final totalSales = loading
-            ? '…'
-            : _formatCurrency(sales?.totalSales ?? 0);
+        final totalSales =
+            loading ? '…' : _formatCurrency(sales?.totalSales ?? 0);
         final billCount =
             loading ? '…' : (sales?.billCount ?? 0).toString();
         final avgBill =
@@ -343,6 +358,125 @@ class _LowStockBanner extends StatelessWidget {
               ),
             ),
           ),
+        );
+      },
+    );
+  }
+}
+
+/// Search delegate that filters products from the ProductBloc state
+/// by name, barcode, or description. Tapping a result navigates to product detail page.
+class _ProductSearchDelegate extends SearchDelegate<Product?> {
+  @override
+  String get searchFieldLabel => 'Search products by name or barcode';
+
+  @override
+  ThemeData appBarTheme(BuildContext searchContext) {
+    final theme = Theme.of(searchContext);
+    return theme.copyWith(
+      inputDecorationTheme: const InputDecorationTheme(
+        border: InputBorder.none,
+        hintStyle: TextStyle(color: Colors.grey),
+      ),
+    );
+  }
+
+  List<Product> _getAllProducts(BuildContext context) {
+    final productState = context.read<ProductBloc>().state;
+    return productState.products;
+  }
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () => query = '',
+        icon: const Icon(Icons.clear_rounded),
+        tooltip: 'Clear',
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () => close(context, null),
+      icon: const Icon(Icons.arrow_back_rounded),
+      tooltip: 'Close',
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) => _buildSearchResults(context);
+
+  @override
+  Widget buildSuggestions(BuildContext context) => _buildSearchResults(context);
+
+  Widget _buildSearchResults(BuildContext context) {
+    final allProducts = _getAllProducts(context);
+    final queryLower = query.toLowerCase().trim();
+
+    if (queryLower.isEmpty) {
+      return Center(
+        child: Text(
+          'Type to search products',
+          style: TextStyle(color: Colors.grey[500], fontSize: 15),
+        ),
+      );
+    }
+
+    final results = allProducts.where((product) {
+      return product.name.toLowerCase().contains(queryLower) ||
+          product.barcode.toLowerCase().contains(queryLower) ||
+          (product.description?.toLowerCase().contains(queryLower) ?? false);
+    }).toList();
+
+    if (results.isEmpty) {
+      return Center(
+        child: Text(
+          'No products found for "$query"',
+          style: TextStyle(color: Colors.grey[500], fontSize: 15),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final product = results[index];
+        return ListTile(
+          leading: const CircleAvatar(
+            backgroundColor: Color(0x1A6C63FF),
+            child: Icon(Icons.inventory_2_outlined,
+                color: AppTheme.primaryColor, size: 20),
+          ),
+          title: Text(
+            product.name,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '₹${product.price.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: AppTheme.primaryColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 13,
+                ),
+              ),
+              Text(
+                'Barcode: ${product.barcode}',
+                style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+              ),
+            ],
+          ),
+          trailing: const Icon(Icons.chevron_right_rounded, size: 20),
+          onTap: () {
+            close(context, product);
+            context.push('/products/detail/${product.id}', extra: product);
+          },
         );
       },
     );
