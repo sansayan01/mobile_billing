@@ -23,8 +23,7 @@ class ReportRepositoryImpl implements ReportRepository {
       // Start with select() to get PostgrestFilterBuilder, then add filters
       var query = _supabase
           .from('bills')
-          .select('*, profiles(name)')
-          .order('created_at', ascending: false) as dynamic;
+          .select('*, profiles(name)');
 
       if (shopId != null) {
         query = query.eq('shop_id', shopId);
@@ -41,9 +40,8 @@ class ReportRepositoryImpl implements ReportRepository {
 
       final start = (page - 1) * limit;
       final end = start + limit - 1;
-      query = query.range(start, end);
 
-      final response = await query;
+      final response = await query.range(start, end).order('created_at', ascending: false);
 
       final bills = (response as List<dynamic>)
           .map(
@@ -246,8 +244,7 @@ class ReportRepositoryImpl implements ReportRepository {
     try {
       var query = _supabase
           .from('inventory_log')
-          .select('*, products(name), profiles(name)')
-          .order('created_at', ascending: false) as dynamic;
+          .select('*, products(name), profiles(name)');
 
       if (shopId != null) {
         query = query.eq('shop_id', shopId);
@@ -267,7 +264,7 @@ class ReportRepositoryImpl implements ReportRepository {
         query = query.eq('change_type', changeType);
       }
 
-      final response = await query;
+      final response = await query.order('created_at', ascending: false);
 
       final movements = (response as List<dynamic>)
           .map((e) =>
