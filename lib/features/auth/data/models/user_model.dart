@@ -12,11 +12,12 @@ class UserModel extends User {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final roleStr = json['role'] as String? ?? 'staff';
     return UserModel(
       id: json['id'] as String,
       email: json['email'] as String,
       name: json['name'] as String? ?? '',
-      role: json['role'] as String? ?? 'staff',
+      role: UserRole.fromString(roleStr).value,
       shopId: json['shop_id'] as String?,
       phone: json['phone'] as String?,
     );
@@ -52,12 +53,12 @@ class UserModel extends User {
 
     if (profile != null) {
       name = profile['name'] as String? ?? email.split('@').first;
-      role = profile['role'] as String? ?? 'staff';
+      role = UserRole.fromString(profile['role'] as String?).value;
       shopId = profile['shop_id'] as String?;
       phone = profile['phone'] as String?;
     } else {
       name = email.split('@').first;
-      role = 'staff';
+      role = UserRole.staff.value;
       shopId = null;
       phone = null;
     }
@@ -75,11 +76,12 @@ class UserModel extends User {
 
   /// Creates a UserModel from a 'profiles' table row JSON.
   factory UserModel.fromProfileJson(Map<String, dynamic> json) {
+    final roleStr = json['role'] as String? ?? 'staff';
     return UserModel(
       id: json['id'] as String,
       email: json['email'] as String? ?? '',
       name: json['name'] as String? ?? '',
-      role: json['role'] as String? ?? 'staff',
+      role: UserRole.fromString(roleStr).value,
       shopId: json['shop_id'] as String?,
       phone: json['phone'] as String?,
     );

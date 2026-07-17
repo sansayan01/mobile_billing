@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -26,6 +28,24 @@ class EmailVerificationPage extends StatefulWidget {
 class _EmailVerificationPageState extends State<EmailVerificationPage> {
   bool _isResending = false;
   bool _isChecking = false;
+  Timer? _pollTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-poll: har 3 sec check karo ki email confirm ho gayi kya.
+    // Jab confirm ho jayega, AuthBloc → Authenticated emit karega
+    // aur BlocListener neeche redirect kar dega.
+    _pollTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (mounted) context.read<AuthBloc>().add(const CheckAuthStatus());
+    });
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    super.dispose();
+  }
 
   void _onResend() {
     setState(() => _isResending = true);
@@ -72,6 +92,10 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
               behavior: SnackBarBehavior.floating,
             ),
           );
+        } else if (state is Authenticated) {
+          // Email confirm ho gayi (auto-poll ya manual continue) → dashboard.
+          _pollTimer?.cancel();
+          context.go('/');
         }
       },
       child: Scaffold(

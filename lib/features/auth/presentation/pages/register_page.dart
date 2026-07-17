@@ -16,6 +16,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  final _shopNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -26,6 +27,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void dispose() {
     _nameController.dispose();
+    _shopNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -40,6 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
             email: _emailController.text.trim(),
             password: _passwordController.text,
             name: _nameController.text.trim(),
+            shopName: _shopNameController.text.trim(),
           ),
         );
   }
@@ -129,6 +132,28 @@ class _RegisterPageState extends State<RegisterPage> {
                         }
                         if (value.trim().length < 2) {
                           return 'Name must be at least 2 characters';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Shop Name Field
+                    TextFormField(
+                      controller: _shopNameController,
+                      textInputAction: TextInputAction.next,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(
+                        labelText: 'Shop Name',
+                        hintText: 'e.g. Sai Mobile & Accessories',
+                        prefixIcon: Icon(Icons.store_outlined),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter your shop name';
+                        }
+                        if (value.trim().length < 2) {
+                          return 'Shop name must be at least 2 characters';
                         }
                         return null;
                       },

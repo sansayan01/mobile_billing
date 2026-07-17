@@ -198,16 +198,38 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       stockErrors: null,
     ));
 
-    final authState = authBloc.state;
-    if (authState is! Authenticated) {
+    // Get current user directly from Supabase session to avoid
+    // race conditions with BLoC auth state transitions.
+    final supabaseUser = SupabaseConfig.client.auth.currentUser;
+    if (supabaseUser == null) {
       emit(state.copyWith(
           error: 'User not authenticated', isSubmitting: false));
       return;
     }
 
+    // Fetch user profile for shopId
+    String? shopId;
     try {
-      final staffId = authState.user.id;
-      final shopId = authState.user.shopId;
+      final profile = await SupabaseConfig.client
+          .from('profiles')
+          .select('shop_id')
+          .eq('id', supabaseUser.id)
+          .maybeSingle();
+      if (profile != null) {
+        shopId = profile['shop_id'] as String?;
+      }
+    } catch (_) {
+      // continue with null shopId — RLS may block if profile missing
+    }
+
+    if (shopId == null) {
+      emit(state.copyWith(
+          error: 'Shop not found. Please contact support.', isSubmitting: false));
+      return;
+    }
+
+    try {
+      final staffId = supabaseUser.id;
       final billId = const Uuid().v4();
       final now = DateTime.now().toIso8601String();
       final baseTotal =
@@ -222,7 +244,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
         'total_amount': baseTotal,
         'discount': state.discount,
         'grand_total': calculatedTotal,
-        'payment_method': 'UPI',
+        'payment_method': 'upi',
         'created_at': now,
       });
 
@@ -248,7 +270,6 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
         await SupabaseConfig.client.from('inventory_log').insert({
           'id': const Uuid().v4(),
           'product_id': item.product.id,
-          'product_name': item.product.name,
           'shop_id': shopId,
           'staff_id': staffId,
           'change_type': 'sell',

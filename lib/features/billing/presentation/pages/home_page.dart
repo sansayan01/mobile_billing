@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vibration/vibration.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../billing/presentation/bloc/billing_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -24,9 +25,17 @@ class _HomePageState extends State<HomePage> {
 
   bool _isCameraOn = true;
   bool _isFlashOn = false;
+  bool _isCheckingOut = false;
+  PermissionStatus _cameraStatus = PermissionStatus.granted;
 
   // Cooldown mapping to prevent rapid firing of the same barcode
   final Map<String, DateTime> _lastScanTimes = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _checkCameraPermission();
+  }
 
   @override
   void dispose() {
@@ -34,7 +43,20 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  Future<void> _checkCameraPermission() async {
+    final status = await Permission.camera.status;
+    if (mounted) {
+      setState(() {
+        _cameraStatus = status;
+        if (status != PermissionStatus.granted) {
+          _isCameraOn = false;
+        }
+      });
+    }
+  }
+
   void _onDetect(BarcodeCapture capture) async {
+    if (!_isCameraOn || _isCheckingOut) return;
     final List<Barcode> barcodes = capture.barcodes;
     final now = DateTime.now();
 
@@ -130,9 +152,11 @@ class _HomePageState extends State<HomePage> {
           onPressed: state.cartItems.isEmpty
               ? null
               : () async {
+                  setState(() => _isCheckingOut = true);
                   _scannerController.stop();
                   await context.push('/scan/checkout');
-                  if (_isCameraOn && mounted) _scannerController.start();
+                  if (mounted && _isCameraOn) _scannerController.start();
+                  if (mounted) setState(() => _isCheckingOut = false);
                 },
           icon: Icons.payment,
           label: 'Review Order',
@@ -142,16 +166,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildScannerSection() {
+    final hasPermission = _cameraStatus == PermissionStatus.granted;
     return Container(
       color: Colors.black,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          MobileScanner(
-            controller: _scannerController,
-            onDetect: _onDetect,
-          ),
-          if (!_isCameraOn) _buildCameraOffState(),
+          if (hasPermission && _isCameraOn)
+            MobileScanner(
+              controller: _scannerController,
+              onDetect: _onDetect,
+            )
+          else if (!hasPermission)
+            _buildCameraOffState(),
+
+          if (hasPermission && !_isCameraOn) _buildCameraOffState(),
 
           // Overlay Actions (Top Right)
           Positioned(
@@ -207,8 +236,23 @@ class _HomePageState extends State<HomePage> {
                 if (_isCameraOn) const SizedBox(height: 16),
                 _buildOverlayButton(
                   icon: _isCameraOn ? Icons.videocam : Icons.videocam_off,
-                  // color:  Colors.white24 ,
-                  onPressed: () {
+                  onPressed: () async {
+                    if (!_isCameraOn) {
+                      final status = await Permission.camera.status;
+                      if (status != PermissionStatus.granted) {
+                        final result = await Permission.camera.request();
+                        if (result != PermissionStatus.granted && mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Camera permission is required to scan barcodes'),
+                              backgroundColor: Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+                      }
+                    }
                     setState(() {
                       _isCameraOn = !_isCameraOn;
                     });
@@ -224,7 +268,7 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // Central Overlay Bounding Box
-          if (_isCameraOn)
+          if (_isCameraOn && _cameraStatus == PermissionStatus.granted)
             Center(
               child: Container(
                 width: 250,

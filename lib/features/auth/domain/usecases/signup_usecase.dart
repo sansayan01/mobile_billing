@@ -9,7 +9,7 @@ class SignUpParams extends Equatable {
   final String email;
   final String password;
   final String name;
-  final String role; // 'owner' ya 'staff'
+  final String role; // 'owner' (default self-signup) | 'staff' (owner adds) | 'super_admin' (manual only)
   final String? shopName; // sirf owner signup ke liye — apni shop ka naam
   final String? emailRedirectTo; // verification deep-link (billingapp://verify)
   final String? shopId; // owner ne staff create kiya toh apni shop_id pass kare
@@ -18,7 +18,7 @@ class SignUpParams extends Equatable {
     required this.email,
     required this.password,
     required this.name,
-    this.role = 'staff',
+    this.role = 'owner', // naya signup hamesha owner banta hai (apni shop ke)
     this.shopName,
     this.emailRedirectTo,
     this.shopId,

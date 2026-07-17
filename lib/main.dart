@@ -16,11 +16,18 @@ import 'features/shop/presentation/bloc/shop_bloc.dart';
 import 'features/settings/presentation/bloc/printer_bloc.dart';
 import 'features/settings/presentation/bloc/printer_event.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseConfig.initialize();
   await HiveDatabase.init();
   await di.init();
+
+  // Auth state subscription ek baar hi setup — MyApp ke build() mein nahi,
+  // warna har rebuild par naye listener banenge → infinite loop + spam logout.
+  di.sl<AuthBloc>().subscribeToAuthChanges(
+    () => di.sl<AuthRepository>().authStateChanges,
+  );
+
   runApp(const MyApp());
 }
 
@@ -29,13 +36,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Supabase auth state changes (incl. email-deeplink confirmation) ko
-    // suno taaki jab user email link se confirm ho, AuthGate turant app
-    // mein redirect kare.
-    di.sl<AuthBloc>().subscribeToAuthChanges(
-      () => di.sl<AuthRepository>().authStateChanges,
-    );
-
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(

@@ -66,12 +66,18 @@ Flutter-based **billing + inventory management** app for a phone shop (phones, h
 
 ---
 
-## User Roles
+## User Roles (3-Tier)
 
 | Role | Permissions |
 |------|------------|
-| **Owner** | Full access — categories, products, billing, settings, reports, **staff mgmt (add/delete staff, scoped to own shop)** |
-| **Staff** | Billing only (scan → sell → print), view products & stock; **no staff management access** |
+| **Super Admin** (`super_admin`) | SaaS product admin. Cross-shop access — dekh sakta hai sab shops ka data (products, bills, profiles). Manually assign hota hai (self-signup se nahi banta). |
+| **Owner** (`owner`) | Shop owner — **default role on every new signup**. Auto-create apni shop milti hai. Full access: categories, products, billing, settings, reports, **staff mgmt (add/delete staff, scoped to own shop)** |
+| **Staff** (`staff`) | Employee added by owner. Billing only (scan → sell → print), view products & stock; **no staff management access** |
+
+### Role Assignment Flow
+- **New signup → automatically `owner`** + apni shop auto-create (DB trigger `handle_new_user` karta hai).
+- **Owner adds staff → `staff`** with owner's `shop_id` (via `SignUpRequested(role:'staff', shopId)`).
+- **`super_admin` → manual only** (koi self-signup path nahi).
 
 ---
 

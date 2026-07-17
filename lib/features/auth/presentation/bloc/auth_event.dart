@@ -24,7 +24,7 @@ class SignUpRequested extends AuthEvent {
   final String email;
   final String password;
   final String name;
-  final String role; // 'owner' ya 'staff'
+  final String role; // 'owner' (default) | 'staff' | 'super_admin' (manual only)
   final String? shopName; // owner signup ke liye shop ka naam
   final String? shopId; // owner staff create kare toh apni shop_id pass kare
 
@@ -32,7 +32,7 @@ class SignUpRequested extends AuthEvent {
     required this.email,
     required this.password,
     required this.name,
-    this.role = 'staff',
+    this.role = 'owner',
     this.shopName,
     this.shopId,
   });

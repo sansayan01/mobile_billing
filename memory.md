@@ -1,5 +1,46 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-07-17 — 3-Tier Role System (super_admin / owner / staff) ✅
+
+### Context (user asked)
+Pehle sirf 2 roles the (owner, staff). User ne 3-tier manga: (1) super_admin = SaaS product admin, (2) owner = shop owner, (3) staff. Naya signup hamesha **owner** banta hai apni shop ke saath. super_admin manual assign hota hai.
+
+### What Was Done
+1. **Migration `supabase/migrations/006_three_tier_roles.sql`** (APPLIED via MCP `apply_migration`):
+   - `profiles.role` CHECK extended → `['super_admin','owner','staff']`
+   - New helper `is_super_admin()` (SECURITY DEFINER)
+   - **Rewrote `handle_new_user()` trigger**: har new signup → auto `owner` role + apni shop auto-create (`shops` insert) + `shop_id` link. super_admin never via self-signup.
+   - **RLS**: `is_super_admin()` cross-shop bypass bolted onto ALL tables (profiles, shops, categories, products, bills, bill_items, inventory_log) — super admin sab dekh/sudhar sakta hai.
+   - Verified: role_check = `role = ANY (ARRAY['super_admin','owner','staff'])`, is_super_admin() exists, trigger present.
+2. **Dart UserRole enum** (`lib/features/auth/domain/entities/user.dart`):
+   - `enum UserRole { superAdmin('super_admin'), owner('owner'), staff('staff') }` + `UserRole.fromString()`
+   - `User` ko getters add: `userRole`, `isSuperAdmin`, `isOwner`, `isStaff`
+3. **UserModel** (`user_model.dart`): fromJson / fromSupabaseAuth / fromProfileJson ab `UserRole.fromString().value` use karte hain (role normalize).
+4. **Signup default = owner**:
+   - `SignUpParams` default `role='owner'`; `SignUpRequested` default `'owner'`; `AuthRepository.signUp` default `'owner'`.
+   - `auth_repository_impl.signUp` REWRITE: ab DB trigger ko owner+shop banane deta hai. Sirf staff-created-by-owner case me `_ensureProfileRole(role:'staff', shopId)` best-effort. Removed unused `_createShop` (trigger handles).
+   - signUp ab `data: {name, shop_name}` bhejta hai taaki trigger shop name le sake.
+5. **RPD.md** — "User Roles" section → 3-tier table + assignment flow.
+
+### Key Decisions
+| Decision | Why |
+|----------|-----|
+| DB trigger auto owner+shop | Self-signup hamesha owner — Dart side duplicate insert conflict avoid (idempotent try/catch) |
+| super_admin manual only | Self-signup se security risk; admin manually promote karega |
+| RLS super_admin bypass on ALL tables | Cross-shop SaaS admin view chahiye |
+| Dart UserRole enum (not just string) | Type-safe role checks; backwards compatible (role string abhi bhi `'owner'` etc) |
+
+### flutter analyze
+- `lib/features/auth`: No issues found ✅
+
+### TODO
+- [ ] Device pe verify: naya signup → profile role='owner' + shop auto-bani + shop_id linked
+- [ ] super_admin manually assign karke cross-shop access test (SQL ya admin screen)
+- [ ] graphify --update (pending)
+- [ ] CLAUDE.md auto-update rule: har edit ke baad memory + graphify + md update
+
+---
+
 ## Current Session: 2026-07-17 — Staff Management Feature ✅
 
 ### What Was Done

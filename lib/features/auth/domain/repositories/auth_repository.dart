@@ -8,7 +8,7 @@ abstract class AuthRepository {
     String email,
     String password,
     String name, {
-    String role = 'staff',
+    String role = 'owner',
     String? shopName,
     String? emailRedirectTo,
     String? shopId,

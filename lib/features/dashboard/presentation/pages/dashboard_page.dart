@@ -168,7 +168,6 @@ class _Greeting extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         final name = state is Authenticated ? state.user.name : 'there';
-        final role = state is Authenticated ? state.user.role : null;
         return Row(
           children: [
             Expanded(
@@ -191,7 +190,6 @@ class _Greeting extends StatelessWidget {
                 ],
               ),
             ),
-            if (role != null) _RoleBadge(role: role),
           ],
         );
       },
@@ -203,30 +201,6 @@ class _Greeting extends StatelessWidget {
     if (hour < 12) return 'Good morning,';
     if (hour < 17) return 'Good afternoon,';
     return 'Good evening,';
-  }
-}
-
-class _RoleBadge extends StatelessWidget {
-  final String role;
-  const _RoleBadge({required this.role});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        role.toUpperCase(),
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: AppTheme.primaryColor,
-        ),
-      ),
-    );
   }
 }
 

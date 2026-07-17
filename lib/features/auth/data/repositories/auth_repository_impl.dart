@@ -52,23 +52,6 @@ class AuthRepositoryImpl implements AuthRepository {
     await SupabaseConfig.client.from('profiles').insert(insert);
   }
 
-  /// Creates a 'shops' row for a new owner and returns the generated shop id.
-  /// Uses select().single() so we get the server-generated UUID back.
-  Future<String> _createShop({
-    required String ownerId,
-    required String shopName,
-  }) async {
-    final response = await SupabaseConfig.client
-        .from('shops')
-        .insert({
-          'owner_id': ownerId,
-          'name': shopName,
-        })
-        .select('id')
-        .single();
-    return response['id'] as String;
-  }
-
   @override
   Future<Either<Failure, User>> login(
       String email, String password) async {
@@ -94,7 +77,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String email,
     String password,
     String name, {
-    String role = 'staff',
+    String role = 'owner',
     String? shopName,
     String? emailRedirectTo,
     String? shopId,
@@ -104,6 +87,10 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         password: password,
         emailRedirectTo: emailRedirectTo,
+        data: {
+          'name': name,
+          'shop_name': shopName ?? '$name ki Shop',
+        },
       );
 
       final supabaseUser = response.user;
@@ -111,61 +98,57 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(const ServerFailure('Sign up failed. No user returned.'));
       }
 
-      String? effectiveShopId;
-
-      // Agar owner signup hai to pehle shop create karo (RLS allows owner insert),
-      // phir profile me role='owner' + shop_id link karo.
-      // Koi super admin email hardcode nahi hai — role param se decide hota hai.
-      // Staff create by owner: shopId directly pass hota hai (owner.shopId).
-      if (role == 'owner') {
-        try {
-          effectiveShopId = await _createShop(
-            ownerId: supabaseUser.id,
-            shopName: shopName?.isNotEmpty == true
-                ? shopName!
-                : '$name ki Shop',
-          );
-        } catch (e) {
-          return Left(ServerFailure(
-              'Shop creation failed: ${_extractErrorMessage(e)}'));
-        }
-      } else if (shopId != null) {
-        // Owner ne staff create kiya — shopId seedha pass kiya gaya.
-        effectiveShopId = shopId;
-      }
-
-      // Profile create karo (trigger bhi kar sakta hai — conflict ignore karo).
-      try {
-        await _createProfile(
-          id: supabaseUser.id,
-          email: email,
-          name: name,
-          role: role,
-          shopId: effectiveShopId,
+      // DB trigger (handle_new_user) auto-creates the owner profile + shop
+      // for every new signup. We only step in for the staff case (owner adds
+      // an employee and passes their shopId) and as a best-effort fallback.
+      if (role == 'staff' && shopId != null) {
+        await _ensureProfileRole(
+          userId: supabaseUser.id,
+          role: 'staff',
+          shopId: shopId,
         );
-      } catch (_) {
-        // Profile already exists from trigger — update role/shop_id instead
-        if (shopId != null || role == 'owner') {
-          try {
-            final updates = <String, dynamic>{};
-            if (role == 'owner') updates['role'] = 'owner';
-            if (shopId != null) updates['shop_id'] = shopId;
-            await SupabaseConfig.client
-                .from('profiles')
-                .update(updates)
-                .eq('id', supabaseUser.id);
-          } catch (_) {
-            // ignore — best effort
-          }
-        }
       }
 
-      final profile = await _fetchProfile(supabaseUser.id);
+      // Give the trigger a moment, then read back the final profile
+      // (trigger-created). If it's not there yet, fetch once more.
+      Map<String, dynamic>? profile = await _fetchProfile(supabaseUser.id);
+      profile ??= await _fetchProfile(supabaseUser.id);
+
       final user = UserModel.fromSupabaseAuth(supabaseUser, profile);
       return Right(user);
     } catch (e) {
       return Left(
           ServerFailure('Sign up failed: ${_extractErrorMessage(e)}'));
+    }
+  }
+
+  /// Best-effort: make sure a profile exists with the given role/shop.
+  /// Used when the DB trigger hasn't run yet or for staff created by an owner.
+  Future<void> _ensureProfileRole({
+    required String userId,
+    required String role,
+    String? shopId,
+  }) async {
+    try {
+      final existing = await _fetchProfile(userId);
+      final updates = <String, dynamic>{'role': role};
+      if (shopId != null) updates['shop_id'] = shopId;
+      if (existing == null) {
+        await _createProfile(
+          id: userId,
+          email: '',
+          name: '',
+          role: role,
+          shopId: shopId,
+        );
+      } else {
+        await SupabaseConfig.client
+            .from('profiles')
+            .update(updates)
+            .eq('id', userId);
+      }
+    } catch (_) {
+      // ignore — trigger will handle it
     }
   }
 

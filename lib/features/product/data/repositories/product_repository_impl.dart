@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/data/hive_database.dart';
@@ -31,18 +32,33 @@ class ProductRepositoryImpl implements ProductRepository {
     );
   }
 
+  /// Resolve shopId: if not provided, fetch from current user's profile.
+  Future<String?> _resolveShopId(String? shopId) async {
+    if (shopId != null) return shopId;
+    try {
+      final userId = _supabase.auth.currentUser?.id;
+      if (userId == null) return null;
+      final profile = await _supabase
+          .from('profiles')
+          .select('shop_id')
+          .eq('id', userId)
+          .maybeSingle();
+      if (profile != null) {
+        return profile['shop_id'] as String?;
+      }
+    } catch (_) {
+      // If profile fetch fails, return null — RLS may block the operation.
+    }
+    return null;
+  }
+
   @override
   Future<Either<Failure, List<Product>>> getProducts({String? shopId}) async {
     try {
-      if (shopId == null) {
-        // Fallback: RLS still scopes server-side, but log a warning so we
-        // know the shop context was missing.
-        // ignore: avoid_print
-        print('Warning: getProducts called without shopId — falling back to RLS scope only');
-      }
+      final effectiveShopId = await _resolveShopId(shopId);
       var query = _supabase.from('products').select();
-      if (shopId != null) {
-        query = query.eq('shop_id', shopId);
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
       }
       final response = await query.order('created_at', ascending: false);
 
@@ -76,9 +92,10 @@ class ProductRepositoryImpl implements ProductRepository {
     String? shopId,
   }) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       var query = _supabase.from('products').select().eq('barcode', barcode);
-      if (shopId != null) {
-        query = query.eq('shop_id', shopId);
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
       }
       final response = await query.maybeSingle();
 
@@ -114,12 +131,13 @@ class ProductRepositoryImpl implements ProductRepository {
     String? shopId,
   }) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       var query = _supabase
           .from('products')
           .select()
           .eq('category_id', categoryId);
-      if (shopId != null) {
-        query = query.eq('shop_id', shopId);
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
       }
       final response = await query.order('created_at', ascending: false);
 
@@ -139,6 +157,7 @@ class ProductRepositoryImpl implements ProductRepository {
     String? shopId,
   }) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       final model = ProductModel.fromEntity(product);
       await _supabase.from('products').insert({
         'id': model.id,
@@ -151,7 +170,7 @@ class ProductRepositoryImpl implements ProductRepository {
         'description': model.description,
         'image_url': model.imageUrl,
         'qr_data': model.qrData,
-        'shop_id': shopId,
+        'shop_id': effectiveShopId,
       });
 
       // Cache in Hive
@@ -170,6 +189,7 @@ class ProductRepositoryImpl implements ProductRepository {
     String? shopId,
   }) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       final model = ProductModel.fromEntity(product);
       await _supabase.from('products').upsert({
         'id': model.id,
@@ -182,7 +202,7 @@ class ProductRepositoryImpl implements ProductRepository {
         'description': model.description,
         'image_url': model.imageUrl,
         'qr_data': model.qrData,
-        'shop_id': shopId,
+        'shop_id': effectiveShopId,
         'updated_at': DateTime.now().toIso8601String(),
       });
 
@@ -202,11 +222,12 @@ class ProductRepositoryImpl implements ProductRepository {
     String? shopId,
   }) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       var query = _supabase
           .from('products')
           .select('id, name, stock');
-      if (shopId != null) {
-        query = query.eq('shop_id', shopId);
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
       }
       final response = await query.filter('id', 'in', productIds);
 
@@ -228,9 +249,10 @@ class ProductRepositoryImpl implements ProductRepository {
     String? shopId,
   }) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       var query = _supabase.from('products').delete().eq('id', id);
-      if (shopId != null) {
-        query = query.eq('shop_id', shopId);
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
       }
       await query;
 
