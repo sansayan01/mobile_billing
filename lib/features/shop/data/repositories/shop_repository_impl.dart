@@ -16,14 +16,10 @@ class ShopRepositoryImpl implements ShopRepository {
       if (shop != null) {
         return Right(shop);
       } else {
-        // Return default shop if not found
-        return const Right(Shop(
-            name: 'Dinesh Shop',
-            addressLine1: 'Samrajpet, Mecheri',
-            addressLine2: 'Salem - 636453',
-            phoneNumber: '+917010674588',
-            upiId: 'dineshsowndar@oksbi',
-            footerText: 'Thank you, Visit again!!!'));
+        // Koi cached shop nahi mila — empty shop return karo.
+        // Shop name + UPI id user Shop Details screen se set karega,
+        // ya `shops` table se load hoga. Kuch bhi hardcode mat karo.
+        return const Right(Shop());
       }
     } catch (e) {
       return Left(CacheFailure(e.toString()));

@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:billing_app/core/error/failure.dart';
@@ -15,6 +17,7 @@ class ReportRepositoryImpl implements ReportRepository {
     DateTime? to,
     int page = 1,
     int limit = 20,
+    String? shopId,
   }) async {
     try {
       // Start with select() to get PostgrestFilterBuilder, then add filters
@@ -22,6 +25,10 @@ class ReportRepositoryImpl implements ReportRepository {
           .from('bills')
           .select('*, profiles(name)')
           .order('created_at', ascending: false) as dynamic;
+
+      if (shopId != null) {
+        query = query.eq('shop_id', shopId);
+      }
 
       if (from != null) {
         query = query.gte('created_at', from.toIso8601String());
@@ -50,13 +57,21 @@ class ReportRepositoryImpl implements ReportRepository {
   }
 
   @override
-  Future<Either<Failure, BillSummary>> getBillDetail(String billId) async {
+  Future<Either<Failure, BillSummary>> getBillDetail(
+    String billId, {
+    String? shopId,
+  }) async {
     try {
-      final response = await _supabase
+      var billQuery = _supabase
           .from('bills')
           .select('*, profiles(name)')
-          .eq('id', billId)
-          .maybeSingle();
+          .eq('id', billId) as dynamic;
+
+      if (shopId != null) {
+        billQuery = billQuery.eq('shop_id', shopId);
+      }
+
+      final response = await billQuery.maybeSingle();
 
       if (response == null) {
         return Left(ServerFailure('Bill not found'));
@@ -80,16 +95,25 @@ class ReportRepositoryImpl implements ReportRepository {
   }
 
   @override
-  Future<Either<Failure, DailySales>> getDailySales(DateTime date) async {
+  Future<Either<Failure, DailySales>> getDailySales(
+    DateTime date, {
+    String? shopId,
+  }) async {
     try {
       final startOfDay = DateTime(date.year, date.month, date.day);
       final endOfDay = startOfDay.add(const Duration(days: 1));
 
-      final response = await _supabase
+      var query = _supabase
           .from('bills')
           .select('grand_total, discount')
           .gte('created_at', startOfDay.toIso8601String())
-          .lt('created_at', endOfDay.toIso8601String());
+          .lt('created_at', endOfDay.toIso8601String()) as dynamic;
+
+      if (shopId != null) {
+        query = query.eq('shop_id', shopId);
+      }
+
+      final response = await query;
 
       final rows = response as List<dynamic>;
 
@@ -120,19 +144,26 @@ class ReportRepositoryImpl implements ReportRepository {
   @override
   Future<Either<Failure, List<DailySales>>> getSalesRange(
     DateTime from,
-    DateTime to,
-  ) async {
+    DateTime to, {
+    String? shopId,
+  }) async {
     try {
       final startDate = DateTime(from.year, from.month, from.day);
       final endDate =
           DateTime(to.year, to.month, to.day).add(const Duration(days: 1));
 
-      final response = await _supabase
+      var query = _supabase
           .from('bills')
           .select('grand_total, discount, created_at')
           .gte('created_at', startDate.toIso8601String())
           .lt('created_at', endDate.toIso8601String())
-          .order('created_at', ascending: true);
+          .order('created_at', ascending: true) as dynamic;
+
+      if (shopId != null) {
+        query = query.eq('shop_id', shopId);
+      }
+
+      final response = await query;
 
       final rows = response as List<dynamic>;
 
@@ -177,14 +208,22 @@ class ReportRepositoryImpl implements ReportRepository {
 
   @override
   Future<Either<Failure, List<Map<String, dynamic>>>> getLowStockProducts(
-    int threshold,
-  ) async {
+    int threshold, {
+    String? shopId,
+  }) async {
     try {
-      final response = await _supabase
+      var query = _supabase
           .from('products')
           .select('name, stock, price')
-          .lte('stock', threshold)
-          .order('stock', ascending: true);
+          .lte('stock', threshold) as dynamic;
+
+      if (shopId != null) {
+        query = query.eq('shop_id', shopId);
+      }
+
+      query = query.order('stock', ascending: true);
+
+      final response = await query;
 
       final products = (response as List<dynamic>)
           .map((e) => Map<String, dynamic>.from(e as Map))
@@ -202,6 +241,7 @@ class ReportRepositoryImpl implements ReportRepository {
     DateTime? from,
     DateTime? to,
     String? changeType,
+    String? shopId,
   }) async {
     try {
       var query = _supabase
@@ -209,6 +249,9 @@ class ReportRepositoryImpl implements ReportRepository {
           .select('*, products(name), profiles(name)')
           .order('created_at', ascending: false) as dynamic;
 
+      if (shopId != null) {
+        query = query.eq('shop_id', shopId);
+      }
       if (productId != null) {
         query = query.eq('product_id', productId);
       }

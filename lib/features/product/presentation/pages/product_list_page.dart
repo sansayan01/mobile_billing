@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+// ignore_for_file: prefer_const_constructors
 import '../bloc/product_bloc.dart';
 import '../../../category/presentation/bloc/category_bloc.dart';
 import '../../domain/entities/product.dart';
@@ -36,7 +37,7 @@ class _ProductListPageState extends State<ProductListPage> {
   }
 
   void _scanQR(List<Product> products) async {
-    final barcode = await context.push<String>('/scanner');
+    final barcode = await context.push<String>('/scan/scanner');
     if (barcode != null && barcode.isNotEmpty) {
       final matchedProduct =
           products.where((p) => p.barcode == barcode).firstOrNull;
@@ -57,10 +58,27 @@ class _ProductListPageState extends State<ProductListPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.chevron_left,
-              size: 28, color: Theme.of(context).primaryColor),
-          onPressed: () => context.pop(),
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: Icon(Icons.menu,
+                  size: 24, color: Theme.of(context).primaryColor),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Open menu',
+            ),
+            IconButton(
+              icon: Icon(Icons.chevron_left,
+                  size: 28, color: Theme.of(context).primaryColor),
+              onPressed: () {
+                if (Navigator.of(context).canPop()) {
+                  context.pop();
+                } else {
+                  context.go('/');
+                }
+              },
+            ),
+          ],
         ),
         title: const Text('Product Management',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),

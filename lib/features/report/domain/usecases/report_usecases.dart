@@ -12,53 +12,59 @@ class BillHistoryParams extends Equatable {
   final DateTime? to;
   final int page;
   final int limit;
+  final String? shopId;
 
   const BillHistoryParams({
     this.from,
     this.to,
     this.page = 1,
     this.limit = 20,
+    this.shopId,
   });
 
   @override
-  List<Object?> get props => [from, to, page, limit];
+  List<Object?> get props => [from, to, page, limit, shopId];
 }
 
 class BillDetailParams extends Equatable {
   final String billId;
+  final String? shopId;
 
-  const BillDetailParams({required this.billId});
+  const BillDetailParams({required this.billId, this.shopId});
 
   @override
-  List<Object?> get props => [billId];
+  List<Object?> get props => [billId, shopId];
 }
 
 class DailySalesParams extends Equatable {
   final DateTime date;
+  final String? shopId;
 
-  const DailySalesParams({required this.date});
+  const DailySalesParams({required this.date, this.shopId});
 
   @override
-  List<Object?> get props => [date];
+  List<Object?> get props => [date, shopId];
 }
 
 class SalesRangeParams extends Equatable {
   final DateTime from;
   final DateTime to;
+  final String? shopId;
 
-  const SalesRangeParams({required this.from, required this.to});
+  const SalesRangeParams({required this.from, required this.to, this.shopId});
 
   @override
-  List<Object?> get props => [from, to];
+  List<Object?> get props => [from, to, shopId];
 }
 
 class LowStockParams extends Equatable {
   final int threshold;
+  final String? shopId;
 
-  const LowStockParams({required this.threshold});
+  const LowStockParams({required this.threshold, this.shopId});
 
   @override
-  List<Object?> get props => [threshold];
+  List<Object?> get props => [threshold, shopId];
 }
 
 class StockMovementParams extends Equatable {
@@ -66,16 +72,18 @@ class StockMovementParams extends Equatable {
   final DateTime? from;
   final DateTime? to;
   final String? changeType;
+  final String? shopId;
 
   const StockMovementParams({
     this.productId,
     this.from,
     this.to,
     this.changeType,
+    this.shopId,
   });
 
   @override
-  List<Object?> get props => [productId, from, to, changeType];
+  List<Object?> get props => [productId, from, to, changeType, shopId];
 }
 
 // ===================== Use Cases =====================
@@ -93,6 +101,7 @@ class GetBillHistoryUseCase
       to: params.to,
       page: params.page,
       limit: params.limit,
+      shopId: params.shopId,
     );
   }
 }
@@ -105,7 +114,10 @@ class GetBillDetailUseCase
 
   @override
   Future<Either<Failure, BillSummary>> call(BillDetailParams params) {
-    return repository.getBillDetail(params.billId);
+    return repository.getBillDetail(
+      params.billId,
+      shopId: params.shopId,
+    );
   }
 }
 
@@ -116,7 +128,10 @@ class GetDailySalesUseCase implements UseCase<DailySales, DailySalesParams> {
 
   @override
   Future<Either<Failure, DailySales>> call(DailySalesParams params) {
-    return repository.getDailySales(params.date);
+    return repository.getDailySales(
+      params.date,
+      shopId: params.shopId,
+    );
   }
 }
 
@@ -128,7 +143,11 @@ class GetSalesRangeUseCase
 
   @override
   Future<Either<Failure, List<DailySales>>> call(SalesRangeParams params) {
-    return repository.getSalesRange(params.from, params.to);
+    return repository.getSalesRange(
+      params.from,
+      params.to,
+      shopId: params.shopId,
+    );
   }
 }
 
@@ -141,7 +160,10 @@ class GetLowStockProductsUseCase
   @override
   Future<Either<Failure, List<Map<String, dynamic>>>> call(
       LowStockParams params) {
-    return repository.getLowStockProducts(params.threshold);
+    return repository.getLowStockProducts(
+      params.threshold,
+      shopId: params.shopId,
+    );
   }
 }
 
@@ -159,6 +181,7 @@ class GetStockMovementsUseCase
       from: params.from,
       to: params.to,
       changeType: params.changeType,
+      shopId: params.shopId,
     );
   }
 }

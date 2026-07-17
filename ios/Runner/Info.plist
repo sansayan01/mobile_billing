@@ -53,5 +53,16 @@
 	<string>We need bluetooth to connect to thermal printers.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need location access to find nearby printers.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>billingapp</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>billingapp</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

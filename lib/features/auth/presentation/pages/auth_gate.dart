@@ -4,10 +4,13 @@ import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:billing_app/features/auth/presentation/pages/login_page.dart';
+import 'package:billing_app/features/auth/presentation/pages/email_verification_page.dart';
 
 /// A wrapper widget that listens to [AuthBloc] state and shows either:
 /// - [HomePage] (or any authenticated content widget) when the user is
-///   authenticated
+///   authenticated AND email confirmed
+/// - [EmailVerificationPage] when the user is authenticated but email NOT
+///   confirmed yet
 /// - [LoginPage] when the user is unauthenticated
 /// - A splash / loading indicator while checking auth status
 class AuthGate extends StatelessWidget {
@@ -40,6 +43,20 @@ class AuthGate extends StatelessWidget {
 
         if (state is Authenticated) {
           return authenticatedChild;
+        }
+
+        // Email confirmation pending — show verification screen.
+        // ResendEmailSent / ResendEmailError transient states bhi yahin
+        // rehna chahiye taaki user screen par hi rahe.
+        if (state is EmailVerificationPending ||
+            state is ResendEmailSent ||
+            state is ResendEmailError) {
+          final email = state is EmailVerificationPending
+              ? state.email
+              : state is ResendEmailSent
+                  ? state.email
+                  : (state as ResendEmailError).email;
+          return EmailVerificationPage(email: email);
         }
 
         // Unauthenticated or AuthError — show login

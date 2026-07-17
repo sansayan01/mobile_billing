@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 
+import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:billing_app/features/report/domain/usecases/report_usecases.dart';
 import 'report_event.dart';
 import 'report_state.dart';
@@ -11,6 +13,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
   final GetSalesRangeUseCase getSalesRangeUseCase;
   final GetLowStockProductsUseCase getLowStockProductsUseCase;
   final GetStockMovementsUseCase getStockMovementsUseCase;
+  final AuthBloc authBloc;
 
   ReportBloc({
     required this.getBillHistoryUseCase,
@@ -19,6 +22,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     required this.getSalesRangeUseCase,
     required this.getLowStockProductsUseCase,
     required this.getStockMovementsUseCase,
+    required this.authBloc,
   }) : super(const ReportState()) {
     on<LoadBillHistory>(_onLoadBillHistory);
     on<LoadBillDetail>(_onLoadBillDetail);
@@ -27,6 +31,11 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     on<LoadLowStockProducts>(_onLoadLowStockProducts);
     on<LoadStockMovements>(_onLoadStockMovements);
     on<ResetReport>(_onResetReport);
+  }
+
+  String? get _currentShopId {
+    final s = authBloc.state;
+    return s is Authenticated ? s.user.shopId : null;
   }
 
   Future<void> _onLoadBillHistory(
@@ -38,6 +47,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         from: event.from ?? DateTime(2020, 1, 1),
         to: event.to ?? DateTime.now(),
         page: event.page,
+        shopId: _currentShopId,
       ),
     );
 
@@ -69,7 +79,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     emit(state.copyWith(status: ReportStatus.loading, error: null));
 
     final result = await getBillDetailUseCase(
-        BillDetailParams(billId: event.billId));
+        BillDetailParams(billId: event.billId, shopId: _currentShopId));
 
     result.fold(
       (failure) => emit(state.copyWith(
@@ -84,7 +94,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     emit(state.copyWith(status: ReportStatus.loading, error: null));
 
     final result = await getDailySalesUseCase(
-        DailySalesParams(date: event.date));
+        DailySalesParams(date: event.date, shopId: _currentShopId));
 
     result.fold(
       (failure) => emit(state.copyWith(
@@ -99,7 +109,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     emit(state.copyWith(status: ReportStatus.loading, error: null));
 
     final result = await getSalesRangeUseCase(
-      SalesRangeParams(from: event.from, to: event.to),
+      SalesRangeParams(from: event.from, to: event.to, shopId: _currentShopId),
     );
 
     result.fold(
@@ -115,7 +125,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     emit(state.copyWith(status: ReportStatus.loading, error: null));
 
     final result = await getLowStockProductsUseCase(
-        LowStockParams(threshold: event.threshold));
+        LowStockParams(threshold: event.threshold, shopId: _currentShopId));
 
     result.fold(
       (failure) => emit(state.copyWith(
@@ -135,6 +145,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         from: event.from,
         to: event.to,
         changeType: event.changeType,
+        shopId: _currentShopId,
       ),
     );
 

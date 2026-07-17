@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+// ignore_for_file: prefer_const_constructors
 import 'package:share_plus/share_plus.dart';
 
 import '../../domain/entities/product.dart';
@@ -54,11 +54,6 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.chevron_left,
-              size: 28, color: Theme.of(context).primaryColor),
-          onPressed: () => context.pop(),
-        ),
         title: const Text('QR Code',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,

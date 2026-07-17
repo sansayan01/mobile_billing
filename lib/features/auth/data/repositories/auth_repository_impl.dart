@@ -1,6 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:async';
 import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
+import 'package:billing_app/core/config/deep_link_config.dart';
 import 'package:billing_app/core/error/failure.dart';
 import 'package:billing_app/core/supabase/supabase_client.dart';
 import 'package:billing_app/features/auth/domain/entities/user.dart';
@@ -35,13 +38,35 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String name,
     String role = 'staff',
+    String? shopId,
   }) async {
-    await SupabaseConfig.client.from('profiles').insert({
+    final insert = {
       'id': id,
       'email': email,
       'name': name,
       'role': role,
-    });
+    };
+    if (shopId != null) {
+      insert['shop_id'] = shopId;
+    }
+    await SupabaseConfig.client.from('profiles').insert(insert);
+  }
+
+  /// Creates a 'shops' row for a new owner and returns the generated shop id.
+  /// Uses select().single() so we get the server-generated UUID back.
+  Future<String> _createShop({
+    required String ownerId,
+    required String shopName,
+  }) async {
+    final response = await SupabaseConfig.client
+        .from('shops')
+        .insert({
+          'owner_id': ownerId,
+          'name': shopName,
+        })
+        .select('id')
+        .single();
+    return response['id'] as String;
   }
 
   @override
@@ -66,26 +91,68 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, User>> signUp(
-      String email, String password, String name) async {
+    String email,
+    String password,
+    String name, {
+    String role = 'staff',
+    String? shopName,
+    String? emailRedirectTo,
+  }) async {
     try {
-      final response = await SupabaseConfig.client.auth
-          .signUp(email: email, password: password);
+      final response = await SupabaseConfig.client.auth.signUp(
+        email: email,
+        password: password,
+        emailRedirectTo: emailRedirectTo,
+      );
 
       final supabaseUser = response.user;
       if (supabaseUser == null) {
         return Left(const ServerFailure('Sign up failed. No user returned.'));
       }
 
-      // Create the profile row manually.
-      // A DB trigger may also do this, but we ensure it exists here.
+      String? shopId;
+
+      // Agar owner signup hai to pehle shop create karo (RLS allows owner insert),
+      // phir profile me role='owner' + shop_id link karo.
+      // Koi super admin email hardcode nahi hai — role param se decide hota hai.
+      if (role == 'owner') {
+        try {
+          shopId = await _createShop(
+            ownerId: supabaseUser.id,
+            shopName: shopName?.isNotEmpty == true
+                ? shopName!
+                : '$name ki Shop',
+          );
+        } catch (e) {
+          return Left(ServerFailure(
+              'Shop creation failed: ${_extractErrorMessage(e)}'));
+        }
+      }
+
+      // Profile create karo (trigger bhi kar sakta hai — conflict ignore karo).
       try {
         await _createProfile(
           id: supabaseUser.id,
           email: email,
           name: name,
+          role: role,
+          shopId: shopId,
         );
       } catch (_) {
-        // Profile may already exist from trigger — ignore conflict
+        // Profile already exists from trigger — update role/shop_id instead
+        if (shopId != null || role == 'owner') {
+          try {
+            final updates = <String, dynamic>{};
+            if (role == 'owner') updates['role'] = 'owner';
+            if (shopId != null) updates['shop_id'] = shopId;
+            await SupabaseConfig.client
+                .from('profiles')
+                .update(updates)
+                .eq('id', supabaseUser.id);
+          } catch (_) {
+            // ignore — best effort
+          }
+        }
       }
 
       final profile = await _fetchProfile(supabaseUser.id);
@@ -185,6 +252,24 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (e) {
       return Left(
           ServerFailure('Logout failed: ${_extractErrorMessage(e)}'));
+    }
+  }
+
+  /// Resends the email confirmation link for an unconfirmed user.
+  /// Uses Supabase's `auth.resend` with [OtpType.signup] and the same
+  /// deep-link redirect so the app re-opens after confirmation.
+  @override
+  Future<Either<Failure, void>> resendVerificationEmail(String email) async {
+    try {
+      await SupabaseConfig.client.auth.resend(
+        type: OtpType.signup,
+        email: email,
+        emailRedirectTo: DeepLinkConfig.emailRedirectTo,
+      );
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(
+          'Failed to resend email: ${_extractErrorMessage(e)}'));
     }
   }
 

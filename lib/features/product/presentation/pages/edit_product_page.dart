@@ -65,11 +65,6 @@ class _EditProductPageState extends State<EditProductPage> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.chevron_left,
-                size: 32, color: Theme.of(context).primaryColor),
-            onPressed: () => context.pop(),
-          ),
           title: const Text('Edit Product',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           centerTitle: true,
@@ -136,7 +131,7 @@ class _EditProductPageState extends State<EditProductPage> {
                           hintText: 'Select category',
                           prefixIcon: Icon(Icons.category_outlined),
                         ),
-                        value: _categoryId,
+                        initialValue: _categoryId,
                         items: [
                           const DropdownMenuItem<String>(
                             value: null,

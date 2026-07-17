@@ -5,6 +5,8 @@ import '../../domain/entities/product.dart';
 import '../../domain/usecases/product_usecases.dart';
 import '../../../../core/realtime/realtime_service.dart';
 import '../../../../core/usecase/usecase.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/auth_state.dart';
 
 part 'product_event.dart';
 part 'product_state.dart';
@@ -15,6 +17,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final UpdateProductUseCase updateProductUseCase;
   final DeleteProductUseCase deleteProductUseCase;
   final RealtimeService realtimeService;
+  final AuthBloc authBloc;
 
   Timer? _realtimeDebounce;
 
@@ -24,6 +27,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     required this.updateProductUseCase,
     required this.deleteProductUseCase,
     required this.realtimeService,
+    required this.authBloc,
   }) : super(const ProductState()) {
     on<LoadProducts>(_onLoadProducts);
     on<AddProduct>(_onAddProduct);
@@ -35,10 +39,17 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<ProductsRealtimeUpdated>(_onProductsRealtimeUpdated);
   }
 
+  /// Current shop id from the authenticated AuthBloc state, or null if not
+  /// authenticated. Used to scope product queries/inserts to the tenant.
+  String? get _currentShopId {
+    final s = authBloc.state;
+    return s is Authenticated ? s.user.shopId : null;
+  }
+
   Future<void> _onLoadProducts(
       LoadProducts event, Emitter<ProductState> emit) async {
     emit(state.copyWith(status: ProductStatus.loading));
-    final result = await getProductsUseCase(NoParams());
+    final result = await getProductsUseCase(NoParams(), shopId: _currentShopId);
     result.fold(
       (failure) => emit(state.copyWith(
           status: ProductStatus.error, message: failure.message)),
@@ -53,7 +64,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   Future<void> _onAddProduct(
       AddProduct event, Emitter<ProductState> emit) async {
     emit(state.copyWith(status: ProductStatus.loading));
-    final result = await addProductUseCase(event.product);
+    final result = await addProductUseCase(event.product, shopId: _currentShopId);
     result.fold(
       (failure) => emit(state.copyWith(
           status: ProductStatus.error, message: failure.message)),
@@ -69,7 +80,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   Future<void> _onUpdateProduct(
       UpdateProduct event, Emitter<ProductState> emit) async {
     emit(state.copyWith(status: ProductStatus.loading));
-    final result = await updateProductUseCase(event.product);
+    final result = await updateProductUseCase(event.product, shopId: _currentShopId);
     result.fold(
       (failure) => emit(state.copyWith(
           status: ProductStatus.error, message: failure.message)),
@@ -85,7 +96,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   Future<void> _onDeleteProduct(
       DeleteProduct event, Emitter<ProductState> emit) async {
     emit(state.copyWith(status: ProductStatus.loading));
-    final result = await deleteProductUseCase(event.id);
+    final result = await deleteProductUseCase(event.id, shopId: _currentShopId);
     result.fold(
       (failure) => emit(state.copyWith(
           status: ProductStatus.error, message: failure.message)),

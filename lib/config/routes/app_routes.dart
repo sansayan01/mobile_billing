@@ -5,7 +5,9 @@ import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/auth/presentation/bloc/auth_state.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
+import '../../features/auth/presentation/pages/email_verification_page.dart';
 import '../../features/billing/presentation/pages/home_page.dart';
+import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/product/presentation/pages/product_list_page.dart';
 import '../../features/product/presentation/pages/add_product_page.dart';
 import '../../features/product/presentation/pages/edit_product_page.dart';
@@ -26,24 +28,29 @@ import '../../features/category/presentation/pages/category_list_page.dart';
 import 'app_shell.dart';
 
 GoRouter createRouter() {
-  final GlobalKey<NavigatorState> _rootNavigatorKey =
+  final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'root');
 
   return GoRouter(
-    navigatorKey: _rootNavigatorKey,
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/login',
     debugLogDiagnostics: true,
     redirect: (context, state) {
       final authState = context.read<AuthBloc>().state;
       final isLoggedIn = authState is Authenticated;
       final isAuthRoute = state.matchedLocation == '/login' ||
-          state.matchedLocation == '/register';
+          state.matchedLocation == '/register' ||
+          state.matchedLocation == '/verify-email';
 
       if (!isLoggedIn && !isAuthRoute) {
         return '/login';
       }
 
-      if (isLoggedIn && isAuthRoute) {
+      // Agar logged in ho aur auth route par ho toh app mein bhejo.
+      // (AuthGate hi verification pending ko handle karega agar logged in
+      //  but unconfirmed hai — par verify-email direct route pe bhi jaa sakte hain.)
+      if (isLoggedIn && (state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register')) {
         return '/';
       }
 
@@ -58,11 +65,22 @@ GoRouter createRouter() {
         path: '/register',
         builder: (context, state) => const RegisterPage(),
       ),
+      GoRoute(
+        path: '/verify-email',
+        builder: (context, state) {
+          final email = state.extra as String? ?? '';
+          return EmailVerificationPage(email: email);
+        },
+      ),
       ShellRoute(
         builder: (context, state, child) => AppShell(child: child),
         routes: [
           GoRoute(
             path: '/',
+            builder: (context, state) => const DashboardPage(),
+          ),
+          GoRoute(
+            path: '/scan',
             builder: (context, state) => const HomePage(),
             routes: [
               GoRoute(

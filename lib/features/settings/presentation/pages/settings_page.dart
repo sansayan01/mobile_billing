@@ -33,11 +33,6 @@ class _SettingsPageState extends State<SettingsPage> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.chevron_left,
-              size: 28, color: Theme.of(context).primaryColor),
-          onPressed: () => context.pop(),
-        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -49,8 +44,8 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
               child: BlocBuilder<ShopBloc, ShopState>(
                 builder: (context, state) {
-                  String shopName = 'Elite Groceries';
-                  String initials = 'EG';
+                  String shopName = 'Your Shop';
+                  String initials = 'S';
                   if (state is ShopLoaded && state.shop.name.isNotEmpty) {
                     shopName = state.shop.name;
                     final parts = shopName.split(' ');

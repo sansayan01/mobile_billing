@@ -39,7 +39,11 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
 
   Future<void> _onScanBarcode(
       ScanBarcodeEvent event, Emitter<BillingState> emit) async {
-    final result = await getProductByBarcodeUseCase(event.barcode);
+    final shopId = authBloc.state is Authenticated
+        ? (authBloc.state as Authenticated).user.shopId
+        : null;
+    final result =
+        await getProductByBarcodeUseCase(event.barcode, shopId: shopId);
     result.fold(
       (failure) =>
           emit(state.copyWith(error: 'Product not found: ${event.barcode}')),
@@ -203,6 +207,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
 
     try {
       final staffId = authState.user.id;
+      final shopId = authState.user.shopId;
       final billId = const Uuid().v4();
       final now = DateTime.now().toIso8601String();
       final baseTotal =
@@ -212,6 +217,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       // 1. Insert into bills table
       await SupabaseConfig.client.from('bills').insert({
         'id': billId,
+        'shop_id': shopId,
         'staff_id': staffId,
         'total_amount': baseTotal,
         'discount': state.discount,
@@ -225,6 +231,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
         await SupabaseConfig.client.from('bill_items').insert({
           'id': const Uuid().v4(),
           'bill_id': billId,
+          'shop_id': shopId,
           'product_id': item.product.id,
           'product_name': item.product.name,
           'quantity': item.quantity,
@@ -242,11 +249,12 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           'id': const Uuid().v4(),
           'product_id': item.product.id,
           'product_name': item.product.name,
-          'change': -item.quantity,
-          'type': 'sale',
-          'bill_id': billId,
+          'shop_id': shopId,
           'staff_id': staffId,
+          'change_type': 'sell',
+          'quantity': -item.quantity,
           'created_at': now,
+          'notes': 'Sale: bill $billId',
         });
       }
 
@@ -301,7 +309,12 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
 
     final productIds = cartItems.map((item) => item.product.id).toList();
 
-    final result = await getCurrentStockBulkUseCase(productIds);
+    final shopId = authBloc.state is Authenticated
+        ? (authBloc.state as Authenticated).user.shopId
+        : null;
+
+    final result =
+        await getCurrentStockBulkUseCase(productIds, shopId: shopId);
 
     return result.fold(
       (failure) => ['Stock validation failed: ${failure.message}'],

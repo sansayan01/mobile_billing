@@ -73,6 +73,7 @@ Future<void> init() async {
       updateProductUseCase: sl(),
       deleteProductUseCase: sl(),
       realtimeService: sl(),
+      authBloc: sl(),
     ),
   );
 
@@ -122,6 +123,7 @@ Future<void> init() async {
       addCategoryUseCase: sl(),
       updateCategoryUseCase: sl(),
       deleteCategoryUseCase: sl(),
+      authBloc: sl(),
     ),
   );
 
@@ -172,6 +174,7 @@ Future<void> init() async {
       getSalesRangeUseCase: sl(),
       getLowStockProductsUseCase: sl(),
       getStockMovementsUseCase: sl(),
+      authBloc: sl(),
     ),
   );
 }

@@ -10,12 +10,13 @@ class CategoryRepositoryImpl implements CategoryRepository {
   SupabaseClient get _supabase => SupabaseConfig.client;
 
   @override
-  Future<Either<Failure, List<Category>>> getCategories() async {
+  Future<Either<Failure, List<Category>>> getCategories({String? shopId}) async {
     try {
-      final response = await _supabase
-          .from('categories')
-          .select()
-          .order('created_at', ascending: false);
+      var query = _supabase.from('categories').select();
+      if (shopId != null) {
+        query = query.eq('shop_id', shopId);
+      }
+      final response = await query.order('created_at', ascending: false);
 
       final categories = (response as List<dynamic>)
           .map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
@@ -28,12 +29,14 @@ class CategoryRepositoryImpl implements CategoryRepository {
   }
 
   @override
-  Future<Either<Failure, void>> addCategory(Category category) async {
+  Future<Either<Failure, void>> addCategory(Category category,
+      {String? shopId}) async {
     try {
       await _supabase.from('categories').insert({
         'id': category.id,
         'name': category.name,
         'description': category.description,
+        'shop_id': shopId,
       });
 
       return const Right(null);
@@ -43,12 +46,14 @@ class CategoryRepositoryImpl implements CategoryRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateCategory(Category category) async {
+  Future<Either<Failure, void>> updateCategory(Category category,
+      {String? shopId}) async {
     try {
       await _supabase.from('categories').upsert({
         'id': category.id,
         'name': category.name,
         'description': category.description,
+        'shop_id': shopId,
       });
 
       return const Right(null);
@@ -58,7 +63,8 @@ class CategoryRepositoryImpl implements CategoryRepository {
   }
 
   @override
-  Future<Either<Failure, void>> deleteCategory(String id) async {
+  Future<Either<Failure, void>> deleteCategory(String id,
+      {String? shopId}) async {
     try {
       await _supabase.from('categories').delete().eq('id', id);
 

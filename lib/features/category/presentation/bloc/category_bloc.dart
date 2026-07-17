@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:billing_app/core/usecase/usecase.dart';
+import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:billing_app/features/category/domain/entities/category.dart';
 import 'package:billing_app/features/category/domain/usecases/category_usecases.dart';
 
@@ -14,12 +16,14 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final AddCategoryUseCase addCategoryUseCase;
   final UpdateCategoryUseCase updateCategoryUseCase;
   final DeleteCategoryUseCase deleteCategoryUseCase;
+  final AuthBloc authBloc;
 
   CategoryBloc({
     required this.getCategoriesUseCase,
     required this.addCategoryUseCase,
     required this.updateCategoryUseCase,
     required this.deleteCategoryUseCase,
+    required this.authBloc,
   }) : super(const CategoryState()) {
     on<LoadCategories>(_onLoadCategories);
     on<AddCategory>(_onAddCategory);
@@ -27,10 +31,16 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     on<DeleteCategory>(_onDeleteCategory);
   }
 
+  String? get _currentShopId {
+    final s = authBloc.state;
+    return s is Authenticated ? s.user.shopId : null;
+  }
+
   Future<void> _onLoadCategories(
       LoadCategories event, Emitter<CategoryState> emit) async {
     emit(state.copyWith(status: CategoryStatus.loading));
-    final result = await getCategoriesUseCase(NoParams());
+    final result = await getCategoriesUseCase(NoParams(),
+        shopId: _currentShopId);
     result.fold(
       (failure) => emit(state.copyWith(
           status: CategoryStatus.error, message: failure.message)),
@@ -47,7 +57,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       name: event.name,
       description: event.description,
     );
-    final result = await addCategoryUseCase(category);
+    final result = await addCategoryUseCase(category,
+        shopId: _currentShopId);
     result.fold(
       (failure) => emit(state.copyWith(
           status: CategoryStatus.error, message: failure.message)),
@@ -68,7 +79,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       name: event.name,
       description: event.description,
     );
-    final result = await updateCategoryUseCase(category);
+    final result = await updateCategoryUseCase(category,
+        shopId: _currentShopId);
     result.fold(
       (failure) => emit(state.copyWith(
           status: CategoryStatus.error, message: failure.message)),
@@ -84,7 +96,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   Future<void> _onDeleteCategory(
       DeleteCategory event, Emitter<CategoryState> emit) async {
     emit(state.copyWith(status: CategoryStatus.loading));
-    final result = await deleteCategoryUseCase(event.id);
+    final result = await deleteCategoryUseCase(event.id,
+        shopId: _currentShopId);
     result.fold(
       (failure) => emit(state.copyWith(
           status: CategoryStatus.error, message: failure.message)),

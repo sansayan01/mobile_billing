@@ -959,7 +959,7 @@
     ],
     "42": [
       "formstate",
-      "lib_features_auth_presentation_bloc_auth_event_loginrequested",
+      "lib_features_auth_presentation_bloc_auth_event_googleloginrequested",
       "lib_features_auth_presentation_pages_login_page",
       "lib_features_auth_presentation_pages_login_page_createstate",
       "lib_features_auth_presentation_pages_login_page_dispose",
@@ -969,7 +969,7 @@
       "lib_features_auth_presentation_pages_login_page_loginpage",
       "lib_features_auth_presentation_pages_login_page_loginpagestate",
       "lib_features_auth_presentation_pages_login_page_obscurepassword",
-      "lib_features_auth_presentation_pages_login_page_onlogin",
+      "lib_features_auth_presentation_pages_login_page_ongooglelogin",
       "lib_features_auth_presentation_pages_login_page_passwordcontroller"
     ],
     "43": [
@@ -1116,7 +1116,6 @@
       "readme_use_cases"
     ],
     "53": [
-      "rules",
       "rules_code_quality",
       "rules_database_rules",
       "rules_development_rules",
@@ -1169,6 +1168,7 @@
       "lib_features_category_presentation_pages_add_edit_category_dialog_namecontroller"
     ],
     "57": [
+      "design",
       "design_buttons_primarybutton",
       "design_cards",
       "design_component_specs",
@@ -1198,14 +1198,14 @@
       "lib_features_auth_presentation_bloc_auth_event",
       "lib_features_auth_presentation_bloc_auth_event_authevent",
       "lib_features_auth_presentation_bloc_auth_event_email",
-      "lib_features_auth_presentation_bloc_auth_event_googleloginrequested",
+      "lib_features_auth_presentation_bloc_auth_event_loginrequested",
       "lib_features_auth_presentation_bloc_auth_event_logoutrequested",
       "lib_features_auth_presentation_bloc_auth_event_name",
       "lib_features_auth_presentation_bloc_auth_event_password",
       "lib_features_auth_presentation_bloc_auth_event_props",
       "lib_features_auth_presentation_bloc_auth_event_role",
       "lib_features_auth_presentation_bloc_auth_event_updateprofilerequested",
-      "lib_features_auth_presentation_pages_login_page_ongooglelogin"
+      "lib_features_auth_presentation_pages_login_page_onlogin"
     ],
     "60": [
       "lib_features_report_data_models_report_models",
@@ -1457,8 +1457,8 @@
     "83": [
       "architecture",
       "claude",
-      "design",
-      "rpd"
+      "rpd",
+      "rules"
     ],
     "84": [
       "lib_features_auth_presentation_pages_login_page_build",
@@ -1562,11 +1562,11 @@
     "50": 0.18181818181818182,
     "51": 0.16666666666666666,
     "52": 0.16666666666666666,
-    "53": 0.16666666666666666,
+    "53": 0.18181818181818182,
     "54": 0.18181818181818182,
     "55": 0.18181818181818182,
     "56": 0.18181818181818182,
-    "57": 0.18181818181818182,
+    "57": 0.16666666666666666,
     "58": 0.18181818181818182,
     "59": 0.23636363636363636,
     "60": 0.18181818181818182,
@@ -1715,8 +1715,41 @@
       "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Auth Feature Implementation` unexpectedly reaches hub `Phase 1 Database and Auth`"
     }
   ],
-  "tokens": {
-    "input": 0,
-    "output": 0
-  }
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `AuthBloc` connect `AuthBloc` to `service_locator.dart`, `billing_bloc.dart`, `shop_bloc.dart`, `login_page.dart`, `auth_bloc.dart`, `package:flutter_bloc/flutter_bloc.dart`, `register_page.dart`, `auth_event.dart`?",
+      "why": "High betweenness centrality (0.030) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Product` connect `Product` to `billing_bloc.dart`, `cart_item.dart`, `Equatable`, `product_bloc.dart`, `qr_generator_page.dart`, `edit_product_page.dart`, `product.dart`?",
+      "why": "High betweenness centrality (0.027) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `ProductModel` connect `Product` to `product_model.dart`, `hive_database.dart`?",
+      "why": "High betweenness centrality (0.020) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `XCTest`, `HiveDatabase`, `productBoxName` to the rest of the system?",
+      "why": "725 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Flutter Billing App` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.0517120894479385 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `service_locator.dart` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.04421768707482993 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `billing_bloc.dart` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.044444444444444446 - nodes in this community are weakly interconnected."
+    }
+  ]
 }

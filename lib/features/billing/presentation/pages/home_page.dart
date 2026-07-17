@@ -94,6 +94,25 @@ class _HomePageState extends State<HomePage> {
               child: _buildScannerSection(),
             ),
 
+            // HAMBURGER / MENU BUTTON (TOP LEFT) — AppShell drawer kholta hai
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 64,
+              left: 8,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black45,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.menu, color: Colors.white, size: 24),
+                  onPressed: () {
+                    // AppShell ka drawer open karo (ShellRoute wala scaffold)
+                    Scaffold.of(context).openDrawer();
+                  },
+                ),
+              ),
+            ),
+
             // BOTTOM PANEL (BOTTOM 50% + OVERLAP)
             Positioned(
               top: (MediaQuery.of(context).size.height * 0.4) - 24, // overlap
@@ -112,7 +131,7 @@ class _HomePageState extends State<HomePage> {
               ? null
               : () async {
                   _scannerController.stop();
-                  await context.push('/checkout');
+                  await context.push('/scan/checkout');
                   if (_isCameraOn && mounted) _scannerController.start();
                 },
           icon: Icons.payment,
@@ -145,6 +164,15 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () async {
                     _scannerController.stop();
                     await context.push('/settings');
+                    if (_isCameraOn && mounted) _scannerController.start();
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildOverlayButton(
+                  icon: Icons.qr_code_scanner,
+                  onPressed: () async {
+                    _scannerController.stop();
+                    await context.push('/scan/scanner');
                     if (_isCameraOn && mounted) _scannerController.start();
                   },
                 ),

@@ -6,6 +6,8 @@ class UserModel extends User {
     required super.email,
     required super.name,
     super.role = 'staff',
+    super.shopId,
+    super.emailConfirmedAt,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -14,6 +16,7 @@ class UserModel extends User {
       email: json['email'] as String,
       name: json['name'] as String? ?? '',
       role: json['role'] as String? ?? 'staff',
+      shopId: json['shop_id'] as String?,
     );
   }
 
@@ -23,6 +26,7 @@ class UserModel extends User {
       'email': email,
       'name': name,
       'role': role,
+      'shop_id': shopId,
     };
   }
 
@@ -36,13 +40,20 @@ class UserModel extends User {
     final String email = supabaseUser.email as String? ?? '';
     final String name;
     final String role;
+    final String? shopId;
+    final DateTime? emailConfirmedAt =
+        supabaseUser.emailConfirmedAt == null
+            ? null
+            : DateTime.tryParse(supabaseUser.emailConfirmedAt as String);
 
     if (profile != null) {
       name = profile['name'] as String? ?? email.split('@').first;
       role = profile['role'] as String? ?? 'staff';
+      shopId = profile['shop_id'] as String?;
     } else {
       name = email.split('@').first;
       role = 'staff';
+      shopId = null;
     }
 
     return UserModel(
@@ -50,6 +61,8 @@ class UserModel extends User {
       email: email,
       name: name,
       role: role,
+      shopId: shopId,
+      emailConfirmedAt: emailConfirmedAt,
     );
   }
 
@@ -60,6 +73,7 @@ class UserModel extends User {
       email: json['email'] as String? ?? '',
       name: json['name'] as String? ?? '',
       role: json['role'] as String? ?? 'staff',
+      shopId: json['shop_id'] as String?,
     );
   }
 }

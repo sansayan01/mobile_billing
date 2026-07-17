@@ -30,7 +30,7 @@ class _AddProductPageState extends State<AddProductPage> {
   String? _categoryId;
 
   void _scanBarcode() async {
-    final result = await context.push<String>('/scanner');
+    final result = await context.push<String>('/scan/scanner');
     if (result != null && result.isNotEmpty) {
       setState(() {
         _barcode = result;
@@ -82,11 +82,6 @@ class _AddProductPageState extends State<AddProductPage> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.chevron_left,
-                size: 28, color: Theme.of(context).primaryColor),
-            onPressed: () => context.pop(),
-          ),
           title: const Text('Add Product',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           centerTitle: true,
@@ -151,7 +146,7 @@ class _AddProductPageState extends State<AddProductPage> {
                           hintText: 'Select category',
                           prefixIcon: Icon(Icons.category_outlined),
                         ),
-                        value: _categoryId,
+                        initialValue: _categoryId,
                         items: [
                           const DropdownMenuItem<String>(
                             value: null,

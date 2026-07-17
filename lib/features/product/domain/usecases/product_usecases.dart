@@ -10,8 +10,11 @@ class GetProductsUseCase implements UseCase<List<Product>, NoParams> {
   GetProductsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, List<Product>>> call(NoParams params) {
-    return repository.getProducts();
+  Future<Either<Failure, List<Product>>> call(
+    NoParams params, {
+    String? shopId,
+  }) {
+    return repository.getProducts(shopId: shopId);
   }
 }
 
@@ -21,8 +24,11 @@ class AddProductUseCase implements UseCase<void, Product> {
   AddProductUseCase(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(Product params) {
-    return repository.addProduct(params);
+  Future<Either<Failure, void>> call(
+    Product params, {
+    String? shopId,
+  }) {
+    return repository.addProduct(params, shopId: shopId);
   }
 }
 
@@ -32,8 +38,11 @@ class UpdateProductUseCase implements UseCase<void, Product> {
   UpdateProductUseCase(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(Product params) {
-    return repository.updateProduct(params);
+  Future<Either<Failure, void>> call(
+    Product params, {
+    String? shopId,
+  }) {
+    return repository.updateProduct(params, shopId: shopId);
   }
 }
 
@@ -43,8 +52,11 @@ class DeleteProductUseCase implements UseCase<void, String> {
   DeleteProductUseCase(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(String params) {
-    return repository.deleteProduct(params);
+  Future<Either<Failure, void>> call(
+    String params, {
+    String? shopId,
+  }) {
+    return repository.deleteProduct(params, shopId: shopId);
   }
 }
 
@@ -54,8 +66,11 @@ class GetProductByBarcodeUseCase implements UseCase<Product, String> {
   GetProductByBarcodeUseCase(this.repository);
 
   @override
-  Future<Either<Failure, Product>> call(String params) {
-    return repository.getProductByBarcode(params);
+  Future<Either<Failure, Product>> call(
+    String params, {
+    String? shopId,
+  }) {
+    return repository.getProductByBarcode(params, shopId: shopId);
   }
 }
 
@@ -66,8 +81,11 @@ class GetProductsByCategoryUseCase
   GetProductsByCategoryUseCase(this.repository);
 
   @override
-  Future<Either<Failure, List<Product>>> call(String params) {
-    return repository.getProductsByCategory(params);
+  Future<Either<Failure, List<Product>>> call(
+    String params, {
+    String? shopId,
+  }) {
+    return repository.getProductsByCategory(params, shopId: shopId);
   }
 }
 
@@ -78,7 +96,10 @@ class GetCurrentStockBulkUseCase
   GetCurrentStockBulkUseCase(this.repository);
 
   @override
-  Future<Either<Failure, Map<String, int>>> call(List<String> params) {
-    return repository.getCurrentStockBulk(params);
+  Future<Either<Failure, Map<String, int>>> call(
+    List<String> params, {
+    String? shopId,
+  }) {
+    return repository.getCurrentStockBulk(params, shopId: shopId);
   }
 }

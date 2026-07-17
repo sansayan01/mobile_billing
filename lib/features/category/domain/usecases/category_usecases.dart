@@ -10,8 +10,9 @@ class GetCategoriesUseCase implements UseCase<List<Category>, NoParams> {
   GetCategoriesUseCase(this.repository);
 
   @override
-  Future<Either<Failure, List<Category>>> call(NoParams params) {
-    return repository.getCategories();
+  Future<Either<Failure, List<Category>>> call(NoParams params,
+      {String? shopId}) {
+    return repository.getCategories(shopId: shopId);
   }
 }
 
@@ -21,8 +22,8 @@ class AddCategoryUseCase implements UseCase<void, Category> {
   AddCategoryUseCase(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(Category params) {
-    return repository.addCategory(params);
+  Future<Either<Failure, void>> call(Category params, {String? shopId}) {
+    return repository.addCategory(params, shopId: shopId);
   }
 }
 
@@ -32,8 +33,8 @@ class UpdateCategoryUseCase implements UseCase<void, Category> {
   UpdateCategoryUseCase(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(Category params) {
-    return repository.updateCategory(params);
+  Future<Either<Failure, void>> call(Category params, {String? shopId}) {
+    return repository.updateCategory(params, shopId: shopId);
   }
 }
 
@@ -43,7 +44,7 @@ class DeleteCategoryUseCase implements UseCase<void, String> {
   DeleteCategoryUseCase(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(String params) {
-    return repository.deleteCategory(params);
+  Future<Either<Failure, void>> call(String params, {String? shopId}) {
+    return repository.deleteCategory(params, shopId: shopId);
   }
 }

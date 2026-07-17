@@ -64,3 +64,28 @@ flutter run              # run on connected device
 flutter build apk        # build APK
 dart run build_runner build  # run code generation
 ```
+
+## Herder CLI — Live Pane Monitoring ⚡
+**Herder** (terminal agent multiplexer) installed hai: `C:\Users\msrib\AppData\Local\Programs\Herdr\bin\herdr`
+- App run karne par **Flutter live logcat** right vertical pane (`w5:p8`) mein stream hota hai — `com.example.billing_app` (MainActivity).
+- Layout: horizontal split — left main pane, right narrow vertical strip = logs.
+- Monitor karne ke liye: `herdr pane read w5:p8 --source recent --lines N --format text`
+- Pane list: `herdr pane list` | Layout: `herdr pane layout --pane w5:p8`
+- **Auto-pilot rule:** Jab bhi app run/debug ho rahi ho, `w5:p8` ko Monitor se watch karo (errors `E/` `F/`, warnings `W/`, crash/ANR). Normal noise (`BufferQueueProducer`, `FlutterJNI`, `WindowOnBackDispatcher`) filter karo. Har session auto-start karo, user se poochhna nahi.
+
+## Supabase Migration Rule ⚡⚡
+- Supabase MCP connected hai (`mcp__supabase__*`). Schema change ke liye `apply_migration` use karo.
+- **Agar SQL editor ya kisi aur tareeke se direct SQL run bhi ho raha ho**, tab bhi **HAMESHA ek migration file banao** (DDL changes ke liye) taaki history aur rollback rahe.
+- Flow: `list_tables` (existing structure samajhne) → migration file create → `apply_migration` se apply.
+- Pehle `get_logs` / `get_advisors` check karo before schema change.
+- `get_project_url` + `get_publishable_keys` client config ke liye.
+
+## CRITICAL — Dart-Only Fix Preference ⚡
+- **Try to fix Dart only.** Prefer fixing issues in Flutter/Dart code (UI, BLoC, repos, models) over touching the database.
+- **Avoid SQL migration files** jitna possible ho — sirf tabhi banao jab schema sach mein badalna pade (new table/column/constraint). Existing schema ke against Dart code adjust karo instead of migrating.
+- Agar koi bug DB structure ke wajah se ho, pehle dekho kya Dart side se workaround mil sakta hai (e.g. client-side validation, default values handle karna) before reaching for a migration.
+
+## CRITICAL — Next Time Auto-Recall ⚡
+- Herder `w5:p8` = Flutter app log pane — auto-monitor karo.
+- Supabase direct SQL run ho ya na ho, migration file zaroor banao.
+- In dono ko graphify knowledge graph mein bhi note rakho.

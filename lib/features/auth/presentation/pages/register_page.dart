@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:billing_app/core/widgets/app_back_button.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -56,6 +57,17 @@ class _RegisterPageState extends State<RegisterPage> {
 
         if (state is Authenticated) {
           context.go('/');
+        } else if (state is EmailVerificationPending) {
+          // Email confirm required — verification screen par bhejo.
+          context.go('/verify-email', extra: state.email);
+        } else if (state is ResendEmailError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: theme.colorScheme.error,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         } else if (state is AuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -68,10 +80,7 @@ class _RegisterPageState extends State<RegisterPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.pop(),
-          ),
+          leading: const AppBackButton(icon: Icons.arrow_back),
           title: const Text('Create Account'),
         ),
         body: SafeArea(

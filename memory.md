@@ -1,5 +1,148 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-07-17 — Multi-Tenant Shop Data Isolation (CRITICAL FIX) ✅
+
+### Problem (user flagged): "har shop mei ek hi data to nahi rahega na"
+Cross-tenant data leak tha — products/categories/bills/inventory_log mein `shop_id` column hi nahi tha, aur koi query filter nahi karta tha. Shop A Shop B ka data dekh leta tha. RLS bhi user/role scope karti thi, shop nahi.
+
+### What Was Done
+1. **Migration `supabase/migrations/004_shop_data_scoping.sql`** (APPLIED via MCP):
+   - `shop_id` UUID column + FK to shops added to `products`, `categories`, `bills`, `bill_items`, `inventory_log` (nullable, ON DELETE CASCADE)
+   - Indexes: `idx_*_shop_id`
+   - Helpers: `user_shop_id()`, `belongs_to_shop(target_shop_id)`
+   - RLS rewritten: har table pe `belongs_to_shop(shop_id)` scoping (read/insert/update/delete). Purani open policies drop ki.
+2. **Dart — shop_id threading** (3 parallel agents):
+   - `product_repository*`: `.eq('shop_id', shopId)` on reads + `shop_id` on insert/upsert. ProductBloc injected `authBloc`, passes `_currentShopId`.
+   - `category_repository*`: same pattern. CategoryBloc injected `authBloc`.
+   - `report_repository*`: `.eq('shop_id', shopId)` on bills/products/inventory_log queries. ReportBloc injected `authBloc`.
+   - `billing_bloc.dart`: writes `shop_id` on bills/bill_items/inventory_log inserts. **Also fixed inventory_log schema drift** — ab `change_type` + `quantity` use karta hai (purana `change`/`type`/`bill_id` remove kiya jo schema mein nahi the).
+   - `service_locator.dart`: ProductBloc/CategoryBloc/ReportBloc ko `authBloc: sl()` diya.
+   - Pattern: `String? shopId` optional param end-to-end; null pe RLS hi scope karta hai.
+
+### Key Decisions
+| Decision | Why |
+|----------|-----|
+| Migration ZAROORI thi | Dart-only fix se nahi hota tha — column hi nahi tha (CLAUDE.md Dart-only rule ka exception) |
+| RLS + app-side dono | Defense in depth — DB bhi scope kare, app bhi filter kare |
+| `String? shopId` optional | Existing callers na toote; null pe RLS fallback |
+| AuthBloc inject in blocs | Live user.shopId read karne ke liye (factory instances) |
+
+### flutter analyze
+- Full project: 0 issues ✅
+
+### TODO
+- [ ] Device/emulator pe verify: Shop A login → only Shop A products/bills dikhne chahiye
+- [ ] Existing rows (null shop_id) ko backfill karne ka script agar purane users hain
+- [ ] graphify --update (pending)
+
+---
+
+## Current Session: 2026-07-17 — Hamburger Icon Fix + Email Verification Hardening ✅
+
+### What Was Done
+1. **Hamburger icon added to 2 pages** (pehle custom back-chevron `leading` ne override kar diya tha):
+   - `lib/features/product/presentation/pages/product_list_page.dart` — AppBar `leading` ab `Row` me `Icons.menu` (openDrawer) + back-chevron dono hai
+   - `lib/features/billing/presentation/pages/checkout_page.dart` — same pattern (menu + back)
+   - Dono pages AppShell ke under hain → drawer already attached tha, sirf button missing tha
+2. **Email verification gate hardened (Dart-only, no migration):**
+   - `lib/features/auth/presentation/bloc/auth_bloc.dart` — `_onLoginRequested` ab bhi `emailConfirmedAt != null` check karta hai (pehle direct `Authenticated`)
+   - `_onGoogleLoginRequested` bhi same gate lagaya (consistency) — pehle direct `Authenticated` emit karta tha
+   - Signup + CheckAuthStatus path pe pehle se gate tha
+3. **CLAUDE.md** — added "CRITICAL — Dart-Only Fix Preference" section (avoid SQL migration files, fix Dart first)
+
+### Key Decisions
+| Decision | Why |
+|----------|-----|
+| Menu + back button dono rakhe | User ko drawer access + back dono chahiye |
+| Login/Google path pe bhi verification gate | Unverified user app na ghoose login ke turant baad |
+| Dart-only fix | CLAUDE.md instruction — avoid migrations unless schema must change |
+
+### flutter analyze
+- 3 changed files (product_list_page, checkout_page, auth_bloc): 0 issues
+
+### TODO
+- [ ] Device pe verify: product_list + checkout me hamburger drawer khole
+- [ ] graphify --update (running)
+
+---
+
+## Current Session: 2026-07-17 — Dashboard Homepage + Improved Side Menu ✅
+
+### What Was Done
+1. **New Dashboard Homepage** — `/` route ab DashboardPage kholta hai (pehle scanner tha)
+   - `lib/features/dashboard/presentation/pages/dashboard_page.dart` (new) — BlocProvider<ReportBloc> (LoadDailySales + LoadLowStockProducts(5)), RefreshIndicator
+     - **Greeting**: time-based (Good morning/afternoon/evening) + user name (AuthBloc) + role badge
+     - **Today's Sales**: 4 StatCards (Total Sales, Bills, Avg Bill, Discount) — ReportBloc.dailySales se, loading pe "…"
+     - **Quick Actions**: bada primary "New Bill" card → `/scan`, + 3-col compact tiles (Products, Categories, Reports, Shop, Settings)
+     - **Low Stock Banner**: error-tinted, count > 0 pe dikhta hai → `/reports/low-stock`
+
+2. **Reusable Widgets** (new, `lib/core/widgets/`)
+   - `stat_card.dart` — StatCard({label, value, color, icon?}) — white radius16, black12 shadow, value w900
+   - `dashboard_action_card.dart` — DashboardActionCard (big solid-color card) + QuickActionTile (compact 3-col tile)
+
+3. **AppDrawer Improved** — `lib/core/widgets/app_drawer.dart`
+   - Profile header: CircleAvatar (initials from name) + name + email + role badge (AuthBloc), fallback jab !Authenticated
+   - Working logout: `context.read<AuthBloc>().add(const LogoutRequested())` (pehle sirf navigate karta tha)
+   - Sectioned menu (_SectionHeader): Main (Dashboard `/`, Scan & Billing `/scan`) / Inventory (Products, Categories) / Reports / Settings (Shop, Printer)
+
+4. **Routing** — `lib/config/routes/app_routes.dart`
+   - `/` → DashboardPage
+   - `/scan` (parent) → HomePage (scanner), children: `/scan/scanner` (ScannerPage), `/scan/checkout` (CheckoutPage)
+   - Auth redirect logic unchanged
+
+5. **Navigation Path Fixes** (routes move ki wajah se)
+   - `home_page.dart`: checkout `/checkout` → `/scan/checkout`
+   - `checkout_page.dart`: 3x `context.go('/')` → `/scan` (checkout ke baad wapas scanner, dashboard nahi)
+   - `add_product_page.dart` + `product_list_page.dart`: `/scanner` → `/scan/scanner`
+
+### Key Decisions
+| Decision | Why |
+|----------|-----|
+| Scanner `/` se `/scan` pe move | Dashboard ko primary home banana; billing ab quick action |
+| `/scan/checkout` child route | HomePage → checkout flow same hierarchy me rahe |
+| Checkout return `/scan` (not `/`) | Billing loop me user ko wapas scanner chahiye, dashboard nahi |
+| Big "New Bill" + compact tiles | Billing app hai — billing sabse prominent action |
+| StatCard/ActionCard alag widgets | DRY — daily_sales + dashboard dono reuse kar sakein |
+| ReportBloc factory reuse | Koi naya data layer/DI nahi — existing usecases hi kaafi |
+
+### flutter analyze
+- Changed files (7): 0 issues
+- Full project: 0 issues
+
+### TODO
+- [ ] StatCard/ActionCard ko daily_sales_page + reports_home_page me migrate (optional DRY)
+- [ ] Dashboard notification icon abhi placeholder (empty onPressed)
+- [ ] Device pe end-to-end test (login → dashboard → new bill → checkout → wapas scan)
+
+---
+
+## Current Session: 2026-07-17 — Barcode/QR Scanner → Cart Integration ✅
+
+### What Was Done
+1. **ScannerPage wired into BillingBloc flow** — `lib/features/billing/presentation/pages/scanner_page.dart`
+   - Ab `ScanBarcodeEvent(barcode)` dispatch karta hai (pehle sirf `context.pop(barcode)` karta tha)
+   - `BlocListener<BillingBloc>` se not-found SnackBar dikhata (BillingState.error) aur scan ke baad `/scan` pe wapas pop karta hai
+   - BillingBloc already present (root MultiBlocProvider) — `/scan/scanner` route me available
+2. **HomePage entry point** — `lib/features/billing/presentation/pages/home_page.dart`
+   - Overlay me `Icons.qr_code_scanner` button add kiya → `context.push('/scan/scanner')` (camera stop/start handle karta hai)
+   - Scan → cart flow dono jagah kaam karega: inline HomePage scanner + dedicated ScannerPage
+
+### Scan → Cart Flow (one-liner)
+MobileScanner decodes barcode/QR → `ScanBarcodeEvent` → `GetProductByBarcodeUseCase` (Supabase `products.barcode`) → product mila to `AddProductToCartEvent`, nahi toa BillingState.error SnackBar ("Product not found").
+
+### Key Decisions
+| Decision | Why |
+|----------|-----|
+| ScannerPage BillingBloc use kare | Reuse existing scan→cart + not-found logic, no new BLoC needed |
+| Scan ke baad auto-pop | Seamless wapas cart panel me; HomePage already shows cart |
+| Inline + dedicated dono rakhe | HomePage pehle se scanning karta hai; extra dedicated screen optional entry |
+
+### flutter analyze
+- Changed files (scanner_page.dart, home_page.dart): 0 issues
+- Full project: 0 issues
+
+---
+
 ## Current Session: 2026-07-17 — Reports & History Data + Domain Layers ✅
 
 ### What Was Done
@@ -273,3 +416,39 @@ Pages:
 | Bill detail page uses constructor injection (not Bloc) | Simpler - data already available from navigation extra, no async needed |
 | Pagination via "Load more" button (not auto-scroll) | Simpler UX, user controls when to load more data |
 | Low stock list uses local filter for search | Avoids extra API calls, threshold already defines the server query |
+
+---
+
+## Session: 2026-07-17 (Part 2) — Back Button + ReportBloc Fix 🔧
+
+### What Was Done
+1. **Shared Back Button Widget** — `lib/core/widgets/app_back_button.dart` (new)
+   - `AppBackButton` → `context.pop()` with `context.go('/')` fallback (canPop check)
+   - Added to EVERY page's AppBar `leading` (top-left): dashboard, category, reports_home, bill_history, bill_detail, daily_sales, low_stock, stock_movement, shop_details, product(add/edit/qr), settings, register, scanner
+   - `home_page` (`/scan` full-screen scanner) → overlay back button top-left (Positioned, black45 bg)
+   - checkout_page: left as-is (custom ClearCart + go('/scan') behavior)
+
+2. **ReportBloc Red Screen FIX** — root cause: `ReportBloc` sirf Dashboard ke andar provide tha, `main.dart` MultiBlocProvider mei nahi → saare `/reports/*` pages crash (ProviderNotFoundException)
+   - `lib/main.dart` → added `BlocProvider<ReportBloc>` to MultiBlocProvider
+   - `dashboard_page.dart` → removed duplicate local BlocProvider, moved initial LoadDailySales/LoadLowStockProducts to `_DashboardViewState.initState()`
+   - `dart analyze` → No issues
+
+3. **Android Manifest** — `android/app/src/main/AndroidManifest.xml` → added `android:enableOnBackInvokedCallback="true"` (clears predictive-back warning for PopScope)
+
+### Key Decisions
+| Decision | Why |
+|----------|-----|
+| Shared AppBackButton widget | Avoids copy-paste, single point of control, consistent canPop fallback |
+| ReportBloc global in main.dart | Reports pages need it but aren't under Dashboard's widget tree |
+| Horizontal pane (right split) not vertical (down) | User preference — avoid vertical splits |
+
+### ⚡ AUTO-UPDATE RULES (NEVER ASK, JUST DO)
+- **Har file edit ke baad**: memory.md update + `/graphify --update` run + relevant RPD/phases/architecture/design md update
+- **Pane rule**: Vertical split (down) MAT Kholna — horizontal (right) ya existing pane use karo
+- **Device**: Wireless ADB baar-baar id change karta hai (RMX3762) → fresh `adb devices` read karke current id use karo, ya USB cable lagao for stability
+- **Hot restart**: stop mat karo, `R` bhejo (herdr pane: `herdr pane send-keys <id> R Enter`)
+
+### Todo
+- [ ] USB cable lagake stable connection confirm karo
+- [ ] Reports pages abhi device pe verify karo (red screen gone?)
+- [ ] graphify --update run karo (pending)

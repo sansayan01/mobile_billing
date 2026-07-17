@@ -32,12 +32,19 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<Either<Failure, List<Product>>> getProducts() async {
+  Future<Either<Failure, List<Product>>> getProducts({String? shopId}) async {
     try {
-      final response = await _supabase
-          .from('products')
-          .select()
-          .order('created_at', ascending: false);
+      if (shopId == null) {
+        // Fallback: RLS still scopes server-side, but log a warning so we
+        // know the shop context was missing.
+        // ignore: avoid_print
+        print('Warning: getProducts called without shopId — falling back to RLS scope only');
+      }
+      var query = _supabase.from('products').select();
+      if (shopId != null) {
+        query = query.eq('shop_id', shopId);
+      }
+      final response = await query.order('created_at', ascending: false);
 
       final products = (response as List<dynamic>)
           .map((e) => _fromMap(e as Map<String, dynamic>))
@@ -64,13 +71,16 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<Either<Failure, Product>> getProductByBarcode(String barcode) async {
+  Future<Either<Failure, Product>> getProductByBarcode(
+    String barcode, {
+    String? shopId,
+  }) async {
     try {
-      final response = await _supabase
-          .from('products')
-          .select()
-          .eq('barcode', barcode)
-          .maybeSingle();
+      var query = _supabase.from('products').select().eq('barcode', barcode);
+      if (shopId != null) {
+        query = query.eq('shop_id', shopId);
+      }
+      final response = await query.maybeSingle();
 
       if (response != null) {
         final product = _fromMap(response);
@@ -100,13 +110,18 @@ class ProductRepositoryImpl implements ProductRepository {
 
   @override
   Future<Either<Failure, List<Product>>> getProductsByCategory(
-      String categoryId) async {
+    String categoryId, {
+    String? shopId,
+  }) async {
     try {
-      final response = await _supabase
+      var query = _supabase
           .from('products')
           .select()
-          .eq('category_id', categoryId)
-          .order('created_at', ascending: false);
+          .eq('category_id', categoryId);
+      if (shopId != null) {
+        query = query.eq('shop_id', shopId);
+      }
+      final response = await query.order('created_at', ascending: false);
 
       final products = (response as List<dynamic>)
           .map((e) => _fromMap(e as Map<String, dynamic>))
@@ -119,7 +134,10 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<Either<Failure, void>> addProduct(Product product) async {
+  Future<Either<Failure, void>> addProduct(
+    Product product, {
+    String? shopId,
+  }) async {
     try {
       final model = ProductModel.fromEntity(product);
       await _supabase.from('products').insert({
@@ -133,6 +151,7 @@ class ProductRepositoryImpl implements ProductRepository {
         'description': model.description,
         'image_url': model.imageUrl,
         'qr_data': model.qrData,
+        'shop_id': shopId,
       });
 
       // Cache in Hive
@@ -146,7 +165,10 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateProduct(Product product) async {
+  Future<Either<Failure, void>> updateProduct(
+    Product product, {
+    String? shopId,
+  }) async {
     try {
       final model = ProductModel.fromEntity(product);
       await _supabase.from('products').upsert({
@@ -160,6 +182,7 @@ class ProductRepositoryImpl implements ProductRepository {
         'description': model.description,
         'image_url': model.imageUrl,
         'qr_data': model.qrData,
+        'shop_id': shopId,
         'updated_at': DateTime.now().toIso8601String(),
       });
 
@@ -174,12 +197,18 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<Either<Failure, Map<String, int>>> getCurrentStockBulk(List<String> productIds) async {
+  Future<Either<Failure, Map<String, int>>> getCurrentStockBulk(
+    List<String> productIds, {
+    String? shopId,
+  }) async {
     try {
-      final response = await _supabase
+      var query = _supabase
           .from('products')
-          .select('id, name, stock')
-          .filter('id', 'in', productIds);
+          .select('id, name, stock');
+      if (shopId != null) {
+        query = query.eq('shop_id', shopId);
+      }
+      final response = await query.filter('id', 'in', productIds);
 
       final stockMap = <String, int>{};
       for (final row in response as List<dynamic>) {
@@ -194,9 +223,16 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<Either<Failure, void>> deleteProduct(String id) async {
+  Future<Either<Failure, void>> deleteProduct(
+    String id, {
+    String? shopId,
+  }) async {
     try {
-      await _supabase.from('products').delete().eq('id', id);
+      var query = _supabase.from('products').delete().eq('id', id);
+      if (shopId != null) {
+        query = query.eq('shop_id', shopId);
+      }
+      await query;
 
       // Delete from Hive
       final box = HiveDatabase.productBox;

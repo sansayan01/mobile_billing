@@ -34,7 +34,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         onPopInvokedWithResult: (bool didPop, dynamic result) {
           if (didPop) return;
           context.read<BillingBloc>().add(ClearCartEvent());
-          context.go('/');
+          context.go('/scan');
         },
         child: Scaffold(
           appBar: AppBar(
@@ -43,13 +43,24 @@ class _CheckoutPageState extends State<CheckoutPage> {
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.chevron_left,
-                  size: 28, color: Theme.of(context).primaryColor),
-              onPressed: () {
-                context.read<BillingBloc>().add(ClearCartEvent());
-                context.go('/');
-              },
+            leading: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.menu,
+                      size: 24, color: Theme.of(context).primaryColor),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                  tooltip: 'Open menu',
+                ),
+                IconButton(
+                  icon: Icon(Icons.chevron_left,
+                      size: 28, color: Theme.of(context).primaryColor),
+                  onPressed: () {
+                    context.read<BillingBloc>().add(ClearCartEvent());
+                    context.go('/scan');
+                  },
+                ),
+              ],
             ),
           ),
           body: BlocConsumer<BillingBloc, BillingState>(
@@ -64,7 +75,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     content: Text('Bill saved successfully'),
                     backgroundColor: Colors.green));
                 context.read<BillingBloc>().add(ClearCartEvent());
-                context.go('/');
+                context.go('/scan');
               }
               if (state.error != null) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -89,7 +100,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               return BlocBuilder<ShopBloc, ShopState>(
                   builder: (context, shopState) {
                 String upiId = '';
-                String shopName = 'Shop';
+                String shopName = 'Your Shop';
 
                 if (shopState is ShopLoaded) {
                   upiId = shopState.shop.upiId;

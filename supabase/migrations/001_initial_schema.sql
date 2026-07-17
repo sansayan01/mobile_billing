@@ -114,7 +114,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER SET search_path = ''
 AS $$
 BEGIN
-  INSERT INTO profiles (id, email, name, role)
+  INSERT INTO public.profiles (id, email, name, role)
   VALUES (
     NEW.id,
     NEW.email,
@@ -143,7 +143,7 @@ SECURITY DEFINER SET search_path = ''
 AS $$
   SELECT EXISTS (
     SELECT 1
-    FROM profiles
+    FROM public.profiles
     WHERE id = auth.uid()
       AND role = 'owner'
   );

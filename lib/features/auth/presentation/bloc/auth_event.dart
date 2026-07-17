@@ -24,15 +24,19 @@ class SignUpRequested extends AuthEvent {
   final String email;
   final String password;
   final String name;
+  final String role; // 'owner' ya 'staff'
+  final String? shopName; // owner signup ke liye shop ka naam
 
   const SignUpRequested({
     required this.email,
     required this.password,
     required this.name,
+    this.role = 'staff',
+    this.shopName,
   });
 
   @override
-  List<Object?> get props => [email, password, name];
+  List<Object?> get props => [email, password, name, role, shopName];
 }
 
 class GoogleLoginRequested extends AuthEvent {
@@ -45,6 +49,16 @@ class LogoutRequested extends AuthEvent {
 
 class CheckAuthStatus extends AuthEvent {
   const CheckAuthStatus();
+}
+
+/// Resend verification email request — pending verification screen se aayega.
+class ResendVerificationEmailRequested extends AuthEvent {
+  final String email;
+
+  const ResendVerificationEmailRequested({required this.email});
+
+  @override
+  List<Object?> get props => [email];
 }
 
 class UpdateProfileRequested extends AuthEvent {

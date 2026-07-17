@@ -89,7 +89,11 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text('Shop details saved!'),
                   backgroundColor: Colors.green));
-              context.pop();
+              if (Navigator.of(context).canPop()) {
+                context.pop();
+              } else {
+                context.go('/');
+              }
             } else if (state is ShopError) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(state.message), backgroundColor: Colors.red));
@@ -155,7 +159,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
                     const InputLabel(text: 'UPI ID'),
                     _buildTextField(
                       controller: _upiController,
-                      hint: 'dineshsowndar@oksbi',
+                      hint: 'e.g. yourname@oksbi',
                     ),
                     const SizedBox(height: 15),
                     Row(

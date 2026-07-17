@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vibration/vibration.dart';
+import '../bloc/billing_bloc.dart';
 
 class ScannerPage extends StatefulWidget {
   const ScannerPage({super.key});
@@ -30,16 +32,17 @@ class _ScannerPageState extends State<ScannerPage> {
     for (final barcode in barcodes) {
       if (barcode.rawValue != null) {
         _isScanned = true;
-        // Vibrate
+        // Vibrate karo scan hone pe
         final hasVibrator = await Vibration.hasVibrator();
         if (hasVibrator == true) {
           Vibration.vibrate();
         }
 
         if (mounted) {
-          context.pop(barcode.rawValue);
+          // BillingBloc ko scan event bhejo — ye product dhoondh ke cart me add karega
+          context.read<BillingBloc>().add(ScanBarcodeEvent(barcode.rawValue!));
         }
-        break; // Only take first one
+        break; // Sirf pehla barcode lelo
       }
     }
   }
@@ -48,22 +51,34 @@ class _ScannerPageState extends State<ScannerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.chevron_left,
-                size: 28, color: Theme.of(context).primaryColor),
-            onPressed: () => context.pop(),
-          ),
           title: const Text('Scan Barcode',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18))),
-      body: Stack(
-        children: [
-          MobileScanner(
-            controller: controller,
-            onDetect: _onDetect,
-            // Removed overlay property
-          ),
-          // Simple border overlay manually
-          Container(
+      body: BlocListener<BillingBloc, BillingState>(
+        listenWhen: (previous, current) =>
+            previous.error != current.error && current.error != null,
+        listener: (context, state) {
+          if (state.error != null) {
+            // Product nahi mila — friendly message dikhao
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error!),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+          // Scan complete ho gaya (found ya not found) — wapas HomePage pe jao
+          if (mounted) context.pop();
+        },
+        child: Stack(
+          children: [
+            MobileScanner(
+              controller: controller,
+              onDetect: _onDetect,
+              // Removed overlay property
+            ),
+            // Simple border overlay manually
+            Container(
             decoration: BoxDecoration(
               border: Border.all(color: Colors.transparent, width: 0),
             ),
@@ -111,6 +126,7 @@ class _ScannerPageState extends State<ScannerPage> {
             ),
           ),
         ],
+        ),
       ),
     );
   }
