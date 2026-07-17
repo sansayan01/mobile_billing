@@ -1,5 +1,50 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-07-17 — Staff Management Feature ✅
+
+### What Was Done
+1. **Migration `supabase/migrations/005_add_staff_phone.sql`** (APPLIED via MCP):
+   - `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS phone TEXT` (nullable)
+   - Koi new RLS nahi — `003_saas_shops.sql` already owner/staff read + owner write scope karta hai profiles pe
+2. **User entity + model** (`features/auth/.../user.dart`, `user_model.dart`):
+   - `phone?` field added to `User` + `UserModel` (ctor, fromJson, fromProfileJson, fromSupabaseAuth, toJson) + copyWith + props
+3. **Auth signUp shopId threading** (Dart-only, no new schema beyond phone):
+   - `AuthRepository.signUp` + `SignUpRequested` event + `SignUpParams` + `SignUpUseCase` ko `String? shopId` param add
+   - `auth_repository_impl.signUp`: owner signup abhi shop create karta hai; staff signup by owner → `effectiveShopId = shopId` direct pass (`_createProfile` ko). One-call shop link.
+4. **Staff Feature created** (mirrors Category feature clean-arch):
+   - `lib/features/staff/domain/repositories/staff_repository.dart` — `getStaffMembers({shopId})`, `deleteStaffMember(id, {shopId})`
+   - `lib/features/staff/domain/usecases/staff_usecases.dart` — `GetStaffMembersUseCase` (NoParams), `DeleteStaffMemberUseCase` (String)
+   - `lib/features/staff/data/repositories/staff_repository_impl.dart` — `profiles.select().eq('shop_id', shopId).order('created_at', desc)` → `UserModel.fromProfileJson`; delete `.delete().eq('id', id)`
+   - `lib/features/staff/presentation/bloc/` — staff_event/state/bloc (LoadStaff, DeleteStaffMember; _currentShopId from AuthBloc)
+   - `lib/features/staff/presentation/pages/staff_list_page.dart` — list + search + white cards (avatar/name/email/phone/role badge) + delete AlertDialog + owner-only FAB → `/staff/add`
+   - `lib/features/staff/presentation/pages/add_staff_page.dart` — form (name/email/phone/password) → `SignUpRequested(role:'staff', shopId: ownerShopId)`; owner-only BlocBuilder guard; pops on success
+5. **Wiring**:
+   - `app_routes.dart` — `GoRoute('/staff', StaffListPage, routes:[add])` inside ShellRoute
+   - `app_drawer.dart` — owner-only `Staff` _DrawerItem (_SectionHeader)
+   - `dashboard_page.dart` — owner-only `Staff` QuickActionTile
+   - `service_locator.dart` — Staff DI block (usecases + repo + bloc with authBloc: sl())
+
+### Key Decisions
+| Decision | Why |
+|----------|-----|
+| Staff = `User` entity (no new Staff entity) | Staff already `profiles` rows hain; `UserModel.fromProfileJson` reuse |
+| RLS se list free | `003` already owner ko apne shop ke profiles read karne deti hai |
+| phone = migration (not Dart-only) | Genuinely new user column — CLAUDE.md Dart-only rule ka justified exception |
+| Delete = profiles row only | Client-side `auth.users` delete needs service role (admin) — orphaned auth user limitation documented |
+| Owner-only gating (3 layers) | Drawer/dashboard hide + add page BlocBuilder guard + RLS rejects foreign shopId |
+| signUp shopId param (not post-update) | One-call shop link, `_createProfile` already forwards shopId |
+
+### flutter analyze
+- Full project: **No issues found!** ✅
+
+### TODO
+- [ ] Device pe verify: owner login → Staff list (own shop only) → add staff (gets shop_id) → delete removes row
+- [ ] Staff login → no Staff drawer item; direct `/staff/add` blocked
+- [ ] graphify --update (pending → run karna hai)
+- [ ] Limitation note: delete ke baad `auth.users` orphaned reh sakta hai (service-role needed for full purge)
+
+---
+
 ## Current Session: 2026-07-17 — Multi-Tenant Shop Data Isolation (CRITICAL FIX) ✅
 
 ### Problem (user flagged): "har shop mei ek hi data to nahi rahega na"

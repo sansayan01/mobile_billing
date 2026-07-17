@@ -7,6 +7,7 @@ class UserModel extends User {
     required super.name,
     super.role = 'staff',
     super.shopId,
+    super.phone,
     super.emailConfirmedAt,
   });
 
@@ -17,6 +18,7 @@ class UserModel extends User {
       name: json['name'] as String? ?? '',
       role: json['role'] as String? ?? 'staff',
       shopId: json['shop_id'] as String?,
+      phone: json['phone'] as String?,
     );
   }
 
@@ -27,6 +29,7 @@ class UserModel extends User {
       'name': name,
       'role': role,
       'shop_id': shopId,
+      'phone': phone,
     };
   }
 
@@ -41,6 +44,7 @@ class UserModel extends User {
     final String name;
     final String role;
     final String? shopId;
+    final String? phone;
     final DateTime? emailConfirmedAt =
         supabaseUser.emailConfirmedAt == null
             ? null
@@ -50,10 +54,12 @@ class UserModel extends User {
       name = profile['name'] as String? ?? email.split('@').first;
       role = profile['role'] as String? ?? 'staff';
       shopId = profile['shop_id'] as String?;
+      phone = profile['phone'] as String?;
     } else {
       name = email.split('@').first;
       role = 'staff';
       shopId = null;
+      phone = null;
     }
 
     return UserModel(
@@ -62,6 +68,7 @@ class UserModel extends User {
       name: name,
       role: role,
       shopId: shopId,
+      phone: phone,
       emailConfirmedAt: emailConfirmedAt,
     );
   }
@@ -74,6 +81,7 @@ class UserModel extends User {
       name: json['name'] as String? ?? '',
       role: json['role'] as String? ?? 'staff',
       shopId: json['shop_id'] as String?,
+      phone: json['phone'] as String?,
     );
   }
 }

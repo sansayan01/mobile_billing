@@ -97,6 +97,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String role = 'staff',
     String? shopName,
     String? emailRedirectTo,
+    String? shopId,
   }) async {
     try {
       final response = await SupabaseConfig.client.auth.signUp(
@@ -110,14 +111,15 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(const ServerFailure('Sign up failed. No user returned.'));
       }
 
-      String? shopId;
+      String? effectiveShopId;
 
       // Agar owner signup hai to pehle shop create karo (RLS allows owner insert),
       // phir profile me role='owner' + shop_id link karo.
       // Koi super admin email hardcode nahi hai — role param se decide hota hai.
+      // Staff create by owner: shopId directly pass hota hai (owner.shopId).
       if (role == 'owner') {
         try {
-          shopId = await _createShop(
+          effectiveShopId = await _createShop(
             ownerId: supabaseUser.id,
             shopName: shopName?.isNotEmpty == true
                 ? shopName!
@@ -127,6 +129,9 @@ class AuthRepositoryImpl implements AuthRepository {
           return Left(ServerFailure(
               'Shop creation failed: ${_extractErrorMessage(e)}'));
         }
+      } else if (shopId != null) {
+        // Owner ne staff create kiya — shopId seedha pass kiya gaya.
+        effectiveShopId = shopId;
       }
 
       // Profile create karo (trigger bhi kar sakta hai — conflict ignore karo).
@@ -136,7 +141,7 @@ class AuthRepositoryImpl implements AuthRepository {
           email: email,
           name: name,
           role: role,
-          shopId: shopId,
+          shopId: effectiveShopId,
         );
       } catch (_) {
         // Profile already exists from trigger — update role/shop_id instead

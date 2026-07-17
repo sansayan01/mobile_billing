@@ -96,6 +96,30 @@ class AppDrawer extends StatelessWidget {
                     context.go('/settings');
                   },
                 ),
+                // Staff section — sirf owner ko dikhaye (staff ko nahi)
+                BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    final isOwner = state is Authenticated &&
+                        state.user.role == 'owner';
+                    if (!isOwner) return const SizedBox.shrink();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _SectionHeader('Staff'),
+                        _DrawerItem(
+                          icon: Icons.people_rounded,
+                          label: 'Staff',
+                          route: '/staff',
+                          currentRoute: currentRoute,
+                          onTap: () {
+                            context.pop();
+                            context.go('/staff');
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
           ),

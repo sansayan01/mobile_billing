@@ -56,14 +56,22 @@ Flutter-based **billing + inventory management** app for a phone shop (phones, h
 - [x] Low stock alerts (domain + data + UI)
 - [x] Stock movement log (domain + data + UI)
 
+### 8. Staff Management (Owner-only)
+- [x] Owner can **create staff account** (Supabase Auth signUp + shop_id link) with name, email, phone, password
+- [x] Staff **list view** (own shop only, scoped by RLS) — name, email, role badge, phone
+- [x] **Delete staff** (profiles row removal via confirm dialog)
+- [x] Staff hidden from non-owner (drawer + dashboard tile + add page guard)
+- [ ] Staff edit (role/phone change) — deferred
+- [ ] Active/Inactive toggle — deferred (delete-only model)
+
 ---
 
 ## User Roles
 
 | Role | Permissions |
 |------|------------|
-| **Owner** | Full access — categories, products, billing, settings, reports, staff mgmt |
-| **Staff** | Billing only (scan → sell → print), view products & stock |
+| **Owner** | Full access — categories, products, billing, settings, reports, **staff mgmt (add/delete staff, scoped to own shop)** |
+| **Staff** | Billing only (scan → sell → print), view products & stock; **no staff management access** |
 
 ---
 

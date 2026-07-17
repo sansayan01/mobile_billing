@@ -25,6 +25,8 @@ import '../../features/billing/presentation/pages/checkout_page.dart';
 import '../../features/product/domain/entities/product.dart';
 import '../../features/report/domain/entities/report_entities.dart';
 import '../../features/category/presentation/pages/category_list_page.dart';
+import '../../features/staff/presentation/pages/staff_list_page.dart';
+import '../../features/staff/presentation/pages/add_staff_page.dart';
 import 'app_shell.dart';
 
 GoRouter createRouter() {
@@ -130,6 +132,16 @@ GoRouter createRouter() {
           GoRoute(
             path: '/categories',
             builder: (context, state) => const CategoryListPage(),
+          ),
+          GoRoute(
+            path: '/staff',
+            builder: (context, state) => const StaffListPage(),
+            routes: [
+              GoRoute(
+                path: 'add',
+                builder: (context, state) => const AddStaffPage(),
+              ),
+            ],
           ),
           GoRoute(
             path: '/shop',

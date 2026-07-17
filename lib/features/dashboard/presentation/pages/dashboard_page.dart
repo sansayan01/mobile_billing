@@ -133,6 +133,21 @@ class _DashboardViewState extends State<_DashboardView> {
       ),
     ];
 
+    // Staff tile — sirf owner ko dikhaye (staff management owner-only hai)
+    final authState = context.read<AuthBloc>().state;
+    final isOwner =
+        authState is Authenticated && authState.user.role == 'owner';
+    if (isOwner) {
+      tiles.add(
+        QuickActionTile(
+          icon: Icons.people_rounded,
+          label: 'Staff',
+          color: AppTheme.primaryColor,
+          onTap: () => context.go('/staff'),
+        ),
+      );
+    }
+
     return GridView.count(
       crossAxisCount: 3,
       mainAxisSpacing: 12,

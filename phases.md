@@ -85,7 +85,24 @@
 - [x] Owner signup flow: creates shop + assigns `role='owner'` + links `shop_id` (signup_usecase, auth_repository_impl)
 - [x] User entity/model `shopId` field added
 - [ ] **Super Admin portal — DEFERRED** (msayan9733@gmail.com = super admin, portal baad mein)
-- [ ] Staff invite by owner (UI pending — schema ready)
+- [x] ~~Staff invite by owner~~ → **Staff Management feature complete** (see Phase 6.5) — owner creates staff via Supabase Auth signUp + shop_id link
+
+---
+
+## Phase 6.5 — Staff Management (Owner-only) ✅
+- [x] Migration `005_add_staff_phone.sql` (applied) — `profiles.phone` TEXT column
+- [x] `User` entity + `UserModel` `phone?` field (fromJson/fromProfileJson/fromSupabaseAuth/toJson/copyWith)
+- [x] Auth `signUp` threading: `String? shopId` param → owner-created staff linked to shop in one call
+- [x] Staff feature (Clean Arch, mirrors Category):
+  - `staff_repository` (getStaffMembers shop-scoped, deleteStaffMember)
+  - `staff_usecases` (GetStaffMembers, DeleteStaffMember)
+  - `staff_repository_impl` (profiles SELECT/DELETE via UserModel.fromProfileJson)
+  - `staff_bloc`/event/state (LoadStaff, DeleteStaffMember, _currentShopId from AuthBloc)
+  - `staff_list_page.dart` (list + search + cards + owner-only FAB + delete dialog)
+  - `add_staff_page.dart` (owner-only form → SignUpRequested role:'staff', shopId: owner.shopId)
+- [x] Wiring: `/staff` route (ShellRoute), owner-only Drawer item + Dashboard QuickActionTile, Staff DI block
+- [ ] Device verify: owner add/delete staff; staff can't see Staff section
+- [ ] NOTE: delete removes `profiles` row only; `auth.users` may stay orphaned (client-side needs service role)
 
 ## Known Issues / TODO
 - [ ] **Kotlin Gradle Plugin warning** — `app_settings, device_info_plus, mobile_scanner, print_bluetooth_thermal, share_plus` apply KGP; future Flutter build break. `flutter pub upgrade` done (partial), full Built-in Kotlin migration pending rebuild verification.

@@ -12,6 +12,7 @@ class SignUpParams extends Equatable {
   final String role; // 'owner' ya 'staff'
   final String? shopName; // sirf owner signup ke liye — apni shop ka naam
   final String? emailRedirectTo; // verification deep-link (billingapp://verify)
+  final String? shopId; // owner ne staff create kiya toh apni shop_id pass kare
 
   const SignUpParams({
     required this.email,
@@ -20,11 +21,12 @@ class SignUpParams extends Equatable {
     this.role = 'staff',
     this.shopName,
     this.emailRedirectTo,
+    this.shopId,
   });
 
   @override
   List<Object?> get props =>
-      [email, password, name, role, shopName, emailRedirectTo];
+      [email, password, name, role, shopName, emailRedirectTo, shopId];
 }
 
 class SignUpUseCase implements UseCase<User, SignUpParams> {
@@ -41,6 +43,7 @@ class SignUpUseCase implements UseCase<User, SignUpParams> {
       role: params.role,
       shopName: params.shopName,
       emailRedirectTo: params.emailRedirectTo,
+      shopId: params.shopId,
     );
   }
 }

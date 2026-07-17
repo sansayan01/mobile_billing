@@ -6,6 +6,7 @@ class User extends Equatable {
   final String name;
   final String role; // 'owner' or 'staff'
   final String? shopId; // staff/owner ki associated shop (nullable)
+  final String? phone; // contact number (staff management)
   final DateTime? emailConfirmedAt; // null = email abhi confirm nahi hui
 
   const User({
@@ -14,6 +15,7 @@ class User extends Equatable {
     required this.name,
     this.role = 'staff',
     this.shopId,
+    this.phone,
     this.emailConfirmedAt,
   });
 
@@ -26,6 +28,7 @@ class User extends Equatable {
     String? name,
     String? role,
     String? shopId,
+    String? phone,
     DateTime? emailConfirmedAt,
   }) {
     return User(
@@ -34,11 +37,12 @@ class User extends Equatable {
       name: name ?? this.name,
       role: role ?? this.role,
       shopId: shopId ?? this.shopId,
+      phone: phone ?? this.phone,
       emailConfirmedAt: emailConfirmedAt ?? this.emailConfirmedAt,
     );
   }
 
   @override
   List<Object?> get props =>
-      [id, email, name, role, shopId, emailConfirmedAt];
+      [id, email, name, role, shopId, phone, emailConfirmedAt];
 }

@@ -70,6 +70,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         role: event.role,
         shopName: event.shopName,
         emailRedirectTo: DeepLinkConfig.emailRedirectTo,
+        shopId: event.shopId,
       ),
     );
     result.fold(

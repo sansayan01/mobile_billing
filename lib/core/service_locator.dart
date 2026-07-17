@@ -12,6 +12,10 @@ import '../../features/category/data/repositories/category_repository_impl.dart'
 import '../../features/category/domain/repositories/category_repository.dart';
 import '../../features/category/domain/usecases/category_usecases.dart';
 import '../../features/category/presentation/bloc/category_bloc.dart';
+import '../../features/staff/data/repositories/staff_repository_impl.dart';
+import '../../features/staff/domain/repositories/staff_repository.dart';
+import '../../features/staff/domain/usecases/staff_usecases.dart';
+import '../../features/staff/presentation/bloc/staff_bloc.dart';
 import '../../features/product/data/repositories/product_repository_impl.dart';
 import '../../features/product/domain/repositories/product_repository.dart';
 import '../../features/product/domain/usecases/product_usecases.dart';
@@ -147,6 +151,25 @@ Future<void> init() async {
     () => BillingBloc(
       getProductByBarcodeUseCase: sl(),
       getCurrentStockBulkUseCase: sl(),
+      authBloc: sl(),
+    ),
+  );
+
+  // ============== Staff Feature ==============
+  // Use cases
+  sl.registerLazySingleton(() => GetStaffMembersUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteStaffMemberUseCase(sl()));
+
+  // Repository
+  sl.registerLazySingleton<StaffRepository>(
+    () => StaffRepositoryImpl(),
+  );
+
+  // Bloc
+  sl.registerFactory(
+    () => StaffBloc(
+      getStaffMembersUseCase: sl(),
+      deleteStaffMemberUseCase: sl(),
       authBloc: sl(),
     ),
   );
