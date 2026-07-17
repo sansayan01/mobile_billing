@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../bloc/product_bloc.dart';
+import '../../../category/presentation/bloc/category_bloc.dart';
 import '../../domain/entities/product.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_validators.dart';
@@ -21,7 +22,12 @@ class _AddProductPageState extends State<AddProductPage> {
   final _formKey = GlobalKey<FormState>();
   String _name = '';
   String _barcode = '';
+  String _location = '';
+  String _description = '';
+  String _imageUrl = '';
   double _price = 0.0;
+  int _stock = 0;
+  String? _categoryId;
 
   void _scanBarcode() async {
     final result = await context.push<String>('/scanner');
@@ -55,6 +61,14 @@ class _AddProductPageState extends State<AddProductPage> {
         name: _name,
         barcode: _barcode,
         price: _price,
+        stock: _stock,
+        categoryId: _categoryId,
+        location: _location.isNotEmpty ? _location : null,
+        description: _description.isNotEmpty ? _description : null,
+        imageUrl: _imageUrl.isNotEmpty ? _imageUrl : null,
+        qrData: _barcode,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
 
       context.read<ProductBloc>().add(AddProduct(product));
@@ -129,6 +143,37 @@ class _AddProductPageState extends State<AddProductPage> {
                     onSaved: (value) => _name = value!,
                   ),
                   const SizedBox(height: 24),
+                  const InputLabel(text: 'Category'),
+                  BlocBuilder<CategoryBloc, CategoryState>(
+                    builder: (context, state) {
+                      return DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          hintText: 'Select category',
+                          prefixIcon: Icon(Icons.category_outlined),
+                        ),
+                        value: _categoryId,
+                        items: [
+                          const DropdownMenuItem<String>(
+                            value: null,
+                            child: Text('No Category'),
+                          ),
+                          ...state.categories.map(
+                            (category) => DropdownMenuItem<String>(
+                              value: category.id,
+                              child: Text(category.name),
+                            ),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _categoryId = value;
+                          });
+                        },
+                        onSaved: (value) => _categoryId = value,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
                   const InputLabel(text: 'Price'),
                   TextFormField(
                     keyboardType:
@@ -143,6 +188,48 @@ class _AddProductPageState extends State<AddProductPage> {
                     ),
                     validator: AppValidators.price,
                     onSaved: (value) => _price = double.parse(value!),
+                  ),
+                  const SizedBox(height: 24),
+                  const InputLabel(text: 'Stock Quantity'),
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    initialValue: _stock.toString(),
+                    decoration: const InputDecoration(
+                      hintText: '0',
+                      prefixIcon: Icon(Icons.inventory_2_outlined),
+                    ),
+                    validator: AppValidators.required('Please enter stock'),
+                    onSaved: (value) => _stock = int.tryParse(value!) ?? 0,
+                  ),
+                  const SizedBox(height: 24),
+                  const InputLabel(text: 'Location (Shelf/Rack)'),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'e.g. A-12, Rack 3',
+                      prefixIcon: Icon(Icons.location_on_outlined),
+                    ),
+                    onSaved: (value) => _location = value?.trim() ?? '',
+                  ),
+                  const SizedBox(height: 24),
+                  const InputLabel(text: 'Description'),
+                  TextFormField(
+                    maxLines: 3,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter product description',
+                      alignLabelWithHint: true,
+                    ),
+                    onSaved: (value) => _description = value?.trim() ?? '',
+                  ),
+                  const SizedBox(height: 24),
+                  const InputLabel(text: 'Image URL (Optional)'),
+                  TextFormField(
+                    keyboardType: TextInputType.url,
+                    decoration: const InputDecoration(
+                      hintText: 'https://...',
+                      prefixIcon: Icon(Icons.image_outlined),
+                    ),
+                    onSaved: (value) => _imageUrl = value?.trim() ?? '',
                   ),
                 ],
               ),

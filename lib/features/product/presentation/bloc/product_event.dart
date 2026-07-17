@@ -29,3 +29,32 @@ class DeleteProduct extends ProductEvent {
   @override
   List<Object> get props => [id];
 }
+
+class FilterByCategory extends ProductEvent {
+  final String? categoryId;
+  const FilterByCategory(this.categoryId);
+  @override
+  List<Object> get props => [categoryId ?? ''];
+}
+
+class GenerateQrCode extends ProductEvent {
+  final Product product;
+  const GenerateQrCode(this.product);
+  @override
+  List<Object> get props => [product];
+}
+
+class InitRealtime extends ProductEvent {}
+
+class ProductsRealtimeUpdated extends ProductEvent {
+  final String changeType;
+  final Map<String, dynamic> payload;
+
+  const ProductsRealtimeUpdated({
+    required this.changeType,
+    required this.payload,
+  });
+
+  @override
+  List<Object> get props => [changeType, payload];
+}

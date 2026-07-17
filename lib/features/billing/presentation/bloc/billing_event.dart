@@ -55,3 +55,37 @@ class PrintReceiptEvent extends BillingEvent {
   @override
   List<Object> get props => [shopName, address1, address2, phone, footer];
 }
+
+class UpdateDiscountEvent extends BillingEvent {
+  final double? discount;
+  final bool isPercentage;
+  const UpdateDiscountEvent(this.discount, this.isPercentage);
+  @override
+  List<Object> get props => [discount ?? 0.0, isPercentage];
+}
+
+class UpdateGrandTotalOverrideEvent extends BillingEvent {
+  final double? grandTotal;
+  const UpdateGrandTotalOverrideEvent(this.grandTotal);
+  @override
+  List<Object> get props => [grandTotal ?? 0.0];
+}
+
+class SetDiscountTypeEvent extends BillingEvent {
+  final bool isPercentage;
+  const SetDiscountTypeEvent(this.isPercentage);
+  @override
+  List<Object> get props => [isPercentage];
+}
+
+class SubmitBillEvent extends BillingEvent {
+  const SubmitBillEvent();
+}
+
+class ValidateStockBeforeBill extends BillingEvent {
+  const ValidateStockBeforeBill();
+}
+
+class ClearStockErrorsEvent extends BillingEvent {
+  const ClearStockErrorsEvent();
+}

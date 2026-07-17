@@ -39,7 +39,6 @@ Flutter-based **billing + inventory management** app for a phone shop (phones, h
 - [ ] Real-time inventory updates — staff A sells → staff B sees updated stock instantly
 - [ ] Multi-user support (4-5 staff + owner)
 - [ ] Auth login (owner vs staff roles)
-- [ ] Offline fallback (local cache)
 
 ### 5. Shelf / Location Tracking
 - [ ] Products assigned to **box/shelf/rack location**
@@ -52,10 +51,10 @@ Flutter-based **billing + inventory management** app for a phone shop (phones, h
 - [ ] Print QR or save as image
 
 ### 7. Reports & History
-- [ ] Bill/invoice history
-- [ ] Daily sales summary
-- [ ] Low stock alerts
-- [ ] Stock movement log (who sold what)
+- [x] Bill/invoice history (domain + data + UI)
+- [x] Daily sales summary (domain + data + UI)
+- [x] Low stock alerts (domain + data + UI)
+- [x] Stock movement log (domain + data + UI)
 
 ---
 
@@ -72,8 +71,8 @@ Flutter-based **billing + inventory management** app for a phone shop (phones, h
 
 | Component | Current | New |
 |-----------|---------|-----|
-| **Database** | Hive (local) | Supabase (cloud) + Hive (local cache) |
-| **Auth** | None | Supabase Auth |
+| **Database** | Supabase (cloud) |
+| **Auth** | Supabase Auth |
 | **Real-time** | None | Supabase Realtime |
 | **Scanner** | mobile_scanner (✅ already supports QR + barcode) | Same |
 | **QR Gen** | pretty_qr_code (only for UPI) | pretty_qr_code (extend for products) |
@@ -86,6 +85,5 @@ Flutter-based **billing + inventory management** app for a phone shop (phones, h
 
 ## Constraints
 - Supabase required for real-time multi-user
-- Offline should work with local cache when internet is down
 - Thermal printer via Bluetooth (ESC/POS)
 - ₹ currency, Indian market

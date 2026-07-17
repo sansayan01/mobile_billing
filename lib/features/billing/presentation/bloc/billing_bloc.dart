@@ -1,5 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:uuid/uuid.dart';
+import 'package:billing_app/core/supabase/supabase_client.dart';
+import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
 import '../../domain/entities/cart_item.dart';
 import 'package:billing_app/features/product/domain/entities/product.dart';
 import 'package:billing_app/features/product/domain/usecases/product_usecases.dart';
@@ -11,15 +15,26 @@ part 'billing_state.dart';
 
 class BillingBloc extends Bloc<BillingEvent, BillingState> {
   final GetProductByBarcodeUseCase getProductByBarcodeUseCase;
+  final GetCurrentStockBulkUseCase getCurrentStockBulkUseCase;
+  final AuthBloc authBloc;
 
-  BillingBloc({required this.getProductByBarcodeUseCase})
-      : super(const BillingState()) {
+  BillingBloc({
+    required this.getProductByBarcodeUseCase,
+    required this.getCurrentStockBulkUseCase,
+    required this.authBloc,
+  }) : super(const BillingState()) {
     on<ScanBarcodeEvent>(_onScanBarcode);
     on<AddProductToCartEvent>(_onAddProductToCart);
     on<RemoveProductFromCartEvent>(_onRemoveProductFromCart);
     on<UpdateQuantityEvent>(_onUpdateQuantity);
     on<ClearCartEvent>(_onClearCart);
     on<PrintReceiptEvent>(_onPrintReceipt);
+    on<UpdateDiscountEvent>(_onUpdateDiscount);
+    on<UpdateGrandTotalOverrideEvent>(_onUpdateGrandTotalOverride);
+    on<SetDiscountTypeEvent>(_onSetDiscountType);
+    on<SubmitBillEvent>(_onSubmitBill);
+    on<ValidateStockBeforeBill>(_onValidateStockBeforeBill);
+    on<ClearStockErrorsEvent>(_onClearStockErrors);
   }
 
   Future<void> _onScanBarcode(
@@ -36,7 +51,6 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
 
   void _onAddProductToCart(
       AddProductToCartEvent event, Emitter<BillingState> emit) {
-    // Clear error when adding
     final cleanState = state.copyWith(error: null);
 
     final existingIndex = cleanState.cartItems
@@ -131,8 +145,182 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     } catch (e) {
       emit(state.copyWith(
           isPrinting: false, error: 'Print failed: $e', clearError: false));
-      // Reset error instantly avoids sticky error
       emit(state.copyWith(clearError: true));
     }
+  }
+
+  void _onUpdateDiscount(
+      UpdateDiscountEvent event, Emitter<BillingState> emit) {
+    emit(state.copyWith(
+      discount: event.discount,
+      discountIsPercentage: event.isPercentage,
+    ));
+  }
+
+  void _onUpdateGrandTotalOverride(
+      UpdateGrandTotalOverrideEvent event, Emitter<BillingState> emit) {
+    emit(state.copyWith(
+      grandTotalOverride: event.grandTotal,
+    ));
+  }
+
+  void _onSetDiscountType(
+      SetDiscountTypeEvent event, Emitter<BillingState> emit) {
+    emit(state.copyWith(
+      discountIsPercentage: event.isPercentage,
+    ));
+  }
+
+  Future<void> _onSubmitBill(
+      SubmitBillEvent event, Emitter<BillingState> emit) async {
+    if (state.cartItems.isEmpty) {
+      emit(state.copyWith(error: 'Cart is empty'));
+      return;
+    }
+
+    // Validate stock before submitting
+    final stockValidation = await _validateStock(state.cartItems);
+    if (stockValidation != null) {
+      emit(state.copyWith(
+        isSubmitting: false,
+        stockErrors: stockValidation,
+      ));
+      return;
+    }
+
+    emit(state.copyWith(
+      isSubmitting: true,
+      submitSuccess: false,
+      stockErrors: null,
+    ));
+
+    final authState = authBloc.state;
+    if (authState is! Authenticated) {
+      emit(state.copyWith(
+          error: 'User not authenticated', isSubmitting: false));
+      return;
+    }
+
+    try {
+      final staffId = authState.user.id;
+      final billId = const Uuid().v4();
+      final now = DateTime.now().toIso8601String();
+      final baseTotal =
+          state.cartItems.fold<double>(0, (sum, item) => sum + item.total);
+      final calculatedTotal = state.totalAmount;
+
+      // 1. Insert into bills table
+      await SupabaseConfig.client.from('bills').insert({
+        'id': billId,
+        'staff_id': staffId,
+        'total_amount': baseTotal,
+        'discount': state.discount,
+        'grand_total': calculatedTotal,
+        'payment_method': 'UPI',
+        'created_at': now,
+      });
+
+      // 2. Insert bill items, update stock, and log inventory
+      for (final item in state.cartItems) {
+        await SupabaseConfig.client.from('bill_items').insert({
+          'id': const Uuid().v4(),
+          'bill_id': billId,
+          'product_id': item.product.id,
+          'product_name': item.product.name,
+          'quantity': item.quantity,
+          'price': item.product.price,
+          'total': item.total,
+        });
+
+        // Update product stock
+        await SupabaseConfig.client.from('products').update({
+          'stock': item.product.stock - item.quantity,
+        }).eq('id', item.product.id);
+
+        // Log to inventory_log table
+        await SupabaseConfig.client.from('inventory_log').insert({
+          'id': const Uuid().v4(),
+          'product_id': item.product.id,
+          'product_name': item.product.name,
+          'change': -item.quantity,
+          'type': 'sale',
+          'bill_id': billId,
+          'staff_id': staffId,
+          'created_at': now,
+        });
+      }
+
+      emit(state.copyWith(isSubmitting: false, submitSuccess: true));
+    } catch (e) {
+      emit(state.copyWith(
+        isSubmitting: false,
+        error: 'Failed to save bill: $e',
+      ));
+    }
+  }
+
+  Future<void> _onValidateStockBeforeBill(
+      ValidateStockBeforeBill event, Emitter<BillingState> emit) async {
+    if (state.cartItems.isEmpty) {
+      emit(state.copyWith(error: 'Cart is empty'));
+      return;
+    }
+
+    emit(state.copyWith(
+      isValidatingStock: true,
+      stockErrors: null,
+    ));
+
+    final errors = await _validateStock(state.cartItems);
+
+    if (errors != null && errors.isNotEmpty) {
+      emit(state.copyWith(
+        isValidatingStock: false,
+        stockErrors: errors,
+      ));
+    } else {
+      // Stock is sufficient, proceed to submit bill
+      emit(state.copyWith(
+        isValidatingStock: false,
+        stockErrors: null,
+      ));
+      add(const SubmitBillEvent());
+    }
+  }
+
+  void _onClearStockErrors(
+      ClearStockErrorsEvent event, Emitter<BillingState> emit) {
+    emit(state.copyWith(clearStockErrors: true));
+  }
+
+  /// Validates cart item quantities against current stock in Supabase.
+  /// Returns a list of error messages if any item has insufficient stock,
+  /// or null if all items have sufficient stock.
+  Future<List<String>?> _validateStock(List<CartItem> cartItems) async {
+    if (cartItems.isEmpty) return null;
+
+    final productIds = cartItems.map((item) => item.product.id).toList();
+
+    final result = await getCurrentStockBulkUseCase(productIds);
+
+    return result.fold(
+      (failure) => ['Stock validation failed: ${failure.message}'],
+      (stockMap) {
+        final errors = <String>[];
+
+        for (final item in cartItems) {
+          final availableStock = stockMap[item.product.id];
+          if (availableStock == null) {
+            errors.add(
+                '${item.product.name}: Product not found in inventory');
+          } else if (availableStock < item.quantity) {
+            errors.add(
+                '${item.product.name} only has $availableStock in stock (requested ${item.quantity})');
+          }
+        }
+
+        return errors.isNotEmpty ? errors : null;
+      },
+    );
   }
 }

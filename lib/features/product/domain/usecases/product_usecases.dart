@@ -58,3 +58,27 @@ class GetProductByBarcodeUseCase implements UseCase<Product, String> {
     return repository.getProductByBarcode(params);
   }
 }
+
+class GetProductsByCategoryUseCase
+    implements UseCase<List<Product>, String> {
+  final ProductRepository repository;
+
+  GetProductsByCategoryUseCase(this.repository);
+
+  @override
+  Future<Either<Failure, List<Product>>> call(String params) {
+    return repository.getProductsByCategory(params);
+  }
+}
+
+class GetCurrentStockBulkUseCase
+    implements UseCase<Map<String, int>, List<String>> {
+  final ProductRepository repository;
+
+  GetCurrentStockBulkUseCase(this.repository);
+
+  @override
+  Future<Either<Failure, Map<String, int>>> call(List<String> params) {
+    return repository.getCurrentStockBulk(params);
+  }
+}

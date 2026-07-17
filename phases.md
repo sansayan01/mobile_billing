@@ -1,40 +1,68 @@
-# Phases
+# Phases — Roadmap
 
-## Phase 1 — Core MVP ✅ (Complete)
-- [x] Project setup (Flutter + dependencies)
+## Phase 0 — Foundation ✅ (Complete)
+- [x] Flutter project setup
+- [x] Hive + get_it + go_router + theme
 - [x] Clean Architecture folder structure
-- [x] Hive local database
-- [x] get_it dependency injection
-- [x] Theme & routing setup
-- [x] Product CRUD (Add, Edit, Delete, List)
-- [x] Barcode scanner with camera
-- [x] Cart management (scan, add, update qty, remove)
-- [x] Checkout page with itemized table
-- [x] UPI QR code generation
-- [x] Bluetooth thermal printer (ESC/POS)
-- [x] Shop configuration (name, UPI ID, address, phone, footer)
-- [x] Settings page (printer init, app settings)
+- [x] GitHub repo setup & push
+- [x] Project docs (CLAUDE.md, RPD.md, architecture.md, rules.md, phases.md, memory.md, design.md)
+- [x] Graphify installed
+- [x] Supabase client config & package added
 
-## Phase 2 — Enhancements 🔜
-- [ ] Product search & filter (by name/barcode)
-- [ ] Invoice history — past bills stored & reprintable
-- [ ] Daily sales summary dashboard
-- [ ] Customer management (name, phone, total purchases)
-- [ ] Dark mode support
-- [ ] Multi-language support (Hindi + English)
+---
 
-## Phase 3 — Advanced 🚀
-- [ ] Cloud backup (Firebase / custom API)
-- [ ] Multi-device sync
-- [ ] Export to PDF/CSV/Excel
-- [ ] Email/SMS invoice sharing
-- [ ] GST invoice format
-- [ ] Stock/Inventory management
-- [ ] Low stock alerts
+## Phase 1 — Database & Auth 🏗️ ✅
+- [x] Supabase tables creation (categories, products, profiles, bills, bill_items, locations, inventory_log)
+- [x] Row Level Security (RLS) policies
+- [x] Supabase Auth — owner & staff login (email + Google OAuth)
+- [x] Auth screens (login, register)
+- [x] Role-based access (owner vs staff via profiles table)
 
-## Phase 4 — Scale 🌟
-- [ ] Multi-shop support (owner manages multiple stores)
-- [ ] Employee login with roles
-- [ ] Web dashboard
-- [ ] REST API backend
-- [ ] Analytics & insights
+---
+
+## Phase 2 — Core Features 🔧 ✅
+
+### 2A — Categories ✅
+- [x] Category CRUD (create, read, update, delete) — full Clean Architecture feature
+- [x] Category list screen with search/filter
+- [x] Assign category to product (dropdown in add/edit product)
+
+### 2B — Products (Inventory) ✅
+- [x] ProductRepositoryImpl — Supabase primary, Hive cache (CRUD methods)
+- [x] Product add via QR/barcode scan
+- [x] QR code generator (in-app) — qr_generator_page.dart
+- [x] Product list with search & filter + category chips
+- [x] Shelf/location assignment
+- [x] Stock tracking
+- [x] Product entity expanded: categoryId, location, description, imageUrl, qrData, timestamps
+
+### 2C — Billing (Enhanced) ✅
+- [x] Multi-product billing
+- [x] Manual discount (₹ or %) — BillingBloc UpdateDiscountEvent
+- [x] Manual grand total override — BillingBloc UpdateGrandTotalOverrideEvent
+- [x] Bill save to Supabase (bills + bill_items + inventory_log)
+- [x] Thermal receipt with new format
+- [x] UPI QR on bill
+
+---
+
+## Phase 3 — Real-time & Multi-user 🔄 ✅
+- [x] Supabase Realtime subscriptions (products table via RealtimeService)
+- [x] Live inventory sync across staff (ProductBloc auto-refresh on changes)
+- [x] Multi-staff concurrent billing (stock validation before bill submit)
+
+---
+
+## Phase 4 — Reports & History 📊 ✅
+- [x] Bill/invoice history (domain + data + UI)
+- [x] Daily sales summary (domain + data + UI)
+- [x] Low stock alerts (domain + data + UI)
+- [x] Stock movement log (domain + data + UI)
+
+---
+
+## Phase 5 — Polish & Deploy 🚀
+- [ ] Google Drive backup
+- [ ] Testing & bug fixes
+- [ ] APK build
+- [ ] Play Store release (optional)

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../bloc/product_bloc.dart';
+import '../../../category/presentation/bloc/category_bloc.dart';
 import '../../domain/entities/product.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_validators.dart';
@@ -21,23 +22,37 @@ class _EditProductPageState extends State<EditProductPage> {
   final _formKey = GlobalKey<FormState>();
   late String _name;
   late double _price;
+  late int _stock;
+  late String _location;
+  late String _description;
+  late String _imageUrl;
+  late String? _categoryId;
 
   @override
   void initState() {
     super.initState();
     _name = widget.product.name;
     _price = widget.product.price;
+    _stock = widget.product.stock;
+    _location = widget.product.location ?? '';
+    _description = widget.product.description ?? '';
+    _imageUrl = widget.product.imageUrl ?? '';
+    _categoryId = widget.product.categoryId;
   }
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      final updatedProduct = Product(
-        id: widget.product.id,
+      final updatedProduct = widget.product.copyWith(
         name: _name,
-        barcode: widget.product.barcode,
         price: _price,
+        stock: _stock,
+        categoryId: _categoryId,
+        location: _location.isNotEmpty ? _location : null,
+        description: _description.isNotEmpty ? _description : null,
+        imageUrl: _imageUrl.isNotEmpty ? _imageUrl : null,
+        updatedAt: DateTime.now(),
       );
 
       context.read<ProductBloc>().add(UpdateProduct(updatedProduct));
@@ -113,6 +128,38 @@ class _EditProductPageState extends State<EditProductPage> {
                   ),
                   const SizedBox(height: 24),
 
+                  const InputLabel(text: 'Category'),
+                  BlocBuilder<CategoryBloc, CategoryState>(
+                    builder: (context, state) {
+                      return DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          hintText: 'Select category',
+                          prefixIcon: Icon(Icons.category_outlined),
+                        ),
+                        value: _categoryId,
+                        items: [
+                          const DropdownMenuItem<String>(
+                            value: null,
+                            child: Text('No Category'),
+                          ),
+                          ...state.categories.map(
+                            (category) => DropdownMenuItem<String>(
+                              value: category.id,
+                              child: Text(category.name),
+                            ),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _categoryId = value;
+                          });
+                        },
+                        onSaved: (value) => _categoryId = value,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
+
                   const InputLabel(text: 'Price'),
 
                   TextFormField(
@@ -128,6 +175,59 @@ class _EditProductPageState extends State<EditProductPage> {
                     ),
                     validator: AppValidators.price,
                     onSaved: (value) => _price = double.parse(value!),
+                  ),
+                  const SizedBox(height: 24),
+
+                  const InputLabel(text: 'Stock Quantity'),
+
+                  TextFormField(
+                    initialValue: _stock.toString(),
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      hintText: '0',
+                      prefixIcon: Icon(Icons.inventory_2_outlined),
+                    ),
+                    validator: AppValidators.required('Please enter stock'),
+                    onSaved: (value) => _stock = int.tryParse(value!) ?? 0,
+                  ),
+                  const SizedBox(height: 24),
+
+                  const InputLabel(text: 'Location (Shelf/Rack)'),
+
+                  TextFormField(
+                    initialValue: _location,
+                    decoration: const InputDecoration(
+                      hintText: 'e.g. A-12, Rack 3',
+                      prefixIcon: Icon(Icons.location_on_outlined),
+                    ),
+                    onSaved: (value) => _location = value?.trim() ?? '',
+                  ),
+                  const SizedBox(height: 24),
+
+                  const InputLabel(text: 'Description'),
+
+                  TextFormField(
+                    initialValue: _description,
+                    maxLines: 3,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter product description',
+                      alignLabelWithHint: true,
+                    ),
+                    onSaved: (value) => _description = value?.trim() ?? '',
+                  ),
+                  const SizedBox(height: 24),
+
+                  const InputLabel(text: 'Image URL (Optional)'),
+
+                  TextFormField(
+                    initialValue: _imageUrl,
+                    keyboardType: TextInputType.url,
+                    decoration: const InputDecoration(
+                      hintText: 'https://...',
+                      prefixIcon: Icon(Icons.image_outlined),
+                    ),
+                    onSaved: (value) => _imageUrl = value?.trim() ?? '',
                   ),
                 ],
               ),

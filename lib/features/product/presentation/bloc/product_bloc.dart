@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/usecases/product_usecases.dart';
+import '../../../../core/realtime/realtime_service.dart';
 import '../../../../core/usecase/usecase.dart';
 
 part 'product_event.dart';
@@ -12,17 +14,25 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final AddProductUseCase addProductUseCase;
   final UpdateProductUseCase updateProductUseCase;
   final DeleteProductUseCase deleteProductUseCase;
+  final RealtimeService realtimeService;
+
+  Timer? _realtimeDebounce;
 
   ProductBloc({
     required this.getProductsUseCase,
     required this.addProductUseCase,
     required this.updateProductUseCase,
     required this.deleteProductUseCase,
+    required this.realtimeService,
   }) : super(const ProductState()) {
     on<LoadProducts>(_onLoadProducts);
     on<AddProduct>(_onAddProduct);
     on<UpdateProduct>(_onUpdateProduct);
     on<DeleteProduct>(_onDeleteProduct);
+    on<FilterByCategory>(_onFilterByCategory);
+    on<GenerateQrCode>(_onGenerateQrCode);
+    on<InitRealtime>(_onInitRealtime);
+    on<ProductsRealtimeUpdated>(_onProductsRealtimeUpdated);
   }
 
   Future<void> _onLoadProducts(
@@ -32,14 +42,17 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     result.fold(
       (failure) => emit(state.copyWith(
           status: ProductStatus.error, message: failure.message)),
-      (products) => emit(
-          state.copyWith(status: ProductStatus.loaded, products: products)),
+      (products) => emit(state.copyWith(
+          status: ProductStatus.loaded,
+          products: products,
+          filteredProducts: products,
+          selectedCategoryId: null)),
     );
   }
 
   Future<void> _onAddProduct(
       AddProduct event, Emitter<ProductState> emit) async {
-    emit(state.copyWith(status: ProductStatus.loading)); // Keep products
+    emit(state.copyWith(status: ProductStatus.loading));
     final result = await addProductUseCase(event.product);
     result.fold(
       (failure) => emit(state.copyWith(
@@ -83,5 +96,87 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         add(LoadProducts());
       },
     );
+  }
+
+  void _onFilterByCategory(
+      FilterByCategory event, Emitter<ProductState> emit) {
+    if (event.categoryId == null) {
+      // Show all products
+      emit(state.copyWith(
+        selectedCategoryId: null,
+        filteredProducts: state.products,
+      ));
+    } else {
+      // Filter by category
+      final filtered = state.products
+          .where((p) => p.categoryId == event.categoryId)
+          .toList();
+      emit(state.copyWith(
+        selectedCategoryId: event.categoryId,
+        filteredProducts: filtered,
+      ));
+    }
+  }
+
+  void _onGenerateQrCode(
+      GenerateQrCode event, Emitter<ProductState> emit) {
+    // Generate QR data combining product info
+    final qrData =
+        '${event.product.name}|${event.product.barcode}|₹${event.product.price.toStringAsFixed(2)}';
+    emit(state.copyWith(qrCodeData: qrData));
+  }
+
+  void _onInitRealtime(
+      InitRealtime event, Emitter<ProductState> emit) {
+    try {
+      realtimeService.subscribeToProducts((payload) {
+        final eventType = payload['event_type'] as String;
+        add(ProductsRealtimeUpdated(
+          changeType: eventType,
+          payload: payload,
+        ));
+      });
+    } catch (_) {
+      // Realtime init failed — app continues without live updates
+    }
+  }
+
+  Future<void> _onProductsRealtimeUpdated(
+      ProductsRealtimeUpdated event, Emitter<ProductState> emit) async {
+    try {
+      if (event.changeType == 'DELETE') {
+        // Remove from state directly — no full reload needed
+        final deletedId = (event.payload['old'] as Map<String, dynamic>?)?
+            ['id'] as String?;
+        if (deletedId == null) return;
+
+        final updatedProducts =
+            state.products.where((p) => p.id != deletedId).toList();
+        final updatedFiltered =
+            state.filteredProducts.where((p) => p.id != deletedId).toList();
+
+        emit(state.copyWith(
+          status: ProductStatus.loaded,
+          products: updatedProducts,
+          filteredProducts: updatedFiltered,
+        ));
+      } else {
+        // INSERT or UPDATE — debounce reload to batch rapid changes
+        _realtimeDebounce?.cancel();
+        _realtimeDebounce = Timer(
+          const Duration(milliseconds: 300),
+          () => add(LoadProducts()),
+        );
+      }
+    } catch (_) {
+      // Silently handle real-time update errors
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _realtimeDebounce?.cancel();
+    realtimeService.dispose();
+    return super.close();
   }
 }
