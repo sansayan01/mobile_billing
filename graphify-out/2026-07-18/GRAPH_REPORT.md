@@ -1,11 +1,11 @@
 # Graph Report - flutter_billing_app-main  (2026-07-18)
 
 ## Corpus Check
-- 135 files · ~1,402,152 words
+- 135 files · ~1,402,234 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1613 nodes · 2497 edges · 138 communities (104 shown, 34 thin omitted)
+- 1614 nodes · 2498 edges · 135 communities (101 shown, 34 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 34 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
@@ -95,7 +95,6 @@
 - Presentation
 - Widgets
 - Domain
-- Models
 - Equatable
 - Client
 - Domain
@@ -106,7 +105,6 @@
 - Implementation
 - Implementation
 - Presentation
-- Reports
 - User
 - realtime_service.dart
 - Memory
@@ -148,7 +146,6 @@
 - Supabase-Migration-Rule
 - Tech-Stack-Flutter
 - Update-Rule
-- category_model.dart
 
 ## God Nodes (most connected - your core abstractions)
 1. `AuthBloc` - 56 edges
@@ -191,27 +188,27 @@
 - **iOS Launch Image Set** — ios_runner_assets_xcassets_launchimage_imageset_launchimage, ios_runner_assets_xcassets_launchimage_imageset_launchimage_2x, ios_runner_assets_xcassets_launchimage_imageset_launchimage_3x [INFERRED 0.95]
 - **Web Icon Set** — web_favicon, web_icons_icon_192, web_icons_icon_512, web_icons_icon_maskable_192, web_icons_icon_maskable_512 [INFERRED 0.95]
 
-## Communities (138 total, 34 thin omitted)
+## Communities (135 total, 34 thin omitted)
 
 ### Community 0 - "Presentation"
 Cohesion: 0.06
-Nodes (53): ../bloc/printer_bloc.dart, ../bloc/printer_event.dart, ../bloc/printer_state.dart, ../../domain/repositories/printer_repository.dart, build, _buildScannerSection, build, _buildQuickTiles (+45 more)
+Nodes (52): ../bloc/printer_bloc.dart, ../bloc/printer_event.dart, ../bloc/printer_state.dart, build, _buildScannerSection, build, _buildQuickTiles, build (+44 more)
 
 ### Community 1 - "Utils"
-Cohesion: 0.09
-Nodes (21): alignCenter, alignLeft, alignRight, boldOff, boldOn, checkPermission, connect, disconnect (+13 more)
+Cohesion: 0.04
+Nodes (44): ../../../../core/utils/printer_helper.dart, ../../domain/repositories/printer_repository.dart, alignCenter, alignLeft, alignRight, boldOff, boldOn, checkPermission (+36 more)
 
 ### Community 2 - "Presentation"
 Cohesion: 0.04
 Nodes (44): address1, address2, barcode, cartItems, copyWith, discountIsPercentage, error, footer (+36 more)
 
 ### Community 3 - "Presentation"
-Cohesion: 0.22
-Nodes (18): AddProductToCartEvent, BillingEvent, ClearCartEvent, ClearStockErrorsEvent, PrintReceiptEvent, RemoveProductFromCartEvent, ScanBarcodeEvent, SetDiscountTypeEvent (+10 more)
+Cohesion: 0.21
+Nodes (19): AddProductToCartEvent, BillingEvent, ClearCartEvent, ClearStockErrorsEvent, PrintReceiptEvent, RemoveProductFromCartEvent, ScanBarcodeEvent, SetDiscountTypeEvent (+11 more)
 
 ### Community 4 - "Presentation"
-Cohesion: 0.08
-Nodes (37): ../bloc/shop_bloc.dart, LoadShopEvent, message, ShopError, ShopEvent, ShopInitial, ShopLoaded, ShopLoading (+29 more)
+Cohesion: 0.09
+Nodes (36): ../bloc/shop_bloc.dart, LoadShopEvent, message, ShopError, ShopEvent, ShopInitial, ShopLoaded, ShopLoading (+28 more)
 
 ### Community 5 - "Presentation"
 Cohesion: 0.06
@@ -222,20 +219,20 @@ Cohesion: 0.06
 Nodes (30): app_shell.dart, ../../features/auth/presentation/pages/email_verification_page.dart, ../../features/auth/presentation/pages/login_page.dart, ../../features/auth/presentation/pages/register_page.dart, ../../features/billing/presentation/pages/checkout_page.dart, ../../features/billing/presentation/pages/home_page.dart, ../../features/billing/presentation/pages/scanner_page.dart, ../../features/category/presentation/pages/category_list_page.dart (+22 more)
 
 ### Community 7 - "Domain"
-Cohesion: 0.05
-Nodes (46): config/routes/app_routes.dart, core/service_locator.dart, ../../features/auth/data/repositories/auth_repository_impl.dart, features/auth/domain/repositories/auth_repository.dart, ../../features/auth/domain/usecases/get_current_user_usecase.dart, ../../features/auth/domain/usecases/login_usecase.dart, ../../features/auth/domain/usecases/login_with_google_usecase.dart, ../../features/auth/domain/usecases/logout_usecase.dart (+38 more)
+Cohesion: 0.07
+Nodes (29): ../../features/auth/data/repositories/auth_repository_impl.dart, ../../features/auth/domain/usecases/get_current_user_usecase.dart, ../../features/auth/domain/usecases/login_usecase.dart, ../../features/auth/domain/usecases/login_with_google_usecase.dart, ../../features/auth/domain/usecases/logout_usecase.dart, ../../features/auth/domain/usecases/signup_usecase.dart, ../../features/category/data/repositories/category_repository_impl.dart, ../../features/category/domain/repositories/category_repository.dart (+21 more)
 
 ### Community 8 - "Usecases"
-Cohesion: 0.12
-Nodes (16): class, billId, call, changeType, date, from, GetLowStockProductsUseCase, GetStockMovementsUseCase (+8 more)
+Cohesion: 0.14
+Nodes (13): billId, call, changeType, date, from, limit, page, productId (+5 more)
 
 ### Community 9 - "Presentation"
-Cohesion: 0.13
-Nodes (29): _DashboardViewState, ReportBloc, billId, changeType, date, from, LoadBillDetail, LoadBillHistory (+21 more)
+Cohesion: 0.14
+Nodes (26): DateTime, initState, ReportBloc, billId, changeType, date, from, LoadBillDetail (+18 more)
 
 ### Community 10 - "Entities"
-Cohesion: 0.08
-Nodes (23): averageBill, billCount, changeType, copyWith, createdAt, date, discount, grandTotal (+15 more)
+Cohesion: 0.07
+Nodes (29): BillItemModel, DailySalesModel, StockMovementModel, averageBill, billCount, BillItem, changeType, copyWith (+21 more)
 
 ### Community 11 - "Presentation"
 Cohesion: 0.09
@@ -254,16 +251,16 @@ Cohesion: 0.10
 Nodes (20): ../../../billing/presentation/bloc/billing_bloc.dart, ../../domain/entities/cart_item.dart, build, _buildBottomPanel, _buildCameraOffState, _buildCorner, _buildEmptyCart, _buildOverlayButton (+12 more)
 
 ### Community 15 - "Presentation"
-Cohesion: 0.10
-Nodes (20): categories, CategoryStatus, copyWith, description, id, message, name, status (+12 more)
+Cohesion: 0.06
+Nodes (34): categories, CategoryStatus, copyWith, description, id, message, name, status (+26 more)
 
 ### Community 16 - "Presentation"
 Cohesion: 0.15
-Nodes (16): AppDrawer, AuthEvent, email, GoogleLoginRequested, LoginRequested, LogoutRequested, name, password (+8 more)
+Nodes (24): AppDrawer, AuthBloc, AuthEvent, CheckAuthStatus, email, GoogleLoginRequested, LoginRequested, LogoutRequested (+16 more)
 
 ### Community 17 - "Presentation"
-Cohesion: 0.09
-Nodes (21): GetBillDetailUseCase, GetBillHistoryUseCase, GetDailySalesUseCase, GetSalesRangeUseCase, authBloc, getBillDetailUseCase, getBillHistoryUseCase, getDailySalesUseCase (+13 more)
+Cohesion: 0.11
+Nodes (17): authBloc, getBillDetailUseCase, getBillHistoryUseCase, getDailySalesUseCase, getLowStockProductsUseCase, getSalesRangeUseCase, getStockMovementsUseCase, _onLoadBillDetail (+9 more)
 
 ### Community 18 - "Presentation"
 Cohesion: 0.11
@@ -298,24 +295,24 @@ Cohesion: 0.21
 Nodes (18): AddProduct, DeleteProduct, FilterByCategory, GenerateQrCode, InitRealtime, LoadProducts, ProductEvent, ProductsRealtimeUpdated (+10 more)
 
 ### Community 26 - "Presentation"
-Cohesion: 0.12
-Nodes (17): FormState, authenticatedChild, _SplashScreen, createState, dispose, _emailController, _formKey, _isLoading (+9 more)
+Cohesion: 0.13
+Nodes (16): authenticatedChild, _SplashScreen, createState, dispose, _emailController, _formKey, _isLoading, LoginPage (+8 more)
 
 ### Community 27 - "Presentation"
-Cohesion: 0.18
-Nodes (11): createState, dispose, email, EmailVerificationPage, _EmailVerificationPageState, _isChecking, _isResending, _onResend (+3 more)
+Cohesion: 0.20
+Nodes (10): createState, dispose, email, EmailVerificationPage, _EmailVerificationPageState, _isChecking, _isResending, _onResend (+2 more)
 
 ### Community 28 - "Domain"
 Cohesion: 0.12
-Nodes (15): fromJson, fromProfileJson, fromSupabaseAuth, toJson, StaffRepositoryImpl, deleteStaffMember, getStaffMembers, StaffRepository (+7 more)
+Nodes (14): fromJson, fromProfileJson, fromSupabaseAuth, toJson, StaffRepositoryImpl, deleteStaffMember, getStaffMembers, StaffRepository (+6 more)
 
 ### Community 29 - "Widgets"
 Cohesion: 0.12
 Nodes (17): currentRoute, _DrawerItem, icon, _initials, label, onTap, _ProfileHeader, route (+9 more)
 
 ### Community 30 - "Presentation"
-Cohesion: 0.13
-Nodes (16): SignUpRequested, _confirmPasswordController, createState, dispose, _emailController, _formKey, _isLoading, _nameController (+8 more)
+Cohesion: 0.14
+Nodes (14): _confirmPasswordController, createState, dispose, _emailController, _formKey, _isLoading, _nameController, _obscureConfirmPassword (+6 more)
 
 ### Community 31 - "App"
 Cohesion: 0.12
@@ -327,7 +324,7 @@ Nodes (15): hashCode, operator, read, typeId, write, int get, addressLine1, addr
 
 ### Community 33 - "Presentation"
 Cohesion: 0.12
-Nodes (15): copyWith, id, message, staff, StaffState, StaffStatus, status, authBloc (+7 more)
+Nodes (16): copyWith, id, message, staff, StaffState, StaffStatus, status, authBloc (+8 more)
 
 ### Community 34 - "Repositories"
 Cohesion: 0.14
@@ -335,15 +332,15 @@ Nodes (13): dart:async, ../../domain/repositories/product_repository.dart, addPr
 
 ### Community 35 - "Domain"
 Cohesion: 0.16
-Nodes (13): AuthRepositoryImpl, AuthRepository, call, GetCurrentUserUseCase, repository, call, LoginWithGoogleUseCase, repository (+5 more)
+Nodes (14): AuthRepositoryImpl, AuthRepository, call, GetCurrentUserUseCase, repository, call, LoginWithGoogleUseCase, repository (+6 more)
 
 ### Community 36 - "Presentation"
 Cohesion: 0.12
-Nodes (15): build, _buildBarChart, _buildDateNavigation, _buildStatCard, _buildStatCards, createState, _dayAbbr, _formatCurrency (+7 more)
+Nodes (16): build, _buildBarChart, _buildDateNavigation, _buildStatCard, _buildStatCards, createState, DailySalesPage, _dayAbbr (+8 more)
 
 ### Community 37 - "Presentation"
-Cohesion: 0.14
-Nodes (13): build, _buildMovementCard, _changeTypes, _chipColor, createState, _filterApplied, _formatDate, _fromDate (+5 more)
+Cohesion: 0.13
+Nodes (15): build, _buildMovementCard, _changeTypes, _chipColor, createState, _filterApplied, _formatDate, _fromDate (+7 more)
 
 ### Community 38 - "Domain"
 Cohesion: 0.15
@@ -351,27 +348,27 @@ Nodes (13): core/theme/app_theme.dart, build, createState, dispose, initState, p
 
 ### Community 39 - "Dashboard"
 Cohesion: 0.09
-Nodes (21): appBarTheme, buildActions, buildLeading, buildResults, _buildSearchResults, buildSuggestions, createState, _formatCurrency (+13 more)
+Nodes (22): appBarTheme, buildActions, buildLeading, buildResults, _buildSearchResults, buildSuggestions, createState, _DashboardView (+14 more)
 
 ### Community 40 - "Domain"
 Cohesion: 0.13
 Nodes (14): barcode, categoryId, copyWith, createdAt, description, id, imageUrl, location (+6 more)
 
 ### Community 41 - "Presentation"
-Cohesion: 0.12
-Nodes (15): BillSummaryModel, BillSummary, billDetail, billHistory, copyWith, currentPage, dailySales, error (+7 more)
+Cohesion: 0.13
+Nodes (14): billDetail, billHistory, copyWith, currentPage, dailySales, error, hasMorePages, lowStockProducts (+6 more)
 
 ### Community 42 - "Presentation"
-Cohesion: 0.17
-Nodes (12): ../bloc/billing_bloc.dart, _buildDataCell, _buildHeaderCell, CheckoutPage, _CheckoutPageState, createState, dispose, _isEditingTotal (+4 more)
+Cohesion: 0.10
+Nodes (20): add_edit_category_dialog.dart, ../bloc/billing_bloc.dart, ../bloc/category_bloc.dart, _buildDataCell, _buildHeaderCell, createState, dispose, _isEditingTotal (+12 more)
 
 ### Community 43 - "Runnertests"
 Cohesion: 0.15
 Nodes (10): Any, Bool, Flutter, FlutterAppDelegate, AppDelegate, RunnerTests, UIApplication, UIKit (+2 more)
 
 ### Community 44 - "Usecases"
-Cohesion: 0.14
-Nodes (19): ../entities/product.dart, UseCase, AddCategoryUseCase, call, DeleteCategoryUseCase, GetCategoriesUseCase, repository, UpdateCategoryUseCase (+11 more)
+Cohesion: 0.13
+Nodes (19): class, ../entities/product.dart, UseCase, AddProductUseCase, call, DeleteProductUseCase, GetCurrentStockBulkUseCase, GetProductByBarcodeUseCase (+11 more)
 
 ### Community 45 - "Database"
 Cohesion: 0.14
@@ -386,16 +383,16 @@ Cohesion: 0.15
 Nodes (12): call, email, emailRedirectTo, name, password, props, repository, role (+4 more)
 
 ### Community 48 - "Presentation"
-Cohesion: 0.20
-Nodes (19): AuthBloc, CheckAuthStatus, Authenticated, AuthError, AuthInitial, AuthLoading, AuthState, email (+11 more)
+Cohesion: 0.23
+Nodes (13): Authenticated, AuthError, AuthInitial, AuthLoading, AuthState, email, EmailVerificationPending, message (+5 more)
 
 ### Community 49 - "Presentation"
 Cohesion: 0.14
 Nodes (13): _barcode, build, _categoryId, createState, _description, _formKey, _imageUrl, _location (+5 more)
 
 ### Community 50 - "Presentation"
-Cohesion: 0.15
-Nodes (12): _applyThreshold, build, createState, dispose, _formatCurrency, initState, _searchController, _searchQuery (+4 more)
+Cohesion: 0.14
+Nodes (14): _applyThreshold, build, createState, dispose, _formatCurrency, initState, LowStockPage, _LowStockPageState (+6 more)
 
 ### Community 51 - "Presentation"
 Cohesion: 0.15
@@ -407,15 +404,15 @@ Nodes (12): EdgeInsetsGeometry, borderRadius, build, elevation, icon, isFullWidt
 
 ### Community 53 - "Presentation"
 Cohesion: 0.14
-Nodes (14): build, _categoryId, createState, _description, EditProductPage, _EditProductPageState, _formKey, _imageUrl (+6 more)
+Nodes (13): build, _categoryId, createState, _description, _formKey, _imageUrl, initState, _location (+5 more)
 
 ### Community 54 - "Models"
-Cohesion: 0.18
-Nodes (10): BillItemModel, DailySalesModel, fromJson, fromSupabaseRow, StockMovementModel, toJson, BillItem, DailySales (+2 more)
+Cohesion: 0.12
+Nodes (15): config/routes/app_routes.dart, core/service_locator.dart, features/auth/domain/repositories/auth_repository.dart, features/auth/presentation/bloc/auth_event.dart, features/billing/presentation/bloc/billing_bloc.dart, features/category/presentation/bloc/category_bloc.dart, features/product/presentation/bloc/product_bloc.dart, features/report/presentation/bloc/report_bloc.dart (+7 more)
 
 ### Community 55 - "Presentation"
-Cohesion: 0.18
-Nodes (10): ../../../../core/utils/app_validators.dart, build, category, createState, _descriptionController, dispose, _formKey, initState (+2 more)
+Cohesion: 0.11
+Nodes (18): ../../../../core/utils/app_validators.dart, ../../domain/entities/category.dart, FormState, CategoryModel, fromEntity, fromJson, toEntity, toJson (+10 more)
 
 ### Community 56 - "Presentation"
 Cohesion: 0.17
@@ -425,12 +422,12 @@ Nodes (11): connecting,
   disconnected,, connectedMac, connectedName, copyWith, devices, errorMessage, PrinterState, PrinterStatus (+3 more)
 
 ### Community 57 - "Presentation"
-Cohesion: 0.15
-Nodes (11): ../error/failure.dart, call, NoParams, CategoryRepositoryImpl, addCategory, CategoryRepository, deleteCategory, getCategories (+3 more)
+Cohesion: 0.40
+Nodes (4): ../error/failure.dart, call, NoParams, package:fpdart/fpdart.dart
 
 ### Community 58 - "Realtime"
-Cohesion: 0.15
-Nodes (13): BillingState, CategoryState, ProductState, Equatable, UserModel, User, BillDetailParams, BillHistoryParams (+5 more)
+Cohesion: 0.17
+Nodes (12): BillingState, CategoryState, ProductState, Equatable, UserModel, User, BillDetailParams, BillHistoryParams (+4 more)
 
 ### Community 59 - "Repositories"
 Cohesion: 0.20
@@ -445,20 +442,20 @@ Cohesion: 0.18
 Nodes (10): getBillDetail, getBillHistory, getDailySales, getLowStockProducts, getSalesRange, getStockMovements, _supabase, package:billing_app/core/supabase/supabase_client.dart (+2 more)
 
 ### Community 62 - "Presentation"
-Cohesion: 0.20
-Nodes (9): _buildBillCard, createState, _datePickerButton, _fromDate, initState, _selectDate, _toDate, package:billing_app/features/report/presentation/bloc/report_event.dart (+1 more)
+Cohesion: 0.18
+Nodes (11): BillHistoryPage, _BillHistoryPageState, _buildBillCard, createState, _datePickerButton, _fromDate, initState, _selectDate (+3 more)
 
 ### Community 63 - "Web"
 Cohesion: 0.18
 Nodes (10): background_color, description, display, icons, name, orientation, prefer_related_applications, short_name (+2 more)
 
 ### Community 64 - "Domain"
-Cohesion: 0.22
-Nodes (8): ../../domain/entities/product.dart, addProduct, deleteProduct, getCurrentStockBulk, getProductByBarcode, getProducts, getProductsByCategory, updateProduct
+Cohesion: 0.18
+Nodes (10): ../../domain/entities/product.dart, ProductRepositoryImpl, addProduct, deleteProduct, getCurrentStockBulk, getProductByBarcode, getProducts, getProductsByCategory (+2 more)
 
 ### Community 65 - "Implementation"
-Cohesion: 0.17
-Nodes (12): add_edit_category_dialog.dart, ../bloc/category_bloc.dart, build, CategoryListPage, _CategoryListPageState, _confirmDelete, createState, dispose (+4 more)
+Cohesion: 0.25
+Nodes (7): Color, build, color, icon, label, StatCard, value
 
 ### Community 66 - "Widgets"
 Cohesion: 0.18
@@ -473,16 +470,16 @@ Cohesion: 0.25
 Nodes (7): ../../../auth/data/models/user_model.dart, ../../../auth/domain/entities/user.dart, ../../domain/repositories/staff_repository.dart, deleteStaffMember, getStaffMembers, _supabase, SupabaseClient get
 
 ### Community 69 - "Presentation"
-Cohesion: 0.42
-Nodes (10): AddCategory, CategoryEvent, DeleteCategory, LoadCategories, UpdateCategory, CategoryBloc, _AddEditCategoryDialogState, _onSave (+2 more)
+Cohesion: 0.17
+Nodes (22): AddCategory, CategoryEvent, DeleteCategory, LoadCategories, UpdateCategory, CheckoutPage, HomePage, CategoryBloc (+14 more)
 
 ### Community 70 - "Domain"
-Cohesion: 0.22
-Nodes (8): double get, CartItem, copyWith, product, props, quantity, total, package:billing_app/features/product/domain/entities/product.dart
+Cohesion: 0.20
+Nodes (9): double get, CartItem, copyWith, product, props, quantity, total, List (+1 more)
 
 ### Community 71 - "Widgets"
-Cohesion: 0.10
-Nodes (18): Color, IconData?, AppBackButton, icon, size, build, InputLabel, text (+10 more)
+Cohesion: 0.22
+Nodes (7): build, InputLabel, text, package:billing_app/main.dart, package:flutter/material.dart, package:flutter_test/flutter_test.dart, main
 
 ### Community 72 - "Repositories"
 Cohesion: 0.22
@@ -514,15 +511,11 @@ Nodes (9): TASK 3 — Core Feature Completion, 3A Scanner (barcode/QR → produc
 
 ### Community 79 - "Domain"
 Cohesion: 0.25
-Nodes (7): DateTime, copyWith, createdAt, description, id, name, props
-
-### Community 80 - "Models"
-Cohesion: 0.17
-Nodes (11): ../../../../core/utils/printer_helper.dart, PrinterHelper, clearPrinterData, connect, disconnect, getSavedPrinterMac, getSavedPrinterName, _printerHelper (+3 more)
+Nodes (7): copyWith, createdAt, description, id, name, props, String?
 
 ### Community 81 - "Equatable"
-Cohesion: 0.32
-Nodes (7): CacheFailure, Failure, message, props, ServerFailure, List, package:equatable/equatable.dart
+Cohesion: 0.38
+Nodes (6): CacheFailure, Failure, message, props, ServerFailure, package:equatable/equatable.dart
 
 ### Community 82 - "Client"
 Cohesion: 0.25
@@ -533,16 +526,16 @@ Cohesion: 0.25
 Nodes (7): call, email, LoginParams, LoginUseCase, password, props, repository
 
 ### Community 84 - "Presentation"
-Cohesion: 0.13
-Nodes (15): HomePage, AddEditCategoryDialog, _DashboardView, AddProductPage, BillHistoryPage, DailySalesPage, LowStockPage, _buildCard (+7 more)
+Cohesion: 0.40
+Nodes (5): _buildCard, createState, ReportsHomePage, _ReportsHomePageState, package:billing_app/core/theme/app_theme.dart
 
 ### Community 85 - "Presentation"
-Cohesion: 0.25
-Nodes (7): bill, BillDetailPage, build, _buildInfoCard, _infoRow, package:billing_app/core/widgets/primary_button.dart, package:intl/intl.dart
+Cohesion: 0.14
+Nodes (13): BillSummaryModel, fromJson, fromSupabaseRow, toJson, BillSummary, bill, BillDetailPage, build (+5 more)
 
 ### Community 86 - "App"
-Cohesion: 0.29
-Nodes (6): ../../core/widgets/app_drawer.dart, AppShell, build, child, package:go_router/go_router.dart, Widget
+Cohesion: 0.17
+Nodes (10): ../../core/widgets/app_drawer.dart, IconData?, AppShell, build, child, AppBackButton, icon, size (+2 more)
 
 ### Community 87 - "Config"
 Cohesion: 0.29
@@ -560,13 +553,9 @@ Nodes (7): handle_new_user() trigger (default staff, signup promotes owner), sho
 Cohesion: 0.20
 Nodes (10): build, build, build, build, build, build, Route /, Route /login (+2 more)
 
-### Community 91 - "Reports"
-Cohesion: 0.17
-Nodes (11): PrinterRepositoryImpl, clearPrinterData, connect, disconnect, getSavedPrinterMac, getSavedPrinterName, PrinterRepository, savePrinterData (+3 more)
-
 ### Community 92 - "User"
 Cohesion: 0.18
-Nodes (11): ../bloc/product_bloc.dart, createState, dispose, _filterChip, _getCategoryName, _placeholderIcon, ProductListPage, _ProductListPageState (+3 more)
+Nodes (10): ../bloc/product_bloc.dart, _copyDescription, createState, dispose, _filterChip, _getCategoryName, _placeholderIcon, _scanQR (+2 more)
 
 ### Community 93 - "realtime_service.dart"
 Cohesion: 0.18
@@ -592,29 +581,25 @@ Nodes (5): ReportBloc Global Provider Fix, Session: Reports & History Data+Domai
 Cohesion: 0.67
 Nodes (3): iOS Launch Image (@1x), iOS Launch Image (@2x), iOS Launch Image (@3x)
 
-### Community 140 - "category_model.dart"
-Cohesion: 0.25
-Nodes (7): ../../domain/entities/category.dart, CategoryModel, fromEntity, fromJson, toEntity, toJson, Category
-
 ## Knowledge Gaps
-- **902 isolated node(s):** `supabase`, `XCTest`, `rootNavigatorKey`, `child`, `build` (+897 more)
+- **903 isolated node(s):** `supabase`, `XCTest`, `rootNavigatorKey`, `child`, `build` (+898 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **34 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AuthBloc` connect `Presentation` to `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Domain`, `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Widgets`, `Presentation`, `Presentation`, `Dashboard`, `Presentation`, `Presentation`, `Presentation`?**
-  _High betweenness centrality (0.092) - this node is a cross-community bridge._
-- **Why does `AuthRepository` connect `Domain` to `Domain`, `Domain`, `Presentation`, `Domain`, `Domain`?**
+- **Why does `AuthBloc` connect `Presentation` to `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Widgets`, `Presentation`, `Presentation`, `Dashboard`, `Presentation`, `Presentation`, `Models`, `Presentation`, `Presentation`?**
+  _High betweenness centrality (0.093) - this node is a cross-community bridge._
+- **Why does `AuthRepository` connect `Domain` to `Domain`, `Domain`, `Presentation`, `Domain`, `Domain`, `Models`?**
   _High betweenness centrality (0.020) - this node is a cross-community bridge._
-- **Why does `Product` connect `Presentation` to `Presentation`, `Presentation`, `Domain`, `Domain`, `Domain`, `Models`, `Presentation`, `Realtime`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **Why does `ReportBloc` connect `Presentation` to `Presentation`, `Presentation`, `Presentation`, `Dashboard`, `Presentation`, `Presentation`, `Presentation`, `Presentation`, `Models`, `Widgets`, `Presentation`?**
+  _High betweenness centrality (0.018) - this node is a cross-community bridge._
 - **What connects `supabase`, `XCTest`, `rootNavigatorKey` to the rest of the system?**
-  _902 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _903 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Presentation` be split into smaller, more focused modules?**
-  _Cohesion score 0.05649350649350649 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.057912457912457915 - nodes in this community are weakly interconnected._
 - **Should `Utils` be split into smaller, more focused modules?**
-  _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.04440333024976873 - nodes in this community are weakly interconnected._
 - **Should `Presentation` be split into smaller, more focused modules?**
   _Cohesion score 0.044444444444444446 - nodes in this community are weakly interconnected._

@@ -1,7 +1,7 @@
 {
   ".claude/settings.local.json": {
-    "mtime": 1784320461.0202246,
-    "ast_hash": "bfac8560ebd7de518c2730f51a865258",
+    "mtime": 1784322283.7796872,
+    "ast_hash": "f5d9e794419bc2179945967ad4990f3d",
     "semantic_hash": ""
   },
   "android/app/build.gradle.kts": {
@@ -260,8 +260,8 @@
     "semantic_hash": "8adda6f555f9636bfdf735dc3c39a362"
   },
   "lib/features/product/presentation/pages/add_product_page.dart": {
-    "mtime": 1784319227.7676058,
-    "ast_hash": "11e49588b2ba2fac6116fb068f41b19c",
+    "mtime": 1784322758.4116812,
+    "ast_hash": "1764c06ca4b004ddf20147528ee4d46d",
     "semantic_hash": ""
   },
   "lib/features/product/presentation/pages/edit_product_page.dart": {
@@ -270,8 +270,8 @@
     "semantic_hash": ""
   },
   "lib/features/product/presentation/pages/product_list_page.dart": {
-    "mtime": 1784321760.0459282,
-    "ast_hash": "7463bfd62bf697a2d4594693ee43b804",
+    "mtime": 1784322246.9406753,
+    "ast_hash": "751919cf4e96626e537f3a51c9cb8089",
     "semantic_hash": ""
   },
   "lib/features/settings/data/repositories/printer_repository_impl.dart": {
@@ -725,8 +725,8 @@
     "semantic_hash": "bfd44e79359721e6bd5186667ca7822a"
   },
   "lib/features/dashboard/presentation/pages/dashboard_page.dart": {
-    "mtime": 1784321278.6151822,
-    "ast_hash": "9d6a5b1627bab6b10631c0051c4dc193",
+    "mtime": 1784322295.5729544,
+    "ast_hash": "7edd1d4c8685faac7fbd4bcaa3ab8c27",
     "semantic_hash": ""
   },
   "lib/core/widgets/app_back_button.dart": {

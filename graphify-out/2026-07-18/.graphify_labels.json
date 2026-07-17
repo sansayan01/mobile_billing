@@ -79,7 +79,6 @@
   "77": "Presentation",
   "78": "Widgets",
   "79": "Domain",
-  "80": "Models",
   "81": "Equatable",
   "82": "Client",
   "83": "Domain",
@@ -90,7 +89,6 @@
   "88": "Implementation",
   "89": "Implementation",
   "90": "Presentation",
-  "91": "Reports",
   "92": "User",
   "93": "realtime_service.dart",
   "94": "Memory",
@@ -135,6 +133,5 @@
   "134": "State-Flutter-Bloc",
   "135": "Supabase-Migration-Rule",
   "136": "Tech-Stack-Flutter",
-  "137": "Update-Rule",
-  "140": "category_model.dart"
+  "137": "Update-Rule"
 }
