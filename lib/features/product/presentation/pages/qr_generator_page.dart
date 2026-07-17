@@ -54,6 +54,11 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
+          onPressed: () => Scaffold.of(context).openDrawer(),
+          tooltip: 'Open menu',
+        ),
         title: const Text('QR Code',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,

@@ -17,6 +17,11 @@ class BillDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
+          onPressed: () => Scaffold.of(context).openDrawer(),
+          tooltip: 'Open menu',
+        ),
         title: const Text('Bill Details'),
       ),
       body: SingleChildScrollView(

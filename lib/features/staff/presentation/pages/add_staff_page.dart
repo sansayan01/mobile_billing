@@ -93,7 +93,17 @@ class _AddStaffPageState extends State<AddStaffPage> {
           if (!isOwner) {
             return Scaffold(
               appBar: AppBar(
-                leading: const AppBackButton(icon: Icons.arrow_back),
+                leading: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.menu, size: 24, color: Theme.of(context).primaryColor),
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                      tooltip: 'Open menu',
+                    ),
+                    const AppBackButton(icon: Icons.arrow_back),
+                  ],
+                ),
                 title: const Text('Add Staff'),
               ),
               body: Center(
@@ -118,7 +128,17 @@ class _AddStaffPageState extends State<AddStaffPage> {
 
           return Scaffold(
             appBar: AppBar(
-              leading: const AppBackButton(icon: Icons.arrow_back),
+              leading: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.menu, size: 24, color: Theme.of(context).primaryColor),
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                    tooltip: 'Open menu',
+                  ),
+                  const AppBackButton(icon: Icons.arrow_back),
+                ],
+              ),
               title: const Text('Add Staff'),
             ),
             body: SafeArea(

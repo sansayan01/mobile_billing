@@ -65,6 +65,11 @@ class _EditProductPageState extends State<EditProductPage> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+            tooltip: 'Open menu',
+          ),
           title: const Text('Edit Product',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           centerTitle: true,

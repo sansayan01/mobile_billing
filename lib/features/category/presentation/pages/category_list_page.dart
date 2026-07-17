@@ -39,6 +39,11 @@ class _CategoryListPageState extends State<CategoryListPage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
+          onPressed: () => Scaffold.of(context).openDrawer(),
+          tooltip: 'Open menu',
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(

@@ -114,6 +114,11 @@ class _StockMovementPageState extends State<StockMovementPage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
+          onPressed: () => Scaffold.of(context).openDrawer(),
+          tooltip: 'Open menu',
+        ),
         title: const Text('Stock Movements'),
       ),
       body: Column(

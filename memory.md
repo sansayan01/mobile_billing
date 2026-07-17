@@ -1,5 +1,24 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-07-18 — Hamburger Menu on 5 AppBars ✅
+
+### What Was Done
+1. **Added `leading` hamburger menu IconButton to 5 pages** (missing from AppBar, calling `Scaffold.of(context).openDrawer()`):
+   - `lib/features/dashboard/presentation/pages/dashboard_page.dart` — AppBar leading added (was: no leading, only actions with notifications icon)
+   - `lib/features/billing/presentation/pages/scanner_page.dart` — AppBar leading added (was: no leading at all)
+   - `lib/features/settings/presentation/pages/settings_page.dart` — AppBar leading added (was: no leading)
+   - `lib/features/shop/presentation/pages/shop_details_page.dart` — AppBar leading added (was: no leading)
+   - `lib/features/category/presentation/pages/category_list_page.dart` — AppBar leading added (was: no leading)
+2. **Consistent pattern**: `Icons.menu` + `Theme.of(context).primaryColor` + `Scaffold.of(context).openDrawer()` + tooltip 'Open menu'
+
+### flutter analyze
+- All 5 files: 0 issues
+
+### TODO
+- [ ] Device pe verify: drawer opens from all 5 pages
+
+---
+
 ## Current Session: 2026-07-17 — 3-Tier Role System (super_admin / owner / staff) ✅
 
 ### Context (user asked)

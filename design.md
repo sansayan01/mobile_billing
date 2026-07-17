@@ -60,6 +60,10 @@
 - Flash toggle
 - Camera on/off toggle
 
+## Navigation Pattern
+- All AppShell pages have a hamburger `Icons.menu` button in AppBar `leading` calling `Scaffold.of(context).openDrawer()`
+- Color: `Theme.of(context).primaryColor`; tooltip: 'Open menu'
+
 ## Screens
 
 | Screen | Route | Purpose |
