@@ -1,7 +1,7 @@
 {
   ".claude/settings.local.json": {
-    "mtime": 1784322283.7796872,
-    "ast_hash": "f5d9e794419bc2179945967ad4990f3d",
+    "mtime": 1784324538.086496,
+    "ast_hash": "c1d349a9200dbc0c39af776af53e317f",
     "semantic_hash": ""
   },
   "android/app/build.gradle.kts": {
@@ -400,8 +400,8 @@
     "semantic_hash": "dd51899fcf8e4fce686c8d0788715b6e"
   },
   "design.md": {
-    "mtime": 1784319253.227704,
-    "ast_hash": "257876f15f342d2d1d1fac3f7622d8fb",
+    "mtime": 1784324779.847526,
+    "ast_hash": "6d596973cb08369da05c0a5075404506",
     "semantic_hash": ""
   },
   "ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md": {
@@ -410,8 +410,8 @@
     "semantic_hash": "e175e436acacf76c814d83532d0b662c"
   },
   "memory.md": {
-    "mtime": 1784321835.8640635,
-    "ast_hash": "56fda6de9a0e5394f8e12a7d26131344",
+    "mtime": 1784324846.8115048,
+    "ast_hash": "4369bcd01bb5da8c19e7d9839a3abc93",
     "semantic_hash": ""
   },
   "phases.md": {
@@ -715,9 +715,9 @@
     "semantic_hash": "5aa9157e2174bc8fe6d9d1ed86ed569a"
   },
   "lib/core/widgets/dashboard_action_card.dart": {
-    "mtime": 1784251757.6848814,
-    "ast_hash": "7ce5fd5dae82956986ef3ddc24b64661",
-    "semantic_hash": "7ce5fd5dae82956986ef3ddc24b64661"
+    "mtime": 1784324662.7065217,
+    "ast_hash": "58b719810ec3f78c72b4460315125fed",
+    "semantic_hash": ""
   },
   "lib/core/widgets/stat_card.dart": {
     "mtime": 1784251711.1008313,
@@ -725,8 +725,8 @@
     "semantic_hash": "bfd44e79359721e6bd5186667ca7822a"
   },
   "lib/features/dashboard/presentation/pages/dashboard_page.dart": {
-    "mtime": 1784322295.5729544,
-    "ast_hash": "7edd1d4c8685faac7fbd4bcaa3ab8c27",
+    "mtime": 1784324642.7175567,
+    "ast_hash": "5db8dda7c3e2cd28911bf70b692e6160",
     "semantic_hash": ""
   },
   "lib/core/widgets/app_back_button.dart": {
@@ -832,6 +832,16 @@
   "lib/features/product/presentation/pages/product_detail_page.dart": {
     "mtime": 1784321803.7697518,
     "ast_hash": "fd9c94d43cac8dd6a638924d9cc11bac",
+    "semantic_hash": ""
+  },
+  "lib/core/widgets/greeting_header.dart": {
+    "mtime": 1784323649.6782486,
+    "ast_hash": "4fc6bdfd41d2e0bec64876309fca5247",
+    "semantic_hash": ""
+  },
+  "lib/core/widgets/premium_stat_card.dart": {
+    "mtime": 1784323649.741664,
+    "ast_hash": "56ebab890a2543a374727538e2cedd92",
     "semantic_hash": ""
   }
 }

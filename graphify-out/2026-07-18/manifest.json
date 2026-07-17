@@ -300,8 +300,8 @@
     "semantic_hash": "2fbd7adf089e30c1de11d10c8547e07d"
   },
   "lib/features/settings/presentation/pages/settings_page.dart": {
-    "mtime": 1784319232.519674,
-    "ast_hash": "dd4a4afdc287a3b26e4afbdb06929fc6",
+    "mtime": 1784323351.8143432,
+    "ast_hash": "bd3c5c6c60dbb1721c838c408ef9dbc2",
     "semantic_hash": ""
   },
   "lib/features/shop/data/models/shop_model.dart": {

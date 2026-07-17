@@ -1,6 +1,7 @@
 import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/widgets/dashboard_action_card.dart';
-import 'package:billing_app/core/widgets/stat_card.dart';
+import 'package:billing_app/core/widgets/greeting_header.dart';
+import 'package:billing_app/core/widgets/premium_stat_card.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:billing_app/features/product/presentation/bloc/product_bloc.dart';
@@ -55,8 +56,7 @@ class _DashboardViewState extends State<_DashboardView> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.notifications_none_rounded,
-            color: Colors.black87),
+            icon: const Icon(Icons.notifications_none_rounded, color: Colors.black87),
           ),
           IconButton(
             onPressed: () => _showProductSearch(context),
@@ -74,17 +74,20 @@ class _DashboardViewState extends State<_DashboardView> {
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _Greeting(),
-              const SizedBox(height: 20),
-              const _LowStockBanner(),
-              const _TodaysSales(),
+              const GreetingHeader(userName: 'San Mondal'),
               const SizedBox(height: 24),
+              const _LowStockBanner(),
+              const SizedBox(height: 28),
+              _sectionTitle("Today's Sales"),
+              const SizedBox(height: 14),
+              const _TodaysSales(),
+              const SizedBox(height: 28),
               _sectionTitle('Quick Actions'),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               DashboardActionCard(
                 icon: Icons.shopping_cart_rounded,
                 title: 'New Bill',
@@ -113,8 +116,9 @@ class _DashboardViewState extends State<_DashboardView> {
     text,
     style: const TextStyle(
       fontSize: 16,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w800,
       color: Colors.black87,
+      letterSpacing: -0.2,
     ),
   );
 
@@ -152,7 +156,6 @@ class _DashboardViewState extends State<_DashboardView> {
       ),
     ];
 
-    // Staff tile — sirf owner ko dikhaye (staff management owner-only hai)
     final authState = context.read<AuthBloc>().state;
     final isOwner =
         authState is Authenticated && authState.user.role == 'owner';
@@ -169,58 +172,14 @@ class _DashboardViewState extends State<_DashboardView> {
 
     return GridView.count(
       crossAxisCount: 3,
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
+      mainAxisSpacing: 14,
+      crossAxisSpacing: 14,
       childAspectRatio: 0.95,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: tiles,
     );
   }
-}
-
-class _Greeting extends StatelessWidget {
-  const _Greeting();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        final name = state is Authenticated ? state.user.name : 'there';
-        return Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _greetingPrefix(),
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-String _greetingPrefix() {
-  final hour = DateTime.now().hour;
-  if (hour < 12) return 'Good morning,';
-  if (hour < 17) return 'Good afternoon,';
-  return 'Good evening,';
 }
 
 class _TodaysSales extends StatelessWidget {
@@ -240,39 +199,29 @@ class _TodaysSales extends StatelessWidget {
         final loading = state.status == ReportStatus.loading && sales == null;
 
         final totalSales =
-            loading ? '…' : _formatCurrency(sales?.totalSales ?? 0);
+        loading ? '…' : _formatCurrency(sales?.totalSales ?? 0);
         final billCount =
-            loading ? '…' : (sales?.billCount ?? 0).toString();
+        loading ? '…' : (sales?.billCount ?? 0).toString();
         final avgBill =
-            loading ? '…' : _formatCurrency(sales?.averageBill ?? 0);
+        loading ? '…' : _formatCurrency(sales?.averageBill ?? 0);
         final discount =
-            loading ? '…' : _formatCurrency(sales?.totalDiscount ?? 0);
+        loading ? '…' : _formatCurrency(sales?.totalDiscount ?? 0);
 
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Today's Sales",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: StatCard(
+                  child: PremiumStatCard(
                     label: 'Total Sales',
                     value: totalSales,
-                    color: Colors.green,
+                    color: const Color(0xFF4CAF50),
                     icon: Icons.currency_rupee_rounded,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 Expanded(
-                  child: StatCard(
+                  child: PremiumStatCard(
                     label: 'Bills',
                     value: billCount,
                     color: AppTheme.primaryColor,
@@ -281,23 +230,23 @@ class _TodaysSales extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Row(
               children: [
                 Expanded(
-                  child: StatCard(
+                  child: PremiumStatCard(
                     label: 'Avg Bill',
                     value: avgBill,
-                    color: Colors.orange,
+                    color: const Color(0xFFFF9800),
                     icon: Icons.trending_up_rounded,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 Expanded(
-                  child: StatCard(
+                  child: PremiumStatCard(
                     label: 'Discount',
                     value: discount,
-                    color: Colors.redAccent,
+                    color: const Color(0xFFE91E63),
                     icon: Icons.local_offer_rounded,
                   ),
                 ),
@@ -320,26 +269,44 @@ class _LowStockBanner extends StatelessWidget {
       builder: (context, state) {
         final count = state.lowStockProducts.length;
         if (count == 0) return const SizedBox.shrink();
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 20),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppTheme.errorColor.withValues(alpha: 0.12),
+                AppTheme.errorColor.withValues(alpha: 0.06),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppTheme.errorColor.withValues(alpha: 0.35),
+              width: 1.2,
+            ),
+          ),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
               onTap: () => context.go('/reports/low-stock'),
-              borderRadius: BorderRadius.circular(12),
-              child: Ink(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: AppTheme.errorColor.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppTheme.errorColor.withValues(alpha: 0.3),
-                  ),
-                ),
+              borderRadius: BorderRadius.circular(16),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Row(
                   children: [
-                    const Icon(Icons.warning_amber_rounded,
-                        color: AppTheme.errorColor),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.errorColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.warning_amber_rounded,
+                        color: AppTheme.errorColor,
+                        size: 20,
+                      ),
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -351,8 +318,11 @@ class _LowStockBanner extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Icon(Icons.chevron_right_rounded,
-                        color: AppTheme.errorColor),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: AppTheme.errorColor.withValues(alpha: 0.7),
+                      size: 20,
+                    ),
                   ],
                 ),
               ),

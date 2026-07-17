@@ -79,6 +79,7 @@
   "77": "Presentation",
   "78": "Widgets",
   "79": "Domain",
+  "80": "package:billing_app/features/report/domain/entities/report_entities.dart",
   "81": "Equatable",
   "82": "Client",
   "83": "Domain",
@@ -89,11 +90,13 @@
   "88": "Implementation",
   "89": "Implementation",
   "90": "Presentation",
+  "91": "printer_repository.dart",
   "92": "User",
   "93": "realtime_service.dart",
   "94": "Memory",
   "95": "Memory",
   "96": "Web",
+  "97": "report_event.dart",
   "98": "Memory",
   "99": "App",
   "100": "Launchimage",
@@ -133,5 +136,7 @@
   "134": "State-Flutter-Bloc",
   "135": "Supabase-Migration-Rule",
   "136": "Tech-Stack-Flutter",
-  "137": "Update-Rule"
+  "137": "Update-Rule",
+  "138": "RealtimeService",
+  "139": "StatefulWidget"
 }
