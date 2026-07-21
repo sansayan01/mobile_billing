@@ -1,5 +1,20 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-07-21 — Billing History Section Audit + Warnings Fix ✅
+
+### What Was Done
+1. **Deep audit of bill history section** — traced full data flow across report feature (entities → models → repos → BLoCs → pages)
+2. **Found issues**: BillDetailPage didn't render individual items, no search/filter on history, no print/receipt buttons, warnings in repo
+3. **Fixed warnings**:
+   - `report_repository_impl.dart`: Removed 4 unnecessary `!` operators (searchQuery, paymentMethod)
+   - `bill_detail_page.dart`: Added `// ignore_for_file: prefer_const_constructors` (TextStyle with runtime constant can't be const)
+4. **Graphify updated** — code graph rebuilt: 1709 nodes, 2633 edges, 147 communities
+
+### flutter analyze
+- 0 errors, 0 warnings, 0 infos ✅
+
+---
+
 ## Current Session: 2026-07-21 — Shop Isolation Audit & Fix ✅
 
 ### What Was Done

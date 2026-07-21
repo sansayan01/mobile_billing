@@ -142,5 +142,8 @@
   "140": "supabase_client.dart",
   "141": "package:billing_app/core/theme/app_theme.dart",
   "142": "package:fpdart/fpdart.dart",
-  "143": "User Roles (3-Tier)"
+  "143": "User Roles (3-Tier)",
+  "144": "SignUpRequested",
+  "145": "ProductRepository",
+  "146": "BillSummary"
 }

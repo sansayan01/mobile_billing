@@ -61,12 +61,12 @@ class ReportRepositoryImpl implements ReportRepository {
         query = query.lte('created_at', endOfDay.toIso8601String());
       }
 
-      if (searchQuery != null && searchQuery!.trim().isNotEmpty) {
-        final term = searchQuery!.trim();
+      if (searchQuery != null && searchQuery.trim().isNotEmpty) {
+        final term = searchQuery.trim();
         query = query.or('customer_name.ilike.%$term%,id.eq.$term');
       }
-      if (paymentMethod != null && paymentMethod!.trim().isNotEmpty) {
-        query = query.eq('payment_method', paymentMethod!.trim());
+      if (paymentMethod != null && paymentMethod.trim().isNotEmpty) {
+        query = query.eq('payment_method', paymentMethod.trim());
       }
 
       final start = (page - 1) * limit;
