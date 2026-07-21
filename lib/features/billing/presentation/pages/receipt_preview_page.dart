@@ -202,8 +202,9 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.chevron_left, size: 28, color: Theme.of(context).primaryColor),
-          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
+          onPressed: () => Scaffold.of(context).openDrawer(),
+          tooltip: 'Open menu',
         ),
         actions: const [],
       ),

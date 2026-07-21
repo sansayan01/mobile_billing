@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -30,18 +31,40 @@ import '../../features/report/domain/entities/report_entities.dart';
 import '../../features/category/presentation/pages/category_list_page.dart';
 import '../../features/staff/presentation/pages/staff_list_page.dart';
 import '../../features/staff/presentation/pages/add_staff_page.dart';
+import '../../features/staff/presentation/bloc/staff_bloc.dart';
+import '../../../core/service_locator.dart';
 import 'app_shell.dart';
 
-GoRouter createRouter() {
+class _AuthNotifier extends ChangeNotifier {
+  late final StreamSubscription _sub;
+  _AuthNotifier(AuthBloc bloc) {
+    _sub = bloc.stream.listen((_) => notifyListeners());
+  }
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+}
+
+GoRouter createRouter(AuthBloc authBloc) {
   final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'root');
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: '/login',
+    initialLocation: '/',
     debugLogDiagnostics: true,
+    refreshListenable: _AuthNotifier(authBloc),
     redirect: (context, state) {
       final authState = context.read<AuthBloc>().state;
+
+      // Auth check abhi bhi chal raha hai — login flash se bachne ke liye
+      // dashboard pe hi rakh do, redirect mat karo.
+      if (authState is AuthInitial || authState is AuthLoading) {
+        return null;
+      }
+
       final isLoggedIn = authState is Authenticated;
       final isAuthRoute = state.matchedLocation == '/login' ||
           state.matchedLocation == '/register' ||
@@ -57,6 +80,14 @@ GoRouter createRouter() {
       if (isLoggedIn && (state.matchedLocation == '/login' ||
           state.matchedLocation == '/register')) {
         return '/';
+      }
+
+      // Staff routes: sirf owner ke liye, others ko dashboard pe bhejo
+      if (state.matchedLocation == '/staff' ||
+          state.matchedLocation.startsWith('/staff/')) {
+        if (authState is Authenticated && authState.user.role != 'owner') {
+          return '/';
+        }
       }
 
       return null;
@@ -168,7 +199,14 @@ GoRouter createRouter() {
           ),
           GoRoute(
             path: '/staff',
-            builder: (context, state) => const StaffListPage(),
+            builder: (context, state) => BlocProvider<StaffBloc>(
+    create: (_) => StaffBloc(
+      getStaffMembersUseCase: sl(),
+      deleteStaffMemberUseCase: sl(),
+      authBloc: sl(),
+    ),
+    child: const StaffListPage(),
+  ),
             routes: [
               GoRoute(
                 path: 'add',

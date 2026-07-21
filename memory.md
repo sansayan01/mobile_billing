@@ -379,7 +379,82 @@
 
 ---
 
-## Current Session: 2026-07-21 — Simplified Billing: Save Bill → Preview with 3 Actions ✅
+## Current Session: 2026-07-22 — Navigation Fix v2: PopScope + addPostFrameCallback ✅
+
+### What Was Done
+1. **`app_shell.dart`** — Fixed PopScope not working because `context.go('/')` was conflicting with GoRouter's in-flight back event processing.
+   - **Root Cause**: GoRouter v14.8.1 ka ShellRoute back event process kar raha hota hai jab PopScope callback fire hota hai. Direct `context.go('/')` call fail ho jata hai race condition ki vajah se.
+   - **Fix**: 
+     - `GoRouter.of(context)` se GoRouter instance build time pe store kiya
+     - `addPostFrameCallback` se navigation ko next frame tak defer kiya
+     - `canPop: false` rakha taaki system back button hamesha intercept ho
+2. **Result**: Kisi bhi shell page se back → dashboard khulega. Dashboard se back → app close.
+
+### flutter analyze
+- 0 errors, 0 warnings ✅
+
+---
+
+## Current Session: 2026-07-22 — Complete Navigation Fix ✅
+
+### What Was Done
+1. **System back button fix** — `app_shell.dart`: Added `PopScope` wrapper around Scaffold
+   - Sub-routes: back pops naturally (checkout → scan → etc.)
+   - Top-level routes: back navigates to `/` (dashboard) instead of closing app
+   - Uses `canPop: true` + `onPopInvokedWithResult` — if `didPop` is false, redirects to dashboard
+2. **Removed redundant back buttons** from 8 pages inside ShellRoute (kept hamburger menu only):
+   - `scanner_page.dart`, `product_list_page.dart`, `product_detail_page.dart`, `edit_product_page.dart`, `add_product_page.dart`, `add_staff_page.dart`, `receipt_preview_page.dart`
+3. **Fixed `checkout_page.dart`**: `PopScope(canPop: false)` → `canPop: true` + `onPopInvokedWithResult` clears cart only after successful pop
+4. **Cleaned unused import**: `app_back_button.dart` removed from `add_staff_page.dart`
+5. **Auth pages outside shell** (`register_page.dart`, `email_verification_page.dart`) — unaffected, still use `AppBackButton`
+6. **9 files modified** total, **0 flutter analyze issues**
+
+### flutter analyze
+- 0 errors, 0 warnings, 0 infos ✅
+
+### Next
+- Run on device to verify system back button behavior on real device
+
+---
+
+## Current Session: 2026-07-22 — Staff Widget Owner-Only (Dashboard + Drawer + Route Guard) ✅
+
+### What Was Done
+1. **Staff tile is owner-only** — 3-layer protection:
+   - **Dashboard tiles**: Staff tile shown only when `authState.user.role == 'owner'`
+   - **Side menu drawer**: Staff section hidden via BlocBuilder `isOwner` check (no change needed)
+   - **Route guard**: `/staff` and `/staff/add` redirect non-owner users to `/` dashboard
+2. Staff/cashier role users cannot see or access staff management anywhere
+
+### flutter analyze
+- 0 errors, 0 warnings ✅
+
+---
+
+## Current Session: 2026-07-22 — Logout Infinite Loop Fix ✅
+
+### What Was Done
+1. **Fixed infinite logout loop** — `auth_bloc.dart`:
+   - Added `_isLoggingOut` flag (line 24)
+   - `_onLogoutRequested`: emits `Unauthenticated()` FIRST (before await), then calls `logoutUseCase()`
+   - `subscribeToAuthChanges`: skips dispatching `LogoutRequested` if `_isLoggingOut == true`
+   - Root cause: Supabase `signOut()` triggers auth stream → listener dispatches `LogoutRequested` again → infinite loop (9x "Signing out" in console)
+
+2. **Fixed GoRouter redirect not triggering** — `app_routes.dart`:
+   - Added `_AuthNotifier extends ChangeNotifier` wrapper with proper `StreamSubscription` + `dispose()`
+   - `createRouter(AuthBloc authBloc)` now accepts authBloc parameter
+   - `refreshListenable: _AuthNotifier(authBloc)` — GoRouter re-evaluates redirect on every BLoC state change
+   - `main.dart`: passes `di.sl<AuthBloc>()` to `createRouter()`
+
+### Files Modified
+- `lib/features/auth/presentation/bloc/auth_bloc.dart` — `_isLoggingOut` guard + emit Unauthenticated first
+- `lib/config/routes/app_routes.dart` — `_AuthNotifier` wrapper + `refreshListenable` + `dart:async` import
+- `lib/main.dart` — `createRouter(authBloc)` parameter
+
+### flutter analyze
+- 0 errors, 0 warnings ✅
+
+---
 
 ### What Was Done
 1. **CheckoutPage simplified** — sirf **Save Bill** button (full width, green)

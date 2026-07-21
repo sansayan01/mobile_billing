@@ -69,27 +69,11 @@ class _EditProductPageState extends State<EditProductPage> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          leading: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Icon(Icons.menu,
-                    size: 24, color: Theme.of(context).primaryColor),
-                onPressed: () => Scaffold.of(context).openDrawer(),
-                tooltip: 'Open menu',
-              ),
-              IconButton(
-                icon: Icon(Icons.chevron_left,
-                    size: 28, color: Theme.of(context).primaryColor),
-                onPressed: () {
-                  if (Navigator.of(context).canPop()) {
-                    context.pop();
-                  } else {
-                    context.go('/');
-                  }
-                },
-              ),
-            ],
+          leading: IconButton(
+            icon: Icon(Icons.menu,
+                size: 24, color: Theme.of(context).primaryColor),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+            tooltip: 'Open menu',
           ),
           title: const Text('Edit Product',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),

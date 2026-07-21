@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_back_button.dart';
 import '../../../../core/widgets/input_label.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -93,16 +92,10 @@ class _AddStaffPageState extends State<AddStaffPage> {
           if (!isOwner) {
             return Scaffold(
               appBar: AppBar(
-                leading: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.menu, size: 24, color: Theme.of(context).primaryColor),
-                      onPressed: () => Scaffold.of(context).openDrawer(),
-                      tooltip: 'Open menu',
-                    ),
-                    const AppBackButton(icon: Icons.arrow_back),
-                  ],
+                leading: IconButton(
+                  icon: Icon(Icons.menu, size: 24, color: Theme.of(context).primaryColor),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                  tooltip: 'Open menu',
                 ),
                 title: const Text('Add Staff'),
               ),
@@ -128,16 +121,10 @@ class _AddStaffPageState extends State<AddStaffPage> {
 
           return Scaffold(
             appBar: AppBar(
-              leading: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.menu, size: 24, color: Theme.of(context).primaryColor),
-                    onPressed: () => Scaffold.of(context).openDrawer(),
-                    tooltip: 'Open menu',
-                  ),
-                  const AppBackButton(icon: Icons.arrow_back),
-                ],
+              leading: IconButton(
+                icon: Icon(Icons.menu, size: 24, color: Theme.of(context).primaryColor),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+                tooltip: 'Open menu',
               ),
               title: const Text('Add Staff'),
             ),

@@ -10,12 +10,23 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get current route location from GoRouter
-    final router = GoRouterState.of(context);
-    final currentRoute = router.matchedLocation;
+    final routerState = GoRouterState.of(context);
+    final goRouter = GoRouter.of(context);
+    final currentRoute = routerState.matchedLocation;
 
-    return Scaffold(
-      drawer: AppDrawer(currentRoute: currentRoute),
-      body: child,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (didPop) return;
+        // System back → dashboard (GoRouter reference stored, not context-dependent)
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          goRouter.go('/');
+        });
+      },
+      child: Scaffold(
+        drawer: AppDrawer(currentRoute: currentRoute),
+        body: child,
+      ),
     );
   }
 }

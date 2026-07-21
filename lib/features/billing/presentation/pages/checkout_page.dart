@@ -45,11 +45,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
     const borderColor = Color(0xFFE5E5EA);
 
     return PopScope(
-        canPop: false,
+        canPop: true,
         onPopInvokedWithResult: (bool didPop, dynamic result) {
-          if (didPop) return;
+          if (!didPop) return;
           context.read<BillingBloc>().add(ClearCartEvent());
-          context.go('/scan');
         },
         child: Scaffold(
           appBar: AppBar(
@@ -58,24 +57,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0,
-            leading: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.menu,
-                      size: 24, color: Theme.of(context).primaryColor),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
-                  tooltip: 'Open menu',
-                ),
-                IconButton(
-                  icon: Icon(Icons.chevron_left,
-                      size: 28, color: Theme.of(context).primaryColor),
-                  onPressed: () {
-                    context.read<BillingBloc>().add(ClearCartEvent());
-                    context.go('/scan');
-                  },
-                ),
-              ],
+            leading: IconButton(
+              icon: Icon(Icons.menu,
+                  size: 24, color: Theme.of(context).primaryColor),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Open menu',
             ),
           ),
           body: BlocConsumer<BillingBloc, BillingState>(

@@ -78,21 +78,11 @@ class _ScannerPageState extends State<ScannerPage> {
       canPop: true,
       child: Scaffold(
         appBar: AppBar(
-          leading: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Icon(Icons.menu,
-                    size: 24, color: Theme.of(context).primaryColor),
-                onPressed: () => Scaffold.of(context).openDrawer(),
-                tooltip: 'Open menu',
-              ),
-              IconButton(
-                icon: Icon(Icons.chevron_left,
-                    size: 28, color: Theme.of(context).primaryColor),
-                onPressed: () => context.pop(),
-              ),
-            ],
+          leading: IconButton(
+            icon: Icon(Icons.menu,
+                size: 24, color: Theme.of(context).primaryColor),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+            tooltip: 'Open menu',
           ),
           title: const Text('Scan Barcode',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),

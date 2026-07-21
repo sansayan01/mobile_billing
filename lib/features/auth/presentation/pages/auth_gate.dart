@@ -7,8 +7,7 @@ import 'package:billing_app/features/auth/presentation/pages/login_page.dart';
 import 'package:billing_app/features/auth/presentation/pages/email_verification_page.dart';
 
 /// A wrapper widget that listens to [AuthBloc] state and shows either:
-/// - [HomePage] (or any authenticated content widget) when the user is
-///   authenticated AND email confirmed
+/// - The authenticated child when the user is logged in AND email confirmed
 /// - [EmailVerificationPage] when the user is authenticated but email NOT
 ///   confirmed yet
 /// - [LoginPage] when the user is unauthenticated
@@ -34,11 +33,11 @@ class AuthGate extends StatelessWidget {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             context.read<AuthBloc>().add(const CheckAuthStatus());
           });
-          return const _SplashScreen();
+          return const SplashScreen();
         }
 
         if (state is AuthLoading) {
-          return const _SplashScreen();
+          return const SplashScreen();
         }
 
         if (state is Authenticated) {
@@ -66,8 +65,9 @@ class AuthGate extends StatelessWidget {
   }
 }
 
-class _SplashScreen extends StatelessWidget {
-  const _SplashScreen();
+/// Splash screen shown while auth status is being determined.
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

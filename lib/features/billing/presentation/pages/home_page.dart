@@ -182,90 +182,19 @@ class _HomePageState extends State<HomePage> {
 
           if (hasPermission && !_isCameraOn) _buildCameraOffState(),
 
-          // Overlay Actions (Top Right)
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 16,
-            right: 16,
-            child: Column(
-              children: [
-                _buildOverlayButton(
-                  icon: Icons.settings,
-                  onPressed: () async {
-                    _scannerController.stop();
-                    await context.push('/settings');
-                    if (_isCameraOn && mounted) _scannerController.start();
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildOverlayButton(
-                  icon: Icons.qr_code_scanner,
-                  onPressed: () async {
-                    _scannerController.stop();
-                    await context.push('/scan/scanner');
-                    if (_isCameraOn && mounted) _scannerController.start();
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildOverlayButton(
-                  icon: Icons.category,
-                  onPressed: () async {
-                    _scannerController.stop();
-                    await context.push('/categories');
-                    if (_isCameraOn && mounted) _scannerController.start();
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildOverlayButton(
-                  icon: Icons.bar_chart_rounded,
-                  onPressed: () async {
-                    _scannerController.stop();
-                    await context.push('/reports');
-                    if (_isCameraOn && mounted) _scannerController.start();
-                  },
-                ),
-                const SizedBox(height: 16),
-                if (_isCameraOn)
-                  _buildOverlayButton(
-                    icon:
-                        _isFlashOn ? Icons.flashlight_off : Icons.flashlight_on,
-                    onPressed: () {
-                      setState(() => _isFlashOn = !_isFlashOn);
-                      _scannerController.toggleTorch();
-                    },
-                  ),
-                if (_isCameraOn) const SizedBox(height: 16),
-                _buildOverlayButton(
-                  icon: _isCameraOn ? Icons.videocam : Icons.videocam_off,
-                  onPressed: () async {
-                    if (!_isCameraOn) {
-                      final status = await Permission.camera.status;
-                      if (status != PermissionStatus.granted) {
-                        final result = await Permission.camera.request();
-                        if (result != PermissionStatus.granted && mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Camera permission is required to scan barcodes'),
-                              backgroundColor: Colors.red,
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                          return;
-                        }
-                      }
-                    }
-                    setState(() {
-                      _isCameraOn = !_isCameraOn;
-                    });
-                    if (_isCameraOn) {
-                      _scannerController.start();
-                    } else {
-                      _scannerController.stop();
-                    }
-                  },
-                ),
-              ],
+          // Flashlight Button (Top Right) — only overlay button kept
+          if (_isCameraOn)
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 16,
+              right: 16,
+              child: _buildOverlayButton(
+                icon: _isFlashOn ? Icons.flashlight_off : Icons.flashlight_on,
+                onPressed: () {
+                  setState(() => _isFlashOn = !_isFlashOn);
+                  _scannerController.toggleTorch();
+                },
+              ),
             ),
-          ),
 
           // Central Overlay Bounding Box
           if (_isCameraOn && _cameraStatus == PermissionStatus.granted)

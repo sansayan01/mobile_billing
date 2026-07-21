@@ -65,13 +65,23 @@ flutter build apk        # build APK
 dart run build_runner build  # run code generation
 ```
 
-## Herder CLI — Live Pane Monitoring ⚡
-**Herder** (terminal agent multiplexer) installed hai: `C:\Users\msrib\AppData\Local\Programs\Herdr\bin\herdr`
-- App run karne par **Flutter live logcat** right vertical pane (`w5:p8`) mein stream hota hai — `com.example.billing_app` (MainActivity).
-- Layout: horizontal split — left main pane, right narrow vertical strip = logs.
-- Monitor karne ke liye: `herdr pane read w5:p8 --source recent --lines N --format text`
-- Pane list: `herdr pane list` | Layout: `herdr pane layout --pane w5:p8`
-- **Auto-pilot rule:** Jab bhi app run/debug ho rahi ho, `w5:p8` ko Monitor se watch karo (errors `E/` `F/`, warnings `W/`, crash/ANR). Normal noise (`BufferQueueProducer`, `FlutterJNI`, `WindowOnBackDispatcher`) filter karo. Har session auto-start karo, user se poochhna nahi.
+## Orca CLI — Live Monitoring + Orchestration ⚡
+**Orca** installed hai: `C:\Users\msrib\AppData\Local\Programs\orca\resources\bin\orca.cmd`
+- Ye ab mera **primary tool** hai — Herder se jyada powerful hai.
+- App run karne par terminals/worktrees manage kar sakta hai.
+- Status: `orca status --json`
+- Active worktrees/agents: `orca worktree ps --json`
+- Terminals: `orca terminal list --json`
+- Agent kaam dekhne: `orca terminal read --terminal <handle> --json`
+- Agent ko naya task dena: new worktree create + terminal send
+- **Auto-pilot rule:** Jab bhi app run/debug ho rahi ho, Orca terminals se logs monitor karo.
+
+## User Context — Vibe Coder Learning 🧠
+- User is a **vibe coder** — sikh raha hai, formal CS background nahi hai
+- Har baat ko **simple Hinglish mein samjhao**, jargon nahi
+- Bich-bich mein **thoda bohot teach** karte raho — PR, git, architecture sab
+- **Sabar se samjhao**, assumptions mat lo ki user pehle se sab jaanta hai
+- Jab bhi koi naya concept aaye, ek line mein explain kar do pehle
 
 ## Supabase Migration Rule ⚡⚡
 - Supabase MCP connected hai (`mcp__supabase__*`). Schema change ke liye `apply_migration` use karo.
@@ -86,6 +96,8 @@ dart run build_runner build  # run code generation
 - Agar koi bug DB structure ke wajah se ho, pehle dekho kya Dart side se workaround mil sakta hai (e.g. client-side validation, default values handle karna) before reaching for a migration.
 
 ## CRITICAL — Next Time Auto-Recall ⚡
-- Herder `w5:p8` = Flutter app log pane — auto-monitor karo.
+- Orca CLI = primary tool hai (`C:\Users\msrib\AppData\Local\Programs\orca\resources\bin\orca.cmd`).
+- Herder se jyada powerful hai — worktrees, terminals, agents, orchestration sab manage karta hai.
+- App run/debug kar rahi ho to Orca terminals se logs/agents monitor karo.
 - Supabase direct SQL run ho ya na ho, migration file zaroor banao.
 - In dono ko graphify knowledge graph mein bhi note rakho.

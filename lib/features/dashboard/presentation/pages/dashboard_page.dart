@@ -78,7 +78,12 @@ class _DashboardViewState extends State<_DashboardView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const GreetingHeader(userName: 'San Mondal'),
+              BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          final name = state is Authenticated ? state.user.name : '';
+          return GreetingHeader(userName: name);
+        },
+      ),
               const SizedBox(height: 24),
               const _LowStockBanner(),
               const SizedBox(height: 28),
@@ -96,7 +101,9 @@ class _DashboardViewState extends State<_DashboardView> {
                 onTap: () => context.go('/scan'),
               ),
               const SizedBox(height: 16),
-              _buildQuickTiles(context),
+              BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) => _buildQuickTiles(context, state),
+              ),
               const SizedBox(height: 16),
             ],
           ),
@@ -122,7 +129,7 @@ class _DashboardViewState extends State<_DashboardView> {
     ),
   );
 
-  Widget _buildQuickTiles(BuildContext context) {
+  Widget _buildQuickTiles(BuildContext context, AuthState authState) {
     final tiles = <Widget>[
       QuickActionTile(
         icon: Icons.inventory_2_rounded,
@@ -156,7 +163,6 @@ class _DashboardViewState extends State<_DashboardView> {
       ),
     ];
 
-    final authState = context.read<AuthBloc>().state;
     final isOwner =
         authState is Authenticated && authState.user.role == 'owner';
     if (isOwner) {

@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Billing App',
         theme: AppTheme.lightTheme,
-        routerConfig: createRouter(),
+        routerConfig: createRouter(di.sl<AuthBloc>()),
         debugShowCheckedModeBanner: false,
       ),
     );

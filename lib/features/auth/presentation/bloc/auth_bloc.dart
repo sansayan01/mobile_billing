@@ -21,6 +21,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
 
   StreamSubscription<User?>? _authSubscription;
+  bool _isLoggingOut = false;
 
   AuthBloc({
     required this.loginUseCase,
@@ -117,12 +118,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onLogoutRequested(
       LogoutRequested event, Emitter<AuthState> emit) async {
-    emit(const AuthLoading());
-    final result = await logoutUseCase(NoParams());
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (_) => emit(const Unauthenticated()),
-    );
+    _isLoggingOut = true;
+    // Pehle Unauthenticated emit karo — taaki stream listener dobara
+    // LogoutRequested dispatch na kare (state already Unauthenticated hai).
+    emit(const Unauthenticated());
+    await logoutUseCase(NoParams());
+    _isLoggingOut = false;
   }
 
   Future<void> _onCheckAuthStatus(
@@ -166,6 +167,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       Stream<User?> Function() authStateChangesProvider) {
     _authSubscription?.cancel();
     _authSubscription = authStateChangesProvider().listen((user) {
+      if (_isLoggingOut) return;
       if (user != null) {
         add(const CheckAuthStatus());
       } else {
