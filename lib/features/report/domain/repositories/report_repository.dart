@@ -9,6 +9,8 @@ abstract class ReportRepository {
     int page = 1,
     int limit = 20,
     String? shopId,
+    String? searchQuery,
+    String? paymentMethod,
   });
 
   Future<Either<Failure, BillSummary>> getBillDetail(

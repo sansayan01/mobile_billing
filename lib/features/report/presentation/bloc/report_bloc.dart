@@ -48,6 +48,8 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         to: event.to ?? DateTime.now(),
         page: event.page,
         shopId: _currentShopId,
+        searchQuery: event.searchQuery,
+        paymentMethod: event.paymentMethod,
       ),
     );
 

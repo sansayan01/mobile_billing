@@ -282,10 +282,12 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           'total': item.total,
         });
 
-        // Update product stock
-        await SupabaseConfig.client.from('products').update({
-          'stock': item.product.stock - item.quantity,
-        }).eq('id', item.product.id);
+        // Update product stock (scoped by shop_id for defense-in-depth)
+        await SupabaseConfig.client
+            .from('products')
+            .update({'stock': item.product.stock - item.quantity})
+            .eq('id', item.product.id)
+            .eq('shop_id', shopId);
 
         // Log to inventory_log table
         await SupabaseConfig.client.from('inventory_log').insert({

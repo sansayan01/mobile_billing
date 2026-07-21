@@ -19,6 +19,9 @@ class BillHistoryPage extends StatefulWidget {
 class _BillHistoryPageState extends State<BillHistoryPage> {
   late DateTime _fromDate;
   late DateTime _toDate;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  String? _paymentMethodFilter;
 
   @override
   void initState() {
@@ -28,14 +31,36 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
     _loadBills();
   }
 
-  void _loadBills() {
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _loadBills({int page = 1}) {
     context.read<ReportBloc>().add(
       LoadBillHistory(
         from: _fromDate,
         to: _toDate,
-        page: 1,
+        page: page,
+        searchQuery: _searchQuery.isEmpty ? null : _searchQuery,
+        paymentMethod: _paymentMethodFilter,
       ),
     );
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() {
+      _searchQuery = value;
+    });
+    _loadBills(page: 1);
+  }
+
+  void _onPaymentFilterChanged(String? value) {
+    setState(() {
+      _paymentMethodFilter = value == 'All' ? null : value;
+    });
+    _loadBills(page: 1);
   }
 
   Future<void> _selectDate({required bool isFrom}) async {
@@ -76,38 +101,89 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
       ),
       body: Column(
         children: [
-          // Date range filter row
+          // Search + payment filter + date range
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Row(
+            child: Column(
               children: [
-                Expanded(
-                  child: _datePickerButton(
-                    label: 'From',
-                    formatted: dateFormat.format(_fromDate),
-                    onTap: () => _selectDate(isFrom: true),
+                // Search bar
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search by customer name or bill ID',
+                    prefixIcon: const Icon(Icons.search, size: 20),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, size: 18),
+                            onPressed: () {
+                              _searchController.clear();
+                              _onSearchChanged('');
+                            },
+                          )
+                        : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    isDense: true,
                   ),
+                  onChanged: _onSearchChanged,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _datePickerButton(
-                    label: 'To',
-                    formatted: dateFormat.format(_toDate),
-                    onTap: () => _selectDate(isFrom: false),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                SizedBox(
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: _loadBills,
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 12),
+                // Payment method filter + date range row
+                Row(
+                  children: [
+                    Expanded(
+                      child: _datePickerButton(
+                        label: 'From',
+                        formatted: dateFormat.format(_fromDate),
+                        onTap: () => _selectDate(isFrom: true),
                       ),
                     ),
-                    child: const Icon(Icons.search),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _datePickerButton(
+                        label: 'To',
+                        formatted: dateFormat.format(_toDate),
+                        onTap: () => _selectDate(isFrom: false),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey[300]!),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _paymentMethodFilter ?? 'All',
+                            isDense: true,
+                            icon: Icon(Icons.arrow_drop_down, size: 18, color: Colors.grey[600]),
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87),
+                            items: const [
+                              DropdownMenuItem(value: 'All', child: Text('All')),
+                              DropdownMenuItem(value: 'cash', child: Text('Cash')),
+                              DropdownMenuItem(value: 'upi', child: Text('UPI')),
+                              DropdownMenuItem(value: 'card', child: Text('Card')),
+                            ],
+                            onChanged: _onPaymentFilterChanged,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -294,6 +370,16 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                     ),
                   ),
                   const Spacer(),
+                  if (bill.discount > 0)
+                    Text(
+                      '-${_formatDiscount(bill.discount)}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.green,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  const SizedBox(width: 12),
                   Text(
                     '${bill.itemCount} items',
                     style: const TextStyle(fontSize: 13),
@@ -382,6 +468,11 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
         ),
       ),
     );
+  }
+
+  String _formatDiscount(double discount) {
+    final nf = NumberFormat.currency(symbol: '₹', decimalDigits: 0);
+    return nf.format(discount);
   }
 
   Widget _datePickerButton({

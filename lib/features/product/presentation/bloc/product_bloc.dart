@@ -140,13 +140,16 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   void _onInitRealtime(
       InitRealtime event, Emitter<ProductState> emit) {
     try {
-      realtimeService.subscribeToProducts((payload) {
-        final eventType = payload['event_type'] as String;
-        add(ProductsRealtimeUpdated(
-          changeType: eventType,
-          payload: payload,
-        ));
-      });
+      realtimeService.subscribeToProducts(
+        (payload) {
+          final eventType = payload['event_type'] as String;
+          add(ProductsRealtimeUpdated(
+            changeType: eventType,
+            payload: payload,
+          ));
+        },
+        shopId: _currentShopId,
+      );
     } catch (_) {
       // Realtime init failed — app continues without live updates
     }

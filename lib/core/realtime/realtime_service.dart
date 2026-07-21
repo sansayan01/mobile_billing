@@ -53,7 +53,13 @@ class RealtimeService {
   /// - 'event_type': 'INSERT', 'UPDATE', or 'DELETE'
   /// - 'new': the new record data (Map<String, dynamic>)
   /// - 'old': the old record data (Map<String, dynamic>)
-  void subscribeToProducts(void Function(Map<String, dynamic> payload) onUpsert) {
+  ///
+  /// If [shopId] is provided, only events for that shop's products are
+  /// forwarded. This prevents cross-shop data leaking into the BLoC.
+  void subscribeToProducts(
+    void Function(Map<String, dynamic> payload) onUpsert, {
+    String? shopId,
+  }) {
     unsubscribe('products');
 
     const channelName = 'public:products';
@@ -64,6 +70,15 @@ class RealtimeService {
       schema: 'public',
       table: 'products',
       callback: (PostgresChangePayload change) {
+        // Filter by shop_id if provided — skip events from other shops.
+        if (shopId != null) {
+          final newRecord = change.newRecord;
+          final recordShopId = newRecord['shop_id'] as String?;
+          if (recordShopId == null || recordShopId != shopId) {
+            return;
+          }
+        }
+
         final eventType = change.eventType.name.toUpperCase();
         onUpsert({
           'event_type': eventType,

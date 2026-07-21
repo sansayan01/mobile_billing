@@ -11,11 +11,19 @@ class LoadBillHistory extends ReportEvent {
   final DateTime? from;
   final DateTime? to;
   final int page;
+  final String? searchQuery;
+  final String? paymentMethod;
 
-  const LoadBillHistory({this.from, this.to, this.page = 1});
+  const LoadBillHistory({
+    this.from,
+    this.to,
+    this.page = 1,
+    this.searchQuery,
+    this.paymentMethod,
+  });
 
   @override
-  List<Object?> get props => [from, to, page];
+  List<Object?> get props => [from, to, page, searchQuery, paymentMethod];
 }
 
 class LoadBillDetail extends ReportEvent {

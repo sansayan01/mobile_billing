@@ -79,6 +79,21 @@ Flutter-based **billing + inventory management** app for a phone shop (phones, h
 - **Owner adds staff → `staff`** with owner's `shop_id` (via `SignUpRequested(role:'staff', shopId)`).
 - **`super_admin` → manual only** (koi self-signup path nahi).
 
+### Shop Isolation Implementation
+Shop isolation is enforced at **3 layers**:
+
+1. **Database RLS** (strongest): `belongs_to_shop(shop_id)` scopes all business tables. `is_super_admin()` bypasses for cross-shop access.
+2. **App-side query filtering** (defense-in-depth): All repositories use `_resolveShopId()` to auto-resolve shop_id from the current user's profile if not explicitly provided. Every query filters by `shop_id`.
+3. **BLoC-level propagation**: All data BLoCs extract `_currentShopId` from `AuthBloc.state` and pass it to use cases. Realtime subscriptions also filter by shop_id.
+
+**Verified flows**:
+- Email/password signup → DB trigger creates profile + shop + links them
+- Google OAuth signup → `_ensureShopForOwner()` creates shop if missing
+- Staff creation by owner → `_ensureProfileRole()` links staff to owner's shop
+- All queries (products, categories, bills, bill_items, inventory_log, staff) filtered by shop_id
+- Bill submission scopes inserts + stock updates + inventory log by shop_id
+- Realtime product events filtered by shop_id before reaching ProductBloc
+
 ---
 
 ## Tech Stack Changes

@@ -30,9 +30,10 @@ class CategoryRepositoryImpl implements CategoryRepository {
   @override
   Future<Either<Failure, List<Category>>> getCategories({String? shopId}) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       var query = _supabase.from('categories').select();
-      if (shopId != null) {
-        query = query.eq('shop_id', shopId);
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
       }
       final response = await query.order('created_at', ascending: false);
 

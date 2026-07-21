@@ -25,6 +25,9 @@ class ShopModel extends Shop {
   @override
   @HiveField(5)
   final String footerText;
+  @override
+  @HiveField(6)
+  final String id;
 
   const ShopModel({
     required this.name,
@@ -33,7 +36,9 @@ class ShopModel extends Shop {
     required this.phoneNumber,
     required this.upiId,
     required this.footerText,
+    this.id = '',
   }) : super(
+          id: id,
           name: name,
           addressLine1: addressLine1,
           addressLine2: addressLine2,
@@ -44,6 +49,7 @@ class ShopModel extends Shop {
 
   factory ShopModel.fromEntity(Shop shop) {
     return ShopModel(
+      id: shop.id,
       name: shop.name,
       addressLine1: shop.addressLine1,
       addressLine2: shop.addressLine2,

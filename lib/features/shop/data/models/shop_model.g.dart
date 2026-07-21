@@ -16,6 +16,18 @@ class ShopModelAdapter extends TypeAdapter<ShopModel> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
+    // Backward-compatible: old data had 6 fields (no id), new has 7.
+    if (numOfFields == 6) {
+      return ShopModel(
+        name: fields[0] as String,
+        addressLine1: fields[1] as String,
+        addressLine2: fields[2] as String,
+        phoneNumber: fields[3] as String,
+        upiId: fields[4] as String,
+        footerText: fields[5] as String,
+        id: '',
+      );
+    }
     return ShopModel(
       name: fields[0] as String,
       addressLine1: fields[1] as String,
@@ -23,13 +35,14 @@ class ShopModelAdapter extends TypeAdapter<ShopModel> {
       phoneNumber: fields[3] as String,
       upiId: fields[4] as String,
       footerText: fields[5] as String,
+      id: fields[6] as String? ?? '',
     );
   }
 
   @override
   void write(BinaryWriter writer, ShopModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -41,7 +54,9 @@ class ShopModelAdapter extends TypeAdapter<ShopModel> {
       ..writeByte(4)
       ..write(obj.upiId)
       ..writeByte(5)
-      ..write(obj.footerText);
+      ..write(obj.footerText)
+      ..writeByte(6)
+      ..write(obj.id);
   }
 
   @override

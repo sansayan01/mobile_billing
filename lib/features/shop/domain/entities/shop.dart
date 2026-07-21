@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class Shop extends Equatable {
+  final String id;
   final String name;
   final String addressLine1;
   final String addressLine2;
@@ -9,6 +10,7 @@ class Shop extends Equatable {
   final String footerText;
 
   const Shop({
+    this.id = '',
     this.name = '',
     this.addressLine1 = '',
     this.addressLine2 = '',
@@ -18,6 +20,7 @@ class Shop extends Equatable {
   });
 
   Shop copyWith({
+    String? id,
     String? name,
     String? addressLine1,
     String? addressLine2,
@@ -26,6 +29,7 @@ class Shop extends Equatable {
     String? footerText,
   }) {
     return Shop(
+      id: id ?? this.id,
       name: name ?? this.name,
       addressLine1: addressLine1 ?? this.addressLine1,
       addressLine2: addressLine2 ?? this.addressLine2,
@@ -37,5 +41,5 @@ class Shop extends Equatable {
 
   @override
   List<Object?> get props =>
-      [name, addressLine1, addressLine2, phoneNumber, upiId, footerText];
+      [id, name, addressLine1, addressLine2, phoneNumber, upiId, footerText];
 }

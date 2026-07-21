@@ -39,14 +39,14 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
   }
 
   void _updateControllers(Shop shop) {
-    if (_nameController.text.isEmpty && shop.name.isNotEmpty) {
-      _nameController.text = shop.name;
-      _address1Controller.text = shop.addressLine1;
-      _address2Controller.text = shop.addressLine2;
-      _phoneController.text = shop.phoneNumber;
-      _upiController.text = shop.upiId;
-      _footerController.text = shop.footerText;
-    }
+    // Always sync controllers with shop data — handles both initial load
+    // and reload after save. The BlocConsumer will call this on ShopLoaded.
+    _nameController.text = shop.name;
+    _address1Controller.text = shop.addressLine1;
+    _address2Controller.text = shop.addressLine2;
+    _phoneController.text = shop.phoneNumber;
+    _upiController.text = shop.upiId;
+    _footerController.text = shop.footerText;
   }
 
   @override

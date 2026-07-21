@@ -96,7 +96,6 @@
   "94": "Memory",
   "95": "Memory",
   "96": "Web",
-  "97": "package:fpdart/fpdart.dart",
   "98": "Memory",
   "99": "App",
   "100": "Launchimage",
@@ -140,6 +139,5 @@
   "138": "app_back_button.dart",
   "139": "category_model.dart",
   "140": "supabase_client.dart",
-  "141": "package:billing_app/core/theme/app_theme.dart",
-  "142": "usecase.dart"
+  "141": "package:billing_app/core/theme/app_theme.dart"
 }

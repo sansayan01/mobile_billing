@@ -11,6 +11,26 @@ import 'package:billing_app/features/report/domain/repositories/report_repositor
 class ReportRepositoryImpl implements ReportRepository {
   SupabaseClient get _supabase => SupabaseConfig.client;
 
+  /// Resolve shopId: if not provided, fetch from current user's profile.
+  Future<String?> _resolveShopId(String? shopId) async {
+    if (shopId != null) return shopId;
+    try {
+      final userId = _supabase.auth.currentUser?.id;
+      if (userId == null) return null;
+      final profile = await _supabase
+          .from('profiles')
+          .select('shop_id')
+          .eq('id', userId)
+          .maybeSingle();
+      if (profile != null) {
+        return profile['shop_id'] as String?;
+      }
+    } catch (_) {
+      // If profile fetch fails, return null — RLS may block the operation.
+    }
+    return null;
+  }
+
   @override
   Future<Either<Failure, List<BillSummary>>> getBillHistory({
     DateTime? from,
@@ -18,15 +38,18 @@ class ReportRepositoryImpl implements ReportRepository {
     int page = 1,
     int limit = 20,
     String? shopId,
+    String? searchQuery,
+    String? paymentMethod,
   }) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       // Start with select() to get PostgrestFilterBuilder, then add filters
       var query = _supabase
           .from('bills')
           .select('*, profiles(name)');
 
-      if (shopId != null) {
-        query = query.eq('shop_id', shopId);
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
       }
 
       if (from != null) {
@@ -36,6 +59,14 @@ class ReportRepositoryImpl implements ReportRepository {
         final endOfDay =
             DateTime(to.year, to.month, to.day, 23, 59, 59, 999);
         query = query.lte('created_at', endOfDay.toIso8601String());
+      }
+
+      if (searchQuery != null && searchQuery!.trim().isNotEmpty) {
+        final term = searchQuery!.trim();
+        query = query.or('customer_name.ilike.%$term%,id.eq.$term');
+      }
+      if (paymentMethod != null && paymentMethod!.trim().isNotEmpty) {
+        query = query.eq('payment_method', paymentMethod!.trim());
       }
 
       final start = (page - 1) * limit;
@@ -60,13 +91,14 @@ class ReportRepositoryImpl implements ReportRepository {
     String? shopId,
   }) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       var billQuery = _supabase
           .from('bills')
           .select('*, profiles(name)')
           .eq('id', billId) as dynamic;
 
-      if (shopId != null) {
-        billQuery = billQuery.eq('shop_id', shopId);
+      if (effectiveShopId != null) {
+        billQuery = billQuery.eq('shop_id', effectiveShopId);
       }
 
       final response = await billQuery.maybeSingle();
@@ -75,11 +107,14 @@ class ReportRepositoryImpl implements ReportRepository {
         return Left(ServerFailure('Bill not found'));
       }
 
-      final itemsResponse = await _supabase
+      var itemsQuery = _supabase
           .from('bill_items')
           .select()
-          .eq('bill_id', billId)
-          .order('id', ascending: true);
+          .eq('bill_id', billId);
+      if (effectiveShopId != null) {
+        itemsQuery = itemsQuery.eq('shop_id', effectiveShopId);
+      }
+      final itemsResponse = await itemsQuery.order('id', ascending: true);
 
       final items = (itemsResponse as List<dynamic>)
           .map((e) => BillItemModel.fromJson(e as Map<String, dynamic>))
@@ -98,6 +133,7 @@ class ReportRepositoryImpl implements ReportRepository {
     String? shopId,
   }) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       final startOfDay = DateTime(date.year, date.month, date.day);
       final endOfDay = startOfDay.add(const Duration(days: 1));
 
@@ -107,8 +143,8 @@ class ReportRepositoryImpl implements ReportRepository {
           .gte('created_at', startOfDay.toIso8601String())
           .lt('created_at', endOfDay.toIso8601String()) as dynamic;
 
-      if (shopId != null) {
-        query = query.eq('shop_id', shopId);
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
       }
 
       final response = await query;
@@ -146,6 +182,7 @@ class ReportRepositoryImpl implements ReportRepository {
     String? shopId,
   }) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       final startDate = DateTime(from.year, from.month, from.day);
       final endDate =
           DateTime(to.year, to.month, to.day).add(const Duration(days: 1));
@@ -157,8 +194,8 @@ class ReportRepositoryImpl implements ReportRepository {
           .lt('created_at', endDate.toIso8601String())
           .order('created_at', ascending: true) as dynamic;
 
-      if (shopId != null) {
-        query = query.eq('shop_id', shopId);
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
       }
 
       final response = await query;
@@ -210,13 +247,14 @@ class ReportRepositoryImpl implements ReportRepository {
     String? shopId,
   }) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       var query = _supabase
           .from('products')
           .select('name, stock, price')
           .lte('stock', threshold) as dynamic;
 
-      if (shopId != null) {
-        query = query.eq('shop_id', shopId);
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
       }
 
       query = query.order('stock', ascending: true);
@@ -242,12 +280,13 @@ class ReportRepositoryImpl implements ReportRepository {
     String? shopId,
   }) async {
     try {
+      final effectiveShopId = await _resolveShopId(shopId);
       var query = _supabase
           .from('inventory_log')
           .select('*, products(name), profiles(name)');
 
-      if (shopId != null) {
-        query = query.eq('shop_id', shopId);
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
       }
       if (productId != null) {
         query = query.eq('product_id', productId);

@@ -1,6 +1,47 @@
 # Memory — Session Log & Context
 
-## Current Session: 2026-07-21 — Ultra-Compact Single-Line Product Card ✅
+## Current Session: 2026-07-21 — Shop Isolation Audit & Fix ✅
+
+### What Was Done
+1. **Comprehensive shop isolation audit** — traced shop_id flow across DB, auth, repos, BLoCs, realtime, Hive
+2. **Found 8 gaps** (4 critical, 2 high, 2 medium) where data could leak between shops
+3. **Fixed all 8 gaps**:
+
+| # | Severity | Fix | File |
+|---|----------|-----|------|
+| 1 | Critical | `CategoryRepositoryImpl.getCategories()` — added `_resolveShopId()` fallback so it never returns all shops' categories when shopId is null | `category_repository_impl.dart` |
+| 2 | Critical | `ReportRepositoryImpl.getBillDetail()` — added shop_id filter to bill_items query (was missing entirely) | `report_repository_impl.dart` |
+| 3 | Critical | `BillingBloc._onSubmitBill()` — added shop_id guard to stock update query | `billing_bloc.dart` |
+| 4 | Critical | `RealtimeService.subscribeToProducts()` — added optional `shopId` param, filters events by shop_id before forwarding to BLoC | `realtime_service.dart` |
+| 5 | High | `loginWithGoogle()` — added `_ensureShopForOwner()` so Google OAuth users get a shop created automatically | `auth_repository_impl.dart` |
+| 6 | High | `Shop` entity — added `id` field so shop can be identified by shop_id in app | `shop.dart`, `shop_model.dart`, `shop_model.g.dart` |
+| 7 | Medium | `StaffRepositoryImpl.deleteStaffMember()` — added shop_id filter for defense-in-depth | `staff_repository_impl.dart` |
+| 8 | Medium | `ReportRepositoryImpl` — added `_resolveShopId()` to all 6 methods (bill history, bill detail, daily sales, sales range, low stock, stock movements) | `report_repository_impl.dart` |
+
+### Architecture
+- **3-layer isolation**: DB RLS (strongest) → App-side query filtering (medium) → BLoC-level shopId propagation (medium)
+- **Consistent pattern**: ProductRepo, CategoryRepo, StaffRepo, ReportRepo now all use `_resolveShopId()` fallback
+- **Realtime**: ProductBloc passes `shopId` to `subscribeToProducts()` so only own shop's events trigger reloads
+
+### flutter analyze
+- 0 errors, 0 warnings ✅
+
+---
+## Current Session: 2026-07-21 — Shop Persistence Fix + Final Cleanup ✅
+
+### What Was Done
+1. **Shop persistence bug fixed** — `shop_model.g.dart`, `shop_repository_impl.dart`, `shop_details_page.dart`:
+   - Root cause: adding `id` field to `Shop` entity corrupted Hive field mapping (old 6-field data vs new 7-field adapter)
+   - Fix: Hive adapter now backward-compatible — detects old 6-field data and maps correctly
+   - Fix: `ShopRepositoryImpl.getShop()` now falls back to Supabase `shops` table if Hive data missing/corrupt
+   - Fix: `_updateControllers` in ShopDetailsPage always syncs (removed empty check that prevented reload)
+2. **BillingBloc warning fixed** — `billing_bloc.dart`:
+   - Removed unnecessary null check on `shopId` (already guarded by early return on line 244)
+
+### flutter analyze
+- 0 errors, 0 warnings ✅
+
+---
 
 ### What Was Done
 1. **Single-line meta row** — `product_list_page.dart`:

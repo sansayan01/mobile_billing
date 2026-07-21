@@ -13,6 +13,8 @@ class BillHistoryParams extends Equatable {
   final int page;
   final int limit;
   final String? shopId;
+  final String? searchQuery;
+  final String? paymentMethod;
 
   const BillHistoryParams({
     this.from,
@@ -20,10 +22,12 @@ class BillHistoryParams extends Equatable {
     this.page = 1,
     this.limit = 20,
     this.shopId,
+    this.searchQuery,
+    this.paymentMethod,
   });
 
   @override
-  List<Object?> get props => [from, to, page, limit, shopId];
+  List<Object?> get props => [from, to, page, limit, shopId, searchQuery, paymentMethod];
 }
 
 class BillDetailParams extends Equatable {
@@ -102,6 +106,8 @@ class GetBillHistoryUseCase
       page: params.page,
       limit: params.limit,
       shopId: params.shopId,
+      searchQuery: params.searchQuery,
+      paymentMethod: params.paymentMethod,
     );
   }
 }

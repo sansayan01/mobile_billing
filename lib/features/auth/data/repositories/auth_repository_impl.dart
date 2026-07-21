@@ -152,6 +152,30 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  /// Creates a shop for an owner profile that doesn't have one yet.
+  /// Used for Google OAuth signups where the DB trigger didn't fire.
+  Future<void> _ensureShopForOwner(String userId) async {
+    try {
+      final displayName =
+          SupabaseConfig.client.auth.currentUser?.email?.split('@').first ??
+              'Shop';
+      final result = await SupabaseConfig.client
+          .from('shops')
+          .insert({'owner_id': userId, 'name': '$displayName\'s Shop'})
+          .select('id')
+          .maybeSingle();
+      if (result is Map<String, dynamic>) {
+        final newShopId = result['id'] as String;
+        await SupabaseConfig.client
+            .from('profiles')
+            .update({'shop_id': newShopId})
+            .eq('id', userId);
+      }
+    } catch (_) {
+      // Best-effort; trigger or manual setup may handle it
+    }
+  }
+
   @override
   Future<Either<Failure, User>> loginWithGoogle() async {
     try {
@@ -219,6 +243,19 @@ class AuthRepositoryImpl implements AuthRepository {
           );
         } catch (_) {
           // Ignore if profile already exists
+        }
+      }
+
+      // Ensure the profile has a shop — the DB trigger only fires on INSERT,
+      // so for Google OAuth the shop may not exist. Create it if missing.
+      final finalProfile = await _fetchProfile(supabaseUser.id);
+      if (finalProfile != null &&
+          finalProfile['shop_id'] == null &&
+          finalProfile['role'] == 'owner') {
+        try {
+          await _ensureShopForOwner(supabaseUser.id);
+        } catch (_) {
+          // Best-effort; user can still use the app
         }
       }
 

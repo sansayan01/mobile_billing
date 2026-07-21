@@ -1230,8 +1230,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "equatable",
-      "community": 8,
-      "community_name": "Usecases",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "equatable"
     },
     {
@@ -1296,8 +1296,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_equatable_equatable_dart",
-      "community": 81,
-      "community_name": "Equatable",
+      "community": 73,
+      "community_name": "Domain",
       "norm_label": "package:equatable/equatable.dart"
     },
     {
@@ -2044,8 +2044,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_usecase_usecase",
-      "community": 142,
-      "community_name": "usecase.dart",
+      "community": 51,
+      "community_name": "Presentation",
       "norm_label": "usecase.dart"
     },
     {
@@ -2066,8 +2066,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_usecase_usecase_noparams",
-      "community": 142,
-      "community_name": "usecase.dart",
+      "community": 51,
+      "community_name": "Presentation",
       "norm_label": "noparams"
     },
     {
@@ -2077,8 +2077,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_usecase_usecase_call",
-      "community": 142,
-      "community_name": "usecase.dart",
+      "community": 51,
+      "community_name": "Presentation",
       "norm_label": "call"
     },
     {
@@ -2088,8 +2088,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_fpdart_fpdart_dart",
-      "community": 35,
-      "community_name": "Domain",
+      "community": 51,
+      "community_name": "Presentation",
       "norm_label": "package:fpdart/fpdart.dart"
     },
     {
@@ -2099,8 +2099,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "error_failure_dart",
-      "community": 142,
-      "community_name": "usecase.dart",
+      "community": 51,
+      "community_name": "Presentation",
       "norm_label": "../error/failure.dart"
     },
     {
@@ -2165,8 +2165,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_utils_printer_helper_printerhelper",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "printerhelper"
     },
     {
@@ -2407,8 +2407,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_print_bluetooth_thermal_print_bluetooth_thermal_dart",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "package:print_bluetooth_thermal/print_bluetooth_thermal.dart"
     },
     {
@@ -2495,8 +2495,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route",
-      "community": 24,
-      "community_name": "Presentation",
+      "community": 68,
+      "community_name": "Repositories",
       "norm_label": "route /"
     },
     {
@@ -2649,8 +2649,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_scan",
-      "community": 68,
-      "community_name": "Repositories",
+      "community": 93,
+      "community_name": "StatefulWidget",
       "norm_label": "route /scan"
     },
     {
@@ -4002,8 +4002,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase",
-      "community": 35,
-      "community_name": "Domain",
+      "community": 86,
+      "community_name": "printer_repository.dart",
       "norm_label": "login_usecase.dart"
     },
     {
@@ -4013,8 +4013,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_loginparams",
-      "community": 35,
-      "community_name": "Domain",
+      "community": 86,
+      "community_name": "printer_repository.dart",
       "norm_label": "loginparams"
     },
     {
@@ -4024,8 +4024,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_loginusecase",
-      "community": 35,
-      "community_name": "Domain",
+      "community": 86,
+      "community_name": "printer_repository.dart",
       "norm_label": "loginusecase"
     },
     {
@@ -4035,8 +4035,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_email",
-      "community": 35,
-      "community_name": "Domain",
+      "community": 86,
+      "community_name": "printer_repository.dart",
       "norm_label": "email"
     },
     {
@@ -4046,8 +4046,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_password",
-      "community": 35,
-      "community_name": "Domain",
+      "community": 86,
+      "community_name": "printer_repository.dart",
       "norm_label": "password"
     },
     {
@@ -4057,8 +4057,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_props",
-      "community": 35,
-      "community_name": "Domain",
+      "community": 86,
+      "community_name": "printer_repository.dart",
       "norm_label": "props"
     },
     {
@@ -4068,8 +4068,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_repository",
-      "community": 35,
-      "community_name": "Domain",
+      "community": 86,
+      "community_name": "printer_repository.dart",
       "norm_label": "repository"
     },
     {
@@ -4079,8 +4079,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_call",
-      "community": 35,
-      "community_name": "Domain",
+      "community": 86,
+      "community_name": "printer_repository.dart",
       "norm_label": "call"
     },
     {
@@ -5333,8 +5333,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_pages_login_page_build",
-      "community": 26,
-      "community_name": "Presentation",
+      "community": 68,
+      "community_name": "Repositories",
       "norm_label": "build"
     },
     {
@@ -5344,8 +5344,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_register",
-      "community": 26,
-      "community_name": "Presentation",
+      "community": 68,
+      "community_name": "Repositories",
       "norm_label": "route /register"
     },
     {
@@ -5531,8 +5531,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_pages_register_page_build",
-      "community": 30,
-      "community_name": "Presentation",
+      "community": 68,
+      "community_name": "Repositories",
       "norm_label": "build"
     },
     {
@@ -5542,8 +5542,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_verify_email",
-      "community": 30,
-      "community_name": "Presentation",
+      "community": 68,
+      "community_name": "Repositories",
       "norm_label": "route /verify-email"
     },
     {
@@ -5938,8 +5938,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "core_utils_printer_helper_dart",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "../../../../core/utils/printer_helper.dart"
     },
     {
@@ -6301,8 +6301,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_projects_flutter_billing_app_main_lib_features_billing_presentation_bloc_billing_bloc_billingstate",
-      "community": 8,
-      "community_name": "Usecases",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "billingstate"
     },
     {
@@ -6521,7 +6521,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "texteditingcontroller",
-      "community": 55,
+      "community": 69,
       "community_name": "Presentation",
       "norm_label": "texteditingcontroller"
     },
@@ -7654,8 +7654,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_data_repositories_category_repository_impl_categoryrepositoryimpl",
-      "community": 51,
-      "community_name": "Presentation",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "categoryrepositoryimpl"
     },
     {
@@ -7676,8 +7676,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "supabaseclient_get",
-      "community": 59,
-      "community_name": "Repositories",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "supabaseclient get"
     },
     {
@@ -7753,8 +7753,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "core_supabase_supabase_client_dart",
-      "community": 59,
-      "community_name": "Repositories",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "core/supabase/supabase_client.dart"
     },
     {
@@ -7885,8 +7885,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_repositories_category_repository_categoryrepository",
-      "community": 51,
-      "community_name": "Presentation",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "categoryrepository"
     },
     {
@@ -7951,8 +7951,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases",
-      "community": 51,
-      "community_name": "Presentation",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "category_usecases.dart"
     },
     {
@@ -7962,8 +7962,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases_getcategoriesusecase",
-      "community": 51,
-      "community_name": "Presentation",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "getcategoriesusecase"
     },
     {
@@ -7973,8 +7973,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases_addcategoryusecase",
-      "community": 51,
-      "community_name": "Presentation",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "addcategoryusecase"
     },
     {
@@ -7984,8 +7984,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases_updatecategoryusecase",
-      "community": 51,
-      "community_name": "Presentation",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "updatecategoryusecase"
     },
     {
@@ -7995,8 +7995,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases_deletecategoryusecase",
-      "community": 51,
-      "community_name": "Presentation",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "deletecategoryusecase"
     },
     {
@@ -8006,8 +8006,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases_repository",
-      "community": 51,
-      "community_name": "Presentation",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "repository"
     },
     {
@@ -8017,8 +8017,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases_call",
-      "community": 51,
-      "community_name": "Presentation",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "call"
     },
     {
@@ -8028,8 +8028,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_billing_app_features_category_domain_repositories_category_repository_dart",
-      "community": 51,
-      "community_name": "Presentation",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "package:billing_app/features/category/domain/repositories/category_repository.dart"
     },
     {
@@ -8281,8 +8281,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_projects_flutter_billing_app_main_lib_features_category_presentation_bloc_category_bloc_categorystate",
-      "community": 8,
-      "community_name": "Usecases",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "categorystate"
     },
     {
@@ -8710,8 +8710,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_presentation_pages_dashboard_page_productsearchdelegate",
-      "community": 38,
-      "community_name": "Domain",
+      "community": 24,
+      "community_name": "Presentation",
       "norm_label": "_productsearchdelegate"
     },
     {
@@ -8721,8 +8721,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "searchdelegate",
-      "community": 38,
-      "community_name": "Domain",
+      "community": 24,
+      "community_name": "Presentation",
       "norm_label": "searchdelegate"
     },
     {
@@ -8776,8 +8776,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_presentation_pages_dashboard_page_build",
-      "community": 68,
-      "community_name": "Repositories",
+      "community": 93,
+      "community_name": "StatefulWidget",
       "norm_label": "build"
     },
     {
@@ -8853,8 +8853,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_reports_low_stock",
-      "community": 68,
-      "community_name": "Repositories",
+      "community": 93,
+      "community_name": "StatefulWidget",
       "norm_label": "route /reports/low-stock"
     },
     {
@@ -9359,8 +9359,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_product_data_repositories_product_repository_impl_productrepositoryimpl",
-      "community": 97,
-      "community_name": "package:fpdart/fpdart.dart",
+      "community": 34,
+      "community_name": "Repositories",
       "norm_label": "productrepositoryimpl"
     },
     {
@@ -9513,8 +9513,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_product_domain_entities_product_product",
-      "community": 38,
-      "community_name": "Domain",
+      "community": 24,
+      "community_name": "Presentation",
       "norm_label": "product"
     },
     {
@@ -9689,8 +9689,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_product_domain_repositories_product_repository_productrepository",
-      "community": 97,
-      "community_name": "package:fpdart/fpdart.dart",
+      "community": 34,
+      "community_name": "Repositories",
       "norm_label": "productrepository"
     },
     {
@@ -9876,7 +9876,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "class",
-      "community": 44,
+      "community": 8,
       "community_name": "Usecases",
       "norm_label": "class"
     },
@@ -10349,8 +10349,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_projects_flutter_billing_app_main_lib_features_product_presentation_bloc_product_bloc_productstate",
-      "community": 8,
-      "community_name": "Usecases",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "productstate"
     },
     {
@@ -10635,8 +10635,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_product_presentation_pages_add_product_page_build",
-      "community": 24,
-      "community_name": "Presentation",
+      "community": 68,
+      "community_name": "Repositories",
       "norm_label": "build"
     },
     {
@@ -10646,8 +10646,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_billing_app_core_widgets_input_label_dart",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "package:billing_app/core/widgets/input_label.dart"
     },
     {
@@ -10877,8 +10877,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_product_presentation_pages_edit_product_page_build",
-      "community": 24,
-      "community_name": "Presentation",
+      "community": 68,
+      "community_name": "Repositories",
       "norm_label": "build"
     },
     {
@@ -10932,8 +10932,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_product_presentation_pages_product_detail_page_build",
-      "community": 24,
-      "community_name": "Presentation",
+      "community": 68,
+      "community_name": "Repositories",
       "norm_label": "build"
     },
     {
@@ -11394,8 +11394,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_data_models_report_models_billitemmodel",
-      "community": 80,
-      "community_name": "package:billing_app/features/report/domain/entities/report_entities.dart",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "billitemmodel"
     },
     {
@@ -11614,8 +11614,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_entities_report_entities_billitem",
-      "community": 80,
-      "community_name": "package:billing_app/features/report/domain/entities/report_entities.dart",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "billitem"
     },
     {
@@ -12032,8 +12032,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_billhistoryparams",
-      "community": 8,
-      "community_name": "Usecases",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "billhistoryparams"
     },
     {
@@ -12043,8 +12043,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_billdetailparams",
-      "community": 8,
-      "community_name": "Usecases",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "billdetailparams"
     },
     {
@@ -12054,8 +12054,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_dailysalesparams",
-      "community": 8,
-      "community_name": "Usecases",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "dailysalesparams"
     },
     {
@@ -12065,8 +12065,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_salesrangeparams",
-      "community": 8,
-      "community_name": "Usecases",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "salesrangeparams"
     },
     {
@@ -12076,8 +12076,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_lowstockparams",
-      "community": 8,
-      "community_name": "Usecases",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "lowstockparams"
     },
     {
@@ -12087,8 +12087,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_stockmovementparams",
-      "community": 8,
-      "community_name": "Usecases",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "stockmovementparams"
     },
     {
@@ -12098,8 +12098,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_getbillhistoryusecase",
-      "community": 44,
-      "community_name": "Usecases",
+      "community": 17,
+      "community_name": "Presentation",
       "norm_label": "getbillhistoryusecase"
     },
     {
@@ -12109,8 +12109,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_getbilldetailusecase",
-      "community": 44,
-      "community_name": "Usecases",
+      "community": 17,
+      "community_name": "Presentation",
       "norm_label": "getbilldetailusecase"
     },
     {
@@ -12120,7 +12120,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_getdailysalesusecase",
-      "community": 44,
+      "community": 8,
       "community_name": "Usecases",
       "norm_label": "getdailysalesusecase"
     },
@@ -12131,7 +12131,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_getsalesrangeusecase",
-      "community": 44,
+      "community": 8,
       "community_name": "Usecases",
       "norm_label": "getsalesrangeusecase"
     },
@@ -12142,8 +12142,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_getlowstockproductsusecase",
-      "community": 44,
-      "community_name": "Usecases",
+      "community": 17,
+      "community_name": "Presentation",
       "norm_label": "getlowstockproductsusecase"
     },
     {
@@ -12153,7 +12153,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_getstockmovementsusecase",
-      "community": 44,
+      "community": 8,
       "community_name": "Usecases",
       "norm_label": "getstockmovementsusecase"
     },
@@ -12736,8 +12736,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_presentation_bloc_report_state_reportstate",
-      "community": 41,
-      "community_name": "Presentation",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "reportstate"
     },
     {
@@ -13451,8 +13451,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_presentation_pages_reports_home_page",
-      "community": 68,
-      "community_name": "Repositories",
+      "community": 93,
+      "community_name": "StatefulWidget",
       "norm_label": "reports_home_page.dart"
     },
     {
@@ -13462,8 +13462,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_presentation_pages_reports_home_page_reportshomepage",
-      "community": 68,
-      "community_name": "Repositories",
+      "community": 93,
+      "community_name": "StatefulWidget",
       "norm_label": "reportshomepage"
     },
     {
@@ -13473,8 +13473,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_presentation_pages_reports_home_page_reportshomepagestate",
-      "community": 68,
-      "community_name": "Repositories",
+      "community": 93,
+      "community_name": "StatefulWidget",
       "norm_label": "_reportshomepagestate"
     },
     {
@@ -13484,8 +13484,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_presentation_pages_reports_home_page_createstate",
-      "community": 68,
-      "community_name": "Repositories",
+      "community": 93,
+      "community_name": "StatefulWidget",
       "norm_label": "createstate"
     },
     {
@@ -13495,8 +13495,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_presentation_pages_reports_home_page_build",
-      "community": 68,
-      "community_name": "Repositories",
+      "community": 93,
+      "community_name": "StatefulWidget",
       "norm_label": "build"
     },
     {
@@ -13506,8 +13506,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_reports_bills",
-      "community": 68,
-      "community_name": "Repositories",
+      "community": 93,
+      "community_name": "StatefulWidget",
       "norm_label": "route /reports/bills"
     },
     {
@@ -13517,8 +13517,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_reports_daily_sales",
-      "community": 68,
-      "community_name": "Repositories",
+      "community": 93,
+      "community_name": "StatefulWidget",
       "norm_label": "route /reports/daily-sales"
     },
     {
@@ -13528,8 +13528,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_reports_stock_movements",
-      "community": 68,
-      "community_name": "Repositories",
+      "community": 93,
+      "community_name": "StatefulWidget",
       "norm_label": "route /reports/stock-movements"
     },
     {
@@ -13539,8 +13539,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_presentation_pages_reports_home_page_buildcard",
-      "community": 68,
-      "community_name": "Repositories",
+      "community": 93,
+      "community_name": "StatefulWidget",
       "norm_label": "_buildcard"
     },
     {
@@ -13737,8 +13737,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "printer_repository_impl.dart"
     },
     {
@@ -13748,8 +13748,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_printerrepositoryimpl",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "printerrepositoryimpl"
     },
     {
@@ -13759,8 +13759,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_printerhelper",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "_printerhelper"
     },
     {
@@ -13770,8 +13770,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_scandevices",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "scandevices"
     },
     {
@@ -13781,8 +13781,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_connect",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "connect"
     },
     {
@@ -13792,8 +13792,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_disconnect",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "disconnect"
     },
     {
@@ -13803,8 +13803,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_getsavedprintermac",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "getsavedprintermac"
     },
     {
@@ -13814,8 +13814,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_getsavedprintername",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "getsavedprintername"
     },
     {
@@ -13825,8 +13825,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_saveprinterdata",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "saveprinterdata"
     },
     {
@@ -13836,8 +13836,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_clearprinterdata",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "clearprinterdata"
     },
     {
@@ -13847,8 +13847,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_testprint",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "testprint"
     },
     {
@@ -13858,8 +13858,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "domain_repositories_printer_repository_dart",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "../../domain/repositories/printer_repository.dart"
     },
     {
@@ -13869,8 +13869,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "printer_repository.dart"
     },
     {
@@ -13880,8 +13880,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_printerrepository",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "printerrepository"
     },
     {
@@ -13891,8 +13891,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_scandevices",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "scandevices"
     },
     {
@@ -13902,8 +13902,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_connect",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "connect"
     },
     {
@@ -13913,8 +13913,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_disconnect",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "disconnect"
     },
     {
@@ -13924,8 +13924,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_getsavedprintermac",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "getsavedprintermac"
     },
     {
@@ -13935,8 +13935,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_getsavedprintername",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "getsavedprintername"
     },
     {
@@ -13946,8 +13946,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_saveprinterdata",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "saveprinterdata"
     },
     {
@@ -13957,8 +13957,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_clearprinterdata",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "clearprinterdata"
     },
     {
@@ -13968,8 +13968,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_testprint",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "testprint"
     },
     {
@@ -15211,8 +15211,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "shop_details_page.dart"
     },
     {
@@ -15222,8 +15222,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_shopdetailspage",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "shopdetailspage"
     },
     {
@@ -15233,8 +15233,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_shopdetailspagestate",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "_shopdetailspagestate"
     },
     {
@@ -15255,8 +15255,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_formkey",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "_formkey"
     },
     {
@@ -15266,8 +15266,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_namecontroller",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "_namecontroller"
     },
     {
@@ -15277,8 +15277,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_address1controller",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "_address1controller"
     },
     {
@@ -15288,8 +15288,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_address2controller",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "_address2controller"
     },
     {
@@ -15299,8 +15299,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_phonecontroller",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "_phonecontroller"
     },
     {
@@ -15310,8 +15310,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_upicontroller",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "_upicontroller"
     },
     {
@@ -15321,8 +15321,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_footercontroller",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "_footercontroller"
     },
     {
@@ -15332,8 +15332,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_createstate",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "createstate"
     },
     {
@@ -15354,8 +15354,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_updatecontrollers",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "_updatecontrollers"
     },
     {
@@ -15365,8 +15365,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_dispose",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "dispose"
     },
     {
@@ -15387,8 +15387,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_build",
-      "community": 24,
-      "community_name": "Presentation",
+      "community": 68,
+      "community_name": "Repositories",
       "norm_label": "build"
     },
     {
@@ -15398,8 +15398,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shop_presentation_pages_shop_details_page_buildtextfield",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "_buildtextfield"
     },
     {
@@ -15409,8 +15409,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "bloc_shop_bloc_dart",
-      "community": 82,
-      "community_name": "Client",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "../bloc/shop_bloc.dart"
     },
     {
@@ -15420,8 +15420,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_staff_data_repositories_staff_repository_impl",
-      "community": 59,
-      "community_name": "Repositories",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "staff_repository_impl.dart"
     },
     {
@@ -15442,8 +15442,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_staff_data_repositories_staff_repository_impl_supabase",
-      "community": 59,
-      "community_name": "Repositories",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "_supabase"
     },
     {
@@ -15453,8 +15453,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_staff_data_repositories_staff_repository_impl_getstaffmembers",
-      "community": 59,
-      "community_name": "Repositories",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "getstaffmembers"
     },
     {
@@ -15464,8 +15464,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_staff_data_repositories_staff_repository_impl_deletestaffmember",
-      "community": 59,
-      "community_name": "Repositories",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "deletestaffmember"
     },
     {
@@ -15475,8 +15475,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_domain_entities_user_dart",
-      "community": 59,
-      "community_name": "Repositories",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "../../../auth/domain/entities/user.dart"
     },
     {
@@ -15486,8 +15486,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_data_models_user_model_dart",
-      "community": 59,
-      "community_name": "Repositories",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "../../../auth/data/models/user_model.dart"
     },
     {
@@ -15497,8 +15497,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "domain_repositories_staff_repository_dart",
-      "community": 59,
-      "community_name": "Repositories",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "../../domain/repositories/staff_repository.dart"
     },
     {
@@ -24590,6 +24590,18 @@
       "relation": "navigates",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/features/billing/presentation/pages/receipt_preview_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "route_path",
+      "_origin": "ast",
+      "source": "lib_features_billing_presentation_pages_receipt_preview_page_build",
+      "target": "route"
+    },
+    {
+      "relation": "navigates",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/features/product/presentation/pages/add_product_page.dart",
       "source_location": null,
       "weight": 1.0,
@@ -25013,18 +25025,6 @@
       "context": "route_path",
       "_origin": "ast",
       "source": "lib_features_billing_presentation_pages_checkout_page_build",
-      "target": "route_scan"
-    },
-    {
-      "relation": "navigates",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/billing/presentation/pages/receipt_preview_page.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "route_path",
-      "_origin": "ast",
-      "source": "lib_features_billing_presentation_pages_receipt_preview_page_build",
       "target": "route_scan"
     },
     {
