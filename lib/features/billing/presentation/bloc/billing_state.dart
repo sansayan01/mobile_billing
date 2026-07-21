@@ -12,6 +12,8 @@ class BillingState extends Equatable {
   final bool submitSuccess;
   final List<String>? stockErrors;
   final bool isValidatingStock;
+  final String? customerName;
+  final String? customerPhone;
 
   const BillingState({
     this.cartItems = const [],
@@ -25,6 +27,8 @@ class BillingState extends Equatable {
     this.submitSuccess = false,
     this.stockErrors,
     this.isValidatingStock = false,
+    this.customerName,
+    this.customerPhone,
   });
 
   double get totalAmount {
@@ -65,6 +69,8 @@ class BillingState extends Equatable {
     List<String>? stockErrors,
     bool clearStockErrors = false,
     bool? isValidatingStock,
+    String? customerName,
+    String? customerPhone,
   }) {
     return BillingState(
       cartItems: cartItems ?? this.cartItems,
@@ -81,6 +87,8 @@ class BillingState extends Equatable {
       submitSuccess: submitSuccess ?? this.submitSuccess,
       stockErrors: clearStockErrors ? null : (stockErrors ?? this.stockErrors),
       isValidatingStock: isValidatingStock ?? this.isValidatingStock,
+      customerName: customerName ?? this.customerName,
+      customerPhone: customerPhone ?? this.customerPhone,
     );
   }
 
@@ -97,5 +105,7 @@ class BillingState extends Equatable {
         submitSuccess,
         stockErrors,
         isValidatingStock,
+        customerName,
+        customerPhone,
       ];
 }

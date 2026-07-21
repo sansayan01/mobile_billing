@@ -338,7 +338,7 @@ class _LowStockBanner extends StatelessWidget {
 /// by name, barcode, or description. Tapping a result navigates to product detail page.
 class _ProductSearchDelegate extends SearchDelegate<Product?> {
   @override
-  String get searchFieldLabel => 'Search products by name or barcode';
+  String get searchFieldLabel => 'Search product name, barcode or description';
 
   @override
   ThemeData appBarTheme(BuildContext searchContext) {
@@ -428,18 +428,31 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '₹${product.price.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 13,
-                ),
+              Row(
+                children: [
+                  Text(
+                    '₹${product.price.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      color: AppTheme.primaryColor,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Barcode: ${product.barcode}',
+                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                  ),
+                ],
               ),
-              Text(
-                'Barcode: ${product.barcode}',
-                style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-              ),
+              if (queryLower.isNotEmpty &&
+                  product.description != null &&
+                  product.description!
+                      .toLowerCase()
+                      .contains(queryLower)) ...[
+                const SizedBox(height: 4),
+                _buildDescriptionSnippet(product.description!, queryLower),
+              ],
             ],
           ),
           trailing: const Icon(Icons.chevron_right_rounded, size: 20),
@@ -449,6 +462,46 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
           },
         );
       },
+    );
+  }
+
+  Widget _buildDescriptionSnippet(String description, String query) {
+    final lowerDesc = description.toLowerCase();
+    final index = lowerDesc.indexOf(query);
+
+    int start = (index - 10).clamp(0, description.length);
+    int end = (index + query.length + 20).clamp(0, description.length);
+    String snippet = description.substring(start, end).trim();
+    if (start > 0) snippet = '...$snippet';
+    if (end < description.length) snippet = '$snippet...';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFEF3C7),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: const Color(0xFFFDE68A)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.saved_search_rounded,
+              size: 12, color: Color(0xFFD97706)),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              snippet,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF92400E),
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

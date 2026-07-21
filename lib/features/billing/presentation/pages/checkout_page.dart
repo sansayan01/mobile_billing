@@ -5,6 +5,7 @@ import 'package:pretty_qr_code/pretty_qr_code.dart';
 
 import '../../../shop/presentation/bloc/shop_bloc.dart';
 import '../bloc/billing_bloc.dart';
+import '../../domain/entities/cart_item.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -16,13 +17,27 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   final TextEditingController _totalOverrideController =
       TextEditingController();
+  final TextEditingController _customerNameController =
+      TextEditingController();
+  final TextEditingController _customerPhoneController =
+      TextEditingController();
   bool _isEditingTotal = false;
   bool _stockErrorsHandled = false;
 
   @override
   void dispose() {
     _totalOverrideController.dispose();
+    _customerNameController.dispose();
+    _customerPhoneController.dispose();
     super.dispose();
+  }
+
+  String _formatPrice(double value) {
+    final fixed = value.toStringAsFixed(2);
+    if (fixed.endsWith('.00')) {
+      return fixed.substring(0, fixed.length - 3);
+    }
+    return fixed.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
   }
 
   @override
@@ -75,7 +90,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     content: Text('Bill saved successfully'),
                     backgroundColor: Colors.green));
                 context.read<BillingBloc>().add(ClearCartEvent());
-                context.go('/scan');
+
+                // Navigate to receipt preview
+                final shopState = context.read<ShopBloc>().state;
+                if (shopState is ShopLoaded) {
+                  context.push('/scan/receipt-preview', extra: {
+                    'shopName': shopState.shop.name,
+                    'address1': shopState.shop.addressLine1,
+                    'address2': shopState.shop.addressLine2,
+                    'phone': shopState.shop.phoneNumber,
+                    'footer': shopState.shop.footerText,
+                    'cartItems': state.cartItems,
+                    'totalAmount': state.totalAmount,
+                    'discount': state.discount ?? 0.0,
+                    'discountIsPercentage': state.discountIsPercentage,
+                    'customerName': state.customerName,
+                    'customerPhone': state.customerPhone,
+                    'paymentMethod': 'UPI',
+                  });
+                }
               }
               if (state.error != null) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -254,12 +287,63 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                               ],
                                             ),
                                           ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                                            child: Align(
+                                              alignment: Alignment.centerRight,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  _showEditPriceDialog(context, item);
+                                                },
+                                                borderRadius: BorderRadius.circular(6),
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                  decoration: BoxDecoration(
+                                                    color: item.customPrice != null
+                                                        ? const Color(0xFFFFF7ED)
+                                                        : const Color(0xFFF3F4F6),
+                                                    borderRadius: BorderRadius.circular(6),
+                                                    border: Border.all(
+                                                      color: item.customPrice != null
+                                                          ? const Color(0xFFFDBA74)
+                                                          : const Color(0xFFE5E7EB),
+                                                      width: 1,
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Text(
+                                                        '₹${_formatPrice(item.unitPrice)}',
+                                                        textAlign: TextAlign.right,
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight: item.customPrice != null
+                                                              ? FontWeight.w700
+                                                              : FontWeight.w600,
+                                                          color: item.customPrice != null
+                                                              ? const Color(0xFFC2410C)
+                                                              : const Color(0xFF111827),
+                                                          letterSpacing: -0.2,
+                                                        ),
+                                                      ),
+                                                      if (item.customPrice != null)
+                                                        const Padding(
+                                                          padding: EdgeInsets.only(left: 4),
+                                                          child: Icon(
+                                                            Icons.edit_rounded,
+                                                            size: 12,
+                                                            color: Color(0xFFC2410C),
+                                                          ),
+                                                        ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                           _buildDataCell(
-                                              '₹${item.product.price.toStringAsFixed(2)}',
-                                              TextAlign.right,
-                                              isSubtitle: true),
-                                          _buildDataCell(
-                                              '₹${item.total.toStringAsFixed(2)}',
+                                              '₹${_formatPrice(item.total)}',
                                               TextAlign.right,
                                               isBold: true),
                                         ],
@@ -270,6 +354,120 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               ),
                             ),
                             const SizedBox(height: 16),
+
+                            // Customer Info Section
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: borderColor),
+                              ),
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(Icons.person_outline,
+                                          size: 18,
+                                          color: Theme.of(context).primaryColor),
+                                      const SizedBox(width: 8),
+                                      const Text('Customer Info',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14)),
+                                      const Spacer(),
+                                      TextButton.icon(
+                                        onPressed: () {
+                                          _customerNameController.clear();
+                                          _customerPhoneController.clear();
+                                          context
+                                              .read<BillingBloc>()
+                                              .add(const UpdateCustomerInfoEvent(
+                                                  customerName: null,
+                                                  customerPhone: null));
+                                        },
+                                        icon: const Icon(Icons.clear,
+                                            size: 16),
+                                        label: const Text('Clear'),
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          minimumSize: const Size(0, 0),
+                                          tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _customerNameController,
+                                          decoration: InputDecoration(
+                                            hintText: 'Customer name (optional)',
+                                            prefixIcon: const Icon(
+                                                Icons.person,
+                                                size: 20),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 10),
+                                            isDense: true,
+                                          ),
+                                          onChanged: (value) {
+                                            context
+                                                .read<BillingBloc>()
+                                                .add(UpdateCustomerInfoEvent(
+                                                  customerName: value.isEmpty
+                                                      ? null
+                                                      : value,
+                                                ));
+                                          },
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _customerPhoneController,
+                                          keyboardType:
+                                              TextInputType.phone,
+                                          decoration: InputDecoration(
+                                            hintText: 'Phone (optional)',
+                                            prefixIcon: const Icon(
+                                                Icons.phone,
+                                                size: 20),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 10),
+                                            isDense: true,
+                                          ),
+                                          onChanged: (value) {
+                                            context
+                                                .read<BillingBloc>()
+                                                .add(UpdateCustomerInfoEvent(
+                                                  customerPhone: value.isEmpty
+                                                      ? null
+                                                      : value,
+                                                ));
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
 
                             // Discount Section
                             Container(
@@ -301,7 +499,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                           child: Text(
                                             billingState.discountIsPercentage
                                                 ? '${billingState.discount!.toStringAsFixed(0)}% off'
-                                                : '₹${billingState.discount!.toStringAsFixed(2)} off',
+                                                : '₹${_formatPrice(billingState.discount!)} off',
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.green.shade700,
@@ -426,7 +624,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                         height: 180,
                                         child: PrettyQrView.data(
                                           data:
-                                              'upi://pay?pa=$upiId&pn=$shopName&am=${billingState.totalAmount.toStringAsFixed(2)}&cu=INR',
+                                              'upi://pay?pa=$upiId&pn=$shopName&am=${_formatPrice(billingState.totalAmount)}&cu=INR',
                                         ),
                                       ),
                                     ],
@@ -526,7 +724,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            '₹${billingState.totalAmount.toStringAsFixed(2)}',
+                                            '₹${_formatPrice(billingState.totalAmount)}',
                                             style: const TextStyle(
                                               fontSize: 24,
                                               fontWeight: FontWeight.bold,
@@ -542,8 +740,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                 _isEditingTotal = true;
                                                 _totalOverrideController
                                                         .text =
-                                                    billingState.totalAmount
-                                                        .toStringAsFixed(2);
+                                                    _formatPrice(billingState.totalAmount);
                                               });
                                             },
                                             padding: EdgeInsets.zero,
@@ -558,111 +755,44 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               ],
                             ),
                           ),
-                          // Buttons Row
+                          // Save Bill Button (full width)
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                            child: Row(
-                              children: [
-                                // Print Receipt
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    onPressed: billingState.isPrinting
-                                        ? null
-                                        : () {
-                                            if (shopState is ShopLoaded) {
-                                              context
-                                                  .read<BillingBloc>()
-                                                  .add(PrintReceiptEvent(
-                                                    shopName:
-                                                        shopState.shop.name,
-                                                    address1: shopState
-                                                        .shop.addressLine1,
-                                                    address2: shopState
-                                                        .shop.addressLine2,
-                                                    phone: shopState
-                                                        .shop.phoneNumber,
-                                                    footer: shopState
-                                                        .shop.footerText,
-                                                  ));
-                                            } else {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                      const SnackBar(
-                                                content: Text(
-                                                    'Shop details not loaded'),
-                                                backgroundColor: Colors.red,
-                                              ));
-                                            }
-                                          },
-                                    icon: billingState.isPrinting
-                                        ? const SizedBox(
-                                            width: 18,
-                                            height: 18,
-                                            child:
-                                                CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              color: Colors.white,
-                                            ),
-                                          )
-                                        : const Icon(Icons.print,
-                                            size: 20),
-                                    label: const Text('Print Receipt'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Theme.of(context).primaryColor,
-                                      foregroundColor: Colors.white,
-                                      padding:
-                                          const EdgeInsets.symmetric(
-                                              vertical: 14),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16),
-                                      ),
-                                    ),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: (billingState.isSubmitting ||
+                                        billingState.isValidatingStock)
+                                    ? null
+                                    : () {
+                                        _stockErrorsHandled = false;
+                                        context
+                                            .read<BillingBloc>()
+                                            .add(const ValidateStockBeforeBill());
+                                      },
+                                icon: (billingState.isSubmitting ||
+                                        billingState.isValidatingStock)
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Icon(Icons.save, size: 20),
+                                label: Text(billingState.isValidatingStock
+                                    ? 'Checking...'
+                                    : 'Save Bill'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                // Save Bill
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    onPressed: (billingState.isSubmitting ||
-                                            billingState.isValidatingStock)
-                                        ? null
-                                        : () {
-                                            _stockErrorsHandled = false;
-                                            context
-                                                .read<BillingBloc>()
-                                                .add(const ValidateStockBeforeBill());
-                                          },
-                                    icon: (billingState.isSubmitting ||
-                                            billingState.isValidatingStock)
-                                        ? const SizedBox(
-                                            width: 18,
-                                            height: 18,
-                                            child:
-                                                CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              color: Colors.white,
-                                            ),
-                                          )
-                                        : const Icon(Icons.save, size: 20),
-                                    label: Text(billingState.isValidatingStock
-                                        ? 'Checking Stock...'
-                                        : 'Save Bill'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.green,
-                                      foregroundColor: Colors.white,
-                                      padding:
-                                          const EdgeInsets.symmetric(
-                                              vertical: 14),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         ],
@@ -741,6 +871,115 @@ class _CheckoutPageState extends State<CheckoutPage> {
     if (mounted) {
       _stockErrorsHandled = false;
     }
+  }
+
+  void _showEditPriceDialog(BuildContext context, CartItem item) {
+    final controller = TextEditingController(
+      text: item.customPrice != null ? _formatPrice(item.customPrice!) : _formatPrice(item.product.price),
+    );
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.edit_rounded, size: 20, color: Theme.of(context).primaryColor),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Edit Price',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey[900],
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey[200]!),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    item.product.name,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  Text(
+                    '₹${_formatPrice(item.product.price)}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[900],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(
+                labelText: 'New Unit Price',
+                prefixIcon: const Icon(Icons.currency_rupee, size: 20),
+                prefixIconConstraints: const BoxConstraints(minWidth: 40),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              autofocus: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              context
+                  .read<BillingBloc>()
+                  .add(UpdateItemPriceEvent(item.product.id, null));
+              Navigator.of(ctx).pop();
+            },
+            icon: const Icon(Icons.restore_rounded, size: 18),
+            label: const Text('Reset'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              final newPrice = double.tryParse(controller.text.trim());
+              context
+                  .read<BillingBloc>()
+                  .add(UpdateItemPriceEvent(item.product.id, newPrice));
+              Navigator.of(ctx).pop();
+            },
+            icon: const Icon(Icons.check_rounded, size: 18),
+            label: const Text('Save'),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildHeaderCell(String text, TextAlign align) {

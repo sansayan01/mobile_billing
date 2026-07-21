@@ -50,6 +50,8 @@ class BillSummary extends Equatable {
   final String paymentMethod;
   final DateTime createdAt;
   final List<BillItem> items;
+  final String? customerName;
+  final String? customerPhone;
 
   const BillSummary({
     required this.id,
@@ -61,6 +63,8 @@ class BillSummary extends Equatable {
     this.paymentMethod = 'Unknown',
     required this.createdAt,
     this.items = const [],
+    this.customerName,
+    this.customerPhone,
   });
 
   BillSummary copyWith({
@@ -73,6 +77,8 @@ class BillSummary extends Equatable {
     String? paymentMethod,
     DateTime? createdAt,
     List<BillItem>? items,
+    String? customerName,
+    String? customerPhone,
   }) {
     return BillSummary(
       id: id ?? this.id,
@@ -84,6 +90,8 @@ class BillSummary extends Equatable {
       paymentMethod: paymentMethod ?? this.paymentMethod,
       createdAt: createdAt ?? this.createdAt,
       items: items ?? this.items,
+      customerName: customerName ?? this.customerName,
+      customerPhone: customerPhone ?? this.customerPhone,
     );
   }
 
@@ -98,6 +106,8 @@ class BillSummary extends Equatable {
         paymentMethod,
         createdAt,
         items,
+        customerName,
+        customerPhone,
       ];
 }
 

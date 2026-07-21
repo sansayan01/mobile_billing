@@ -111,6 +111,8 @@ class PrinterHelper {
     required List<Map<String, dynamic>> items, // Name, Qty, Price, Total
     required double total,
     required String footer,
+    String? customerName,
+    String? customerPhone,
   }) async {
     if (!_isConnected) return;
 
@@ -146,6 +148,21 @@ class PrinterHelper {
         DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now());
     bytes += _textToBytes(formattedDate);
     bytes += EscPos.lineFeed;
+
+    // Customer Info (if provided)
+    if (customerName != null && customerName.isNotEmpty) {
+      bytes += _textToBytes('Customer: $customerName');
+      bytes += EscPos.lineFeed;
+    }
+    if (customerPhone != null && customerPhone.isNotEmpty) {
+      bytes += _textToBytes('Phone: $customerPhone');
+      bytes += EscPos.lineFeed;
+    }
+    if ((customerName != null && customerName.isNotEmpty) ||
+        (customerPhone != null && customerPhone.isNotEmpty)) {
+      bytes += _textToBytes('--------------------------------');
+      bytes += EscPos.lineFeed;
+    }
 
     bytes += _textToBytes('--------------------------------');
     bytes += EscPos.lineFeed;

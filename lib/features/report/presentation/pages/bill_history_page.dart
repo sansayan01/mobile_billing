@@ -301,6 +301,45 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                 ],
               ),
               const SizedBox(height: 8),
+              // Customer info row (if available)
+              if (bill.customerName != null && bill.customerName!.isNotEmpty ||
+                  bill.customerPhone != null && bill.customerPhone!.isNotEmpty)
+                Row(
+                  children: [
+                    if (bill.customerName != null && bill.customerName!.isNotEmpty) ...[
+                      Icon(
+                        Icons.person_outline,
+                        size: 14,
+                        color: Colors.grey[500],
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        bill.customerName!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                    if (bill.customerPhone != null && bill.customerPhone!.isNotEmpty) ...[
+                      const SizedBox(width: 12),
+                      Icon(
+                        Icons.phone_outlined,
+                        size: 12,
+                        color: Colors.grey[500],
+                      ),
+                      const SizedBox(width: 2),
+                      Text(
+                        bill.customerPhone!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              const SizedBox(height: 8),
               // Date and payment method row
               Row(
                 children: [

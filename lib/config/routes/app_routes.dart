@@ -7,6 +7,8 @@ import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/email_verification_page.dart';
 import '../../features/billing/presentation/pages/home_page.dart';
+import '../../features/billing/presentation/pages/receipt_preview_page.dart';
+import '../../features/billing/domain/entities/cart_item.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/product/presentation/pages/product_list_page.dart';
 import '../../features/product/presentation/pages/add_product_page.dart';
@@ -93,6 +95,26 @@ GoRouter createRouter() {
               GoRoute(
                 path: 'checkout',
                 builder: (context, state) => const CheckoutPage(),
+              ),
+              GoRoute(
+                path: 'receipt-preview',
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>? ?? {};
+                  return ReceiptPreviewPage(
+                    shopName: extra['shopName'] as String? ?? '',
+                    address1: extra['address1'] as String? ?? '',
+                    address2: extra['address2'] as String? ?? '',
+                    phone: extra['phone'] as String? ?? '',
+                    footer: extra['footer'] as String? ?? '',
+                    cartItems: extra['cartItems'] as List<CartItem>? ?? [],
+                    totalAmount: (extra['totalAmount'] as num?)?.toDouble() ?? 0.0,
+                    discount: (extra['discount'] as num?)?.toDouble() ?? 0.0,
+                    discountIsPercentage: extra['discountIsPercentage'] as bool? ?? false,
+                    customerName: extra['customerName'] as String?,
+                    customerPhone: extra['customerPhone'] as String?,
+                    paymentMethod: extra['paymentMethod'] as String? ?? 'UPI',
+                  );
+                },
               ),
             ],
           ),

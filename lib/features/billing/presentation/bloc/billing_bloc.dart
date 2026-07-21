@@ -27,6 +27,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     on<AddProductToCartEvent>(_onAddProductToCart);
     on<RemoveProductFromCartEvent>(_onRemoveProductFromCart);
     on<UpdateQuantityEvent>(_onUpdateQuantity);
+    on<UpdateItemPriceEvent>(_onUpdateItemPrice);
     on<ClearCartEvent>(_onClearCart);
     on<PrintReceiptEvent>(_onPrintReceipt);
     on<UpdateDiscountEvent>(_onUpdateDiscount);
@@ -35,6 +36,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     on<SubmitBillEvent>(_onSubmitBill);
     on<ValidateStockBeforeBill>(_onValidateStockBeforeBill);
     on<ClearStockErrorsEvent>(_onClearStockErrors);
+    on<UpdateCustomerInfoEvent>(_onUpdateCustomerInfo);
   }
 
   Future<void> _onScanBarcode(
@@ -96,6 +98,21 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     }
   }
 
+  void _onUpdateItemPrice(
+      UpdateItemPriceEvent event, Emitter<BillingState> emit) {
+    final index = state.cartItems
+        .indexWhere((item) => item.product.id == event.productId);
+    if (index >= 0) {
+      final items = List<CartItem>.from(state.cartItems);
+      if (event.customPrice == null || event.customPrice! < 0) {
+        items[index] = items[index].copyWith(clearCustomPrice: true);
+      } else {
+        items[index] = items[index].copyWith(customPrice: event.customPrice);
+      }
+      emit(state.copyWith(cartItems: items));
+    }
+  }
+
   void _onClearCart(ClearCartEvent event, Emitter<BillingState> emit) {
     emit(const BillingState());
   }
@@ -131,7 +148,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           .map((item) => {
                 'name': item.product.name,
                 'qty': item.quantity,
-                'price': item.product.price,
+                'price': item.unitPrice,
                 'total': item.total,
               })
           .toList();
@@ -143,7 +160,9 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           phone: event.phone,
           items: items,
           total: state.totalAmount,
-          footer: event.footer);
+          footer: event.footer,
+          customerName: event.customerName,
+          customerPhone: event.customerPhone);
 
       emit(state.copyWith(isPrinting: false, printSuccess: true));
     } catch (e) {
@@ -246,6 +265,8 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
         'grand_total': calculatedTotal,
         'payment_method': 'upi',
         'created_at': now,
+        'customer_name': state.customerName,
+        'customer_phone': state.customerPhone,
       });
 
       // 2. Insert bill items, update stock, and log inventory
@@ -257,7 +278,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           'product_id': item.product.id,
           'product_name': item.product.name,
           'quantity': item.quantity,
-          'price': item.product.price,
+          'price': item.unitPrice,
           'total': item.total,
         });
 
@@ -320,6 +341,14 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
   void _onClearStockErrors(
       ClearStockErrorsEvent event, Emitter<BillingState> emit) {
     emit(state.copyWith(clearStockErrors: true));
+  }
+
+  void _onUpdateCustomerInfo(
+      UpdateCustomerInfoEvent event, Emitter<BillingState> emit) {
+    emit(state.copyWith(
+      customerName: event.customerName,
+      customerPhone: event.customerPhone,
+    ));
   }
 
   /// Validates cart item quantities against current stock in Supabase.

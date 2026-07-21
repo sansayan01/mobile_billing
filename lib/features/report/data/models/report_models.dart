@@ -44,6 +44,8 @@ class BillSummaryModel extends BillSummary {
     super.paymentMethod,
     required super.createdAt,
     super.items,
+    super.customerName,
+    super.customerPhone,
   });
 
   factory BillSummaryModel.fromJson(Map<String, dynamic> json) {
@@ -60,6 +62,8 @@ class BillSummaryModel extends BillSummary {
               ?.map((e) => BillItemModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      customerName: json['customer_name'] as String?,
+      customerPhone: json['customer_phone'] as String?,
     );
   }
 
@@ -74,6 +78,8 @@ class BillSummaryModel extends BillSummary {
       'payment_method': paymentMethod,
       'created_at': createdAt.toIso8601String(),
       'items': items.map((e) => (e as BillItemModel).toJson()).toList(),
+      'customer_name': customerName,
+      'customer_phone': customerPhone,
     };
   }
 
@@ -103,6 +109,8 @@ class BillSummaryModel extends BillSummary {
       paymentMethod: row['payment_method'] as String? ?? 'Unknown',
       createdAt: DateTime.parse(row['created_at'] as String),
       items: items,
+      customerName: row['customer_name'] as String?,
+      customerPhone: row['customer_phone'] as String?,
     );
   }
 }

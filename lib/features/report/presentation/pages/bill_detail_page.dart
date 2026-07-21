@@ -44,6 +44,14 @@ class BillDetailPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 _infoRow('Payment Method', bill.paymentMethod),
+                if (bill.customerName != null && bill.customerName!.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  _infoRow('Customer Name', bill.customerName!),
+                ],
+                if (bill.customerPhone != null && bill.customerPhone!.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  _infoRow('Customer Phone', bill.customerPhone!),
+                ],
               ],
             ),
             const SizedBox(height: 16),

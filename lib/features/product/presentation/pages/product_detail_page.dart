@@ -96,42 +96,57 @@ class ProductDetailPage extends StatelessWidget {
             _detailRow(context, 'Barcode', product.barcode,
                 icon: Icons.qr_code_rounded),
             const SizedBox(height: 14),
-            _detailRow(context, 'Price', '₹${product.price.toStringAsFixed(2)}',
-                icon: Icons.currency_rupee_rounded,
-                valueColor: AppTheme.primaryColor),
-            const SizedBox(height: 14),
-            _detailRow(
-              context,
-              'Stock',
-              '${product.stock}',
-              icon: Icons.inventory_2_rounded,
-              badge: true,
-              inStock: product.stock > 0,
+            _detailRow2(context,
+              leftLabel: 'Price',
+              leftValue: '₹${product.price.toStringAsFixed(2)}',
+              leftIcon: Icons.currency_rupee_rounded,
+              leftValueColor: AppTheme.primaryColor,
+              rightLabel: 'Stock',
+              rightValue: '${product.stock}',
+              rightIcon: Icons.inventory_2_rounded,
+              rightBadge: true,
+              rightInStock: product.stock > 0,
             ),
-            if (categoryName != null) ...[
+            if (categoryName != null || (product.location != null && product.location!.isNotEmpty)) ...[
               const SizedBox(height: 14),
-              _detailRow(context, 'Category', categoryName,
-                  icon: Icons.category_rounded),
-            ],
-            if (product.location != null && product.location!.isNotEmpty) ...[
-              const SizedBox(height: 14),
-              _detailRow(context, 'Location', product.location!,
-                  icon: Icons.location_on_outlined),
+              _detailRow2(
+                context,
+                leftLabel: 'Category',
+                leftValue: categoryName ?? '—',
+                leftIcon: categoryName != null ? Icons.category_rounded : null,
+                rightLabel: 'Location',
+                rightValue: product.location != null && product.location!.isNotEmpty
+                    ? product.location!
+                    : '—',
+                rightIcon: product.location != null && product.location!.isNotEmpty
+                    ? Icons.location_on_outlined
+                    : null,
+              ),
             ],
             if (product.description != null &&
                 product.description!.isNotEmpty) ...[
               const SizedBox(height: 14),
               _descriptionRow(context, product.description!),
             ],
-            if (product.createdAt != null) ...[
+            if (product.createdAt != null || product.updatedAt != null) ...[
               const SizedBox(height: 14),
-              _detailRow(context, 'Created', _formatDate(product.createdAt!),
-                  icon: Icons.calendar_today_rounded),
-            ],
-            if (product.updatedAt != null) ...[
-              const SizedBox(height: 14),
-              _detailRow(context, 'Last Updated', _formatDate(product.updatedAt!),
-                  icon: Icons.update_rounded),
+              _detailRow2(
+                context,
+                leftLabel: 'Created',
+                leftValue: product.createdAt != null
+                    ? _formatDate(product.createdAt!)
+                    : '—',
+                leftIcon: product.createdAt != null
+                    ? Icons.calendar_today_rounded
+                    : null,
+                rightLabel: 'Last Updated',
+                rightValue: product.updatedAt != null
+                    ? _formatDate(product.updatedAt!)
+                    : '—',
+                rightIcon: product.updatedAt != null
+                    ? Icons.update_rounded
+                    : null,
+              ),
             ],
             if (product.qrData != null && product.qrData!.isNotEmpty) ...[
               const SizedBox(height: 14),
@@ -322,6 +337,104 @@ class ProductDetailPage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _detailRow2(BuildContext context,
+      {required String leftLabel,
+      required String leftValue,
+      IconData? leftIcon,
+      Color? leftValueColor,
+      bool leftBadge = false,
+      bool leftInStock = false,
+      required String rightLabel,
+      required String rightValue,
+      IconData? rightIcon,
+      Color? rightValueColor,
+      bool rightBadge = false,
+      bool rightInStock = false}) {
+    return Row(
+      children: [
+        _detailCard(
+          label: leftLabel,
+          value: leftValue,
+          icon: leftIcon,
+          valueColor: leftValueColor,
+          badge: leftBadge,
+          inStock: leftInStock,
+        ),
+        const SizedBox(width: 10),
+        _detailCard(
+          label: rightLabel,
+          value: rightValue,
+          icon: rightIcon,
+          valueColor: rightValueColor,
+          badge: rightBadge,
+          inStock: rightInStock,
+        ),
+      ],
+    );
+  }
+
+  Widget _detailCard(
+      {required String label,
+      required String value,
+      IconData? icon,
+      Color? valueColor,
+      bool badge = false,
+      bool inStock = false}) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[200]!),
+        ),
+        child: Row(
+          children: [
+            if (icon != null) ...[
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, size: 16, color: AppTheme.primaryColor),
+              ),
+              const SizedBox(width: 10),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey[500],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: badge
+                          ? (inStock ? Colors.green[700] : Colors.red)
+                          : (valueColor ?? Colors.black87),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

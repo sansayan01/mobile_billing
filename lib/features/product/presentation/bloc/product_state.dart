@@ -24,6 +24,7 @@ class ProductState extends Equatable {
     List<Product>? products,
     List<Product>? filteredProducts,
     String? selectedCategoryId,
+    bool clearSelectedCategory = false,
     String? qrCodeData,
     String? message,
   }) {
@@ -31,7 +32,7 @@ class ProductState extends Equatable {
       status: status ?? this.status,
       products: products ?? this.products,
       filteredProducts: filteredProducts ?? this.filteredProducts,
-      selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
+      selectedCategoryId: clearSelectedCategory ? null : (selectedCategoryId ?? this.selectedCategoryId),
       qrCodeData: qrCodeData ?? this.qrCodeData,
       message: message,
     );

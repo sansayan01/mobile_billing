@@ -35,6 +35,14 @@ class UpdateQuantityEvent extends BillingEvent {
   List<Object> get props => [productId, quantity];
 }
 
+class UpdateItemPriceEvent extends BillingEvent {
+  final String productId;
+  final double? customPrice;
+  const UpdateItemPriceEvent(this.productId, this.customPrice);
+  @override
+  List<Object> get props => [productId, customPrice ?? -1.0];
+}
+
 class ClearCartEvent extends BillingEvent {}
 
 class PrintReceiptEvent extends BillingEvent {
@@ -43,6 +51,8 @@ class PrintReceiptEvent extends BillingEvent {
   final String address2;
   final String phone;
   final String footer;
+  final String? customerName;
+  final String? customerPhone;
 
   const PrintReceiptEvent({
     required this.shopName,
@@ -50,10 +60,20 @@ class PrintReceiptEvent extends BillingEvent {
     required this.address2,
     required this.phone,
     required this.footer,
+    this.customerName,
+    this.customerPhone,
   });
 
   @override
-  List<Object> get props => [shopName, address1, address2, phone, footer];
+  List<Object> get props => [
+        shopName,
+        address1,
+        address2,
+        phone,
+        footer,
+        customerName ?? '',
+        customerPhone ?? '',
+      ];
 }
 
 class UpdateDiscountEvent extends BillingEvent {
@@ -88,4 +108,13 @@ class ValidateStockBeforeBill extends BillingEvent {
 
 class ClearStockErrorsEvent extends BillingEvent {
   const ClearStockErrorsEvent();
+}
+
+class UpdateCustomerInfoEvent extends BillingEvent {
+  final String? customerName;
+  final String? customerPhone;
+  const UpdateCustomerInfoEvent({this.customerName, this.customerPhone});
+
+  @override
+  List<Object> get props => [customerName ?? '', customerPhone ?? ''];
 }

@@ -114,7 +114,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     if (event.categoryId == null) {
       // Show all products
       emit(state.copyWith(
-        selectedCategoryId: null,
+        clearSelectedCategory: true,
         filteredProducts: state.products,
       ));
     } else {
