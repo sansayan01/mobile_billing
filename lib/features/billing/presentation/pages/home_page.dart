@@ -9,6 +9,13 @@ import '../../../billing/presentation/bloc/billing_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../domain/entities/cart_item.dart';
+import '../../../../features/product/domain/entities/product.dart';
+import '../../../../features/product/domain/usecases/product_usecases.dart';
+import '../../../../features/product/domain/repositories/product_repository.dart';
+import '../../../../core/usecase/usecase.dart';
+import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../../../features/auth/presentation/bloc/auth_state.dart';
+import '../../../../core/service_locator.dart' as di;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -196,14 +203,14 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-          // Manual Entry Button (below flashlight)
+          // Search/Add Product Button (below flashlight)
           if (_isCameraOn)
             Positioned(
               top: MediaQuery.of(context).padding.top + 68,
               right: 16,
               child: _buildOverlayButton(
-                icon: Icons.keyboard,
-                onPressed: _showManualEntryDialog,
+                icon: Icons.search,
+                onPressed: _showProductSearchDialog,
               ),
             ),
 
@@ -335,78 +342,170 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _showManualEntryDialog() {
-    final controller = TextEditingController();
+  void _showProductSearchDialog() {
+    final searchController = TextEditingController();
+    List<Product> allProducts = [];
+    List<Product> filteredProducts = [];
+    bool isLoading = true;
+
+    fetchProducts() async {
+      final shopId = (context.read<AuthBloc>().state as Authenticated?)?.user.shopId;
+      if (shopId == null) return;
+      try {
+        final result = await GetProductsUseCase(di.sl<ProductRepository>())(NoParams(), shopId: shopId);
+        result.fold(
+          (failure) {},
+          (products) {
+            allProducts = products;
+            filteredProducts = products;
+            isLoading = false;
+          },
+        );
+      } catch (e) {
+        isLoading = false;
+      }
+    }
+
+    fetchProducts();
+
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.keyboard, size: 22, color: Theme.of(context).primaryColor),
-            const SizedBox(width: 8),
-            const Text('Manual Entry',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Enter barcode or product code to add to cart:',
-              style: TextStyle(fontSize: 14, color: Colors.black87),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: controller,
-              autofocus: true,
-              textInputAction: TextInputAction.done,
-              decoration: InputDecoration(
-                hintText: 'Barcode',
-                prefixIcon: const Icon(Icons.qr_code),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Icon(Icons.search, size: 22, color: Theme.of(context).primaryColor),
+                  const SizedBox(width: 8),
+                  const Text('Add Product',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: searchController,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: 'Search products...',
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        final query = value.toLowerCase().trim();
+                        setDialogState(() {
+                          filteredProducts = allProducts.where((product) {
+                            return product.name.toLowerCase().contains(query) ||
+                                product.barcode.toLowerCase().contains(query);
+                          }).toList();
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    isLoading
+                        ? const SizedBox(
+                            height: 120,
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        : filteredProducts.isEmpty
+                            ? SizedBox(
+                                height: 120,
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.inventory_2_outlined, size: 36, color: Colors.grey[400]),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        searchController.text.trim().isEmpty
+                                            ? 'No products found'
+                                            : 'No match for "${searchController.text.trim()}"',
+                                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                constraints: const BoxConstraints(maxHeight: 240),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: filteredProducts.map((product) {
+                                      return InkWell(
+                                        onTap: () {
+                                          context.read<BillingBloc>().add(AddProductToCartEvent(product));
+                                          Navigator.of(ctx).pop();
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('${product.name} added to cart'),
+                                              backgroundColor: Colors.green,
+                                              behavior: SnackBarBehavior.floating,
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                          decoration: BoxDecoration(
+                                            border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      product.name,
+                                                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                                                    ),
+                                                    const SizedBox(height: 2),
+                                                    Text(
+                                                      'Code: ${product.barcode}',
+                                                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    'Stock: ${product.stock}',
+                                                    style: TextStyle(fontSize: 12, color: product.stock > 0 ? Colors.grey[700] : Colors.red),
+                                                  ),
+                                                  Text(
+                                                    '₹${product.price.toStringAsFixed(2)}',
+                                                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Theme.of(context).primaryColor),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ),
+                  ],
                 ),
               ),
-              onSubmitted: (value) {
-                if (value.trim().isNotEmpty) {
-                  ctx.read<BillingBloc>().add(ScanBarcodeEvent(value.trim()));
-                  Navigator.of(ctx).pop();
-                }
-              },
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  if (controller.text.trim().isNotEmpty) {
-                    ctx.read<BillingBloc>().add(
-                        ScanBarcodeEvent(controller.text.trim()));
-                    Navigator.of(ctx).pop();
-                  }
-                },
-                icon: const Icon(Icons.add_shopping_cart, size: 20),
-                label: const Text('Add to Cart'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('Close'),
                 ),
-              ),
-            ),
-            const SizedBox(height: 4),
-            TextButton.icon(
-              onPressed: () {
-                Navigator.of(ctx).pop();
-                context.push('/products/add');
-              },
-              icon: const Icon(Icons.add_circle_outline, size: 20),
-              label: const Text('Create New Product'),
-            ),
-          ],
-        ),
-      ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
