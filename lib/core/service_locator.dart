@@ -183,6 +183,8 @@ Future<void> init() async {
   // Use cases
   sl.registerLazySingleton(() => GetBillHistoryUseCase(sl()));
   sl.registerLazySingleton(() => GetBillDetailUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateBillUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteBillUseCase(sl()));
   sl.registerLazySingleton(() => GetDailySalesUseCase(sl()));
   sl.registerLazySingleton(() => GetSalesRangeUseCase(sl()));
   sl.registerLazySingleton(() => GetLowStockProductsUseCase(sl()));
@@ -193,6 +195,8 @@ Future<void> init() async {
     () => ReportBloc(
       getBillHistoryUseCase: sl(),
       getBillDetailUseCase: sl(),
+      updateBillUseCase: sl(),
+      deleteBillUseCase: sl(),
       getDailySalesUseCase: sl(),
       getSalesRangeUseCase: sl(),
       getLowStockProductsUseCase: sl(),

@@ -272,6 +272,61 @@ class ReportRepositoryImpl implements ReportRepository {
   }
 
   @override
+  Future<Either<Failure, BillSummary>> updateBill(
+    String billId,
+    Map<String, dynamic> updates, {
+    String? shopId,
+  }) async {
+    try {
+      final effectiveShopId = await _resolveShopId(shopId);
+      var query = _supabase
+          .from('bills')
+          .update(updates) as dynamic;
+
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
+      }
+
+      await query.eq('id', billId);
+
+      final updatedRow = await _supabase
+          .from('bills')
+          .select('*, profiles(name)')
+          .eq('id', billId)
+          .maybeSingle();
+
+      if (updatedRow == null) {
+        return Left(ServerFailure('Bill not found after update'));
+      }
+
+      return Right(BillSummaryModel.fromSupabaseRow(updatedRow));
+    } catch (e) {
+      return Left(ServerFailure('Failed to update bill: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteBill(
+    String billId, {
+    String? shopId,
+  }) async {
+    try {
+      final effectiveShopId = await _resolveShopId(shopId);
+      var query = _supabase.from('bills').delete().eq('id', billId) as dynamic;
+
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
+      }
+
+      await query;
+
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure('Failed to delete bill: $e'));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<StockMovement>>> getStockMovements({
     String? productId,
     DateTime? from,

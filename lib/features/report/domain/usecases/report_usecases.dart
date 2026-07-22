@@ -90,6 +90,31 @@ class StockMovementParams extends Equatable {
   List<Object?> get props => [productId, from, to, changeType, shopId];
 }
 
+class UpdateBillParams extends Equatable {
+  final String billId;
+  final Map<String, dynamic> updates;
+  final String? shopId;
+
+  const UpdateBillParams({
+    required this.billId,
+    required this.updates,
+    this.shopId,
+  });
+
+  @override
+  List<Object?> get props => [billId, updates, shopId];
+}
+
+class DeleteBillParams extends Equatable {
+  final String billId;
+  final String? shopId;
+
+  const DeleteBillParams({required this.billId, this.shopId});
+
+  @override
+  List<Object?> get props => [billId, shopId];
+}
+
 // ===================== Use Cases =====================
 
 class GetBillHistoryUseCase
@@ -187,6 +212,35 @@ class GetStockMovementsUseCase
       from: params.from,
       to: params.to,
       changeType: params.changeType,
+      shopId: params.shopId,
+    );
+  }
+}
+
+class UpdateBillUseCase implements UseCase<BillSummary, UpdateBillParams> {
+  final ReportRepository repository;
+
+  UpdateBillUseCase(this.repository);
+
+  @override
+  Future<Either<Failure, BillSummary>> call(UpdateBillParams params) {
+    return repository.updateBill(
+      params.billId,
+      params.updates,
+      shopId: params.shopId,
+    );
+  }
+}
+
+class DeleteBillUseCase implements UseCase<void, DeleteBillParams> {
+  final ReportRepository repository;
+
+  DeleteBillUseCase(this.repository);
+
+  @override
+  Future<Either<Failure, void>> call(DeleteBillParams params) {
+    return repository.deleteBill(
+      params.billId,
       shopId: params.shopId,
     );
   }

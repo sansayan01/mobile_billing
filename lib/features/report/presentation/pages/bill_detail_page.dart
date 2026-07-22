@@ -6,10 +6,13 @@ import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/widgets/primary_button.dart';
 import 'package:billing_app/core/utils/printer_helper.dart';
 import 'package:billing_app/core/data/hive_database.dart';
+import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_state.dart';
 import 'package:billing_app/features/report/domain/entities/report_entities.dart';
+import 'package:flutter/services.dart';
 
 class BillDetailPage extends StatefulWidget {
   final BillSummary bill;
@@ -101,58 +104,82 @@ class _BillDetailPageState extends State<BillDetailPage> {
     final numberFormat =
         NumberFormat.currency(symbol: '₹', decimalDigits: 0);
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
-          onPressed: () => Scaffold.of(context).openDrawer(),
+    final authState = context.read<AuthBloc>().state;
+    final isOwner = authState is Authenticated && authState.user.role == 'owner';
+
+    return BlocListener<ReportBloc, ReportState>(
+      listenWhen: (previous, current) =>
+          previous.message != current.message && current.message != null,
+      listener: (context, state) {
+        _showSnack(state.message!, isError: state.status == ReportStatus.error);
+        if (state.message == 'Bill deleted successfully') {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+          title: const Text('Bill Details'),
+          actions: isOwner
+              ? [
+                  IconButton(
+                    icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
+                    onPressed: () => _showEditDialog(context),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: AppTheme.errorColor),
+                    onPressed: () => _confirmDelete(context),
+                  ),
+                ]
+              : null,
         ),
-        title: const Text('Bill Details'),
-      ),
-      body: BlocBuilder<ReportBloc, ReportState>(
-        buildWhen: (previous, current) =>
-            previous.billDetail != current.billDetail ||
-            previous.status != current.status,
-        builder: (context, state) {
-          final bill = state.billDetail ?? widget.bill;
+        body: BlocBuilder<ReportBloc, ReportState>(
+          buildWhen: (previous, current) =>
+              previous.billDetail != current.billDetail ||
+              previous.status != current.status,
+          builder: (context, state) {
+            final bill = state.billDetail ?? widget.bill;
 
-          if (state.status == ReportStatus.loading &&
-              state.billDetail == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            if (state.status == ReportStatus.loading &&
+                state.billDetail == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (state.status == ReportStatus.error && state.billDetail == null) {
-            return Center(
+            if (state.status == ReportStatus.error && state.billDetail == null) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: AppTheme.errorColor,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      state.error ?? 'Something went wrong',
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: _fetchBillDetail,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: AppTheme.errorColor,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    state.error ?? 'Something went wrong',
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: _fetchBillDetail,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
                 // Bill Info card
                 _buildInfoCard(
                   context,
@@ -317,6 +344,111 @@ class _BillDetailPageState extends State<BillDetailPage> {
           );
         },
       ),
+    ),
+    );
+  }
+
+  void _showEditDialog(BuildContext context) {
+    final bill = context.read<ReportBloc>().state.billDetail ?? widget.bill;
+    final nameController = TextEditingController(text: bill.customerName ?? '');
+    final phoneController = TextEditingController(text: bill.customerPhone ?? '');
+    final discountController =
+        TextEditingController(text: bill.discount.toString());
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Edit Bill'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      decoration:
+                          const InputDecoration(labelText: 'Customer Name'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: phoneController,
+                      decoration:
+                          const InputDecoration(labelText: 'Customer Phone'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: discountController,
+                      decoration:
+                          const InputDecoration(labelText: 'Discount'),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d{0,2}')),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<ReportBloc>().add(UpdateBill(
+                          billId: widget.bill.id,
+                          updates: {
+                            'customer_name': nameController.text,
+                            'customer_phone': phoneController.text,
+                            'discount':
+                                double.tryParse(discountController.text) ?? 0,
+                          },
+                        ));
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: const Text('Save Changes'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Delete Bill'),
+          content: const Text(
+              'Are you sure you want to delete this bill? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                context
+                    .read<ReportBloc>()
+                    .add(DeleteBill(widget.bill.id));
+                Navigator.of(dialogContext).pop();
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

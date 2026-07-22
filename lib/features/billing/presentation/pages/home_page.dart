@@ -182,7 +182,7 @@ class _HomePageState extends State<HomePage> {
 
           if (hasPermission && !_isCameraOn) _buildCameraOffState(),
 
-          // Flashlight Button (Top Right) — only overlay button kept
+          // Flashlight Button (Top Right)
           if (_isCameraOn)
             Positioned(
               top: MediaQuery.of(context).padding.top + 16,
@@ -193,6 +193,17 @@ class _HomePageState extends State<HomePage> {
                   setState(() => _isFlashOn = !_isFlashOn);
                   _scannerController.toggleTorch();
                 },
+              ),
+            ),
+
+          // Manual Entry Button (below flashlight)
+          if (_isCameraOn)
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 68,
+              right: 16,
+              child: _buildOverlayButton(
+                icon: Icons.keyboard,
+                onPressed: _showManualEntryDialog,
               ),
             ),
 
@@ -319,6 +330,81 @@ class _HomePageState extends State<HomePage> {
                 ? const BorderSide(color: Colors.greenAccent, width: 4)
                 : BorderSide.none,
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showManualEntryDialog() {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.keyboard, size: 22, color: Theme.of(context).primaryColor),
+            const SizedBox(width: 8),
+            const Text('Manual Entry',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Enter barcode or product code to add to cart:',
+              style: TextStyle(fontSize: 14, color: Colors.black87),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              textInputAction: TextInputAction.done,
+              decoration: InputDecoration(
+                hintText: 'Barcode',
+                prefixIcon: const Icon(Icons.qr_code),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onSubmitted: (value) {
+                if (value.trim().isNotEmpty) {
+                  ctx.read<BillingBloc>().add(ScanBarcodeEvent(value.trim()));
+                  Navigator.of(ctx).pop();
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  if (controller.text.trim().isNotEmpty) {
+                    ctx.read<BillingBloc>().add(
+                        ScanBarcodeEvent(controller.text.trim()));
+                    Navigator.of(ctx).pop();
+                  }
+                },
+                icon: const Icon(Icons.add_shopping_cart, size: 20),
+                label: const Text('Add to Cart'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            TextButton.icon(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                context.push('/products/add');
+              },
+              icon: const Icon(Icons.add_circle_outline, size: 20),
+              label: const Text('Create New Product'),
+            ),
+          ],
         ),
       ),
     );

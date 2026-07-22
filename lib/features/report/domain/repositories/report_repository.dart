@@ -41,4 +41,15 @@ abstract class ReportRepository {
     String? changeType,
     String? shopId,
   });
+
+  Future<Either<Failure, BillSummary>> updateBill(
+    String billId,
+    Map<String, dynamic> updates, {
+    String? shopId,
+  });
+
+  Future<Either<Failure, void>> deleteBill(
+    String billId, {
+    String? shopId,
+  });
 }

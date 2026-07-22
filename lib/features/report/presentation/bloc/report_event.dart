@@ -76,3 +76,22 @@ class LoadStockMovements extends ReportEvent {
 }
 
 class ResetReport extends ReportEvent {}
+
+class UpdateBill extends ReportEvent {
+  final String billId;
+  final Map<String, dynamic> updates;
+
+  const UpdateBill({required this.billId, required this.updates});
+
+  @override
+  List<Object?> get props => [billId, updates];
+}
+
+class DeleteBill extends ReportEvent {
+  final String billId;
+
+  const DeleteBill(this.billId);
+
+  @override
+  List<Object?> get props => [billId];
+}

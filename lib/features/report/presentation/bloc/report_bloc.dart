@@ -13,6 +13,8 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
   final GetSalesRangeUseCase getSalesRangeUseCase;
   final GetLowStockProductsUseCase getLowStockProductsUseCase;
   final GetStockMovementsUseCase getStockMovementsUseCase;
+  final UpdateBillUseCase updateBillUseCase;
+  final DeleteBillUseCase deleteBillUseCase;
   final AuthBloc authBloc;
 
   ReportBloc({
@@ -22,6 +24,8 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     required this.getSalesRangeUseCase,
     required this.getLowStockProductsUseCase,
     required this.getStockMovementsUseCase,
+    required this.updateBillUseCase,
+    required this.deleteBillUseCase,
     required this.authBloc,
   }) : super(const ReportState()) {
     on<LoadBillHistory>(_onLoadBillHistory);
@@ -31,6 +35,8 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     on<LoadLowStockProducts>(_onLoadLowStockProducts);
     on<LoadStockMovements>(_onLoadStockMovements);
     on<ResetReport>(_onResetReport);
+    on<UpdateBill>(_onUpdateBill);
+    on<DeleteBill>(_onDeleteBill);
   }
 
   String? get _currentShopId {
@@ -163,5 +169,51 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
   void _onResetReport(ResetReport event, Emitter<ReportState> emit) {
     emit(const ReportState());
+  }
+
+  Future<void> _onUpdateBill(
+      UpdateBill event, Emitter<ReportState> emit) async {
+    emit(state.copyWith(status: ReportStatus.loading, error: null, message: null, clearMessage: true));
+
+    final result = await updateBillUseCase(
+      UpdateBillParams(
+        billId: event.billId,
+        updates: event.updates,
+        shopId: _currentShopId,
+      ),
+    );
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+          status: ReportStatus.error, error: failure.message, message: failure.message)),
+      (updatedBill) {
+        emit(state.copyWith(
+            status: ReportStatus.loaded,
+            message: 'Bill updated successfully',
+            billDetail: updatedBill));
+        add(LoadBillDetail(event.billId));
+      },
+    );
+  }
+
+  Future<void> _onDeleteBill(
+      DeleteBill event, Emitter<ReportState> emit) async {
+    emit(state.copyWith(status: ReportStatus.loading, error: null, message: null, clearMessage: true));
+
+    final result = await deleteBillUseCase(
+      DeleteBillParams(billId: event.billId, shopId: _currentShopId),
+    );
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+          status: ReportStatus.error, error: failure.message, message: failure.message)),
+      (_) {
+        emit(state.copyWith(
+            status: ReportStatus.loaded,
+            message: 'Bill deleted successfully',
+            billDetail: null));
+        add(ResetReport());
+      },
+    );
   }
 }
