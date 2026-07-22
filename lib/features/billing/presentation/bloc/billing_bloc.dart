@@ -37,6 +37,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     on<ValidateStockBeforeBill>(_onValidateStockBeforeBill);
     on<ClearStockErrorsEvent>(_onClearStockErrors);
     on<UpdateCustomerInfoEvent>(_onUpdateCustomerInfo);
+    on<UpdatePaymentMethodEvent>(_onUpdatePaymentMethod);
   }
 
   Future<void> _onScanBarcode(
@@ -264,7 +265,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
         'discount': state.discount,
         'grand_total': calculatedTotal,
         'item_count': state.cartItems.length,
-        'payment_method': 'upi',
+        'payment_method': state.paymentMethod,
         'created_at': now,
         'customer_name': state.customerName,
         'customer_phone': state.customerPhone,
@@ -388,5 +389,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
         return errors.isNotEmpty ? errors : null;
       },
     );
+  }
+
+  void _onUpdatePaymentMethod(
+      UpdatePaymentMethodEvent event, Emitter<BillingState> emit) {
+    emit(state.copyWith(paymentMethod: event.paymentMethod));
   }
 }

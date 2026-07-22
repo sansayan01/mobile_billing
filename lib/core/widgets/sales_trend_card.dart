@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -24,70 +23,64 @@ class SalesTrendCard extends StatelessWidget {
     final double total = values.fold(0.0, (sum, v) => sum + v);
     final double average = values.isEmpty ? 0 : total / values.length;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.55),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.2),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: _primaryColor.withValues(alpha: 0.08),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: _primaryColor.withValues(alpha: 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Title ──
-              Text(
-                'Weekly Sales Trend',
-                style: GoogleFonts.ibmPlexSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1A1A2E),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Title ──
+          Text(
+            'Weekly Sales Trend',
+            style: GoogleFonts.ibmPlexSans(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF1A1A2E),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // ── Chart ──
+          if (_hasData)
+            SizedBox(
+              height: 120,
+              child: CustomPaint(
+                size: Size.infinite,
+                painter: _SalesTrendPainter(
+                  values: values,
+                  labels: labels,
+                  primaryColor: _primaryColor,
                 ),
               ),
-              const SizedBox(height: 16),
+            )
+          else
+            _buildPlaceholder(),
 
-              // ── Chart ──
-              if (_hasData)
-                SizedBox(
-                  height: 120,
-                  child: CustomPaint(
-                    size: Size.infinite,
-                    painter: _SalesTrendPainter(
-                      values: values,
-                      labels: labels,
-                      primaryColor: _primaryColor,
-                    ),
-                  ),
-                )
-              else
-                _buildPlaceholder(),
+          const SizedBox(height: 12),
 
-              const SizedBox(height: 12),
-
-              // ── Total & Average Row ──
-              _buildStatsRow(total, average),
-            ],
-          ),
-        ),
+          // ── Total & Average Row ──
+          _buildStatsRow(total, average),
+        ],
       ),
     );
   }

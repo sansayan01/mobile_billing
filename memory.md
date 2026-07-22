@@ -1,5 +1,55 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-07-22 — Cash/UPI Payment Selector in Checkout ✅
+
+### What Was Done
+1. **Conditional QR & Payment Toggle** on `CheckoutPage`:
+   - Material 3 `SegmentedButton` toggle for 'Cash' vs 'UPI'.
+   - Cash selected by default; if selected, hides the Scan to Pay QR code area.
+   - If UPI is selected, shows the QR code.
+2. **Fixed BLoC Missing Implementation**:
+   - Implemented the registered but empty handler `_onUpdatePaymentMethod` in `billing_bloc.dart`.
+3. **Fixed Receipt Preview Parameter**:
+   - Replaced hardcoded `'paymentMethod': 'UPI'` in navigation extra parameters with dynamic `state.paymentMethod` to ensure the receipt correctly outputs the actual user selection.
+4. **Verification**:
+   - Ran `flutter analyze` ensuring 0 warnings / errors.
+
+---
+
+## Current Session: 2026-07-22 — Full Bill Edit Feature ✅
+
+### What Was Done
+1. **Full Bill Edit Feature** — edit dialog ab pura receipt edit kar sakta hai:
+   - **Payment method** dropdown (upi/cash/card) — ab editable
+   - **Items editing** — quantity +/- controls, remove items, add new items
+   - **Product search** — dialog se products search karke bill mein add kar sakte ho
+   - **Stock management** — automatic stock adjustment:
+     - Qty increase → stock kam
+     - Qty decrease → stock badhao
+     - Item remove → stock restore
+     - New item add → stock deduct
+   - **Live totals** — dialog mein total/grand total real-time update
+   - **Inventory logging** — har change ka inventory_log entry
+
+### Files Modified (7 files)
+- `lib/features/report/domain/usecases/report_usecases.dart` — `UpdateBillParams` mein `List<BillItem>? items` add
+- `lib/features/report/domain/repositories/report_repository.dart` — `updateBill` signature update with items param
+- `lib/features/report/data/repositories/report_repository_impl.dart` — full rewrite: item diff, stock management, inventory logging
+- `lib/features/report/presentation/bloc/report_event.dart` — `UpdateBill` event mein items field add
+- `lib/features/report/presentation/bloc/report_bloc.dart` — handler mein items pass to use case
+- `lib/features/report/presentation/pages/bill_detail_page.dart` — complete edit dialog rewrite with items UI + product search
+
+### Architecture Notes
+- Items diff by `productId` — compare existing DB items vs new items
+- Stock fetched from DB before each adjustment (not stale cache)
+- No database transaction wrapping (same as existing billing flow)
+- `uuid` package used for new bill_item IDs
+
+### flutter analyze
+- 0 errors, 0 warnings ✅
+
+---
+
 ## Current Session: 2026-07-22 — Bill Edit/Delete + Manual Product Entry ✅
 
 ### What Was Done

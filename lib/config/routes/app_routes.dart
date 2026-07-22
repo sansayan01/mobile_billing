@@ -54,7 +54,7 @@ GoRouter createRouter(AuthBloc authBloc) {
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: false,
     refreshListenable: _AuthNotifier(authBloc),
     redirect: (context, state) {
       final authState = context.read<AuthBloc>().state;

@@ -66,12 +66,10 @@ class ProductRepositoryImpl implements ProductRepository {
           .map((e) => _fromMap(e as Map<String, dynamic>))
           .toList();
 
-      // Cache in Hive for offline fallback
+      // Cache in Hive for offline fallback (batched write)
       final box = HiveDatabase.productBox;
       await box.clear();
-      for (final product in products) {
-        await box.put(product.id, product);
-      }
+      await box.putAll({for (final product in products) product.id: product});
 
       return Right(products);
     } catch (e) {

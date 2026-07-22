@@ -92,7 +92,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     'discountIsPercentage': state.discountIsPercentage,
                     'customerName': state.customerName,
                     'customerPhone': state.customerPhone,
-                    'paymentMethod': 'UPI',
+                    'paymentMethod': state.paymentMethod,
                   });
                 }
               }
@@ -592,7 +592,38 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 const SizedBox(
                                   height: 8,
                                 ),
-                                if (upiId.isNotEmpty)
+                                // Payment Method Selector
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: SegmentedButton<String>(
+                                    segments: const [
+                                      ButtonSegment(
+                                        value: 'cash',
+                                        label: Text('Cash'),
+                                        icon: Icon(Icons.money_rounded, size: 18),
+                                      ),
+                                      ButtonSegment(
+                                        value: 'upi',
+                                        label: Text('UPI'),
+                                        icon: Icon(Icons.qr_code_2_rounded, size: 18),
+                                      ),
+                                    ],
+                                    selected: {billingState.paymentMethod},
+                                    onSelectionChanged: (Set<String> newSelection) {
+                                      context.read<BillingBloc>().add(
+                                            UpdatePaymentMethodEvent(newSelection.last),
+                                          );
+                                    },
+                                    showSelectedIcon: false,
+                                    style: SegmentedButton.styleFrom(
+                                      selectedBackgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                      selectedForegroundColor: Theme.of(context).primaryColor,
+                                      visualDensity: VisualDensity.compact,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                if (billingState.paymentMethod == 'upi' && upiId.isNotEmpty)
                                   Column(
                                     children: [
                                       const Text(
@@ -613,11 +644,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                               'upi://pay?pa=$upiId&pn=$shopName&am=${_formatPrice(billingState.totalAmount)}&cu=INR',
                                         ),
                                       ),
+                                      const SizedBox(height: 15),
                                     ],
-                                  )
-                                else
-                                  const SizedBox.shrink(),
-                                const SizedBox(height: 15),
+                                  ),
                                 // Grand Total Row
                                 Row(
                                   mainAxisAlignment:

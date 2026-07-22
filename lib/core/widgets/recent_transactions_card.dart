@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -93,89 +91,87 @@ class RecentTransactionsCard extends StatelessWidget {
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.55),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.2),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.55),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.2),
+            width: 1,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ── Title row ──
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Recent Transactions',
-                      style: GoogleFonts.ibmPlexSans(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1A1A2E),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: onViewAll,
-                      child: Text(
-                        'See All',
-                        style: GoogleFonts.ibmPlexSans(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF6C63FF),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // ── Transaction list or empty state ──
-                if (displayTransactions.isEmpty)
-                  _buildEmptyState()
-                else
-                  ...displayTransactions.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final txn = entry.value;
-                    final isLast = index == displayTransactions.length - 1;
-
-                    return Column(
-                      children: [
-                        _buildTransactionItem(txn),
-                        if (!isLast)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Divider(
-                              height: 1,
-                              thickness: 0.8,
-                              color: Colors.grey.shade300.withValues(alpha: 0.5),
-                            ),
-                          ),
-                      ],
-                    );
-                  }),
-              ],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
             ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Title row ──
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Recent Transactions',
+                    style: GoogleFonts.ibmPlexSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF1A1A2E),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: onViewAll,
+                    child: Text(
+                      'See All',
+                      style: GoogleFonts.ibmPlexSans(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF6C63FF),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // ── Transaction list or empty state ──
+              if (displayTransactions.isEmpty)
+                _buildEmptyState()
+              else
+                ...displayTransactions.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final txn = entry.value;
+                  final isLast = index == displayTransactions.length - 1;
+
+                  return Column(
+                    children: [
+                      _buildTransactionItem(txn),
+                      if (!isLast)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Divider(
+                            height: 1,
+                            thickness: 0.8,
+                            color:
+                                Colors.grey.shade300.withValues(alpha: 0.5),
+                          ),
+                        ),
+                    ],
+                  );
+                }),
+            ],
           ),
         ),
       ),

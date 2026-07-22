@@ -118,3 +118,11 @@ class UpdateCustomerInfoEvent extends BillingEvent {
   @override
   List<Object> get props => [customerName ?? '', customerPhone ?? ''];
 }
+
+class UpdatePaymentMethodEvent extends BillingEvent {
+  final String paymentMethod;
+  const UpdatePaymentMethodEvent(this.paymentMethod);
+
+  @override
+  List<Object> get props => [paymentMethod];
+}

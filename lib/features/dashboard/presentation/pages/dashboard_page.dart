@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/widgets/dashboard_action_card.dart';
 import 'package:billing_app/core/widgets/greeting_header.dart';
@@ -121,6 +120,8 @@ class _DashboardViewState extends State<_DashboardView> {
                     delegate: SliverChildListDelegate([
                       // Greeting
                       BlocBuilder<AuthBloc, AuthState>(
+                        buildWhen: (previous, current) =>
+                            previous is! Authenticated || current is! Authenticated || previous.user.name != current.user.name,
                         builder: (context, state) {
                           final name = state is Authenticated ? state.user.name : '';
                           return GreetingHeader(userName: name);
@@ -273,6 +274,7 @@ class _TodaysSales extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ReportBloc, ReportState>(
+      buildWhen: (a, b) => a.dailySales != b.dailySales || a.status != b.status,
       builder: (context, state) {
         final sales = state.dailySales;
         final loading = state.status == ReportStatus.loading && sales == null;
@@ -348,25 +350,28 @@ class _WeeklyTrend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ReportBloc, ReportState>(
+      buildWhen: (a, b) => a.billHistory != b.billHistory,
       builder: (context, state) {
         final now = DateTime.now();
         final values = <double>[];
         final labels = <String>[];
 
+        // Single-pass pre-grouping instead of O(n×7) nested loop
+        final Map<int, double> dayTotals = {};
+        for (int i = 6; i >= 0; i--) {
+          dayTotals[i] = 0.0;
+        }
+        for (final bill in state.billHistory) {
+          final diff = DateTime(now.year, now.month, now.day)
+              .difference(DateTime(bill.createdAt.year, bill.createdAt.month, bill.createdAt.day))
+              .inDays;
+          if (diff >= 0 && diff <= 6) {
+            dayTotals[6 - diff] = (dayTotals[6 - diff] ?? 0) + bill.grandTotal;
+          }
+        }
         for (int i = 6; i >= 0; i--) {
           final day = DateTime(now.year, now.month, now.day - i);
-          final dayStart = DateTime(day.year, day.month, day.day);
-          final dayEnd = dayStart.add(const Duration(days: 1));
-
-          // Sum grandTotal of bills created on this day
-          double dayTotal = 0;
-          for (final bill in state.billHistory) {
-            if (!bill.createdAt.isBefore(dayStart) &&
-                bill.createdAt.isBefore(dayEnd)) {
-              dayTotal += bill.grandTotal;
-            }
-          }
-          values.add(dayTotal);
+          values.add(dayTotals[i] ?? 0);
           labels.add(DateFormat('EEE').format(day));
         }
 
@@ -386,14 +391,15 @@ class _RecentTransactions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ReportBloc, ReportState>(
+      buildWhen: (a, b) => a.billHistory != b.billHistory,
       builder: (context, state) {
         final isLoading = state.status == ReportStatus.loading &&
             state.billHistory.isEmpty;
 
         // Sort by newest first, take top 5
-        final sorted = List.of(state.billHistory)
+        final txns = List.of(state.billHistory)
           ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        final txns = sorted.take(5).map((bill) {
+        final displayed = txns.take(5).map((bill) {
           // Use items.length if itemCount is 0 (DB might not populate it)
           final count = bill.itemCount > 0
               ? bill.itemCount
@@ -413,7 +419,7 @@ class _RecentTransactions extends StatelessWidget {
         }
 
         return RecentTransactionsCard(
-          transactions: txns,
+          transactions: displayed,
           onViewAll: () => context.go('/reports/bills'),
         );
       },
@@ -421,88 +427,84 @@ class _RecentTransactions extends StatelessWidget {
   }
 
   Widget _buildLoadingPlaceholder() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.55),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.2),
-              width: 1,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Recent Transactions',
+            style: GoogleFonts.ibmPlexSans(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF1A1A2E),
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Recent Transactions',
-                style: GoogleFonts.ibmPlexSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1A1A2E),
+          const SizedBox(height: 20),
+          ...List.generate(3, (i) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              ...List.generate(3, (i) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(10),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: 80,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Container(
-                            width: 50,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 6),
+                      Container(
+                        width: 50,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
                       ),
-                    ),
-                    Container(
-                      width: 50,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              )),
-            ],
-          ),
-        ),
+                Container(
+                  width: 50,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+              ],
+            ),
+          )),
+        ],
       ),
     );
   }
 }
+
+
 
 // ═══════════════════════════════════════════════════════════════════════
 // Inventory Health — product stats from ProductBloc
@@ -514,11 +516,20 @@ class _InventoryHealth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProductBloc, ProductState>(
+      buildWhen: (a, b) => a.products != b.products,
       builder: (context, state) {
         final products = state.products;
         final total = products.length;
-        final lowStock = products.where((p) => p.stock > 0 && p.stock <= 5).length;
-        final outOfStock = products.where((p) => p.stock <= 0).length;
+        // Single-pass filter instead of two separate .where() calls
+        int lowStock = 0;
+        int outOfStock = 0;
+        for (final p in products) {
+          if (p.stock <= 0) {
+            outOfStock++;
+          } else if (p.stock <= 5) {
+            lowStock++;
+          }
+        }
 
         return InventoryHealthCard(
           totalProducts: total,
