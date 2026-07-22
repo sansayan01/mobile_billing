@@ -189,10 +189,21 @@ class _HomePageState extends State<HomePage> {
 
           if (hasPermission && !_isCameraOn) _buildCameraOffState(),
 
-          // Flashlight Button (Top Right)
+          // Search/Add Product Button (Top Right)
           if (_isCameraOn)
             Positioned(
               top: MediaQuery.of(context).padding.top + 16,
+              right: 16,
+              child: _buildOverlayButton(
+                icon: Icons.search,
+                onPressed: _showProductSearchDialog,
+              ),
+            ),
+
+          // Flashlight Button (below search)
+          if (_isCameraOn)
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 68,
               right: 16,
               child: _buildOverlayButton(
                 icon: _isFlashOn ? Icons.flashlight_off : Icons.flashlight_on,
@@ -200,17 +211,6 @@ class _HomePageState extends State<HomePage> {
                   setState(() => _isFlashOn = !_isFlashOn);
                   _scannerController.toggleTorch();
                 },
-              ),
-            ),
-
-          // Search/Add Product Button (below flashlight)
-          if (_isCameraOn)
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 68,
-              right: 16,
-              child: _buildOverlayButton(
-                icon: Icons.search,
-                onPressed: _showProductSearchDialog,
               ),
             ),
 
