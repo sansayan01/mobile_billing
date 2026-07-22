@@ -137,6 +137,18 @@
   "135": "Supabase-Migration-Rule",
   "136": "Tech-Stack-Flutter",
   "137": "Update-Rule",
+  "138": "Phases — Roadmap",
+  "139": "product_repository.dart",
+  "140": "category_repository_impl.dart",
   "141": "package:billing_app/core/theme/app_theme.dart",
-  "144": "RPD — Requirements & Product Definition"
+  "142": "category_usecases.dart",
+  "143": "shop_repository_impl.dart",
+  "144": "RPD — Requirements & Product Definition",
+  "145": "deep_link_config.dart",
+  "146": "package:billing_app/core/theme/app_theme.dart",
+  "147": "Migration 003_saas_shops.sql",
+  "148": "TASK 3 — Core Feature Completion",
+  "149": "Phase 2 — Core Features 🔧 ✅",
+  "150": "CLAUDE.md",
+  "151": "DailySales"
 }

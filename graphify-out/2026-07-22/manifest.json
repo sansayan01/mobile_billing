@@ -410,8 +410,8 @@
     "semantic_hash": "e175e436acacf76c814d83532d0b662c"
   },
   "memory.md": {
-    "mtime": 1784678636.2058816,
-    "ast_hash": "5992eea7f7e3573bf9d0cb4a6274eba0",
+    "mtime": 1784724757.226313,
+    "ast_hash": "c3f6367456add94efb67963d49d96ed0",
     "semantic_hash": ""
   },
   "phases.md": {
@@ -725,8 +725,8 @@
     "semantic_hash": "bfd44e79359721e6bd5186667ca7822a"
   },
   "lib/features/dashboard/presentation/pages/dashboard_page.dart": {
-    "mtime": 1784724722.9924188,
-    "ast_hash": "7aa0955c293dd09116fed09e2b146fe0",
+    "mtime": 1784724761.5589314,
+    "ast_hash": "77a4b8873aac9efc208d9c19aa152f04",
     "semantic_hash": ""
   },
   "lib/core/widgets/app_back_button.dart": {
@@ -835,8 +835,8 @@
     "semantic_hash": ""
   },
   "lib/core/widgets/greeting_header.dart": {
-    "mtime": 1784724663.153189,
-    "ast_hash": "b9d249c284ee61de447fe9c2824f22a4",
+    "mtime": 1784724750.5262647,
+    "ast_hash": "45257ab7875823b8a04bdece4de8468d",
     "semantic_hash": ""
   },
   "lib/core/widgets/premium_stat_card.dart": {
@@ -865,8 +865,8 @@
     "semantic_hash": ""
   },
   "lib/core/widgets/recent_transactions_card.dart": {
-    "mtime": 1784724694.2556775,
-    "ast_hash": "b2752112a3eb1a4a30f7395b4b304d24",
+    "mtime": 1784724763.87596,
+    "ast_hash": "de92d4785f05b92b70eb9365c82f4d20",
     "semantic_hash": ""
   },
   "lib/core/widgets/sales_trend_card.dart": {
