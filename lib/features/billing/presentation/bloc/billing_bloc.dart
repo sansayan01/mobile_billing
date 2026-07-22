@@ -263,6 +263,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
         'total_amount': baseTotal,
         'discount': state.discount,
         'grand_total': calculatedTotal,
+        'item_count': state.cartItems.length,
         'payment_method': 'upi',
         'created_at': now,
         'customer_name': state.customerName,

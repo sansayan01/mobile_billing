@@ -40,7 +40,8 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
   Future<void> _onLoadBillHistory(
       LoadBillHistory event, Emitter<ReportState> emit) async {
-    emit(state.copyWith(status: ReportStatus.loading, error: null));
+    // Preserve existing data while loading (don't clear billHistory)
+    emit(state.copyWith(status: ReportStatus.loading));
 
     final result = await getBillHistoryUseCase(
       BillHistoryParams(
@@ -93,7 +94,8 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
   Future<void> _onLoadDailySales(
       LoadDailySales event, Emitter<ReportState> emit) async {
-    emit(state.copyWith(status: ReportStatus.loading, error: null));
+    // Preserve existing data while loading (don't clear billHistory)
+    emit(state.copyWith(status: ReportStatus.loading));
 
     final result = await getDailySalesUseCase(
         DailySalesParams(date: event.date, shopId: _currentShopId));
@@ -108,7 +110,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
   Future<void> _onLoadSalesRange(
       LoadSalesRange event, Emitter<ReportState> emit) async {
-    emit(state.copyWith(status: ReportStatus.loading, error: null));
+    emit(state.copyWith(status: ReportStatus.loading));
 
     final result = await getSalesRangeUseCase(
       SalesRangeParams(from: event.from, to: event.to, shopId: _currentShopId),
@@ -124,7 +126,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
   Future<void> _onLoadLowStockProducts(
       LoadLowStockProducts event, Emitter<ReportState> emit) async {
-    emit(state.copyWith(status: ReportStatus.loading, error: null));
+    emit(state.copyWith(status: ReportStatus.loading));
 
     final result = await getLowStockProductsUseCase(
         LowStockParams(threshold: event.threshold, shopId: _currentShopId));
@@ -139,7 +141,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
   Future<void> _onLoadStockMovements(
       LoadStockMovements event, Emitter<ReportState> emit) async {
-    emit(state.copyWith(status: ReportStatus.loading, error: null));
+    emit(state.copyWith(status: ReportStatus.loading));
 
     final result = await getStockMovementsUseCase(
       StockMovementParams(

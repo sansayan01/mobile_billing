@@ -400,8 +400,8 @@
     "semantic_hash": "dd51899fcf8e4fce686c8d0788715b6e"
   },
   "design.md": {
-    "mtime": 1784324779.847526,
-    "ast_hash": "6d596973cb08369da05c0a5075404506",
+    "mtime": 1784678621.108716,
+    "ast_hash": "55a231a80204508267b61e9e542a8d88",
     "semantic_hash": ""
   },
   "ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md": {
@@ -410,8 +410,8 @@
     "semantic_hash": "e175e436acacf76c814d83532d0b662c"
   },
   "memory.md": {
-    "mtime": 1784677460.5728333,
-    "ast_hash": "7b7dbf3bbbddad8e40de39a9735478ba",
+    "mtime": 1784678636.2058816,
+    "ast_hash": "5992eea7f7e3573bf9d0cb4a6274eba0",
     "semantic_hash": ""
   },
   "phases.md": {
@@ -715,8 +715,8 @@
     "semantic_hash": "5aa9157e2174bc8fe6d9d1ed86ed569a"
   },
   "lib/core/widgets/dashboard_action_card.dart": {
-    "mtime": 1784324662.7065217,
-    "ast_hash": "58b719810ec3f78c72b4460315125fed",
+    "mtime": 1784678221.5123131,
+    "ast_hash": "7caee74af1dc4083760c99a4c750aa30",
     "semantic_hash": ""
   },
   "lib/core/widgets/stat_card.dart": {
@@ -725,8 +725,8 @@
     "semantic_hash": "bfd44e79359721e6bd5186667ca7822a"
   },
   "lib/features/dashboard/presentation/pages/dashboard_page.dart": {
-    "mtime": 1784674950.009482,
-    "ast_hash": "3539e8da0ec9a0fd1425db4fa9352881",
+    "mtime": 1784678304.0798037,
+    "ast_hash": "9087d6072928c3834d0e293854302175",
     "semantic_hash": ""
   },
   "lib/core/widgets/app_back_button.dart": {
@@ -835,13 +835,13 @@
     "semantic_hash": ""
   },
   "lib/core/widgets/greeting_header.dart": {
-    "mtime": 1784323649.6782486,
-    "ast_hash": "4fc6bdfd41d2e0bec64876309fca5247",
+    "mtime": 1784678230.006393,
+    "ast_hash": "6d934770c6d90e13152a39b7fe4acb99",
     "semantic_hash": ""
   },
   "lib/core/widgets/premium_stat_card.dart": {
-    "mtime": 1784323649.741664,
-    "ast_hash": "56ebab890a2543a374727538e2cedd92",
+    "mtime": 1784678207.702986,
+    "ast_hash": "935fe91a879df11dece64f9be99b70db",
     "semantic_hash": ""
   },
   "supabase/migrations/009_add_customer_phone_to_bills.sql": {
@@ -852,6 +852,26 @@
   "lib/features/billing/presentation/pages/receipt_preview_page.dart": {
     "mtime": 1784637882.1573079,
     "ast_hash": "a43eb569e55f022fd90c69e51fa287dc",
+    "semantic_hash": ""
+  },
+  "lib/core/widgets/glass_card.dart": {
+    "mtime": 1784678387.292459,
+    "ast_hash": "798d94f092ea7bf2f5115f9178d5cee3",
+    "semantic_hash": ""
+  },
+  "lib/core/widgets/inventory_health_card.dart": {
+    "mtime": 1784678100.150569,
+    "ast_hash": "42aee3c04b46812dc65cd6f524d4d633",
+    "semantic_hash": ""
+  },
+  "lib/core/widgets/recent_transactions_card.dart": {
+    "mtime": 1784678429.1779509,
+    "ast_hash": "d1aef4197257694f5ee743dde747fced",
+    "semantic_hash": ""
+  },
+  "lib/core/widgets/sales_trend_card.dart": {
+    "mtime": 1784678119.183548,
+    "ast_hash": "592f278ddd51e97854370e4989cea504",
     "semantic_hash": ""
   }
 }

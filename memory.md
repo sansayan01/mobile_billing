@@ -1,5 +1,50 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-07-22 — Dashboard Liquid Glass Redesign ✅
+
+### What Was Done
+1. **Complete dashboard redesign** — liquid glass / glassmorphism design language
+2. **New reusable widgets created**:
+   - `GlassCard` — reusable glassmorphism container (`lib/core/widgets/glass_card.dart`)
+   - `SalesTrendCard` — 7-day sales trend mini chart with CustomPainter (`lib/core/widgets/sales_trend_card.dart`)
+   - `RecentTransactionsCard` — last 5 bills feed with payment badges (`lib/core/widgets/recent_transactions_card.dart`)
+   - `InventoryHealthCard` — inventory health bar with stats (`lib/core/widgets/inventory_health_card.dart`)
+3. **Existing widgets redesigned with glass effect**:
+   - `PremiumStatCard` — frosted glass with tinted color, dark text for readability
+   - `GreetingHeader` — glass container with waving hand icon
+   - `DashboardActionCard` — glass CTA card with colored accent
+   - `QuickActionTile` — glass grid tiles
+4. **Dashboard page** — complete layout redesign:
+   - 4-color gradient background (lavender → blue → purple → green)
+   - SliverAppBar (floating + snap) instead of regular AppBar
+   - CustomScrollView for smooth scrolling
+   - Advanced stats: weekly sales trend, recent transactions, inventory health
+   - All existing features preserved: greeting, sales, quick actions, low stock, search
+5. **Text color fixes** — PremiumStatCard + DashboardActionCard use dark/colored text (not white) for readability on light glass backgrounds
+6. **GreetingHeader fix** — removed boxShadow that doesn't render on BackdropFilter
+
+### Design System Changes
+- Design language: Material 3 → Liquid Glass / Glassmorphism
+- Background: flat `#F2F2F7` → 4-color gradient
+- Cards: solid/surface → `BackdropFilter` + semi-transparent glass
+- Borders: none/grey → subtle white glass borders (0.20 alpha)
+
+### Files Modified
+- `lib/core/widgets/glass_card.dart` — NEW
+- `lib/core/widgets/sales_trend_card.dart` — NEW
+- `lib/core/widgets/recent_transactions_card.dart` — NEW
+- `lib/core/widgets/inventory_health_card.dart` — NEW
+- `lib/core/widgets/premium_stat_card.dart` — glass redesign
+- `lib/core/widgets/greeting_header.dart` — glass redesign
+- `lib/core/widgets/dashboard_action_card.dart` — glass redesign
+- `lib/features/dashboard/presentation/pages/dashboard_page.dart` — complete redesign
+- `design.md` — updated design system docs
+
+### flutter analyze
+- 0 errors, 0 warnings, 0 infos across entire project ✅
+
+---
+
 ## Current Session: 2026-07-21 — Billing History Section Audit + Warnings Fix ✅
 
 ### What Was Done

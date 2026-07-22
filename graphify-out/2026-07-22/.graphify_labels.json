@@ -96,6 +96,7 @@
   "94": "Memory",
   "95": "Memory",
   "96": "Web",
+  "97": "premium_stat_card.dart",
   "98": "Memory",
   "99": "App",
   "100": "Launchimage",
@@ -142,5 +143,8 @@
   "141": "package:billing_app/core/theme/app_theme.dart",
   "142": "package:fpdart/fpdart.dart",
   "143": "User Roles (3-Tier)",
-  "144": "RPD — Requirements & Product Definition"
+  "144": "RPD — Requirements & Product Definition",
+  "145": "Row Level Security (RLS) Policies",
+  "146": "LogoutRequested",
+  "147": "ProductRepository"
 }

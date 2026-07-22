@@ -1,12 +1,14 @@
 # Design
 
-## Theme
+## Theme — Liquid Glass
 - **Material 3** — Flutter Material Design 3
+- **Design Language**: Liquid Glass / Glassmorphism
 - **Primary Color**: `#6C63FF` (Purple-ish)
 - **Secondary**: `#03DAC6` (Teal)
-- **Background**: `#F2F2F7` (Light gray)
-- **Surface**: White
+- **Background**: Gradient (Lavender `#E8EAF6` → Light Blue `#E3F2FD` → Light Purple `#F3E5F5` → Light Green `#E8F5E9`)
+- **Surface**: Semi-transparent white glass (`Colors.white @ 0.45–0.55 alpha`)
 - **Error**: `#B00020` (Red)
+- **Glass Effect**: `ClipRRect` → `BackdropFilter(ImageFilter.blur(sigma: 18-20))` → semi-transparent container
 
 ## Typography
 - **Font Family**: IBM Plex Sans (`google_fonts`)
@@ -16,10 +18,12 @@
 
 ## Component Specs
 
-### Cards
-- Border radius: 16px
-- Elevation: 4
-- Shadow: black 10% (custom `withValues`)
+### Cards (Glass Effect)
+- Border radius: 20px
+- Glass: `ClipRRect` → `BackdropFilter(blur: 20)` → semi-transparent white (0.55 alpha)
+- Border: `Colors.white @ 0.20 alpha`, 1px width
+- Shadow: dual — soft colored glow + ambient depth
+- Reusable component: `GlassCard` (`lib/core/widgets/glass_card.dart`)
 
 ### Buttons (PrimaryButton)
 - Background: Primary color (`#6C63FF`)
@@ -36,46 +40,85 @@
 
 ### PremiumStatCard (`lib/core/widgets/premium_stat_card.dart`)
 - `PremiumStatCard({label, value, color, icon?})`
-- Gradient background (color → 72% alpha), radius 20, colored shadow (blur 16, offset 0,6)
-- Icon chip: white 25% bg, radius 10; label: 12px w600 white 90%, letterSpacing 0.4
-- Value: 28px `FontWeight.w800`, white, height 1.1
-- Faint watermark icon (size 56, alpha 0.1) bottom-right via Stack
+- Glass effect: `ClipRRect` → `BackdropFilter(blur: 18)` → tinted glass (`color @ 0.13 alpha`)
+- Border: white 0.20 alpha; radius 20
+- Shadow: dual — colored glow (color @ 0.28, blur 24) + ambient depth
+- Icon chip: `color @ 0.18 alpha` bg, icon uses `color` directly
+- Label: 12px w600 `color @ 0.85`, letterSpacing 0.4
+- Value: 28px `FontWeight.w800`, `color`, height 1.1
+- Watermark icon: size 58, `color @ 0.06` (very subtle)
 
 ### GreetingHeader (`lib/core/widgets/greeting_header.dart`)
 - `GreetingHeader({userName})`
-- Avatar: 48px gradient circle (primary → 70%), radius 16, colored shadow (blur 12)
-- Initial: 22px w800 white; Greeting: 13px grey[500]; Name: 26px w800 black87
-- Date: 12px grey[400], offset left 62px (aligned under name)
+- Glass container: `ClipRRect(24)` → `BackdropFilter(blur: 20)` → white @ 0.50 alpha
+- Border: white 0.20, width 1.5
+- Avatar: 52px gradient circle (primary → 60%), radius 18, shadow
+- Initial: 24px w800 white; Greeting: 14px grey[500]; Name: 28px w800 black87
+- Waving hand icon on right (decorative)
+- Date: 12px grey[400], offset left 68px
 
 ### DashboardActionCard (`lib/core/widgets/dashboard_action_card.dart`)
 - `DashboardActionCard({icon, title, subtitle?, color, onTap})`
-- Gradient bg (color → 82%), radius 20, dual shadow (colored + subtle black)
+- Glass: `ClipRRect(20)` → `BackdropFilter(blur: 20)` → white @ 0.50 alpha
+- Border: `color @ 0.28 alpha`; shadow: colored glow + ambient
 - Animated entry: `TweenAnimationBuilder` scale 0.98→1.0, 1200ms easeOutCubic
-- Icon in white 22% bg chip (radius 14); arrow in white 18% bg circle
-- Title: 18px w800 white letterSpacing -0.2; subtitle: 13px w500 white 85%
+- Icon in `color @ 0.15` chip (radius 14); arrow in `color @ 0.15` circle
+- Title: 18px w800 `color`; subtitle: 13px w500 grey[600]
 
 ### QuickActionTile (`lib/core/widgets/dashboard_action_card.dart`)
 - `QuickActionTile({icon, label, color, onTap})`
-- White surface, radius 20, border grey[200] 1px, dual soft shadow
+- Glass: white @ 0.45 alpha, radius 20, border white 0.20
 - Animated entry: `TweenAnimationBuilder` scale 0.85→1.0, 400ms easeOutBack
-- Icon chip: color @12%, radius 14; icon size 26; label: 12px w700 black87
-- Tap: splashColor = color @15%
+- Icon chip: `color @ 0.12%`, radius 14; icon size 26; label: 12px w700 black87
+- Tap: splashColor = `color @ 15%`
+
+### GlassCard (`lib/core/widgets/glass_card.dart`)
+- `GlassCard({child, padding?, margin?, blur, tint, borderOpacity, borderRadius, width?, height?, onTap?})`
+- Reusable glassmorphism container: `ClipRRect` → `BackdropFilter(blur: 20)` → semi-transparent white
+- Default: tint white, border 0.20, radius 20, alpha 0.55
+
+### SalesTrendCard (`lib/core/widgets/sales_trend_card.dart`)
+- `SalesTrendCard({values: List<double>, labels: List<String>})`
+- Glass card with mini CustomPainter line chart (7-day trend)
+- Smooth bezier curve, gradient fill, data dots, max-value badge
+- Stats row: Total + Avg/day in colored chips
+- Empty state: "No data yet" placeholder
+
+### RecentTransactionsCard (`lib/core/widgets/recent_transactions_card.dart`)
+- `RecentTransactionsCard({transactions: List<RecentTransaction>})`
+- `RecentTransaction` data class: id, staffName, grandTotal, paymentMethod, itemCount, createdAt
+- Glass card with max 5 transaction rows
+- Payment badges: UPI=green, Cash=orange, Card=blue, Credit=purple
+- Time ago formatting (Just now, X min ago, etc.)
+- "See All" link on right
+
+### InventoryHealthCard (`lib/core/widgets/inventory_health_card.dart`)
+- `InventoryHealthCard({totalProducts, lowStockCount, outOfStockCount, onViewDetails?})`
+- Glass card with proportional health bar (green/orange/red segments)
+- 3 stat items: In Stock, Low Stock, Out of Stock
+- Health score: Good/Fair/Critical based on thresholds
 
 ### LowStockBanner (`inline in dashboard_page.dart`)
 - Gradient bg (errorColor 12% → 6%), radius 16, border errorColor 35% width 1.2
 - Icon in errorColor 15% bg chip (radius 10), icon size 20
 - Text: 14px w600 errorColor; chevron: errorColor 70%, size 20
 
-### Dashboard Screen
-- Greeting: `GreetingHeader` widget (avatar + name + date)
-- Today's Sales: 4 PremiumStatCards in 2×2 grid (Total Sales green, Bills primary, Avg Bill orange, Discount pink)
-- Quick Actions: 1 animated `DashboardActionCard` ("New Bill") + 3-col animated `QuickActionTile` grid (6-7 tiles)
-- Low-stock alert: gradient error banner (tappable → /reports/low-stock)
+### Dashboard Screen — Liquid Glass Layout
+- Background: 4-color gradient (lavender → blue → purple → green)
+- `SliverAppBar` with transparent bg, floating + snap
+- Greeting: `GreetingHeader` glass card (avatar + name + date)
+- Low-stock alert: glass error banner (tappable → /reports/low-stock)
+- Today's Sales: 4 `PremiumStatCard` glass cards in 2×2 grid
+- Weekly Trend: `SalesTrendCard` glass card (7-day chart from billHistory)
+- Recent Transactions: `RecentTransactionsCard` glass card (last 5 bills)
+- Inventory Health: `InventoryHealthCard` glass card (product stats from ProductBloc)
+- Quick Actions: 1 `DashboardActionCard` glass ("New Bill") + 3-col `QuickActionTile` glass grid (6-7 tiles)
 
 ### Animations
 - DashboardActionCard: scale 0.98→1.0 on mount (1200ms)
 - QuickActionTile: scale 0.85→1.0 stagger (400ms easeOutBack)
-- All stat cards instant render (no animation to avoid layout jitter)
+- All stat cards: glass effect renders instantly (no animation to avoid layout jitter)
+- SalesTrendCard: CustomPainter renders smooth bezier curve on mount
 
 ### Scanner Screen
 - Camera occupies top 40% of screen

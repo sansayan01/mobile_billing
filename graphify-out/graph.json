@@ -603,7 +603,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_flutter_bloc_flutter_bloc_dart",
-      "community": 0,
+      "community": 27,
       "community_name": "Presentation",
       "norm_label": "package:flutter_bloc/flutter_bloc.dart"
     },
@@ -614,8 +614,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_go_router_go_router_dart",
-      "community": 93,
-      "community_name": "StatefulWidget",
+      "community": 138,
+      "community_name": "app_back_button.dart",
       "norm_label": "package:go_router/go_router.dart"
     },
     {
@@ -988,8 +988,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_config_routes_app_shell",
-      "community": 93,
-      "community_name": "StatefulWidget",
+      "community": 71,
+      "community_name": "Widgets",
       "norm_label": "app_shell.dart"
     },
     {
@@ -999,8 +999,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_config_routes_app_shell_appshell",
-      "community": 93,
-      "community_name": "StatefulWidget",
+      "community": 71,
+      "community_name": "Widgets",
       "norm_label": "appshell"
     },
     {
@@ -1010,8 +1010,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "statelesswidget",
-      "community": 29,
-      "community_name": "Widgets",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "statelesswidget"
     },
     {
@@ -1021,8 +1021,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_config_routes_app_shell_child",
-      "community": 93,
-      "community_name": "StatefulWidget",
+      "community": 71,
+      "community_name": "Widgets",
       "norm_label": "child"
     },
     {
@@ -1032,8 +1032,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widget",
-      "community": 93,
-      "community_name": "StatefulWidget",
+      "community": 71,
+      "community_name": "Widgets",
       "norm_label": "widget"
     },
     {
@@ -1065,8 +1065,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "core_widgets_app_drawer_dart",
-      "community": 93,
-      "community_name": "StatefulWidget",
+      "community": 71,
+      "community_name": "Widgets",
       "norm_label": "../../core/widgets/app_drawer.dart"
     },
     {
@@ -1307,8 +1307,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_error_failure",
-      "community": 81,
-      "community_name": "Equatable",
+      "community": 73,
+      "community_name": "Domain",
       "norm_label": "failure.dart"
     },
     {
@@ -1318,8 +1318,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_error_failure_failure",
-      "community": 81,
-      "community_name": "Equatable",
+      "community": 73,
+      "community_name": "Domain",
       "norm_label": "failure"
     },
     {
@@ -1329,8 +1329,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "equatable",
-      "community": 90,
-      "community_name": "category_list_page.dart",
+      "community": 8,
+      "community_name": "Usecases",
       "norm_label": "equatable"
     },
     {
@@ -1340,8 +1340,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_error_failure_cachefailure",
-      "community": 81,
-      "community_name": "Equatable",
+      "community": 73,
+      "community_name": "Domain",
       "norm_label": "cachefailure"
     },
     {
@@ -1351,8 +1351,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_error_failure_serverfailure",
-      "community": 81,
-      "community_name": "Equatable",
+      "community": 73,
+      "community_name": "Domain",
       "norm_label": "serverfailure"
     },
     {
@@ -1362,8 +1362,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_error_failure_message",
-      "community": 81,
-      "community_name": "Equatable",
+      "community": 73,
+      "community_name": "Domain",
       "norm_label": "message"
     },
     {
@@ -1373,8 +1373,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_error_failure_props",
-      "community": 81,
-      "community_name": "Equatable",
+      "community": 73,
+      "community_name": "Domain",
       "norm_label": "props"
     },
     {
@@ -1384,8 +1384,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "list",
-      "community": 81,
-      "community_name": "Equatable",
+      "community": 73,
+      "community_name": "Domain",
       "norm_label": "list"
     },
     {
@@ -1395,8 +1395,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_equatable_equatable_dart",
-      "community": 81,
-      "community_name": "Equatable",
+      "community": 73,
+      "community_name": "Domain",
       "norm_label": "package:equatable/equatable.dart"
     },
     {
@@ -1406,8 +1406,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_realtime_realtime_service",
-      "community": 54,
-      "community_name": "Models",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "realtime_service.dart"
     },
     {
@@ -1417,8 +1417,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_realtime_realtime_service_realtimeservice",
-      "community": 54,
-      "community_name": "Models",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "realtimeservice"
     },
     {
@@ -1428,8 +1428,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_realtime_realtime_service_channels",
-      "community": 54,
-      "community_name": "Models",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "_channels"
     },
     {
@@ -1439,8 +1439,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "map",
-      "community": 54,
-      "community_name": "Models",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "map"
     },
     {
@@ -1450,8 +1450,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_realtime_realtime_service_isconnected",
-      "community": 54,
-      "community_name": "Models",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "_isconnected"
     },
     {
@@ -1461,8 +1461,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "bool_get",
-      "community": 54,
-      "community_name": "Models",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "bool get"
     },
     {
@@ -1472,8 +1472,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_realtime_realtime_service_subscribetotable",
-      "community": 54,
-      "community_name": "Models",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "subscribetotable"
     },
     {
@@ -1483,8 +1483,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_realtime_realtime_service_subscribetoproducts",
-      "community": 54,
-      "community_name": "Models",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "subscribetoproducts"
     },
     {
@@ -1494,8 +1494,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_realtime_realtime_service_unsubscribe",
-      "community": 54,
-      "community_name": "Models",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "unsubscribe"
     },
     {
@@ -1505,8 +1505,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_realtime_realtime_service_dispose",
-      "community": 54,
-      "community_name": "Models",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "dispose"
     },
     {
@@ -1516,8 +1516,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_supabase_flutter_supabase_flutter_dart",
-      "community": 140,
-      "community_name": "supabase_client.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "package:supabase_flutter/supabase_flutter.dart"
     },
     {
@@ -1527,8 +1527,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "supabase_supabase_client_dart",
-      "community": 54,
-      "community_name": "Models",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "../supabase/supabase_client.dart"
     },
     {
@@ -1934,8 +1934,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_supabase_supabase_client",
-      "community": 140,
-      "community_name": "supabase_client.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "supabase_client.dart"
     },
     {
@@ -1945,8 +1945,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_supabase_supabase_client_supabaseconfig",
-      "community": 140,
-      "community_name": "supabase_client.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "supabaseconfig"
     },
     {
@@ -1956,8 +1956,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_supabase_supabase_client_url",
-      "community": 140,
-      "community_name": "supabase_client.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "_url"
     },
     {
@@ -1967,8 +1967,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_supabase_supabase_client_anonkey",
-      "community": 140,
-      "community_name": "supabase_client.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "_anonkey"
     },
     {
@@ -1978,8 +1978,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_supabase_supabase_client_client",
-      "community": 140,
-      "community_name": "supabase_client.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "client"
     },
     {
@@ -1989,8 +1989,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "static_supabaseclient_get",
-      "community": 140,
-      "community_name": "supabase_client.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "static supabaseclient get"
     },
     {
@@ -2000,8 +2000,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_supabase_supabase_client_initialize",
-      "community": 140,
-      "community_name": "supabase_client.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "initialize"
     },
     {
@@ -2121,8 +2121,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_google_fonts_google_fonts_dart",
-      "community": 97,
-      "community_name": "premium_stat_card.dart",
+      "community": 60,
+      "community_name": "App",
       "norm_label": "package:google_fonts/google_fonts.dart"
     },
     {
@@ -2132,8 +2132,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_usecase_usecase",
-      "community": 28,
-      "community_name": "Domain",
+      "community": 142,
+      "community_name": "package:fpdart/fpdart.dart",
       "norm_label": "usecase.dart"
     },
     {
@@ -2154,8 +2154,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_usecase_usecase_noparams",
-      "community": 28,
-      "community_name": "Domain",
+      "community": 142,
+      "community_name": "package:fpdart/fpdart.dart",
       "norm_label": "noparams"
     },
     {
@@ -2165,8 +2165,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_usecase_usecase_call",
-      "community": 28,
-      "community_name": "Domain",
+      "community": 142,
+      "community_name": "package:fpdart/fpdart.dart",
       "norm_label": "call"
     },
     {
@@ -2176,8 +2176,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_fpdart_fpdart_dart",
-      "community": 28,
-      "community_name": "Domain",
+      "community": 142,
+      "community_name": "package:fpdart/fpdart.dart",
       "norm_label": "package:fpdart/fpdart.dart"
     },
     {
@@ -2187,8 +2187,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "error_failure_dart",
-      "community": 28,
-      "community_name": "Domain",
+      "community": 142,
+      "community_name": "package:fpdart/fpdart.dart",
       "norm_label": "../error/failure.dart"
     },
     {
@@ -2253,8 +2253,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_utils_printer_helper_printerhelper",
-      "community": 51,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "printerhelper"
     },
     {
@@ -2484,7 +2484,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_intl_intl_dart",
-      "community": 37,
+      "community": 50,
       "community_name": "Presentation",
       "norm_label": "package:intl/intl.dart"
     },
@@ -2495,8 +2495,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_print_bluetooth_thermal_print_bluetooth_thermal_dart",
-      "community": 58,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "package:print_bluetooth_thermal/print_bluetooth_thermal.dart"
     },
     {
@@ -2506,8 +2506,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_permission_handler_permission_handler_dart",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "package:permission_handler/permission_handler.dart"
     },
     {
@@ -2517,8 +2517,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_app_back_button",
-      "community": 93,
-      "community_name": "StatefulWidget",
+      "community": 65,
+      "community_name": "Implementation",
       "norm_label": "app_back_button.dart"
     },
     {
@@ -2528,8 +2528,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_app_back_button_appbackbutton",
-      "community": 93,
-      "community_name": "StatefulWidget",
+      "community": 65,
+      "community_name": "Implementation",
       "norm_label": "appbackbutton"
     },
     {
@@ -2539,8 +2539,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_app_back_button_icon",
-      "community": 93,
-      "community_name": "StatefulWidget",
+      "community": 65,
+      "community_name": "Implementation",
       "norm_label": "icon"
     },
     {
@@ -2550,8 +2550,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "icondata",
-      "community": 93,
-      "community_name": "StatefulWidget",
+      "community": 65,
+      "community_name": "Implementation",
       "norm_label": "icondata?"
     },
     {
@@ -2561,8 +2561,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_app_back_button_size",
-      "community": 93,
-      "community_name": "StatefulWidget",
+      "community": 65,
+      "community_name": "Implementation",
       "norm_label": "size"
     },
     {
@@ -2594,8 +2594,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_app_drawer_appdrawer",
-      "community": 146,
-      "community_name": "LogoutRequested",
+      "community": 16,
+      "community_name": "Presentation",
       "norm_label": "appdrawer"
     },
     {
@@ -2726,8 +2726,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_scan",
-      "community": 138,
-      "community_name": "app_back_button.dart",
+      "community": 0,
+      "community_name": "Presentation",
       "norm_label": "route /scan"
     },
     {
@@ -2814,8 +2814,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_billing_app_features_auth_presentation_bloc_auth_bloc_dart",
-      "community": 27,
-      "community_name": "Presentation",
+      "community": 29,
+      "community_name": "Widgets",
       "norm_label": "package:billing_app/features/auth/presentation/bloc/auth_bloc.dart"
     },
     {
@@ -2825,8 +2825,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_billing_app_features_auth_presentation_bloc_auth_event_dart",
-      "community": 27,
-      "community_name": "Presentation",
+      "community": 29,
+      "community_name": "Widgets",
       "norm_label": "package:billing_app/features/auth/presentation/bloc/auth_event.dart"
     },
     {
@@ -2836,8 +2836,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_billing_app_features_auth_presentation_bloc_auth_state_dart",
-      "community": 27,
-      "community_name": "Presentation",
+      "community": 29,
+      "community_name": "Widgets",
       "norm_label": "package:billing_app/features/auth/presentation/bloc/auth_state.dart"
     },
     {
@@ -2913,8 +2913,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "string",
-      "community": 48,
-      "community_name": "Presentation",
+      "community": 79,
+      "community_name": "Domain",
       "norm_label": "string?"
     },
     {
@@ -2970,6 +2970,182 @@
       "id": "lib_core_widgets_dashboard_action_card_build",
       "community": 66,
       "community_name": "Widgets",
+      "norm_label": "build"
+    },
+    {
+      "label": "dart:ui",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "dart_ui",
+      "community": 97,
+      "community_name": "premium_stat_card.dart",
+      "norm_label": "dart:ui"
+    },
+    {
+      "label": "glass_card.dart",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card",
+      "community": 81,
+      "community_name": "Equatable",
+      "norm_label": "glass_card.dart"
+    },
+    {
+      "label": "GlassCard",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card_glasscard",
+      "community": 81,
+      "community_name": "Equatable",
+      "norm_label": "glasscard"
+    },
+    {
+      "label": "child",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card_child",
+      "community": 81,
+      "community_name": "Equatable",
+      "norm_label": "child"
+    },
+    {
+      "label": "padding",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card_padding",
+      "community": 81,
+      "community_name": "Equatable",
+      "norm_label": "padding"
+    },
+    {
+      "label": "EdgeInsetsGeometry",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "edgeinsetsgeometry",
+      "community": 52,
+      "community_name": "Widgets",
+      "norm_label": "edgeinsetsgeometry"
+    },
+    {
+      "label": "margin",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card_margin",
+      "community": 81,
+      "community_name": "Equatable",
+      "norm_label": "margin"
+    },
+    {
+      "label": "blur",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card_blur",
+      "community": 81,
+      "community_name": "Equatable",
+      "norm_label": "blur"
+    },
+    {
+      "label": "tint",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card_tint",
+      "community": 81,
+      "community_name": "Equatable",
+      "norm_label": "tint"
+    },
+    {
+      "label": "borderOpacity",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card_borderopacity",
+      "community": 81,
+      "community_name": "Equatable",
+      "norm_label": "borderopacity"
+    },
+    {
+      "label": "borderRadius",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card_borderradius",
+      "community": 81,
+      "community_name": "Equatable",
+      "norm_label": "borderradius"
+    },
+    {
+      "label": "width",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card_width",
+      "community": 81,
+      "community_name": "Equatable",
+      "norm_label": "width"
+    },
+    {
+      "label": "double?",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "double",
+      "community": 70,
+      "community_name": "Domain",
+      "norm_label": "double?"
+    },
+    {
+      "label": "height",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card_height",
+      "community": 81,
+      "community_name": "Equatable",
+      "norm_label": "height"
+    },
+    {
+      "label": "onTap",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card_ontap",
+      "community": 81,
+      "community_name": "Equatable",
+      "norm_label": "ontap"
+    },
+    {
+      "label": "build",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_glass_card_build",
+      "community": 81,
+      "community_name": "Equatable",
       "norm_label": "build"
     },
     {
@@ -3045,8 +3221,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_input_label",
-      "community": 71,
-      "community_name": "Widgets",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "input_label.dart"
     },
     {
@@ -3056,8 +3232,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_input_label_inputlabel",
-      "community": 71,
-      "community_name": "Widgets",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "inputlabel"
     },
     {
@@ -3067,8 +3243,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_input_label_text",
-      "community": 71,
-      "community_name": "Widgets",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "text"
     },
     {
@@ -3078,9 +3254,141 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_input_label_build",
-      "community": 71,
-      "community_name": "Widgets",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "build"
+    },
+    {
+      "label": "inventory_health_card.dart",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_inventory_health_card",
+      "community": 86,
+      "community_name": "printer_repository.dart",
+      "norm_label": "inventory_health_card.dart"
+    },
+    {
+      "label": "InventoryHealthCard",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_inventory_health_card_inventoryhealthcard",
+      "community": 86,
+      "community_name": "printer_repository.dart",
+      "norm_label": "inventoryhealthcard"
+    },
+    {
+      "label": "_StatItem",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_inventory_health_card_statitem",
+      "community": 86,
+      "community_name": "printer_repository.dart",
+      "norm_label": "_statitem"
+    },
+    {
+      "label": "totalProducts",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_inventory_health_card_totalproducts",
+      "community": 86,
+      "community_name": "printer_repository.dart",
+      "norm_label": "totalproducts"
+    },
+    {
+      "label": "lowStockCount",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_inventory_health_card_lowstockcount",
+      "community": 86,
+      "community_name": "printer_repository.dart",
+      "norm_label": "lowstockcount"
+    },
+    {
+      "label": "outOfStockCount",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_inventory_health_card_outofstockcount",
+      "community": 86,
+      "community_name": "printer_repository.dart",
+      "norm_label": "outofstockcount"
+    },
+    {
+      "label": "onViewDetails",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_inventory_health_card_onviewdetails",
+      "community": 86,
+      "community_name": "printer_repository.dart",
+      "norm_label": "onviewdetails"
+    },
+    {
+      "label": "label",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_inventory_health_card_label",
+      "community": 86,
+      "community_name": "printer_repository.dart",
+      "norm_label": "label"
+    },
+    {
+      "label": "count",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_inventory_health_card_count",
+      "community": 86,
+      "community_name": "printer_repository.dart",
+      "norm_label": "count"
+    },
+    {
+      "label": "color",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_inventory_health_card_color",
+      "community": 86,
+      "community_name": "printer_repository.dart",
+      "norm_label": "color"
+    },
+    {
+      "label": "build",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_inventory_health_card_build",
+      "community": 86,
+      "community_name": "printer_repository.dart",
+      "norm_label": "build"
+    },
+    {
+      "label": "_buildGlassContainer",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_inventory_health_card_buildglasscontainer",
+      "community": 86,
+      "community_name": "printer_repository.dart",
+      "norm_label": "_buildglasscontainer"
     },
     {
       "label": "premium_stat_card.dart",
@@ -3177,7 +3485,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_primary_button_primarybutton",
-      "community": 29,
+      "community": 52,
       "community_name": "Widgets",
       "norm_label": "primarybutton"
     },
@@ -3248,17 +3556,6 @@
       "norm_label": "padding"
     },
     {
-      "label": "EdgeInsetsGeometry",
-      "file_type": "code",
-      "source_file": null,
-      "source_location": null,
-      "_origin": "ast",
-      "id": "edgeinsetsgeometry",
-      "community": 52,
-      "community_name": "Widgets",
-      "norm_label": "edgeinsetsgeometry"
-    },
-    {
       "label": "isFullWidth",
       "file_type": "code",
       "source_file": "lib/core/widgets/primary_button.dart",
@@ -3312,6 +3609,424 @@
       "community": 52,
       "community_name": "Widgets",
       "norm_label": "build"
+    },
+    {
+      "label": "recent_transactions_card.dart",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "recent_transactions_card.dart"
+    },
+    {
+      "label": "RecentTransaction",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_recenttransaction",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "recenttransaction"
+    },
+    {
+      "label": "RecentTransactionsCard",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_recenttransactionscard",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
+      "norm_label": "recenttransactionscard"
+    },
+    {
+      "label": "id",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_id",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "id"
+    },
+    {
+      "label": "staffName",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_staffname",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "staffname"
+    },
+    {
+      "label": "grandTotal",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_grandtotal",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "grandtotal"
+    },
+    {
+      "label": "paymentMethod",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_paymentmethod",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "paymentmethod"
+    },
+    {
+      "label": "itemCount",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_itemcount",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "itemcount"
+    },
+    {
+      "label": "createdAt",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_createdat",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "createdat"
+    },
+    {
+      "label": "DateTime",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "datetime",
+      "community": 79,
+      "community_name": "Domain",
+      "norm_label": "datetime"
+    },
+    {
+      "label": "transactions",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_transactions",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "transactions"
+    },
+    {
+      "label": "_timeAgo",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_timeago",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "_timeago"
+    },
+    {
+      "label": "_formatCurrency",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_formatcurrency",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "_formatcurrency"
+    },
+    {
+      "label": "_paymentColor",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_paymentcolor",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "_paymentcolor"
+    },
+    {
+      "label": "build",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_build",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "build"
+    },
+    {
+      "label": "_buildTransactionItem",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_buildtransactionitem",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "_buildtransactionitem"
+    },
+    {
+      "label": "_buildPaymentBadge",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_buildpaymentbadge",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "_buildpaymentbadge"
+    },
+    {
+      "label": "_buildEmptyState",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_recent_transactions_card_buildemptystate",
+      "community": 58,
+      "community_name": "printer_repository.dart",
+      "norm_label": "_buildemptystate"
+    },
+    {
+      "label": "sales_trend_card.dart",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "sales_trend_card.dart"
+    },
+    {
+      "label": "SalesTrendCard",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_salestrendcard",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
+      "norm_label": "salestrendcard"
+    },
+    {
+      "label": "_SalesTrendPainter",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_salestrendpainter",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "_salestrendpainter"
+    },
+    {
+      "label": "CustomPainter",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "custompainter",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "custompainter"
+    },
+    {
+      "label": "values",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_values",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "values"
+    },
+    {
+      "label": "labels",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_labels",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "labels"
+    },
+    {
+      "label": "_primaryColor",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_primarycolor",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "_primarycolor"
+    },
+    {
+      "label": "_hasData",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_hasdata",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "_hasdata"
+    },
+    {
+      "label": "_leftPad",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_leftpad",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "_leftpad"
+    },
+    {
+      "label": "static const double",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "static_const_double",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "static const double"
+    },
+    {
+      "label": "_rightPad",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_rightpad",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "_rightpad"
+    },
+    {
+      "label": "_topPad",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_toppad",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "_toppad"
+    },
+    {
+      "label": "_bottomPad",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_bottompad",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "_bottompad"
+    },
+    {
+      "label": "build",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_build",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "build"
+    },
+    {
+      "label": "_buildPlaceholder",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_buildplaceholder",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "_buildplaceholder"
+    },
+    {
+      "label": "_buildStatsRow",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_buildstatsrow",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "_buildstatsrow"
+    },
+    {
+      "label": "_buildStatChip",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_buildstatchip",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "_buildstatchip"
+    },
+    {
+      "label": "_formatCurrency",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_formatcurrency",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "_formatcurrency"
+    },
+    {
+      "label": "paint",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_paint",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "paint"
+    },
+    {
+      "label": "shouldRepaint",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_sales_trend_card_shouldrepaint",
+      "community": 54,
+      "community_name": "Models",
+      "norm_label": "shouldrepaint"
     },
     {
       "label": "stat_card.dart",
@@ -3397,8 +4112,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_data_models_user_model",
-      "community": 139,
-      "community_name": "category_model.dart",
+      "community": 28,
+      "community_name": "Domain",
       "norm_label": "user_model.dart"
     },
     {
@@ -3408,8 +4123,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_data_models_user_model_usermodel",
-      "community": 139,
-      "community_name": "category_model.dart",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "usermodel"
     },
     {
@@ -3419,8 +4134,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_data_models_user_model_fromjson",
-      "community": 139,
-      "community_name": "category_model.dart",
+      "community": 28,
+      "community_name": "Domain",
       "norm_label": "fromjson"
     },
     {
@@ -3430,8 +4145,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_data_models_user_model_tojson",
-      "community": 139,
-      "community_name": "category_model.dart",
+      "community": 28,
+      "community_name": "Domain",
       "norm_label": "tojson"
     },
     {
@@ -3441,8 +4156,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_data_models_user_model_fromsupabaseauth",
-      "community": 139,
-      "community_name": "category_model.dart",
+      "community": 28,
+      "community_name": "Domain",
       "norm_label": "fromsupabaseauth"
     },
     {
@@ -3452,8 +4167,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_data_models_user_model_fromprofilejson",
-      "community": 139,
-      "community_name": "category_model.dart",
+      "community": 28,
+      "community_name": "Domain",
       "norm_label": "fromprofilejson"
     },
     {
@@ -3463,7 +4178,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_billing_app_features_auth_domain_entities_user_dart",
-      "community": 35,
+      "community": 28,
       "community_name": "Domain",
       "norm_label": "package:billing_app/features/auth/domain/entities/user.dart"
     },
@@ -3705,8 +4420,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_entities_user_user",
-      "community": 139,
-      "community_name": "category_model.dart",
+      "community": 22,
+      "community_name": "User",
       "norm_label": "user"
     },
     {
@@ -3796,17 +4511,6 @@
       "community": 22,
       "community_name": "User",
       "norm_label": "emailconfirmedat"
-    },
-    {
-      "label": "DateTime",
-      "file_type": "code",
-      "source_file": null,
-      "source_location": null,
-      "_origin": "ast",
-      "id": "datetime",
-      "community": 79,
-      "community_name": "Domain",
-      "norm_label": "datetime"
     },
     {
       "label": "UserRole get",
@@ -4079,8 +4783,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 35,
+      "community_name": "Domain",
       "norm_label": "login_usecase.dart"
     },
     {
@@ -4090,8 +4794,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_loginparams",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 35,
+      "community_name": "Domain",
       "norm_label": "loginparams"
     },
     {
@@ -4101,8 +4805,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_loginusecase",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 35,
+      "community_name": "Domain",
       "norm_label": "loginusecase"
     },
     {
@@ -4112,8 +4816,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_email",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 35,
+      "community_name": "Domain",
       "norm_label": "email"
     },
     {
@@ -4123,8 +4827,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_password",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 35,
+      "community_name": "Domain",
       "norm_label": "password"
     },
     {
@@ -4134,8 +4838,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_props",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 35,
+      "community_name": "Domain",
       "norm_label": "props"
     },
     {
@@ -4145,8 +4849,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_repository",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 35,
+      "community_name": "Domain",
       "norm_label": "repository"
     },
     {
@@ -4156,8 +4860,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_domain_usecases_login_usecase_call",
-      "community": 86,
-      "community_name": "printer_repository.dart",
+      "community": 35,
+      "community_name": "Domain",
       "norm_label": "call"
     },
     {
@@ -4706,7 +5410,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_bloc_auth_event_loginrequested",
-      "community": 16,
+      "community": 27,
       "community_name": "Presentation",
       "norm_label": "loginrequested"
     },
@@ -4717,7 +5421,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_bloc_auth_event_signuprequested",
-      "community": 16,
+      "community": 30,
       "community_name": "Presentation",
       "norm_label": "signuprequested"
     },
@@ -4739,8 +5443,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_bloc_auth_event_logoutrequested",
-      "community": 146,
-      "community_name": "LogoutRequested",
+      "community": 16,
+      "community_name": "Presentation",
       "norm_label": "logoutrequested"
     },
     {
@@ -5014,8 +5718,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_pages_auth_gate",
-      "community": 27,
-      "community_name": "Presentation",
+      "community": 29,
+      "community_name": "Widgets",
       "norm_label": "auth_gate.dart"
     },
     {
@@ -5036,8 +5740,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_pages_auth_gate_splashscreen",
-      "community": 27,
-      "community_name": "Presentation",
+      "community": 29,
+      "community_name": "Widgets",
       "norm_label": "splashscreen"
     },
     {
@@ -5047,8 +5751,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_pages_auth_gate_authenticatedchild",
-      "community": 27,
-      "community_name": "Presentation",
+      "community": 29,
+      "community_name": "Widgets",
       "norm_label": "authenticatedchild"
     },
     {
@@ -5069,8 +5773,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_billing_app_features_auth_presentation_pages_login_page_dart",
-      "community": 27,
-      "community_name": "Presentation",
+      "community": 29,
+      "community_name": "Widgets",
       "norm_label": "package:billing_app/features/auth/presentation/pages/login_page.dart"
     },
     {
@@ -5080,8 +5784,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_billing_app_features_auth_presentation_pages_email_verification_page_dart",
-      "community": 27,
-      "community_name": "Presentation",
+      "community": 29,
+      "community_name": "Widgets",
       "norm_label": "package:billing_app/features/auth/presentation/pages/email_verification_page.dart"
     },
     {
@@ -5256,8 +5960,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_pages_email_verification_page_build",
-      "community": 146,
-      "community_name": "LogoutRequested",
+      "community": 91,
+      "community_name": "login_usecase.dart",
       "norm_label": "build"
     },
     {
@@ -5267,8 +5971,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_login",
-      "community": 146,
-      "community_name": "LogoutRequested",
+      "community": 91,
+      "community_name": "login_usecase.dart",
       "norm_label": "route /login"
     },
     {
@@ -5300,7 +6004,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_pages_login_page_loginpage",
-      "community": 16,
+      "community": 27,
       "community_name": "Presentation",
       "norm_label": "loginpage"
     },
@@ -5311,7 +6015,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_pages_login_page_loginpagestate",
-      "community": 16,
+      "community": 27,
       "community_name": "Presentation",
       "norm_label": "_loginpagestate"
     },
@@ -5399,7 +6103,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_pages_login_page_onlogin",
-      "community": 16,
+      "community": 27,
       "community_name": "Presentation",
       "norm_label": "_onlogin"
     },
@@ -5432,7 +6136,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "formstate",
-      "community": 27,
+      "community": 55,
       "community_name": "Presentation",
       "norm_label": "formstate"
     },
@@ -5454,7 +6158,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_pages_register_page_registerpage",
-      "community": 16,
+      "community": 30,
       "community_name": "Presentation",
       "norm_label": "registerpage"
     },
@@ -5465,7 +6169,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_pages_register_page_registerpagestate",
-      "community": 16,
+      "community": 30,
       "community_name": "Presentation",
       "norm_label": "_registerpagestate"
     },
@@ -5597,7 +6301,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_auth_presentation_pages_register_page_onsignup",
-      "community": 16,
+      "community": 30,
       "community_name": "Presentation",
       "norm_label": "_onsignup"
     },
@@ -5677,17 +6381,6 @@
       "community": 70,
       "community_name": "Domain",
       "norm_label": "customprice"
-    },
-    {
-      "label": "double?",
-      "file_type": "code",
-      "source_file": null,
-      "source_location": null,
-      "_origin": "ast",
-      "id": "double",
-      "community": 70,
-      "community_name": "Domain",
-      "norm_label": "double?"
     },
     {
       "label": "unitPrice",
@@ -6015,8 +6708,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "core_utils_printer_helper_dart",
-      "community": 51,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "../../../../core/utils/printer_helper.dart"
     },
     {
@@ -6378,8 +7071,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_projects_flutter_billing_app_main_lib_features_billing_presentation_bloc_billing_bloc_billingstate",
-      "community": 90,
-      "community_name": "category_list_page.dart",
+      "community": 8,
+      "community_name": "Usecases",
       "norm_label": "billingstate"
     },
     {
@@ -6598,7 +7291,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "texteditingcontroller",
-      "community": 55,
+      "community": 69,
       "community_name": "Presentation",
       "norm_label": "texteditingcontroller"
     },
@@ -6763,7 +7456,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "shop_presentation_bloc_shop_bloc_dart",
-      "community": 42,
+      "community": 0,
       "community_name": "Presentation",
       "norm_label": "../../../shop/presentation/bloc/shop_bloc.dart"
     },
@@ -6829,8 +7522,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "mobilescannercontroller",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "mobilescannercontroller"
     },
     {
@@ -6884,8 +7577,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "permissionstatus",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "permissionstatus"
     },
     {
@@ -7071,8 +7764,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_vibration_vibration_dart",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "package:vibration/vibration.dart"
     },
     {
@@ -7082,8 +7775,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_mobile_scanner_mobile_scanner_dart",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "package:mobile_scanner/mobile_scanner.dart"
     },
     {
@@ -7373,17 +8066,6 @@
       "norm_label": "dart:io"
     },
     {
-      "label": "dart:ui",
-      "file_type": "code",
-      "source_file": null,
-      "source_location": null,
-      "_origin": "ast",
-      "id": "dart_ui",
-      "community": 68,
-      "community_name": "Repositories",
-      "norm_label": "dart:ui"
-    },
-    {
       "label": "package:flutter/rendering.dart",
       "file_type": "code",
       "source_file": null,
@@ -7467,8 +8149,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "scanner_page.dart"
     },
     {
@@ -7478,8 +8160,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_scannerpage",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "scannerpage"
     },
     {
@@ -7489,8 +8171,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_scannerpagestate",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "_scannerpagestate"
     },
     {
@@ -7500,8 +8182,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_controller",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "controller"
     },
     {
@@ -7511,8 +8193,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_isscanned",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "_isscanned"
     },
     {
@@ -7522,8 +8204,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_camerastatus",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "_camerastatus"
     },
     {
@@ -7533,8 +8215,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_createstate",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "createstate"
     },
     {
@@ -7544,8 +8226,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_initstate",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "initstate"
     },
     {
@@ -7555,8 +8237,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_dispose",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "dispose"
     },
     {
@@ -7566,8 +8248,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_checkpermission",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "_checkpermission"
     },
     {
@@ -7577,8 +8259,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_requestpermission",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "_requestpermission"
     },
     {
@@ -7588,8 +8270,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_ondetect",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "_ondetect"
     },
     {
@@ -7599,8 +8281,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_build",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "build"
     },
     {
@@ -7610,8 +8292,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_buildpermissionprompt",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "_buildpermissionprompt"
     },
     {
@@ -7621,8 +8303,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_billing_presentation_pages_scanner_page_corner",
-      "community": 14,
-      "community_name": "Presentation",
+      "community": 51,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "_corner"
     },
     {
@@ -7742,8 +8424,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "supabaseclient_get",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "supabaseclient get"
     },
     {
@@ -8017,8 +8699,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases",
-      "community": 142,
-      "community_name": "package:fpdart/fpdart.dart",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "category_usecases.dart"
     },
     {
@@ -8028,8 +8710,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases_getcategoriesusecase",
-      "community": 142,
-      "community_name": "package:fpdart/fpdart.dart",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "getcategoriesusecase"
     },
     {
@@ -8039,8 +8721,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases_addcategoryusecase",
-      "community": 142,
-      "community_name": "package:fpdart/fpdart.dart",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "addcategoryusecase"
     },
     {
@@ -8050,8 +8732,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases_updatecategoryusecase",
-      "community": 142,
-      "community_name": "package:fpdart/fpdart.dart",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "updatecategoryusecase"
     },
     {
@@ -8061,8 +8743,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases_deletecategoryusecase",
-      "community": 142,
-      "community_name": "package:fpdart/fpdart.dart",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "deletecategoryusecase"
     },
     {
@@ -8072,8 +8754,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases_repository",
-      "community": 142,
-      "community_name": "package:fpdart/fpdart.dart",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "repository"
     },
     {
@@ -8083,8 +8765,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_category_domain_usecases_category_usecases_call",
-      "community": 142,
-      "community_name": "package:fpdart/fpdart.dart",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "call"
     },
     {
@@ -8094,8 +8776,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_billing_app_features_category_domain_repositories_category_repository_dart",
-      "community": 142,
-      "community_name": "package:fpdart/fpdart.dart",
+      "community": 44,
+      "community_name": "Usecases",
       "norm_label": "package:billing_app/features/category/domain/repositories/category_repository.dart"
     },
     {
@@ -8347,8 +9029,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_projects_flutter_billing_app_main_lib_features_category_presentation_bloc_category_bloc_categorystate",
-      "community": 90,
-      "community_name": "category_list_page.dart",
+      "community": 8,
+      "community_name": "Usecases",
       "norm_label": "categorystate"
     },
     {
@@ -8556,7 +9238,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "bloc_category_bloc_dart",
-      "community": 69,
+      "community": 55,
       "community_name": "Presentation",
       "norm_label": "../bloc/category_bloc.dart"
     },
@@ -8721,8 +9403,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_presentation_pages_dashboard_page_dashboardpage",
-      "community": 29,
-      "community_name": "Widgets",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "dashboardpage"
     },
     {
@@ -8754,9 +9436,42 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_presentation_pages_dashboard_page_todayssales",
-      "community": 29,
-      "community_name": "Widgets",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "_todayssales"
+    },
+    {
+      "label": "_WeeklyTrend",
+      "file_type": "code",
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_features_dashboard_presentation_pages_dashboard_page_weeklytrend",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
+      "norm_label": "_weeklytrend"
+    },
+    {
+      "label": "_RecentTransactions",
+      "file_type": "code",
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_features_dashboard_presentation_pages_dashboard_page_recenttransactions",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
+      "norm_label": "_recenttransactions"
+    },
+    {
+      "label": "_InventoryHealth",
+      "file_type": "code",
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_features_dashboard_presentation_pages_dashboard_page_inventoryhealth",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
+      "norm_label": "_inventoryhealth"
     },
     {
       "label": "_LowStockBanner",
@@ -8765,8 +9480,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_presentation_pages_dashboard_page_lowstockbanner",
-      "community": 29,
-      "community_name": "Widgets",
+      "community": 83,
+      "community_name": "printer_repository_impl.dart",
       "norm_label": "_lowstockbanner"
     },
     {
@@ -8842,8 +9557,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_presentation_pages_dashboard_page_build",
-      "community": 138,
-      "community_name": "app_back_button.dart",
+      "community": 0,
+      "community_name": "Presentation",
       "norm_label": "build"
     },
     {
@@ -8919,8 +9634,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_reports_low_stock",
-      "community": 138,
-      "community_name": "app_back_button.dart",
+      "community": 0,
+      "community_name": "Presentation",
       "norm_label": "route /reports/low-stock"
     },
     {
@@ -9034,6 +9749,17 @@
       "norm_label": "package:billing_app/core/widgets/greeting_header.dart"
     },
     {
+      "label": "package:billing_app/core/widgets/inventory_health_card.dart",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "package_billing_app_core_widgets_inventory_health_card_dart",
+      "community": 39,
+      "community_name": "Dashboard",
+      "norm_label": "package:billing_app/core/widgets/inventory_health_card.dart"
+    },
+    {
       "label": "package:billing_app/core/widgets/premium_stat_card.dart",
       "file_type": "code",
       "source_file": null,
@@ -9043,6 +9769,28 @@
       "community": 39,
       "community_name": "Dashboard",
       "norm_label": "package:billing_app/core/widgets/premium_stat_card.dart"
+    },
+    {
+      "label": "package:billing_app/core/widgets/recent_transactions_card.dart",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "package_billing_app_core_widgets_recent_transactions_card_dart",
+      "community": 39,
+      "community_name": "Dashboard",
+      "norm_label": "package:billing_app/core/widgets/recent_transactions_card.dart"
+    },
+    {
+      "label": "package:billing_app/core/widgets/sales_trend_card.dart",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "package_billing_app_core_widgets_sales_trend_card_dart",
+      "community": 39,
+      "community_name": "Dashboard",
+      "norm_label": "package:billing_app/core/widgets/sales_trend_card.dart"
     },
     {
       "label": "package:billing_app/features/product/presentation/bloc/product_bloc.dart",
@@ -9062,7 +9810,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_billing_app_features_report_presentation_bloc_report_bloc_dart",
-      "community": 50,
+      "community": 85,
       "community_name": "Presentation",
       "norm_label": "package:billing_app/features/report/presentation/bloc/report_bloc.dart"
     },
@@ -9084,7 +9832,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_billing_app_features_report_presentation_bloc_report_state_dart",
-      "community": 85,
+      "community": 37,
       "community_name": "Presentation",
       "norm_label": "package:billing_app/features/report/presentation/bloc/report_state.dart"
     },
@@ -9942,7 +10690,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "class",
-      "community": 44,
+      "community": 8,
       "community_name": "Usecases",
       "norm_label": "class"
     },
@@ -10415,8 +11163,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_projects_flutter_billing_app_main_lib_features_product_presentation_bloc_product_bloc_productstate",
-      "community": 90,
-      "community_name": "category_list_page.dart",
+      "community": 8,
+      "community_name": "Usecases",
       "norm_label": "productstate"
     },
     {
@@ -10734,8 +11482,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "bloc_product_bloc_dart",
-      "community": 38,
-      "community_name": "Domain",
+      "community": 53,
+      "community_name": "Presentation",
       "norm_label": "../bloc/product_bloc.dart"
     },
     {
@@ -11130,8 +11878,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_product_presentation_pages_product_list_page_productlistpage",
-      "community": 141,
-      "community_name": "package:billing_app/core/theme/app_theme.dart",
+      "community": 38,
+      "community_name": "Domain",
       "norm_label": "productlistpage"
     },
     {
@@ -11141,8 +11889,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_product_presentation_pages_product_list_page_productlistpagestate",
-      "community": 25,
-      "community_name": "Presentation",
+      "community": 38,
+      "community_name": "Domain",
       "norm_label": "_productlistpagestate"
     },
     {
@@ -11449,8 +12197,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_data_models_report_models",
-      "community": 87,
-      "community_name": "Config",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "report_models.dart"
     },
     {
@@ -11460,8 +12208,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_data_models_report_models_billitemmodel",
-      "community": 87,
-      "community_name": "Config",
+      "community": 10,
+      "community_name": "Entities",
       "norm_label": "billitemmodel"
     },
     {
@@ -11471,8 +12219,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_data_models_report_models_billsummarymodel",
-      "community": 87,
-      "community_name": "Config",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "billsummarymodel"
     },
     {
@@ -11482,8 +12230,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_data_models_report_models_dailysalesmodel",
-      "community": 87,
-      "community_name": "Config",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "dailysalesmodel"
     },
     {
@@ -11493,8 +12241,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_data_models_report_models_stockmovementmodel",
-      "community": 87,
-      "community_name": "Config",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "stockmovementmodel"
     },
     {
@@ -11504,8 +12252,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_data_models_report_models_fromjson",
-      "community": 87,
-      "community_name": "Config",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "fromjson"
     },
     {
@@ -11515,8 +12263,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_data_models_report_models_tojson",
-      "community": 87,
-      "community_name": "Config",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "tojson"
     },
     {
@@ -11526,8 +12274,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_data_models_report_models_fromsupabaserow",
-      "community": 87,
-      "community_name": "Config",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "fromsupabaserow"
     },
     {
@@ -11537,8 +12285,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_billing_app_features_report_domain_entities_report_entities_dart",
-      "community": 87,
-      "community_name": "Config",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "package:billing_app/features/report/domain/entities/report_entities.dart"
     },
     {
@@ -11691,8 +12439,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_entities_report_entities_billitem",
-      "community": 87,
-      "community_name": "Config",
+      "community": 10,
+      "community_name": "Entities",
       "norm_label": "billitem"
     },
     {
@@ -11702,8 +12450,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_entities_report_entities_billsummary",
-      "community": 87,
-      "community_name": "Config",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "billsummary"
     },
     {
@@ -11713,8 +12461,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_entities_report_entities_dailysales",
-      "community": 87,
-      "community_name": "Config",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "dailysales"
     },
     {
@@ -11724,8 +12472,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_entities_report_entities_stockmovement",
-      "community": 87,
-      "community_name": "Config",
+      "community": 82,
+      "community_name": "Client",
       "norm_label": "stockmovement"
     },
     {
@@ -12109,8 +12857,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_billhistoryparams",
-      "community": 90,
-      "community_name": "category_list_page.dart",
+      "community": 8,
+      "community_name": "Usecases",
       "norm_label": "billhistoryparams"
     },
     {
@@ -12120,8 +12868,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_billdetailparams",
-      "community": 90,
-      "community_name": "category_list_page.dart",
+      "community": 8,
+      "community_name": "Usecases",
       "norm_label": "billdetailparams"
     },
     {
@@ -12131,8 +12879,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_dailysalesparams",
-      "community": 90,
-      "community_name": "category_list_page.dart",
+      "community": 8,
+      "community_name": "Usecases",
       "norm_label": "dailysalesparams"
     },
     {
@@ -12142,8 +12890,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_salesrangeparams",
-      "community": 90,
-      "community_name": "category_list_page.dart",
+      "community": 8,
+      "community_name": "Usecases",
       "norm_label": "salesrangeparams"
     },
     {
@@ -12153,8 +12901,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_lowstockparams",
-      "community": 90,
-      "community_name": "category_list_page.dart",
+      "community": 8,
+      "community_name": "Usecases",
       "norm_label": "lowstockparams"
     },
     {
@@ -12164,8 +12912,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_stockmovementparams",
-      "community": 90,
-      "community_name": "category_list_page.dart",
+      "community": 8,
+      "community_name": "Usecases",
       "norm_label": "stockmovementparams"
     },
     {
@@ -12175,7 +12923,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_getbillhistoryusecase",
-      "community": 44,
+      "community": 8,
       "community_name": "Usecases",
       "norm_label": "getbillhistoryusecase"
     },
@@ -12186,7 +12934,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_getbilldetailusecase",
-      "community": 44,
+      "community": 8,
       "community_name": "Usecases",
       "norm_label": "getbilldetailusecase"
     },
@@ -12197,8 +12945,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_getdailysalesusecase",
-      "community": 44,
-      "community_name": "Usecases",
+      "community": 17,
+      "community_name": "Presentation",
       "norm_label": "getdailysalesusecase"
     },
     {
@@ -12208,8 +12956,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_getsalesrangeusecase",
-      "community": 44,
-      "community_name": "Usecases",
+      "community": 17,
+      "community_name": "Presentation",
       "norm_label": "getsalesrangeusecase"
     },
     {
@@ -12219,8 +12967,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_getlowstockproductsusecase",
-      "community": 44,
-      "community_name": "Usecases",
+      "community": 17,
+      "community_name": "Presentation",
       "norm_label": "getlowstockproductsusecase"
     },
     {
@@ -12230,7 +12978,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_domain_usecases_report_usecases_getstockmovementsusecase",
-      "community": 44,
+      "community": 8,
       "community_name": "Usecases",
       "norm_label": "getstockmovementsusecase"
     },
@@ -12857,8 +13605,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_presentation_bloc_report_state_reportstate",
-      "community": 82,
-      "community_name": "Client",
+      "community": 8,
+      "community_name": "Usecases",
       "norm_label": "reportstate"
     },
     {
@@ -13770,8 +14518,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_presentation_pages_reports_home_page_build",
-      "community": 138,
-      "community_name": "app_back_button.dart",
+      "community": 0,
+      "community_name": "Presentation",
       "norm_label": "build"
     },
     {
@@ -13781,8 +14529,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_reports_bills",
-      "community": 138,
-      "community_name": "app_back_button.dart",
+      "community": 0,
+      "community_name": "Presentation",
       "norm_label": "route /reports/bills"
     },
     {
@@ -13792,8 +14540,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_reports_daily_sales",
-      "community": 138,
-      "community_name": "app_back_button.dart",
+      "community": 0,
+      "community_name": "Presentation",
       "norm_label": "route /reports/daily-sales"
     },
     {
@@ -13803,8 +14551,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_reports_stock_movements",
-      "community": 138,
-      "community_name": "app_back_button.dart",
+      "community": 0,
+      "community_name": "Presentation",
       "norm_label": "route /reports/stock-movements"
     },
     {
@@ -13836,8 +14584,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_presentation_pages_stock_movement_page_stockmovementpage",
-      "community": 141,
-      "community_name": "package:billing_app/core/theme/app_theme.dart",
+      "community": 37,
+      "community_name": "Presentation",
       "norm_label": "stockmovementpage"
     },
     {
@@ -13847,7 +14595,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_report_presentation_pages_stock_movement_page_stockmovementpagestate",
-      "community": 84,
+      "community": 37,
       "community_name": "Presentation",
       "norm_label": "_stockmovementpagestate"
     },
@@ -14012,8 +14760,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl",
-      "community": 51,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "printer_repository_impl.dart"
     },
     {
@@ -14023,8 +14771,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_printerrepositoryimpl",
-      "community": 58,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "printerrepositoryimpl"
     },
     {
@@ -14034,8 +14782,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_printerhelper",
-      "community": 51,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "_printerhelper"
     },
     {
@@ -14045,8 +14793,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_scandevices",
-      "community": 51,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "scandevices"
     },
     {
@@ -14056,8 +14804,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_connect",
-      "community": 51,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "connect"
     },
     {
@@ -14067,8 +14815,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_disconnect",
-      "community": 51,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "disconnect"
     },
     {
@@ -14078,8 +14826,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_getsavedprintermac",
-      "community": 51,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "getsavedprintermac"
     },
     {
@@ -14089,8 +14837,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_getsavedprintername",
-      "community": 51,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "getsavedprintername"
     },
     {
@@ -14100,8 +14848,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_saveprinterdata",
-      "community": 51,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "saveprinterdata"
     },
     {
@@ -14111,8 +14859,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_clearprinterdata",
-      "community": 51,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "clearprinterdata"
     },
     {
@@ -14122,8 +14870,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_data_repositories_printer_repository_impl_testprint",
-      "community": 51,
-      "community_name": "printer_repository_impl.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "testprint"
     },
     {
@@ -14133,8 +14881,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "domain_repositories_printer_repository_dart",
-      "community": 0,
-      "community_name": "Presentation",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "../../domain/repositories/printer_repository.dart"
     },
     {
@@ -14144,8 +14892,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository",
-      "community": 58,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "printer_repository.dart"
     },
     {
@@ -14155,8 +14903,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_printerrepository",
-      "community": 58,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "printerrepository"
     },
     {
@@ -14166,8 +14914,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_scandevices",
-      "community": 58,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "scandevices"
     },
     {
@@ -14177,8 +14925,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_connect",
-      "community": 58,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "connect"
     },
     {
@@ -14188,8 +14936,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_disconnect",
-      "community": 58,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "disconnect"
     },
     {
@@ -14199,8 +14947,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_getsavedprintermac",
-      "community": 58,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "getsavedprintermac"
     },
     {
@@ -14210,8 +14958,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_getsavedprintername",
-      "community": 58,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "getsavedprintername"
     },
     {
@@ -14221,8 +14969,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_saveprinterdata",
-      "community": 58,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "saveprinterdata"
     },
     {
@@ -14232,8 +14980,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_clearprinterdata",
-      "community": 58,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "clearprinterdata"
     },
     {
@@ -14243,8 +14991,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_domain_repositories_printer_repository_testprint",
-      "community": 58,
-      "community_name": "printer_repository.dart",
+      "community": 1,
+      "community_name": "Utils",
       "norm_label": "testprint"
     },
     {
@@ -14650,8 +15398,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_presentation_pages_settings_page_settingspage",
-      "community": 141,
-      "community_name": "package:billing_app/core/theme/app_theme.dart",
+      "community": 0,
+      "community_name": "Presentation",
       "norm_label": "settingspage"
     },
     {
@@ -15717,8 +16465,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_staff_data_repositories_staff_repository_impl",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "staff_repository_impl.dart"
     },
     {
@@ -15739,8 +16487,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_staff_data_repositories_staff_repository_impl_supabase",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "_supabase"
     },
     {
@@ -15750,8 +16498,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_staff_data_repositories_staff_repository_impl_resolveshopid",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "_resolveshopid"
     },
     {
@@ -15761,8 +16509,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_staff_data_repositories_staff_repository_impl_getstaffmembers",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "getstaffmembers"
     },
     {
@@ -15772,8 +16520,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_staff_data_repositories_staff_repository_impl_deletestaffmember",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "deletestaffmember"
     },
     {
@@ -15783,8 +16531,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_domain_entities_user_dart",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "../../../auth/domain/entities/user.dart"
     },
     {
@@ -15794,8 +16542,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_data_models_user_model_dart",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "../../../auth/data/models/user_model.dart"
     },
     {
@@ -15805,8 +16553,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "domain_repositories_staff_repository_dart",
-      "community": 83,
-      "community_name": "printer_repository_impl.dart",
+      "community": 59,
+      "community_name": "Repositories",
       "norm_label": "../../domain/repositories/staff_repository.dart"
     },
     {
@@ -16289,7 +17037,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_staff_presentation_pages_add_staff_page_onsubmit",
-      "community": 18,
+      "community": 30,
       "community_name": "Presentation",
       "norm_label": "_onsubmit"
     },
@@ -16498,8 +17246,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_main_myapp",
-      "community": 29,
-      "community_name": "Widgets",
+      "community": 4,
+      "community_name": "Presentation",
       "norm_label": "myapp"
     },
     {
@@ -20424,6 +21172,17 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "package_flutter_material_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/core/widgets/greeting_header.dart",
       "source_location": null,
       "weight": 1.0,
@@ -20446,6 +21205,17 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "package_flutter_material_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/core/widgets/premium_stat_card.dart",
       "source_location": null,
       "weight": 1.0,
@@ -20462,6 +21232,28 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_core_widgets_primary_button",
+      "target": "package_flutter_material_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "package_flutter_material_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
       "target": "package_flutter_material_dart"
     },
     {
@@ -21503,6 +22295,17 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card_glasscard",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/core/widgets/greeting_header.dart",
       "source_location": null,
       "weight": 1.0,
@@ -21525,6 +22328,28 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card_inventoryhealthcard",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card_statitem",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/core/widgets/premium_stat_card.dart",
       "source_location": null,
       "weight": 1.0,
@@ -21541,6 +22366,28 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_core_widgets_primary_button_primarybutton",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card_recenttransactionscard",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card_salestrendcard",
       "target": "statelesswidget"
     },
     {
@@ -21595,6 +22442,17 @@
       "source_location": null,
       "weight": 1.0,
       "_origin": "ast",
+      "source": "lib_features_dashboard_presentation_pages_dashboard_page_inventoryhealth",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
       "source": "lib_features_dashboard_presentation_pages_dashboard_page_lowstockbanner",
       "target": "statelesswidget"
     },
@@ -21606,7 +22464,29 @@
       "source_location": null,
       "weight": 1.0,
       "_origin": "ast",
+      "source": "lib_features_dashboard_presentation_pages_dashboard_page_recenttransactions",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
       "source": "lib_features_dashboard_presentation_pages_dashboard_page_todayssales",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_features_dashboard_presentation_pages_dashboard_page_weeklytrend",
       "target": "statelesswidget"
     },
     {
@@ -21630,6 +22510,18 @@
       "_origin": "ast",
       "source": "lib_main_myapp",
       "target": "statelesswidget"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "widget"
     },
     {
       "relation": "references",
@@ -22489,6 +23381,30 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "list"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "list"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/features/auth/domain/entities/user.dart",
       "source_location": null,
       "weight": 1.0,
@@ -23116,6 +24032,18 @@
       "context": "variable_type",
       "_origin": "ast",
       "source": "lib_core_utils_printer_helper",
+      "target": "bool_get"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
       "target": "bool_get"
     },
     {
@@ -23946,6 +24874,18 @@
       "target": "static_final_texttheme"
     },
     {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "static_const_color"
+    },
+    {
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -23971,11 +24911,44 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "package_google_fonts_google_fonts_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/core/widgets/premium_stat_card.dart",
       "source_location": null,
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_core_widgets_premium_stat_card",
+      "target": "package_google_fonts_google_fonts_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "package_google_fonts_google_fonts_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
       "target": "package_google_fonts_google_fonts_dart"
     },
     {
@@ -25350,6 +26323,30 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "voidcallback"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "voidcallback"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/core/widgets/primary_button.dart",
       "source_location": null,
       "weight": 1.0,
@@ -25851,6 +26848,17 @@
       "target": "color"
     },
     {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/dashboard_action_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_dashboard_action_card",
+      "target": "dart_ui"
+    },
+    {
       "relation": "defines",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -26205,12 +27213,48 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "color"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "color"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/core/widgets/premium_stat_card.dart",
       "source_location": null,
       "weight": 1.0,
       "context": "variable_type",
       "_origin": "ast",
       "source": "lib_core_widgets_premium_stat_card",
+      "target": "color"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
       "target": "color"
     },
     {
@@ -26224,6 +27268,275 @@
       "_origin": "ast",
       "source": "lib_core_widgets_stat_card",
       "target": "color"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "dart_ui"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/greeting_header.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_greeting_header",
+      "target": "dart_ui"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "dart_ui"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/premium_stat_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_premium_stat_card",
+      "target": "dart_ui"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "dart_ui"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "dart_ui"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/billing/presentation/pages/receipt_preview_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_features_billing_presentation_pages_receipt_preview_page",
+      "target": "dart_ui"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "double"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "edgeinsetsgeometry"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "lib_core_widgets_glass_card_blur"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "lib_core_widgets_glass_card_borderopacity"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "lib_core_widgets_glass_card_borderradius"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "lib_core_widgets_glass_card_build"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "lib_core_widgets_glass_card_child"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "lib_core_widgets_glass_card_glasscard"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "lib_core_widgets_glass_card_height"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "lib_core_widgets_glass_card_margin"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "lib_core_widgets_glass_card_ontap"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "lib_core_widgets_glass_card_padding"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "lib_core_widgets_glass_card_tint"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/glass_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_glass_card",
+      "target": "lib_core_widgets_glass_card_width"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/primary_button.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_primary_button",
+      "target": "edgeinsetsgeometry"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/billing/domain/entities/cart_item.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_features_billing_domain_entities_cart_item",
+      "target": "double"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/billing/presentation/bloc/billing_state.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_features_billing_presentation_bloc_billing_bloc",
+      "target": "double"
     },
     {
       "relation": "defines",
@@ -26405,6 +27718,127 @@
       "relation": "defines",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "lib_core_widgets_inventory_health_card_build"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "lib_core_widgets_inventory_health_card_buildglasscontainer"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "lib_core_widgets_inventory_health_card_color"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "lib_core_widgets_inventory_health_card_count"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "lib_core_widgets_inventory_health_card_inventoryhealthcard"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "lib_core_widgets_inventory_health_card_label"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "lib_core_widgets_inventory_health_card_lowstockcount"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "lib_core_widgets_inventory_health_card_onviewdetails"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "lib_core_widgets_inventory_health_card_outofstockcount"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "lib_core_widgets_inventory_health_card_statitem"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/inventory_health_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_inventory_health_card",
+      "target": "lib_core_widgets_inventory_health_card_totalproducts"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/core/widgets/premium_stat_card.dart",
       "source_location": null,
       "weight": 1.0,
@@ -26466,18 +27900,6 @@
       "_origin": "ast",
       "source": "lib_core_widgets_premium_stat_card",
       "target": "lib_core_widgets_premium_stat_card_value"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/primary_button.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_core_widgets_primary_button",
-      "target": "edgeinsetsgeometry"
     },
     {
       "relation": "defines",
@@ -26611,6 +28033,524 @@
       "_origin": "ast",
       "source": "lib_core_widgets_primary_button",
       "target": "textstyle"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "datetime"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_build"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_buildemptystate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_buildpaymentbadge"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_buildtransactionitem"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_createdat"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_formatcurrency"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_grandtotal"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_id"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_itemcount"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_paymentcolor"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_paymentmethod"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_recenttransaction"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_recenttransactionscard"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_staffname"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_timeago"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/recent_transactions_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_recent_transactions_card",
+      "target": "lib_core_widgets_recent_transactions_card_transactions"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/auth/domain/entities/user.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_features_auth_domain_entities_user",
+      "target": "datetime"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/category/domain/entities/category.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_features_category_domain_entities_category",
+      "target": "datetime"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/product/data/models/product_model.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_features_product_data_models_product_model",
+      "target": "datetime"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/product/domain/entities/product.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_features_product_domain_entities_product",
+      "target": "datetime"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/report/domain/entities/report_entities.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_features_report_domain_entities_report_entities",
+      "target": "datetime"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/report/domain/usecases/report_usecases.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_features_report_domain_usecases_report_usecases",
+      "target": "datetime"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/report/presentation/bloc/report_event.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_features_report_presentation_bloc_report_event",
+      "target": "datetime"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/report/presentation/pages/bill_history_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_features_report_presentation_pages_bill_history_page",
+      "target": "datetime"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/report/presentation/pages/daily_sales_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_features_report_presentation_pages_daily_sales_page",
+      "target": "datetime"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/report/presentation/pages/stock_movement_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_features_report_presentation_pages_stock_movement_page",
+      "target": "datetime"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_bottompad"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_build"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_buildplaceholder"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_buildstatchip"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_buildstatsrow"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_formatcurrency"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_hasdata"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_labels"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_leftpad"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_paint"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_primarycolor"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_rightpad"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_salestrendcard"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_salestrendpainter"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_shouldrepaint"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_toppad"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "lib_core_widgets_sales_trend_card_values"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card",
+      "target": "static_const_double"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/sales_trend_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_core_widgets_sales_trend_card_salestrendpainter",
+      "target": "custompainter"
     },
     {
       "relation": "defines",
@@ -27328,18 +29268,6 @@
       "target": "package_billing_app_features_auth_domain_repositories_auth_repository_dart"
     },
     {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/auth/domain/entities/user.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_features_auth_domain_entities_user",
-      "target": "datetime"
-    },
-    {
       "relation": "defines",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -27549,114 +29477,6 @@
       "_origin": "ast",
       "source": "lib_features_auth_presentation_bloc_auth_state",
       "target": "lib_features_auth_domain_entities_user_user"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/category/domain/entities/category.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_features_category_domain_entities_category",
-      "target": "datetime"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/product/data/models/product_model.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_features_product_data_models_product_model",
-      "target": "datetime"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/product/domain/entities/product.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_features_product_domain_entities_product",
-      "target": "datetime"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/report/domain/entities/report_entities.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_features_report_domain_entities_report_entities",
-      "target": "datetime"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/report/domain/usecases/report_usecases.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_features_report_domain_usecases_report_usecases",
-      "target": "datetime"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/report/presentation/bloc/report_event.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_features_report_presentation_bloc_report_event",
-      "target": "datetime"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/report/presentation/pages/bill_history_page.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_features_report_presentation_pages_bill_history_page",
-      "target": "datetime"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/report/presentation/pages/daily_sales_page.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_features_report_presentation_pages_daily_sales_page",
-      "target": "datetime"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/report/presentation/pages/stock_movement_page.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_features_report_presentation_pages_stock_movement_page",
-      "target": "datetime"
     },
     {
       "relation": "defines",
@@ -31232,18 +33052,6 @@
       "context": "variable_type",
       "_origin": "ast",
       "source": "lib_features_billing_domain_entities_cart_item",
-      "target": "double"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/billing/domain/entities/cart_item.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_features_billing_domain_entities_cart_item",
       "target": "double_get"
     },
     {
@@ -31356,18 +33164,6 @@
       "_origin": "ast",
       "source": "lib_features_billing_domain_entities_cart_item",
       "target": "package_billing_app_features_product_domain_entities_product_dart"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/billing/presentation/bloc/billing_state.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_features_billing_presentation_bloc_billing_bloc",
-      "target": "double"
     },
     {
       "relation": "imports",
@@ -33766,17 +35562,6 @@
       "_origin": "ast",
       "source": "lib_features_billing_presentation_pages_receipt_preview_page",
       "target": "dart_io"
-    },
-    {
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/billing/presentation/pages/receipt_preview_page.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_features_billing_presentation_pages_receipt_preview_page",
-      "target": "dart_ui"
     },
     {
       "relation": "defines",
@@ -36319,6 +38104,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_features_dashboard_presentation_pages_dashboard_page",
+      "target": "lib_features_dashboard_presentation_pages_dashboard_page_inventoryhealth"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_features_dashboard_presentation_pages_dashboard_page",
       "target": "lib_features_dashboard_presentation_pages_dashboard_page_lowstockbanner"
     },
     {
@@ -36342,6 +38138,17 @@
       "_origin": "ast",
       "source": "lib_features_dashboard_presentation_pages_dashboard_page",
       "target": "lib_features_dashboard_presentation_pages_dashboard_page_productsearchdelegate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_features_dashboard_presentation_pages_dashboard_page",
+      "target": "lib_features_dashboard_presentation_pages_dashboard_page_recenttransactions"
     },
     {
       "relation": "defines",
@@ -36386,6 +38193,17 @@
       "_origin": "ast",
       "source": "lib_features_dashboard_presentation_pages_dashboard_page",
       "target": "lib_features_dashboard_presentation_pages_dashboard_page_todayssales"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_features_dashboard_presentation_pages_dashboard_page",
+      "target": "lib_features_dashboard_presentation_pages_dashboard_page_weeklytrend"
     },
     {
       "relation": "references",
@@ -36442,7 +38260,40 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_features_dashboard_presentation_pages_dashboard_page",
+      "target": "package_billing_app_core_widgets_inventory_health_card_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_features_dashboard_presentation_pages_dashboard_page",
       "target": "package_billing_app_core_widgets_premium_stat_card_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_features_dashboard_presentation_pages_dashboard_page",
+      "target": "package_billing_app_core_widgets_recent_transactions_card_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_features_dashboard_presentation_pages_dashboard_page",
+      "target": "package_billing_app_core_widgets_sales_trend_card_dart"
     },
     {
       "relation": "imports",
@@ -36546,6 +38397,42 @@
       "_origin": "ast",
       "source": "lib_features_dashboard_presentation_pages_dashboard_page_todayssales",
       "target": "lib_features_report_presentation_bloc_report_bloc_reportbloc"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "bloc_widget_binding",
+      "_origin": "ast",
+      "source": "lib_features_dashboard_presentation_pages_dashboard_page_weeklytrend",
+      "target": "lib_features_report_presentation_bloc_report_bloc_reportbloc"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "bloc_widget_binding",
+      "_origin": "ast",
+      "source": "lib_features_dashboard_presentation_pages_dashboard_page_recenttransactions",
+      "target": "lib_features_report_presentation_bloc_report_bloc_reportbloc"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/presentation/pages/dashboard_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "bloc_widget_binding",
+      "_origin": "ast",
+      "source": "lib_features_dashboard_presentation_pages_dashboard_page_inventoryhealth",
+      "target": "lib_features_product_presentation_bloc_product_bloc_productbloc"
     },
     {
       "relation": "references",
@@ -49088,5 +50975,5 @@
       "source_file": "web/favicon.png"
     }
   ],
-  "built_at_commit": "37b6d31a75ce35474067939101a52599b12812d9"
+  "built_at_commit": "2e5d1d934a08cc5823ca64c18a5b83e84907ff31"
 }
