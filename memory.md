@@ -1,18 +1,30 @@
 # Memory — Session Log & Context
 
-## Current Session: 2026-07-22 — Dashboard Liquid Glass Redesign ✅
+## Current Session: 2026-07-22 — Bill Edit/Delete + Manual Product Entry ✅
 
 ### What Was Done
-1. **Complete dashboard redesign** — liquid glass / glassmorphism design language
-2. **New reusable widgets created**:
-   - `GlassCard` — reusable glassmorphism container (`lib/core/widgets/glass_card.dart`)
-   - `SalesTrendCard` — 7-day sales trend mini chart with CustomPainter (`lib/core/widgets/sales_trend_card.dart`)
-   - `RecentTransactionsCard` — last 5 bills feed with payment badges (`lib/core/widgets/recent_transactions_card.dart`)
-   - `InventoryHealthCard` — inventory health bar with stats (`lib/core/widgets/inventory_health_card.dart`)
-3. **Existing widgets redesigned with glass effect**:
-   - `PremiumStatCard` — frosted glass with tinted color, dark text for readability
-   - `GreetingHeader` — glass container with waving hand icon
-   - `DashboardActionCard` — glass CTA card with colored accent
+1. **Agent A: Bill Edit/Delete (Owner Only)** — `bill-details-edit-delete` worktree
+   - Owner ke liye AppBar mein edit + delete buttons
+   - Staff ko kuch nahi dikhta (read-only)
+   - Edit: Customer name, phone, discount change → DB update + page refresh
+   - Delete: Confirmation dialog → DB delete + bill history pe redirect
+   - 8 files modified: repository, usecase, events/states/bloc, service_locator, bill_detail_page
+   - `flutter analyze`: 0 issues ✅
+
+2. **Agent B: Manual Product Entry on Scanner Page** — `manual-product-entry` worktree
+   - Keyboard icon button on scanner (below flashlight toggle)
+   - Dialog opens: TextFormField for barcode + "Add to Cart" button
+   - "Create New Product" fallback → navigates to `/products/add`
+   - Reuses existing ScanBarcodeEvent pipeline — zero new BLoC changes
+   - `flutter analyze`: 0 issues ✅
+
+3. **Bug Fix** — `const ResetReport()` → `ResetReport()` (non-const constructor) in report_bloc.dart
+
+### Orca Orchestration
+- 2 parallel worktree agents launched via Orca CLI
+- Agents explored, planned, and implemented independently
+- Code reviewed + analyze check before merging to main
+- Worktrees to be cleaned up after session
    - `QuickActionTile` — glass grid tiles
 4. **Dashboard page** — complete layout redesign:
    - 4-color gradient background (lavender → blue → purple → green)
@@ -42,6 +54,18 @@
 
 ### flutter analyze
 - 0 errors, 0 warnings, 0 infos across entire project ✅
+
+---
+
+## Current Session: 2026-07-22 — PremiumStatCard BackdropFilter GPU Fix ✅
+
+### What Was Done
+1. **Removed BackdropFilter from PremiumStatCard** — `lib/core/widgets/premium_stat_card.dart`:
+   - Removed `import 'dart:ui'` (no longer needed for ImageFilter)
+   - Removed `ClipRRect` wrapper + `BackdropFilter(filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18))`
+   - Kept the inner Container with semi-transparent glass decoration (color.withValues(alpha: 0.13), white border)
+   - **Why**: BackdropFilter is extremely GPU-expensive when 15+ cards are on screen — causes frame drops
+   - **Visual impact**: None — the semi-transparent tint + white border already gives the frosted glass look
 
 ---
 
