@@ -225,9 +225,9 @@
     "semantic_hash": "18bb9d97642ea626e221ab2c3b76174c"
   },
   "lib/features/product/data/repositories/product_repository_impl.dart": {
-    "mtime": 1784724656.3728483,
-    "ast_hash": "38d4a9f977e7aadb53a593430b73b516",
-    "semantic_hash": "38d4a9f977e7aadb53a593430b73b516"
+    "mtime": 1784827429.0357745,
+    "ast_hash": "c298e79e40177b23d7167cc3231ec54a",
+    "semantic_hash": ""
   },
   "lib/features/product/domain/entities/product.dart": {
     "mtime": 1784245277.8117719,

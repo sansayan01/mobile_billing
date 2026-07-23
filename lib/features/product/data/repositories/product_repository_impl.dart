@@ -247,6 +247,10 @@ class ProductRepositoryImpl implements ProductRepository {
     String? shopId,
   }) async {
     try {
+      // Remove dependent records first (FK constraints block direct delete)
+      await _supabase.from('inventory_log').delete().eq('product_id', id);
+      await _supabase.from('bill_items').delete().eq('product_id', id);
+
       final effectiveShopId = await _resolveShopId(shopId);
       var query = _supabase.from('products').delete().eq('id', id);
       if (effectiveShopId != null) {
