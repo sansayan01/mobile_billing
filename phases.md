@@ -61,6 +61,7 @@
 - [x] Stock movement log (domain + data + UI)
 - [x] **Bill History enhancements** — search by customer name/bill ID, payment method filter (Cash/UPI/Card), discount shown in cards
 - [x] **Bill Detail page** — StatefulWidget with fresh data fetch, individual items list (qty badge + product name + price + total), Amount Summary, Print Receipt (Bluetooth thermal), View Receipt (ReceiptPreviewPage)
+- [x] **Full Bill Edit** (owner-only) — edit dialog with payment method dropdown, item qty/remove/add (product search), stock auto-adjust, inventory logging, live totals
 
 ---
 

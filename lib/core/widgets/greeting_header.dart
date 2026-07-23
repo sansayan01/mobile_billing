@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/text_styles.dart';
 
 /// Premium glassmorphism greeting header with time-based greeting,
 /// gradient avatar, and date display.
@@ -11,19 +11,15 @@ class GreetingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hour = DateTime.now().hour;
-    String greeting;
-    if (hour < 12) {
-      greeting = 'Good morning';
-    } else if (hour < 17) {
-      greeting = 'Good afternoon';
-    } else {
-      greeting = 'Good evening';
-    }
-
     final now = DateTime.now();
-    final dateStr = '${now.day} ${_monthName(now.month)}, ${now.year}';
+    final hour = now.hour;
+    final greeting = hour < 12
+        ? 'Good morning'
+        : hour < 17
+            ? 'Good afternoon'
+            : 'Good evening';
 
+    final dateStr = '${now.day} ${_monthName(now.month)}, ${now.year}';
     final initial = userName.isNotEmpty ? userName[0].toUpperCase() : '?';
 
     return Padding(
@@ -68,9 +64,8 @@ class GreetingHeader extends StatelessWidget {
                       child: Center(
                         child: Text(
                           initial,
-                          style: GoogleFonts.ibmPlexSans(
+                          style: AppTextStyles.greetingName.copyWith(
                             fontSize: 24,
-                            fontWeight: FontWeight.w800,
                             color: Colors.white,
                           ),
                         ),
@@ -83,22 +78,12 @@ class GreetingHeader extends StatelessWidget {
                         children: [
                           Text(
                             '$greeting,',
-                            style: GoogleFonts.ibmPlexSans(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[500],
-                              letterSpacing: 0.3,
-                            ),
+                            style: AppTextStyles.greetingSubtitle,
                           ),
                           const SizedBox(height: 3),
                           Text(
                             userName,
-                            style: GoogleFonts.ibmPlexSans(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.black87,
-                              height: 1.15,
-                            ),
+                            style: AppTextStyles.greetingName,
                           ),
                         ],
                       ),
@@ -116,11 +101,7 @@ class GreetingHeader extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 68),
                   child: Text(
                     dateStr,
-                    style: GoogleFonts.ibmPlexSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[400],
-                    ),
+                    style: AppTextStyles.greetingDate,
                   ),
                 ),
               ],

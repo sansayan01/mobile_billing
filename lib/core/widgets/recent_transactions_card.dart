@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:billing_app/core/theme/text_styles.dart';
 
 /// Simple data class representing a recent transaction/bill.
 class RecentTransaction {
@@ -124,21 +124,13 @@ class RecentTransactionsCard extends StatelessWidget {
                 children: [
                   Text(
                     'Recent Transactions',
-                    style: GoogleFonts.ibmPlexSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1A1A2E),
-                    ),
+                    style: AppTextStyles.txnTitle,
                   ),
                   GestureDetector(
                     onTap: onViewAll,
                     child: Text(
                       'See All',
-                      style: GoogleFonts.ibmPlexSans(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF6C63FF),
-                      ),
+                      style: AppTextStyles.txnSeeAll,
                     ),
                   ),
                 ],
@@ -198,11 +190,8 @@ class RecentTransactionsCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         txn.staffName,
-                        style: GoogleFonts.ibmPlexSans(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A1A2E),
-                        ),
+                        style: AppTextStyles.txnStaffName,
+
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -215,11 +204,8 @@ class RecentTransactionsCard extends StatelessWidget {
                 // Time ago + item count
                 Text(
                   '${_timeAgo(txn.createdAt)}  •  ${txn.itemCount} item${txn.itemCount != 1 ? 's' : ''}',
-                  style: GoogleFonts.ibmPlexSans(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFF8E8E9A),
-                  ),
+                  style: AppTextStyles.txnMeta,
+
                 ),
               ],
             ),
@@ -230,11 +216,8 @@ class RecentTransactionsCard extends StatelessWidget {
           // ── Right: amount ──
           Text(
             _formatCurrency(txn.grandTotal),
-            style: GoogleFonts.ibmPlexSans(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF1A1A2E),
-            ),
+            style: AppTextStyles.txnAmount,
+
           ),
         ],
       ),
@@ -252,7 +235,7 @@ class RecentTransactionsCard extends StatelessWidget {
       ),
       child: Text(
         method,
-        style: GoogleFonts.ibmPlexSans(
+        style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w600,
           color: color,
@@ -278,20 +261,14 @@ class RecentTransactionsCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               'No transactions yet',
-              style: GoogleFonts.ibmPlexSans(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF8E8E9A),
-              ),
+              style: AppTextStyles.txnEmptyTitle,
+
             ),
             const SizedBox(height: 4),
             Text(
               'Completed bills will appear here',
-              style: GoogleFonts.ibmPlexSans(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xFFB0B0BA),
-              ),
+              style: AppTextStyles.txnEmptySubtitle,
+
             ),
           ],
         ),

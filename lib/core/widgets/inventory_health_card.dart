@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:billing_app/core/theme/text_styles.dart';
 
 class InventoryHealthCard extends StatelessWidget {
   final int totalProducts;
@@ -15,17 +15,10 @@ class InventoryHealthCard extends StatelessWidget {
     this.onViewDetails,
   });
 
-  String get _healthLabel {
-    if (outOfStockCount >= 5 || lowStockCount >= 5) return 'Critical';
-    if (outOfStockCount >= 3 || lowStockCount >= 5) return 'Fair';
-    return 'Good';
-  }
-
-  Color get _healthColor {
-    final label = _healthLabel;
-    if (label == 'Good') return const Color(0xFF22C55E);
-    if (label == 'Fair') return const Color(0xFFF59E0B);
-    return const Color(0xFFEF4444);
+  (String, Color) get _healthInfo {
+    if (outOfStockCount >= 5 || lowStockCount >= 5) return ('Critical', const Color(0xFFEF4444));
+    if (outOfStockCount >= 3 || lowStockCount >= 5) return ('Fair', const Color(0xFFF59E0B));
+    return ('Good', const Color(0xFF22C55E));
   }
 
   @override
@@ -39,11 +32,7 @@ class InventoryHealthCard extends StatelessWidget {
             children: [
               Text(
                 'Inventory Health',
-                style: GoogleFonts.ibmPlexSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+                style: AppTextStyles.inventoryTitle,
               ),
               const SizedBox(height: 16),
               Center(
@@ -57,10 +46,7 @@ class InventoryHealthCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       'No products yet',
-                      style: GoogleFonts.ibmPlexSans(
-                        fontSize: 14,
-                        color: Colors.white.withValues(alpha: 0.6),
-                      ),
+                      style: AppTextStyles.inventoryEmpty,
                     ),
                   ],
                 ),
@@ -88,18 +74,14 @@ class InventoryHealthCard extends StatelessWidget {
               children: [
                 Text(
                   'Inventory Health',
-                  style: GoogleFonts.ibmPlexSans(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+                  style: AppTextStyles.inventoryTitle,
                 ),
                 if (onViewDetails != null)
                   GestureDetector(
                     onTap: onViewDetails,
                     child: Text(
                       'View Details',
-                      style: GoogleFonts.ibmPlexSans(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Colors.white.withValues(alpha: 0.7),
@@ -171,18 +153,14 @@ class InventoryHealthCard extends StatelessWidget {
                   width: 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: _healthColor,
+                    color: _healthInfo.$2,
                     shape: BoxShape.circle,
                   ),
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  'Health: $_healthLabel',
-                  style: GoogleFonts.ibmPlexSans(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: _healthColor,
-                  ),
+                  'Health: ${_healthInfo.$1}',
+                  style: AppTextStyles.healthLabel.copyWith(color: _healthInfo.$2),
                 ),
               ],
             ),
@@ -244,18 +222,11 @@ class _StatItem extends StatelessWidget {
           children: [
             Text(
               '$count',
-              style: GoogleFonts.ibmPlexSans(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
+              style: AppTextStyles.statCount,
             ),
             Text(
               label,
-              style: GoogleFonts.ibmPlexSans(
-                fontSize: 11,
-                color: Colors.white.withValues(alpha: 0.7),
-              ),
+              style: AppTextStyles.statLabelSmall,
             ),
           ],
         ),

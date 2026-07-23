@@ -6,12 +6,16 @@ import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/widgets/primary_button.dart';
 import 'package:billing_app/core/utils/printer_helper.dart';
 import 'package:billing_app/core/data/hive_database.dart';
+import 'package:billing_app/core/service_locator.dart';
+import 'package:billing_app/core/usecase/usecase.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_state.dart';
 import 'package:billing_app/features/report/domain/entities/report_entities.dart';
+import 'package:billing_app/features/product/domain/entities/product.dart';
+import 'package:billing_app/features/product/domain/usecases/product_usecases.dart';
 import 'package:flutter/services.dart';
 
 class BillDetailPage extends StatefulWidget {
@@ -355,41 +359,236 @@ class _BillDetailPageState extends State<BillDetailPage> {
     final discountController =
         TextEditingController(text: bill.discount.toString());
 
+    // Editable items list — start with current bill items
+    final List<BillItem> editItems = List.from(bill.items);
+    String paymentMethod = bill.paymentMethod;
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
+            // Calculate totals live
+            final totalAmount = editItems.fold<double>(
+                0, (sum, item) => sum + item.price * item.quantity);
+            final discount =
+                double.tryParse(discountController.text) ?? 0.0;
+            final grandTotal = totalAmount - discount;
+
             return AlertDialog(
               title: const Text('Edit Bill'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: nameController,
-                      decoration:
-                          const InputDecoration(labelText: 'Customer Name'),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: phoneController,
-                      decoration:
-                          const InputDecoration(labelText: 'Customer Phone'),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: discountController,
-                      decoration:
-                          const InputDecoration(labelText: 'Discount'),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                            RegExp(r'^\d*\.?\d{0,2}')),
-                      ],
-                    ),
-                  ],
+              content: SizedBox(
+                width: double.maxFinite,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Customer Name
+                      TextField(
+                        controller: nameController,
+                        decoration:
+                            const InputDecoration(labelText: 'Customer Name'),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Customer Phone
+                      TextField(
+                        controller: phoneController,
+                        decoration:
+                            const InputDecoration(labelText: 'Customer Phone'),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Payment Method Dropdown
+                      DropdownButtonFormField<String>(
+                        initialValue: paymentMethod,
+                        decoration: const InputDecoration(
+                            labelText: 'Payment Method'),
+                        items: const [
+                          DropdownMenuItem(value: 'upi', child: Text('UPI')),
+                          DropdownMenuItem(value: 'cash', child: Text('Cash')),
+                          DropdownMenuItem(value: 'card', child: Text('Card')),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setDialogState(() => paymentMethod = value);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Discount
+                      TextField(
+                        controller: discountController,
+                        decoration:
+                            const InputDecoration(labelText: 'Discount'),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'^\d*\.?\d{0,2}')),
+                        ],
+                        onChanged: (_) => setDialogState(() {}),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Items Section
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Items',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                          TextButton.icon(
+                            onPressed: () => _showProductSearchDialog(
+                              context,
+                              editItems,
+                              setDialogState,
+                            ),
+                            icon: const Icon(Icons.add, size: 18),
+                            label: const Text('Add Item'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+
+                      if (editItems.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Center(
+                            child: Text(
+                              'No items. Tap "Add Item" to add products.',
+                              style: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        ...editItems.asMap().entries.map((entry) {
+                          final idx = entry.key;
+                          final item = entry.value;
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Row(
+                                children: [
+                                  // Product name
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.productName,
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Text(
+                                          '₹${item.price.toStringAsFixed(0)} each',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  // Quantity controls
+                                  IconButton(
+                                    onPressed: () {
+                                      setDialogState(() {
+                                        if (item.quantity > 1) {
+                                          editItems[idx] = item.copyWith(
+                                              quantity: item.quantity - 1);
+                                        } else {
+                                          editItems.removeAt(idx);
+                                        }
+                                      });
+                                    },
+                                    icon: Icon(
+                                      item.quantity > 1
+                                          ? Icons.remove_circle_outline
+                                          : Icons.delete_outline,
+                                      size: 20,
+                                      color: item.quantity > 1
+                                          ? Colors.grey[600]
+                                          : AppTheme.errorColor,
+                                    ),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8),
+                                    child: Text(
+                                      '${item.quantity}',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      setDialogState(() {
+                                        editItems[idx] = item.copyWith(
+                                            quantity: item.quantity + 1);
+                                      });
+                                    },
+                                    icon: Icon(
+                                      Icons.add_circle_outline,
+                                      size: 20,
+                                      color: AppTheme.primaryColor,
+                                    ),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                  ),
+
+                                  const SizedBox(width: 8),
+
+                                  // Item total
+                                  Text(
+                                    '₹${(item.price * item.quantity).toStringAsFixed(0)}',
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+
+                      const SizedBox(height: 12),
+
+                      // Totals
+                      const Divider(),
+                      _editInfoRow('Total',
+                          '₹${totalAmount.toStringAsFixed(0)}'),
+                      if (discount > 0)
+                        _editInfoRow('Discount',
+                            '-₹${discount.toStringAsFixed(0)}',
+                            valueColor: Colors.green),
+                      const Divider(),
+                      _editInfoRow(
+                        'Grand Total',
+                        '₹${grandTotal.toStringAsFixed(0)}',
+                        isBold: true,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               actions: [
@@ -398,18 +597,23 @@ class _BillDetailPageState extends State<BillDetailPage> {
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    context.read<ReportBloc>().add(UpdateBill(
-                          billId: widget.bill.id,
-                          updates: {
-                            'customer_name': nameController.text,
-                            'customer_phone': phoneController.text,
-                            'discount':
-                                double.tryParse(discountController.text) ?? 0,
-                          },
-                        ));
-                    Navigator.of(dialogContext).pop();
-                  },
+                  onPressed: editItems.isEmpty
+                      ? null
+                      : () {
+                          context.read<ReportBloc>().add(UpdateBill(
+                                billId: widget.bill.id,
+                                updates: {
+                                  'customer_name': nameController.text,
+                                  'customer_phone': phoneController.text,
+                                  'discount':
+                                      double.tryParse(discountController.text) ??
+                                          0,
+                                  'payment_method': paymentMethod,
+                                },
+                                items: editItems,
+                              ));
+                          Navigator.of(dialogContext).pop();
+                        },
                   child: const Text('Save Changes'),
                 ),
               ],
@@ -417,6 +621,166 @@ class _BillDetailPageState extends State<BillDetailPage> {
           },
         );
       },
+    );
+  }
+
+  void _showProductSearchDialog(
+    BuildContext context,
+    List<BillItem> editItems,
+    StateSetter setDialogState,
+  ) async {
+    // Fetch all products for the shop
+    final authState = context.read<AuthBloc>().state;
+    final shopId =
+        authState is Authenticated ? authState.user.shopId : null;
+
+    List<Product> allProducts = [];
+    try {
+      final useCase = sl<GetProductsUseCase>();
+      final result = await useCase(NoParams(), shopId: shopId);
+      result.fold(
+        (failure) {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to load products: ${failure.message}')),
+          );
+        },
+        (products) => allProducts = products,
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading products: $e')),
+      );
+      return;
+    }
+
+    if (!context.mounted) return;
+
+    String searchQuery = '';
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setInnerState) {
+            final filtered = allProducts.where((p) {
+              final query = searchQuery.toLowerCase();
+              return p.name.toLowerCase().contains(query) ||
+                  p.barcode.toLowerCase().contains(query);
+            }).toList();
+
+            return AlertDialog(
+              title: const Text('Add Product'),
+              content: SizedBox(
+                width: double.maxFinite,
+                height: MediaQuery.of(context).size.height * 0.5,
+                child: Column(
+                  children: [
+                    TextField(
+                      autofocus: true,
+                      decoration: const InputDecoration(
+                        hintText: 'Search by name or barcode...',
+                        prefixIcon: Icon(Icons.search),
+                      ),
+                      onChanged: (value) {
+                        setInnerState(() => searchQuery = value);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: filtered.length,
+                        itemBuilder: (context, index) {
+                          final product = filtered[index];
+                          // Check if already in bill
+                          final existingIdx = editItems.indexWhere(
+                              (i) => i.productId == product.id);
+                          final alreadyAdded = existingIdx != -1;
+
+                          return ListTile(
+                            title: Text(
+                              product.name,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: alreadyAdded ? Colors.grey : null,
+                              ),
+                            ),
+                            subtitle: Text(
+                              '₹${product.price.toStringAsFixed(0)} • Stock: ${product.stock}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            trailing: alreadyAdded
+                                ? const Icon(Icons.check_circle,
+                                    color: Colors.green, size: 20)
+                                : null,
+                            onTap: alreadyAdded
+                                ? null
+                                : () {
+                                    setDialogState(() {
+                                      editItems.add(BillItem(
+                                        id: '',
+                                        productId: product.id,
+                                        productName: product.name,
+                                        quantity: 1,
+                                        price: product.price,
+                                        total: product.price,
+                                      ));
+                                    });
+                                    Navigator.of(dialogContext).pop();
+                                  },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('Close'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _editInfoRow(
+    String label,
+    String value, {
+    bool isBold = false,
+    Color? valueColor,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey[600],
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: isBold ? 16 : 14,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
+              color: valueColor,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

@@ -24,6 +24,7 @@ class ReceiptPreviewPage extends StatefulWidget {
   final String? customerName;
   final String? customerPhone;
   final String paymentMethod;
+  final String billId;
 
   const ReceiptPreviewPage({
     super.key,
@@ -39,6 +40,7 @@ class ReceiptPreviewPage extends StatefulWidget {
     this.customerName,
     this.customerPhone,
     this.paymentMethod = 'UPI',
+    this.billId = '',
   });
 
   @override
@@ -102,6 +104,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
         footer: widget.footer,
         customerName: widget.customerName,
         customerPhone: widget.customerPhone,
+        billId: widget.billId,
       );
 
       if (mounted) {
@@ -261,6 +264,13 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                     padding: EdgeInsets.symmetric(horizontal: 24),
                     child: Divider(height: 24, thickness: 1),
                   ),
+
+                  // Bill ID
+                  if (widget.billId.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4, left: 24, right: 24, bottom: 4),
+                      child: Text('Bill ID: ${widget.billId}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: Colors.black38, fontStyle: FontStyle.italic)),
+                    ),
 
                   // Customer info
                   if (widget.customerName != null && widget.customerName!.isNotEmpty)

@@ -1,4 +1,4 @@
-﻿import 'package:equatable/equatable.dart';
+import 'package:equatable/equatable.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:billing_app/core/error/failure.dart';
 import 'package:billing_app/core/usecase/usecase.dart';
@@ -94,15 +94,17 @@ class UpdateBillParams extends Equatable {
   final String billId;
   final Map<String, dynamic> updates;
   final String? shopId;
+  final List<BillItem>? items;
 
   const UpdateBillParams({
     required this.billId,
     required this.updates,
     this.shopId,
+    this.items,
   });
 
   @override
-  List<Object?> get props => [billId, updates, shopId];
+  List<Object?> get props => [billId, updates, shopId, items];
 }
 
 class DeleteBillParams extends Equatable {
@@ -228,6 +230,7 @@ class UpdateBillUseCase implements UseCase<BillSummary, UpdateBillParams> {
       params.billId,
       params.updates,
       shopId: params.shopId,
+      items: params.items,
     );
   }
 }

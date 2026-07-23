@@ -14,8 +14,10 @@ class AppTheme {
     fontWeight: FontWeight.w500,
     color: Colors.black,
   ),
- 
 );
+
+static TextStyle ibm(double size, FontWeight weight, Color color) =>
+    GoogleFonts.ibmPlexSans(fontSize: size, fontWeight: weight, color: color);
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,

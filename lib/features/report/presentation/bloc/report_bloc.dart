@@ -180,6 +180,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         billId: event.billId,
         updates: event.updates,
         shopId: _currentShopId,
+        items: event.items,
       ),
     );
 

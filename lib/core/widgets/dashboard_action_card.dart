@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:billing_app/core/theme/text_styles.dart';
 
 /// Big prominent action card (e.g. "New Bill").
 /// Liquid-glass / glassmorphism effect — frosted white background over whatever
@@ -84,22 +84,13 @@ class DashboardActionCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: GoogleFonts.ibmPlexSans(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: color,
-                          letterSpacing: -0.2,
-                        ),
+                        style: AppTextStyles.actionCardTitle.copyWith(color: color),
                       ),
                       if (subtitle != null) ...[
                         const SizedBox(height: 3),
                         Text(
                           subtitle!,
-                          style: GoogleFonts.ibmPlexSans(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[600],
-                          ),
+                          style: AppTextStyles.actionCardSubtitle,
                         ),
                       ],
                     ],
@@ -206,12 +197,7 @@ class QuickActionTile extends StatelessWidget {
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.ibmPlexSans(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
-                    letterSpacing: 0.1,
-                  ),
+                  style: AppTextStyles.tileLabel,
                 ),
               ],
             ),

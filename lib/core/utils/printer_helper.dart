@@ -113,6 +113,7 @@ class PrinterHelper {
     required String footer,
     String? customerName,
     String? customerPhone,
+    String? billId,
   }) async {
     if (!_isConnected) return;
 
@@ -148,6 +149,12 @@ class PrinterHelper {
         DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.now());
     bytes += _textToBytes(formattedDate);
     bytes += EscPos.lineFeed;
+
+    // Bill ID
+    if (billId != null && billId.isNotEmpty) {
+      bytes += _textToBytes('Bill: $billId');
+      bytes += EscPos.lineFeed;
+    }
 
     // Customer Info (if provided)
     if (customerName != null && customerName.isNotEmpty) {

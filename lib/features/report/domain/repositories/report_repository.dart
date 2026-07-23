@@ -1,4 +1,4 @@
-﻿import 'package:fpdart/fpdart.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:billing_app/core/error/failure.dart';
 import 'package:billing_app/features/report/domain/entities/report_entities.dart';
 
@@ -46,6 +46,7 @@ abstract class ReportRepository {
     String billId,
     Map<String, dynamic> updates, {
     String? shopId,
+    List<BillItem>? items,
   });
 
   Future<Either<Failure, void>> deleteBill(

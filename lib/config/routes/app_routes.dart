@@ -144,6 +144,7 @@ GoRouter createRouter(AuthBloc authBloc) {
                     customerName: extra['customerName'] as String?,
                     customerPhone: extra['customerPhone'] as String?,
                     paymentMethod: extra['paymentMethod'] as String? ?? 'UPI',
+                    billId: extra['billId'] as String? ?? '',
                   );
                 },
               ),

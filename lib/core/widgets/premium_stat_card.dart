@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:billing_app/core/theme/text_styles.dart';
 
 /// Liquid-glass stat card — semi-transparent colour-tinted container.
 class PremiumStatCard extends StatelessWidget {
@@ -77,12 +77,7 @@ class PremiumStatCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           label,
-                          style: GoogleFonts.ibmPlexSans(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: color.withValues(alpha: 0.85),
-                            letterSpacing: 0.4,
-                          ),
+                          style: AppTextStyles.statLabel.copyWith(color: color.withValues(alpha: 0.85)),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -92,12 +87,7 @@ class PremiumStatCard extends StatelessWidget {
                   // Big value
                   Text(
                     value,
-                    style: GoogleFonts.ibmPlexSans(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: color,
-                      height: 1.1,
-                    ),
+                    style: AppTextStyles.statValue.copyWith(color: color),
                   ),
                 ],
               ),

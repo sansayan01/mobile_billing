@@ -15,6 +15,7 @@ class BillingState extends Equatable {
   final String? customerName;
   final String? customerPhone;
   final String paymentMethod;
+  final String? lastBillId;
 
   const BillingState({
     this.cartItems = const [],
@@ -31,6 +32,7 @@ class BillingState extends Equatable {
     this.customerName,
     this.customerPhone,
     this.paymentMethod = 'cash',
+    this.lastBillId,
   });
 
   double get totalAmount {
@@ -74,6 +76,7 @@ class BillingState extends Equatable {
     String? customerName,
     String? customerPhone,
     String? paymentMethod,
+    String? lastBillId,
   }) {
     return BillingState(
       cartItems: cartItems ?? this.cartItems,
@@ -93,6 +96,7 @@ class BillingState extends Equatable {
       customerName: customerName ?? this.customerName,
       customerPhone: customerPhone ?? this.customerPhone,
       paymentMethod: paymentMethod ?? this.paymentMethod,
+      lastBillId: lastBillId ?? this.lastBillId,
     );
   }
 
@@ -112,5 +116,6 @@ class BillingState extends Equatable {
         customerName,
         customerPhone,
         paymentMethod,
+        lastBillId,
       ];
 }

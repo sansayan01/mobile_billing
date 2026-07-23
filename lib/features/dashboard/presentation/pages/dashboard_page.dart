@@ -1,4 +1,5 @@
 import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/text_styles.dart';
 import 'package:billing_app/core/widgets/dashboard_action_card.dart';
 import 'package:billing_app/core/widgets/greeting_header.dart';
 import 'package:billing_app/core/widgets/inventory_health_card.dart';
@@ -13,7 +14,6 @@ import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_state.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -118,10 +118,17 @@ class _DashboardViewState extends State<_DashboardView> {
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
+                      // Wrap entire scrollable content in RepaintBoundary
+                      // so glassmorphism cards don't repaint the whole list
+                      RepaintBoundary(
+                        child: Column(
+                          children: [
                       // Greeting
                       BlocBuilder<AuthBloc, AuthState>(
-                        buildWhen: (previous, current) =>
-                            previous is! Authenticated || current is! Authenticated || previous.user.name != current.user.name,
+                        buildWhen: (previous, current) {
+                          if (previous is! Authenticated || current is! Authenticated) return true;
+                          return previous.user.name != current.user.name;
+                        },
                         builder: (context, state) {
                           final name = state is Authenticated ? state.user.name : '';
                           return GreetingHeader(userName: name);
@@ -157,6 +164,10 @@ class _DashboardViewState extends State<_DashboardView> {
                       ),
                       const SizedBox(height: 14),
                       BlocBuilder<AuthBloc, AuthState>(
+                        buildWhen: (previous, current) {
+                          if (previous is! Authenticated || current is! Authenticated) return true;
+                          return previous.user.role != current.user.role;
+                        },
                         builder: (context, state) => _buildQuickTiles(context, state),
                       ),
                       const SizedBox(height: 20),
@@ -168,15 +179,19 @@ class _DashboardViewState extends State<_DashboardView> {
                       // ── Recent Transactions ──
                       const _RecentTransactions(),
                       const SizedBox(height: 16),
-                    ]),
-                  ),
-                ),
-              ],
+                    ], // Column children
+                  ), // Column
+                ), // RepaintBoundary
+              ], // SliverList delegate
             ),
-          ),
+          ), // SliverPadding
         ),
-      ),
-    );
+      ], // slivers
+    ), // CustomScrollView
+  ), // RefreshIndicator
+), // SafeArea
+), // Container
+); // Scaffold
   }
 
   void _showProductSearch(BuildContext context) {
@@ -188,64 +203,16 @@ class _DashboardViewState extends State<_DashboardView> {
 
   Widget _sectionTitle(String text) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 4),
-    child: Text(
-      text,
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w800,
-        color: Colors.grey[800],
-        letterSpacing: -0.2,
-      ),
-    ),
+    child: Text(text, style: AppTextStyles.sectionTitle),
   );
 
   Widget _buildQuickTiles(BuildContext context, AuthState authState) {
-    final tiles = <Widget>[
-      QuickActionTile(
-        icon: Icons.inventory_2_rounded,
-        label: 'Products',
-        color: AppTheme.primaryColor,
-        onTap: () => context.go('/products'),
-      ),
-      QuickActionTile(
-        icon: Icons.category_rounded,
-        label: 'Categories',
-        color: AppTheme.primaryColor,
-        onTap: () => context.go('/categories'),
-      ),
-      QuickActionTile(
-        icon: Icons.bar_chart_rounded,
-        label: 'Reports',
-        color: AppTheme.primaryColor,
-        onTap: () => context.go('/reports'),
-      ),
-      QuickActionTile(
-        icon: Icons.store_rounded,
-        label: 'Shop',
-        color: AppTheme.primaryColor,
-        onTap: () => context.go('/shop'),
-      ),
-      QuickActionTile(
-        icon: Icons.settings_rounded,
-        label: 'Settings',
-        color: AppTheme.primaryColor,
-        onTap: () => context.go('/settings'),
-      ),
-    ];
-
     final isOwner =
         authState is Authenticated && authState.user.role == 'owner';
-    if (isOwner) {
-      tiles.add(
-        QuickActionTile(
-          icon: Icons.people_rounded,
-          label: 'Staff',
-          color: AppTheme.primaryColor,
-          onTap: () => context.go('/staff'),
-        ),
-      );
-    }
 
+    // Build widgets inline to avoid allocating a List that's recreated
+    // on every auth change. Only the owner tile is conditional;
+    // the rest are direct children with zero alloc.
     return GridView.count(
       crossAxisCount: 3,
       mainAxisSpacing: 14,
@@ -253,7 +220,45 @@ class _DashboardViewState extends State<_DashboardView> {
       childAspectRatio: 0.95,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      children: tiles,
+      children: [
+        QuickActionTile(
+          icon: Icons.inventory_2_rounded,
+          label: 'Products',
+          color: AppTheme.primaryColor,
+          onTap: () => context.go('/products'),
+        ),
+        QuickActionTile(
+          icon: Icons.category_rounded,
+          label: 'Categories',
+          color: AppTheme.primaryColor,
+          onTap: () => context.go('/categories'),
+        ),
+        QuickActionTile(
+          icon: Icons.bar_chart_rounded,
+          label: 'Reports',
+          color: AppTheme.primaryColor,
+          onTap: () => context.go('/reports'),
+        ),
+        QuickActionTile(
+          icon: Icons.store_rounded,
+          label: 'Shop',
+          color: AppTheme.primaryColor,
+          onTap: () => context.go('/shop'),
+        ),
+        QuickActionTile(
+          icon: Icons.settings_rounded,
+          label: 'Settings',
+          color: AppTheme.primaryColor,
+          onTap: () => context.go('/settings'),
+        ),
+        if (isOwner)
+          QuickActionTile(
+            icon: Icons.people_rounded,
+            label: 'Staff',
+            color: AppTheme.primaryColor,
+            onTap: () => context.go('/staff'),
+          ),
+      ],
     );
   }
 }
@@ -265,11 +270,13 @@ class _DashboardViewState extends State<_DashboardView> {
 class _TodaysSales extends StatelessWidget {
   const _TodaysSales();
 
-  String _formatCurrency(double v) => NumberFormat.currency(
+  static final _inrFormat = NumberFormat.currency(
     locale: 'en_IN',
     symbol: '₹',
     decimalDigits: 0,
-  ).format(v);
+  );
+
+  String _formatCurrency(double v) => _inrFormat.format(v);
 
   @override
   Widget build(BuildContext context) {
@@ -441,64 +448,60 @@ class _RecentTransactions extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Recent Transactions',
-            style: GoogleFonts.ibmPlexSans(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF1A1A2E),
-            ),
-          ),
+          Text('Recent Transactions', style: AppTextStyles.txnTitle),
           const SizedBox(height: 20),
-          ...List.generate(3, (i) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+          ...List.generate(3, (i) => const Padding(
+            padding: EdgeInsets.only(bottom: 12),
             child: Row(
               children: [
-                Container(
+                SizedBox(
                   width: 36,
                   height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                  child: _SkeletonBox(radius: 10),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
+                      SizedBox(
                         width: 80,
                         height: 12,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
+                        child: _SkeletonBox(radius: 6),
                       ),
-                      const SizedBox(height: 6),
-                      Container(
+                      SizedBox(height: 6),
+                      SizedBox(
                         width: 50,
                         height: 10,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
+                        child: _SkeletonBox(radius: 5),
                       ),
                     ],
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: 50,
                   height: 14,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
+                  child: _SkeletonBox(radius: 6),
                 ),
               ],
             ),
           )),
         ],
+      ),
+    );
+  }
+}
+
+class _SkeletonBox extends StatelessWidget {
+  final double radius;
+  const _SkeletonBox({required this.radius});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.grey.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(radius),
       ),
     );
   }

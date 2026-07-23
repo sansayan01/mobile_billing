@@ -84,7 +84,8 @@ class BillSummaryModel extends BillSummary {
   }
 
   factory BillSummaryModel.fromSupabaseRow(Map<String, dynamic> row) {
-    // Extract item count from embedded bill_items relationship if present
+    // Extract item count from embedded bill_items relationship if present,
+    // otherwise fallback to item_count column in bills table
     int itemCount = 0;
     List<BillItem> items = [];
     if (row['bill_items'] != null && row['bill_items'] is List) {
@@ -93,6 +94,9 @@ class BillSummaryModel extends BillSummary {
       items = billItems
           .map((e) => BillItemModel.fromJson(e as Map<String, dynamic>))
           .toList();
+    } else {
+      // Fallback to item_count column if bill_items not joined
+      itemCount = row['item_count'] as int? ?? 0;
     }
 
     // Extract staff name from embedded profiles relationship

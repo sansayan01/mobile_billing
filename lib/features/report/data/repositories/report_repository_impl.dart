@@ -2,6 +2,7 @@
 
 import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 import 'package:billing_app/core/error/failure.dart';
 import 'package:billing_app/core/supabase/supabase_client.dart';
 import 'package:billing_app/features/report/data/models/report_models.dart';
@@ -46,7 +47,7 @@ class ReportRepositoryImpl implements ReportRepository {
       // Start with select() to get PostgrestFilterBuilder, then add filters
       var query = _supabase
           .from('bills')
-          .select('*, profiles(name)');
+          .select('*, profiles(name), bill_items(*)');
 
       if (effectiveShopId != null) {
         query = query.eq('shop_id', effectiveShopId);
@@ -61,25 +62,52 @@ class ReportRepositoryImpl implements ReportRepository {
         query = query.lte('created_at', endOfDay.toIso8601String());
       }
 
-      if (searchQuery != null && searchQuery.trim().isNotEmpty) {
-        final term = searchQuery.trim();
-        query = query.or('customer_name.ilike.%$term%,id.eq.$term');
-      }
+      // Server-side filter: payment method only (product search needs client-side)
       if (paymentMethod != null && paymentMethod.trim().isNotEmpty) {
         query = query.eq('payment_method', paymentMethod.trim());
       }
 
+      // Fetch more than needed for client-side product search filtering
+      final searchTerm = (searchQuery != null && searchQuery.trim().isNotEmpty)
+          ? searchQuery.trim().toLowerCase()
+          : null;
+
+      // For product search, fetch a larger batch and filter client-side
+      final fetchLimit = searchTerm != null ? 100 : 20;
       final start = (page - 1) * limit;
-      final end = start + limit - 1;
+      final end = start + fetchLimit - 1;
 
       final response = await query.range(start, end).order('created_at', ascending: false);
 
-      final bills = (response as List<dynamic>)
+      var bills = (response as List<dynamic>)
           .map(
               (e) => BillSummaryModel.fromSupabaseRow(e as Map<String, dynamic>))
           .toList();
 
-      return Right(bills);
+      // Client-side filtering for customer name, bill ID, and product names
+      if (searchTerm != null) {
+        bills = bills.where((bill) {
+          // Match customer name
+          if (bill.customerName?.toLowerCase().contains(searchTerm) == true) {
+            return true;
+          }
+          // Match bill ID (full or partial)
+          if (bill.id.toLowerCase().contains(searchTerm)) {
+            return true;
+          }
+          // Match product names in bill items
+          if (bill.items.any((item) =>
+              item.productName.toLowerCase().contains(searchTerm))) {
+            return true;
+          }
+          return false;
+        }).toList();
+      }
+
+      // Paginate the filtered results
+      final paginatedBills = bills.take(limit).toList();
+
+      return Right(paginatedBills);
     } catch (e) {
       return Left(ServerFailure('Failed to fetch bill history: $e'));
     }
@@ -276,9 +304,13 @@ class ReportRepositoryImpl implements ReportRepository {
     String billId,
     Map<String, dynamic> updates, {
     String? shopId,
+    List<BillItem>? items,
   }) async {
     try {
       final effectiveShopId = await _resolveShopId(shopId);
+      final staffId = _supabase.auth.currentUser?.id;
+
+      // 1. Update bill columns (customer_name, customer_phone, discount, payment_method)
       var query = _supabase
           .from('bills')
           .update(updates) as dynamic;
@@ -289,6 +321,181 @@ class ReportRepositoryImpl implements ReportRepository {
 
       await query.eq('id', billId);
 
+      // 2. If items provided, handle item-level changes
+      if (items != null) {
+        // Fetch existing bill_items from DB — bill_id is unique UUID
+        final existingRows = await _supabase
+            .from('bill_items')
+            .select()
+            .eq('bill_id', billId);
+        final existingItems = (existingRows as List<dynamic>)
+            .map((e) => BillItemModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+
+        // Build maps by productId for diffing
+        final existingByProductId = <String, BillItem>{};
+        for (final item in existingItems) {
+          existingByProductId[item.productId] = item;
+        }
+
+        final newByProductId = <String, BillItem>{};
+        for (final item in items) {
+          newByProductId[item.productId] = item;
+        }
+
+        final now = DateTime.now().toIso8601String();
+
+        // a) Removed items — restore stock
+        for (final existing in existingItems) {
+          if (!newByProductId.containsKey(existing.productId)) {
+            // Delete bill_item row
+            await _supabase
+                .from('bill_items')
+                .delete()
+                .eq('id', existing.id);
+
+            // Restore stock — product_id is unique UUID
+            final productRow = await _supabase
+                .from('products')
+                .select('stock')
+                .eq('id', existing.productId)
+                .maybeSingle();
+
+            if (productRow != null) {
+              final currentStock = (productRow['stock'] as num).toInt();
+              await _supabase
+                  .from('products')
+                  .update({'stock': currentStock + existing.quantity})
+                  .eq('id', existing.productId);
+            }
+
+            // Log inventory
+            if (staffId != null) {
+              await _supabase.from('inventory_log').insert({
+                'id': const Uuid().v4(),
+                'product_id': existing.productId,
+                'shop_id': effectiveShopId ?? '',
+                'staff_id': staffId,
+                'change_type': 'return',
+                'quantity': existing.quantity,
+                'created_at': now,
+                'notes': 'Bill edit: removed from bill $billId',
+              });
+            }
+          }
+        }
+
+        // b) Modified items — adjust stock diff
+        for (final newItem in items) {
+          final existing = existingByProductId[newItem.productId];
+          if (existing != null) {
+            // Check if qty or price changed
+            if (existing.quantity != newItem.quantity ||
+                existing.price != newItem.price) {
+              // Update bill_item row
+              await _supabase
+                  .from('bill_items')
+                  .update({
+                    'quantity': newItem.quantity,
+                    'price': newItem.price,
+                    'total': newItem.price * newItem.quantity,
+                  })
+                  .eq('id', existing.id);
+
+              // Adjust stock diff
+              final qtyDiff = newItem.quantity - existing.quantity;
+              if (qtyDiff != 0) {
+                // Get current stock first
+                final productRow = await _supabase
+                    .from('products')
+                    .select('stock')
+                    .eq('id', newItem.productId)
+                    .maybeSingle();
+
+                if (productRow != null) {
+                  final currentStock = (productRow['stock'] as num).toInt();
+                  await _supabase
+                      .from('products')
+                      .update({'stock': currentStock - qtyDiff})
+                      .eq('id', newItem.productId);
+                }
+              }
+
+              // Log inventory if qty changed
+              if (qtyDiff != 0 && staffId != null) {
+                await _supabase.from('inventory_log').insert({
+                  'id': const Uuid().v4(),
+                  'product_id': newItem.productId,
+                  'shop_id': effectiveShopId ?? '',
+                  'staff_id': staffId,
+                  'change_type': qtyDiff > 0 ? 'sell' : 'return',
+                  'quantity': qtyDiff > 0 ? -qtyDiff : qtyDiff.abs(),
+                  'created_at': now,
+                  'notes': 'Bill edit: qty changed in bill $billId',
+                });
+              }
+            }
+          } else {
+            // c) New item — insert bill_item + deduct stock
+            await _supabase.from('bill_items').insert({
+              'id': const Uuid().v4(),
+              'bill_id': billId,
+              'shop_id': effectiveShopId ?? '',
+              'product_id': newItem.productId,
+              'product_name': newItem.productName,
+              'quantity': newItem.quantity,
+              'price': newItem.price,
+              'total': newItem.price * newItem.quantity,
+            });
+
+            // Deduct stock — product_id is unique UUID
+            final productRow = await _supabase
+                .from('products')
+                .select('stock')
+                .eq('id', newItem.productId)
+                .maybeSingle();
+
+            if (productRow != null) {
+              final currentStock = (productRow['stock'] as num).toInt();
+              await _supabase
+                  .from('products')
+                  .update({'stock': currentStock - newItem.quantity})
+                  .eq('id', newItem.productId);
+            }
+
+            // Log inventory
+            if (staffId != null) {
+              await _supabase.from('inventory_log').insert({
+                'id': const Uuid().v4(),
+                'product_id': newItem.productId,
+                'shop_id': effectiveShopId ?? '',
+                'staff_id': staffId,
+                'change_type': 'sell',
+                'quantity': -newItem.quantity,
+                'created_at': now,
+                'notes': 'Bill edit: added to bill $billId',
+              });
+            }
+          }
+        }
+
+        // d) Recalculate bill totals
+        final totalAmount = items.fold<double>(
+            0, (sum, item) => sum + item.price * item.quantity);
+        final discount = (updates['discount'] as num?)?.toDouble() ?? 0.0;
+        final grandTotal = totalAmount - discount;
+
+        await _supabase
+            .from('bills')
+            .update({
+              'total_amount': totalAmount,
+              'grand_total': grandTotal,
+              'item_count': items.length,
+            })
+            .eq('id', billId);
+      }
+
+      // 3. Re-fetch full bill with items
       final updatedRow = await _supabase
           .from('bills')
           .select('*, profiles(name)')
@@ -299,7 +506,22 @@ class ReportRepositoryImpl implements ReportRepository {
         return Left(ServerFailure('Bill not found after update'));
       }
 
-      return Right(BillSummaryModel.fromSupabaseRow(updatedRow));
+      // Fetch items
+      var finalItemsQuery = _supabase
+          .from('bill_items')
+          .select()
+          .eq('bill_id', billId);
+      if (effectiveShopId != null) {
+        finalItemsQuery = finalItemsQuery.eq('shop_id', effectiveShopId);
+      }
+      final finalItemsResponse = await finalItemsQuery.order('id', ascending: true);
+
+      final finalItems = (finalItemsResponse as List<dynamic>)
+          .map((e) => BillItemModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      final bill = BillSummaryModel.fromSupabaseRow(updatedRow);
+      return Right(bill.copyWith(items: finalItems, itemCount: finalItems.length));
     } catch (e) {
       return Left(ServerFailure('Failed to update bill: $e'));
     }
@@ -312,13 +534,64 @@ class ReportRepositoryImpl implements ReportRepository {
   }) async {
     try {
       final effectiveShopId = await _resolveShopId(shopId);
-      var query = _supabase.from('bills').delete().eq('id', billId) as dynamic;
+      final staffId = _supabase.auth.currentUser?.id;
+      final now = DateTime.now().toIso8601String();
 
-      if (effectiveShopId != null) {
-        query = query.eq('shop_id', effectiveShopId);
+      // 1. Fetch bill items BEFORE deleting (to restore stock)
+      // bill_id is a UUID and unique, so no shop_id filter needed here.
+      final itemsResponse = await _supabase
+          .from('bill_items')
+          .select()
+          .eq('bill_id', billId);
+      final items = (itemsResponse as List<dynamic>)
+          .map((e) => BillItemModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      // 2. Restore stock for each item + log inventory
+      for (final item in items) {
+        // Restore stock — product_id is a UUID and unique, so no shop_id
+        // filter needed. This also handles legacy products where shop_id
+        // may be NULL (created before the multi-tenant migration).
+        final productRow = await _supabase
+            .from('products')
+            .select('stock')
+            .eq('id', item.productId)
+            .maybeSingle();
+
+        if (productRow != null) {
+          final currentStock = (productRow['stock'] as num).toInt();
+          await _supabase
+              .from('products')
+              .update({'stock': currentStock + item.quantity})
+              .eq('id', item.productId);
+        }
+
+        // Log inventory restoration
+        if (staffId != null) {
+          await _supabase.from('inventory_log').insert({
+            'id': const Uuid().v4(),
+            'product_id': item.productId,
+            'shop_id': effectiveShopId ?? '',
+            'staff_id': staffId,
+            'change_type': 'return',
+            'quantity': item.quantity,
+            'created_at': now,
+            'notes': 'Bill deleted: $billId',
+          });
+        }
       }
 
-      await query;
+      // 3. Delete bill_items — bill_id is unique UUID
+      await _supabase
+          .from('bill_items')
+          .delete()
+          .eq('bill_id', billId);
+
+      // 4. Delete the bill itself — bill id is unique UUID
+      await _supabase
+          .from('bills')
+          .delete()
+          .eq('id', billId);
 
       return const Right(null);
     } catch (e) {

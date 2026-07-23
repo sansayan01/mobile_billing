@@ -110,7 +110,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                 TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Search by customer name or bill ID',
+                    hintText: 'Search by customer, bill ID, or product',
                     prefixIcon: const Icon(Icons.search, size: 20),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(

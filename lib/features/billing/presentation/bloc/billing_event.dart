@@ -53,6 +53,7 @@ class PrintReceiptEvent extends BillingEvent {
   final String footer;
   final String? customerName;
   final String? customerPhone;
+  final String? billId;
 
   const PrintReceiptEvent({
     required this.shopName,
@@ -62,6 +63,7 @@ class PrintReceiptEvent extends BillingEvent {
     required this.footer,
     this.customerName,
     this.customerPhone,
+    this.billId,
   });
 
   @override
@@ -73,6 +75,7 @@ class PrintReceiptEvent extends BillingEvent {
         footer,
         customerName ?? '',
         customerPhone ?? '',
+        billId ?? '',
       ];
 }
 
@@ -125,4 +128,13 @@ class UpdatePaymentMethodEvent extends BillingEvent {
 
   @override
   List<Object> get props => [paymentMethod];
+}
+
+class _ProductStockUpdatedEvent extends BillingEvent {
+  final String productId;
+  final int newStock;
+  const _ProductStockUpdatedEvent(this.productId, this.newStock);
+
+  @override
+  List<Object> get props => [productId, newStock];
 }

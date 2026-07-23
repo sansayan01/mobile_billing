@@ -1,5 +1,111 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-07-23 — Stock Decrease/Increase Logic Audit + Realtime ✅
+
+### What Was Done
+1. **Stock logic full audit** — billing_bloc + report_repository dono sides check kiye:
+   - Submit pe stock decrease → fresh DB fetch add kiya (race condition fix)
+   - Delete/edit bill pe stock increase → already working (fresh stock fetch + diff logic)
+   - inventory_log shop_id → already present (was missing in my initial audit)
+
+2. **Bug Fix — Race condition in _onSubmitBill** (CRITICAL):
+   - **Root Cause**: `item.product.stock` cached value use karta tha → agar bill submit ke beech mein koi aur session stock change karde, stock negative ho sakta tha
+   - **Fix**: Fresh DB fetch (`SELECT stock` from products) → then subtract quantity
+   - Same pattern already used in report_repository_impl.dart for delete/edit
+
+3. **Realtime stock updates on checkout page**:
+   - BillingBloc pe Supabase realtime subscription added (products table)
+   - Agar cart mein product hai + DB mein stock change hua → instant cart update
+   - Red/Orange "Insufficient Stock" / "Low Stock" badges live update hote hain
+   - `close()` pe subscription cleanup hota hai
+
+4. **Verified Bug 2 already fixed** — inventory_log insert mein `shop_id` already present tha
+
+### Files Modified
+- `lib/features/billing/presentation/bloc/billing_bloc.dart` — race condition fix + realtime subscription
+- `lib/features/billing/presentation/bloc/billing_event.dart` — _ProductStockUpdatedEvent added
+
+### flutter analyze
+- 0 errors, 0 warnings ✅ (entire project)
+
+### Graphify
+- Updated: 1845 nodes, 2850 edges, 151 communities
+
+---
+
+## Current Session: 2026-07-22 — Stock Revert Bug Fix (deleteBill + updateBill) ✅
+
+### What Was Done
+1. **Fixed stock not reverting on bill delete** — `report_repository_impl.dart`:
+   - **Root Cause**: `deleteBill()` aur `updateBill()` mein stock operations `shop_id` filter se wrapped the. Agar product ya bill_item ka `shop_id` NULL hai (migration 004 se pehle bane records), toh `maybeSingle()` null return karta tha aur stock update **silently skip** ho jaata tha. Bill delete hota tha but stock revert nahi hota.
+   - **Fix**: 
+     - `deleteBill()`: bill_items fetch, stock restore, bill_items delete, bill delete — sab se `shop_id` filter hata diya (UUIDs unique hain)
+     - `updateBill()`: 4 jagah stock operations (removed items restore, modified items diff, new items deduct, existing items fetch) se `shop_id` filter hata diya
+   - **Why safe**: bill_id, product_id, bill_item_id sab UUIDs hain jo globally unique hain — shop_id filter redundant tha stock operations ke liye
+
+### Files Modified
+- `lib/features/report/data/repositories/report_repository_impl.dart` — deleteBill + updateBill methods
+
+### flutter analyze
+- 0 errors ✅
+
+---
+
+## Current Session: 2026-07-22 — Bill Delete Stock Restoration Fix ✅
+
+### What Was Done
+1. **Fixed bill delete not restoring stock** — `deleteBill()` method rewrite:
+   - **Root Cause**: Pehle sirf `bills` table se delete hota tha, stock restore nahi hota tha
+   - **Fix**: 
+     1. Bill items fetch karo (delete se pehle)
+     2. Har item ka stock restore karo (`currentStock + item.quantity`)
+     3. Inventory log entry banao (`change_type: 'return'`)
+     4. Bill items delete karo
+     5. Bill delete karo
+
+### Files Modified
+- `lib/features/report/data/repositories/report_repository_impl.dart` — complete deleteBill rewrite
+
+### flutter analyze
+- 0 errors ✅
+
+---
+
+## Current Session: 2026-07-22 — Bill History Product Search ✅
+
+### What Was Done
+1. **Added product name search to Bill History** — ab customer name, bill ID, aur product name teeno searchable hain
+   - **Root Cause**: Pehle sirf `customer_name` aur `id` pe server-side filter tha
+   - **Solution**: Client-side filtering - pehle 100 bills fetch (with items), phir Dart mein filter
+   - Searches: `customerName`, `bill.id`, `bill.items[].productName`
+2. **Hint text updated**: "Search by customer, bill ID, or product"
+
+### Files Modified
+- `lib/features/report/data/repositories/report_repository_impl.dart` — client-side product search logic
+- `lib/features/report/presentation/pages/bill_history_page.dart` — hint text update
+
+### flutter analyze
+- 0 errors ✅
+
+---
+
+## Current Session: 2026-07-22 — Bill History "0 Items" Bug Fix ✅
+
+### What Was Done
+1. **Fixed "0 Items" bug in Bill History** — screenshot se issue identify kiya:
+   - **Root Cause**: `getBillHistory()` query mein `bill_items` table include nahi tha
+   - `select('*, profiles(name)')` → `select('*, profiles(name), bill_items(*)')`
+   - `BillSummaryModel.fromSupabaseRow` mein fallback add kiya: jab `bill_items` na ho to `item_count` column se value le
+
+### Files Modified
+- `lib/features/report/data/repositories/report_repository_impl.dart` — query fix
+- `lib/features/report/data/models/report_models.dart` — fallback logic
+
+### flutter analyze
+- 0 errors ✅
+
+---
+
 ## Current Session: 2026-07-22 — Cash/UPI Payment Selector in Checkout ✅
 
 ### What Was Done

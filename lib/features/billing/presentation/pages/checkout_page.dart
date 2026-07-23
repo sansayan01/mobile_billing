@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../shop/presentation/bloc/shop_bloc.dart';
 import '../bloc/billing_bloc.dart';
@@ -78,6 +79,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 context.read<BillingBloc>().add(ClearCartEvent());
 
                 // Navigate to receipt preview
+                final billId = state.lastBillId ?? const Uuid().v4();
                 final shopState = context.read<ShopBloc>().state;
                 if (shopState is ShopLoaded) {
                   context.push('/scan/receipt-preview', extra: {
@@ -93,6 +95,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     'customerName': state.customerName,
                     'customerPhone': state.customerPhone,
                     'paymentMethod': state.paymentMethod,
+                    'billId': billId,
                   });
                 }
               }
@@ -560,6 +563,30 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             ),
                             const SizedBox(
                                 height: 120), // padding for bottom fixed bar
+
+                            // Show warning when UPI is selected but no UPI ID configured
+                            if (billingState.paymentMethod == 'upi' && upiId.isEmpty)
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.shade50,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.orange.shade200),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700, size: 20),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        'UPI ID not configured. Please add UPI ID in Shop Settings.',
+                                        style: TextStyle(fontSize: 13, color: Colors.orange.shade800),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -623,28 +650,30 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   ),
                                 ),
                                 const SizedBox(height: 8),
+                                // UPI QR code (visible inside bottom bar when UPI selected)
                                 if (billingState.paymentMethod == 'upi' && upiId.isNotEmpty)
                                   Column(
                                     children: [
+                                      const SizedBox(height: 8),
                                       const Text(
                                         'Scan to Pay',
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black87,
-                                          letterSpacing: 1.1,
+                                          letterSpacing: 1.0,
                                         ),
                                       ),
-                                      const SizedBox(height: 12),
+                                      const SizedBox(height: 10),
                                       SizedBox(
-                                        width: 180,
-                                        height: 180,
+                                        width: 160,
+                                        height: 160,
                                         child: PrettyQrView.data(
                                           data:
                                               'upi://pay?pa=$upiId&pn=$shopName&am=${_formatPrice(billingState.totalAmount)}&cu=INR',
                                         ),
                                       ),
-                                      const SizedBox(height: 15),
+                                      const SizedBox(height: 10),
                                     ],
                                   ),
                                 // Grand Total Row

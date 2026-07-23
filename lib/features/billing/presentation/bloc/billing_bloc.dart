@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:billing_app/core/supabase/supabase_client.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
@@ -38,6 +39,42 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     on<ClearStockErrorsEvent>(_onClearStockErrors);
     on<UpdateCustomerInfoEvent>(_onUpdateCustomerInfo);
     on<UpdatePaymentMethodEvent>(_onUpdatePaymentMethod);
+    on<_ProductStockUpdatedEvent>(_onProductStockUpdated);
+
+    _subscription = SupabaseConfig.client
+        .channel('products_changes')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'products',
+          callback: _handleProductChange,
+        )
+        .subscribe();
+  }
+
+  // Realtime subscription handle
+  RealtimeChannel? _subscription;
+
+  bool _isProductInCart(String productId) =>
+      state.cartItems.any((item) => item.product.id == productId);
+
+  void _handleProductChange(PostgresChangePayload payload) {
+    final record = payload.newRecord;
+    final productId = record['id']?.toString();
+    final stock = record['stock'];
+    if (productId == null || stock == null) return;
+
+    // Only update if product is in current cart
+    if (_isProductInCart(productId)) {
+      final newStock = (stock as num).toInt();
+      add(_ProductStockUpdatedEvent(productId, newStock));
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.unsubscribe();
+    return super.close();
   }
 
   Future<void> _onScanBarcode(
@@ -163,7 +200,8 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           total: state.totalAmount,
           footer: event.footer,
           customerName: event.customerName,
-          customerPhone: event.customerPhone);
+          customerPhone: event.customerPhone,
+          billId: event.billId);
 
       emit(state.copyWith(isPrinting: false, printSuccess: true));
     } catch (e) {
@@ -284,12 +322,22 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           'total': item.total,
         });
 
-        // Update product stock (scoped by shop_id for defense-in-depth)
-        await SupabaseConfig.client
+        // Fetch fresh stock to avoid race conditions with concurrent sales
+        final stockRow = await SupabaseConfig.client
             .from('products')
-            .update({'stock': item.product.stock - item.quantity})
+            .select('stock')
             .eq('id', item.product.id)
-            .eq('shop_id', shopId);
+            .eq('shop_id', shopId)
+            .maybeSingle();
+
+        if (stockRow != null) {
+          final currentStock = (stockRow['stock'] as num).toInt();
+          await SupabaseConfig.client
+              .from('products')
+              .update({'stock': currentStock - item.quantity})
+              .eq('id', item.product.id)
+              .eq('shop_id', shopId);
+        }
 
         // Log to inventory_log table
         await SupabaseConfig.client.from('inventory_log').insert({
@@ -304,7 +352,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
         });
       }
 
-      emit(state.copyWith(isSubmitting: false, submitSuccess: true));
+      emit(state.copyWith(isSubmitting: false, submitSuccess: true, lastBillId: billId));
     } catch (e) {
       emit(state.copyWith(
         isSubmitting: false,
@@ -353,6 +401,20 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       customerName: event.customerName,
       customerPhone: event.customerPhone,
     ));
+  }
+
+  void _onProductStockUpdated(
+      _ProductStockUpdatedEvent event, Emitter<BillingState> emit) {
+    final updatedItems = state.cartItems.map((item) {
+      if (item.product.id == event.productId) {
+        return item.copyWith(
+          product: item.product.copyWith(stock: event.newStock),
+        );
+      }
+      return item;
+    }).toList();
+
+    emit(state.copyWith(cartItems: updatedItems));
   }
 
   /// Validates cart item quantities against current stock in Supabase.

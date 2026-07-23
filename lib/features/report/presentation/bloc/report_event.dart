@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:billing_app/features/report/domain/entities/report_entities.dart';
 
 abstract class ReportEvent extends Equatable {
   const ReportEvent();
@@ -80,11 +81,12 @@ class ResetReport extends ReportEvent {}
 class UpdateBill extends ReportEvent {
   final String billId;
   final Map<String, dynamic> updates;
+  final List<BillItem>? items;
 
-  const UpdateBill({required this.billId, required this.updates});
+  const UpdateBill({required this.billId, required this.updates, this.items});
 
   @override
-  List<Object?> get props => [billId, updates];
+  List<Object?> get props => [billId, updates, items];
 }
 
 class DeleteBill extends ReportEvent {

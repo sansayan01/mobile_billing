@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:billing_app/core/theme/text_styles.dart';
 
 /// A glass-effect card that displays a mini sales trend line chart
 /// for the last 7 days using a custom painter — no external chart packages needed.
@@ -23,64 +23,67 @@ class SalesTrendCard extends StatelessWidget {
     final double total = values.fold(0.0, (sum, v) => sum + v);
     final double average = values.isEmpty ? 0 : total / values.length;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.2),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: _primaryColor.withValues(alpha: 0.08),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
+    return RepaintBoundary(
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.55),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.2),
+            width: 1,
           ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Title ──
-          Text(
-            'Weekly Sales Trend',
-            style: GoogleFonts.ibmPlexSans(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF1A1A2E),
+          boxShadow: [
+            BoxShadow(
+              color: _primaryColor.withValues(alpha: 0.08),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
             ),
-          ),
-          const SizedBox(height: 16),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Title ──
+            Text(
+              'Weekly Sales Trend',
+              style: AppTextStyles.trendTitle,
+            ),
+            const SizedBox(height: 16),
 
-          // ── Chart ──
-          if (_hasData)
-            SizedBox(
-              height: 120,
-              child: CustomPaint(
-                size: Size.infinite,
-                painter: _SalesTrendPainter(
-                  values: values,
-                  labels: labels,
-                  primaryColor: _primaryColor,
+            // ── Chart ──
+            if (_hasData)
+              RepaintBoundary(
+                child: SizedBox(
+                  height: 120,
+                  child: CustomPaint(
+                    size: Size.infinite,
+                    painter: _SalesTrendPainter(
+                      values: values,
+                      labels: labels,
+                      primaryColor: _primaryColor,
+                      labelStyle: AppTextStyles.trendChipLabel,
+                      valueStyle: AppTextStyles.trendChipValue,
+                      placeholderStyle: AppTextStyles.trendPlaceholder,
+                    ),
+                  ),
                 ),
-              ),
-            )
-          else
-            _buildPlaceholder(),
+              )
+            else
+              _buildPlaceholder(),
 
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
 
-          // ── Total & Average Row ──
-          _buildStatsRow(total, average),
-        ],
+            // ── Total & Average Row ──
+            _buildStatsRow(total, average),
+          ],
+        ),
       ),
     );
   }
@@ -100,11 +103,7 @@ class SalesTrendCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'No data yet',
-            style: GoogleFonts.ibmPlexSans(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey.shade400,
-            ),
+            style: AppTextStyles.trendPlaceholder,
           ),
         ],
       ),
@@ -146,20 +145,12 @@ class SalesTrendCard extends StatelessWidget {
           children: [
             Text(
               label,
-              style: GoogleFonts.ibmPlexSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey.shade500,
-              ),
+              style: AppTextStyles.trendChipLabel.copyWith(color: Colors.grey.shade500),
             ),
             const SizedBox(height: 2),
             Text(
               value,
-              style: GoogleFonts.ibmPlexSans(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: color,
-              ),
+              style: AppTextStyles.trendChipValue.copyWith(color: color),
             ),
           ],
         ),
@@ -183,11 +174,17 @@ class _SalesTrendPainter extends CustomPainter {
   final List<double> values;
   final List<String> labels;
   final Color primaryColor;
+  final TextStyle labelStyle;
+  final TextStyle valueStyle;
+  final TextStyle placeholderStyle;
 
   _SalesTrendPainter({
     required this.values,
     required this.labels,
     required this.primaryColor,
+    required this.labelStyle,
+    required this.valueStyle,
+    required this.placeholderStyle,
   });
 
   // Padding inside the canvas so dots/labels aren't clipped.
@@ -274,21 +271,14 @@ class _SalesTrendPainter extends CustomPainter {
       canvas.drawCircle(pt, 4.5, dotBorder);
     }
 
-    // ── Day labels ──
+    // ── Day labels (pre-built styles, no GoogleFonts lookup in paint) ──
     final TextPainter textPainter = TextPainter(
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,
     );
 
     for (int i = 0; i < labels.length && i < points.length; i++) {
-      textPainter.text = TextSpan(
-        text: labels[i],
-        style: GoogleFonts.ibmPlexSans(
-          fontSize: 10,
-          fontWeight: FontWeight.w500,
-          color: Colors.grey.shade500,
-        ),
-      );
+      textPainter.text = TextSpan(text: labels[i], style: labelStyle);
       textPainter.layout();
       textPainter.paint(
         canvas,
@@ -309,11 +299,7 @@ class _SalesTrendPainter extends CustomPainter {
 
     final TextSpan badgeSpan = TextSpan(
       text: '₹$maxLabel',
-      style: GoogleFonts.ibmPlexSans(
-        fontSize: 10,
-        fontWeight: FontWeight.w700,
-        color: primaryColor,
-      ),
+      style: valueStyle,
     );
     final TextPainter badgePainter = TextPainter(
       text: badgeSpan,
