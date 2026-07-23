@@ -38,11 +38,13 @@ class AppTextStyles {
     fontSize: 12,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.4,
+    fontFeatures: [FontFeature.tabularFigures()],
   );
   static const TextStyle statValue = TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.w800,
     height: 1.1,
+    fontFeatures: [FontFeature.tabularFigures()],
   );
 
   // ── Quick action tiles ──────────────────────────────────────────────
@@ -85,6 +87,7 @@ class AppTextStyles {
     fontSize: 15,
     fontWeight: FontWeight.w700,
     color: Color(0xFF1A1A2E),
+    fontFeatures: [FontFeature.tabularFigures()],
   );
   static const TextStyle txnSeeAll = TextStyle(
     fontSize: 13,
@@ -116,6 +119,7 @@ class AppTextStyles {
   static const TextStyle trendChipValue = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w700,
+    fontFeatures: [FontFeature.tabularFigures()],
   );
   static const TextStyle trendPlaceholder = TextStyle(
     fontSize: 14,

@@ -23,7 +23,7 @@ class GreetingHeader extends StatelessWidget {
     final initial = userName.isNotEmpty ? userName[0].toUpperCase() : '?';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         decoration: BoxDecoration(

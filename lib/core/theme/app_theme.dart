@@ -3,16 +3,27 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static const Color primaryColor = Color(0xFF6C63FF);
+
   static const Color secondaryColor = Color(0xFF03DAC6);
   static const Color backgroundColor = Color(0xFFF2F2F7);
   static const Color surfaceColor = Colors.white;
   static const Color errorColor = Color(0xFFB00020);
+
+  static const LinearGradient aiGradient = LinearGradient(
+    colors: [
+      Color(0xFFE8EAF6),
+      Color(0xFFE3F2FD),
+      Color(0xFFE0F7FA),
+    ],
+    stops: [0.0, 0.5, 1.0],
+  );
 
  static final TextTheme textTheme = GoogleFonts.ibmPlexSansTextTheme().copyWith(
   bodyLarge: GoogleFonts.ibmPlexSans(
     fontSize: 15,
     fontWeight: FontWeight.w500,
     color: Colors.black,
+    fontFeatures: [FontFeature.tabularFigures()], // ignore: prefer_const_constructors
   ),
 );
 
@@ -38,7 +49,7 @@ static TextStyle ibm(double size, FontWeight weight, Color color) =>
         bodyColor: Colors.black87,
         displayColor: Colors.black,
       ),
-      
+
       appBarTheme: AppBarTheme(
        backgroundColor: Colors.transparent,
         elevation: 0,
@@ -61,7 +72,7 @@ static TextStyle ibm(double size, FontWeight weight, Color color) =>
         fillColor: Colors.white,
          hintStyle:
             TextStyle(color: Colors.grey[400], fontWeight: FontWeight.normal,fontSize: 13),
-      
+
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey[300]!),
@@ -80,7 +91,7 @@ static TextStyle ibm(double size, FontWeight weight, Color color) =>
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            
+
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

@@ -14,6 +14,7 @@ import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -55,18 +56,9 @@ class _DashboardViewState extends State<_DashboardView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFE8EAF6), // Lavender
-              Color(0xFFE3F2FD), // Light blue
-              Color(0xFFF3E5F5), // Light purple
-              Color(0xFFE8F5E9), // Light green
-            ],
-            stops: [0.0, 0.33, 0.66, 1.0],
-          ),
+        // ignore: prefer_const_constructors
+        decoration: BoxDecoration(
+          gradient: AppTheme.aiGradient,
         ),
         child: SafeArea(
           child: RefreshIndicator(
@@ -102,10 +94,6 @@ class _DashboardViewState extends State<_DashboardView> {
                   ),
                   actions: [
                     IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.notifications_none_rounded, color: Colors.grey[700]),
-                    ),
-                    IconButton(
                       onPressed: () => _showProductSearch(context),
                       icon: Icon(Icons.search_rounded, color: Colors.grey[700]),
                       tooltip: 'Search products',
@@ -138,31 +126,31 @@ class _DashboardViewState extends State<_DashboardView> {
 
                       // Low stock banner
                       const _LowStockBanner(),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
 
                       // ── Today's Sales Section ──
                       _sectionTitle("Today's Sales"),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       const _TodaysSales(),
                       const SizedBox(height: 20),
 
                       // ── Weekly Trend ──
                       _sectionTitle('This Week'),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       const _WeeklyTrend(),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
 
                       // ── Quick Actions ──
                       _sectionTitle('Quick Actions'),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       DashboardActionCard(
                         icon: Icons.shopping_cart_rounded,
                         title: 'New Bill',
                         subtitle: 'Scan products & checkout',
                         color: AppTheme.primaryColor,
-                        onTap: () => context.go('/scan'),
+                        onTap: () { HapticFeedback.lightImpact(); context.go('/scan'); },
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
                       BlocBuilder<AuthBloc, AuthState>(
                         buildWhen: (previous, current) {
                           if (previous is! Authenticated || current is! Authenticated) return true;
@@ -170,11 +158,11 @@ class _DashboardViewState extends State<_DashboardView> {
                         },
                         builder: (context, state) => _buildQuickTiles(context, state),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
 
                       // ── Inventory Health ──
                       const _InventoryHealth(),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
 
                       // ── Recent Transactions ──
                       const _RecentTransactions(),
@@ -202,8 +190,12 @@ class _DashboardViewState extends State<_DashboardView> {
   }
 
   Widget _sectionTitle(String text) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 4),
-    child: Text(text, style: AppTextStyles.sectionTitle),
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: Text(text, style: AppTextStyles.sectionTitle.copyWith(
+      fontSize: 13,
+      letterSpacing: 0.8,
+      color: const Color(0xFF787880),
+    )),
   );
 
   Widget _buildQuickTiles(BuildContext context, AuthState authState) {
@@ -225,38 +217,38 @@ class _DashboardViewState extends State<_DashboardView> {
           icon: Icons.inventory_2_rounded,
           label: 'Products',
           color: AppTheme.primaryColor,
-          onTap: () => context.go('/products'),
+          onTap: () { HapticFeedback.lightImpact(); context.go('/products'); },
         ),
         QuickActionTile(
           icon: Icons.category_rounded,
           label: 'Categories',
           color: AppTheme.primaryColor,
-          onTap: () => context.go('/categories'),
+          onTap: () { HapticFeedback.lightImpact(); context.go('/categories'); },
         ),
         QuickActionTile(
           icon: Icons.bar_chart_rounded,
           label: 'Reports',
           color: AppTheme.primaryColor,
-          onTap: () => context.go('/reports'),
+          onTap: () { HapticFeedback.lightImpact(); context.go('/reports'); },
         ),
         QuickActionTile(
           icon: Icons.store_rounded,
           label: 'Shop',
           color: AppTheme.primaryColor,
-          onTap: () => context.go('/shop'),
+          onTap: () { HapticFeedback.lightImpact(); context.go('/shop'); },
         ),
         QuickActionTile(
           icon: Icons.settings_rounded,
           label: 'Settings',
           color: AppTheme.primaryColor,
-          onTap: () => context.go('/settings'),
+          onTap: () { HapticFeedback.lightImpact(); context.go('/settings'); },
         ),
         if (isOwner)
           QuickActionTile(
             icon: Icons.people_rounded,
             label: 'Staff',
             color: AppTheme.primaryColor,
-            onTap: () => context.go('/staff'),
+            onTap: () { HapticFeedback.lightImpact(); context.go('/staff'); },
           ),
       ],
     );

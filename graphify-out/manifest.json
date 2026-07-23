@@ -1,8 +1,8 @@
 {
   ".claude/settings.local.json": {
-    "mtime": 1784724376.6304483,
-    "ast_hash": "fbc84dc6a6895e6fe38a9b89a55e1282",
-    "semantic_hash": "fbc84dc6a6895e6fe38a9b89a55e1282"
+    "mtime": 1784817117.649009,
+    "ast_hash": "b6b3b6ca8545f9cb752491cd45acd17a",
+    "semantic_hash": ""
   },
   "android/app/build.gradle.kts": {
     "mtime": 1784269039.261703,
@@ -75,8 +75,8 @@
     "semantic_hash": "4f67d7b23b912b53766b910508d4780d"
   },
   "lib/core/theme/app_theme.dart": {
-    "mtime": 1784801451.1071613,
-    "ast_hash": "45d51fc5b4b64b353ff568d93a3ee402",
+    "mtime": 1784817843.0926917,
+    "ast_hash": "52c796c59f570d2890f13befe51cd12f",
     "semantic_hash": ""
   },
   "lib/core/usecase/usecase.dart": {
@@ -410,8 +410,8 @@
     "semantic_hash": "e175e436acacf76c814d83532d0b662c"
   },
   "memory.md": {
-    "mtime": 1784815687.8451662,
-    "ast_hash": "76e05d709d83e358173394d76121be57",
+    "mtime": 1784817878.3736706,
+    "ast_hash": "ebc2cb15c5734e68bc981fecfc2ffc34",
     "semantic_hash": ""
   },
   "phases.md": {
@@ -715,8 +715,8 @@
     "semantic_hash": "5aa9157e2174bc8fe6d9d1ed86ed569a"
   },
   "lib/core/widgets/dashboard_action_card.dart": {
-    "mtime": 1784801894.6451552,
-    "ast_hash": "decc575c512c4f21fa0e1a1142d08575",
+    "mtime": 1784817211.8936677,
+    "ast_hash": "41cc3026c89c8d541eb9082fcb4f7332",
     "semantic_hash": ""
   },
   "lib/core/widgets/stat_card.dart": {
@@ -725,8 +725,8 @@
     "semantic_hash": "bfd44e79359721e6bd5186667ca7822a"
   },
   "lib/features/dashboard/presentation/pages/dashboard_page.dart": {
-    "mtime": 1784815406.915444,
-    "ast_hash": "e1a3d2d49e38716bb9652c524cfea355",
+    "mtime": 1784817640.4266987,
+    "ast_hash": "c82fc1b32e39a49fc0617fd376735e16",
     "semantic_hash": ""
   },
   "lib/core/widgets/app_back_button.dart": {
@@ -835,12 +835,12 @@
     "semantic_hash": "96153b954484ed2b0fcd73fcdc7e90d8"
   },
   "lib/core/widgets/greeting_header.dart": {
-    "mtime": 1784801553.477229,
-    "ast_hash": "31636c8eede534646d3dabfcc798b70a",
+    "mtime": 1784816252.5118003,
+    "ast_hash": "d5f6c95454a52b8947bcb6d031b5bf46",
     "semantic_hash": ""
   },
   "lib/core/widgets/premium_stat_card.dart": {
-    "mtime": 1784801871.5779443,
+    "mtime": 1784817623.3822584,
     "ast_hash": "35160f606da11b531d6cb53b05467bd3",
     "semantic_hash": ""
   },
@@ -880,8 +880,8 @@
     "semantic_hash": "a9321a461462c94f7f44c262714c39a6"
   },
   "lib/core/theme/text_styles.dart": {
-    "mtime": 1784801991.4555595,
-    "ast_hash": "b8eadba96dafeb7ded5667bf7328b531",
+    "mtime": 1784816218.0047235,
+    "ast_hash": "6d0df81ef47bba9131c4b523016304e1",
     "semantic_hash": ""
   }
 }

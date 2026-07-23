@@ -1,5 +1,46 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-07-23 — Dashboard Redesign Polish (tabular nums, haptics, gradient, spacing) ✅
+
+### What Was Done
+1. **Removed dead notification icon** from AppBar — sirf search icon rah gaya
+2. **Fixed GreetingHeader double-padding** — outer padding (20,18) → (16,16); GreetingHeader owns its own padding now
+3. **Standardized section spacing** — all gaps normalized to 16/24 cadence throughout dashboard
+4. **Added haptic feedback** — DashboardActionCard + all 6 QuickActionTiles call `HapticFeedback.lightImpact()` before navigation
+5. **Improved `_sectionTitle`** — horizontal padding 4→16, fontSize 13, letterSpacing 0.8, color #787880 for subtle section labels
+6. **Tabular figures for numbers** — `fontFeatures: [FontFeature.tabularFigures()]` added to statValue, statLabel, txnAmount, trendChipValue text styles + bodyLarge in app_theme + premium_stat_card value display
+7. **4-color AI gradient replaced** — lavender→blue→purple→green removed, cleaner 3-color `aiGradient` (lavender→light blue→cyan tint) added in AppTheme + dashboard page uses it
+8. **HapticFeedback import** — `flutter/services.dart` added to dashboard_action_card.dart (was causing compile error after agent edit)
+
+### Files Modified
+- `lib/features/dashboard/presentation/pages/dashboard_page.dart` — notification icon, spacing, haptics, _sectionTitle, gradient, services import
+- `lib/core/widgets/greeting_header.dart` — outer padding fix
+- `lib/core/widgets/dashboard_action_card.dart` — haptic feedback + services import
+- `lib/core/widgets/premium_stat_card.dart` — tabular nums on value text
+- `lib/core/theme/text_styles.dart` — tabular nums on 4 text styles
+- `lib/core/theme/app_theme.dart` — aiGradient, tabular nums on bodyLarge
+- `lib/core/widgets/sales_trend_card.dart` — const constructor fix for pending warnings
+
+### What Was Done
+1. **Removed dead notification icon** from AppBar actions — only search icon remains
+2. **Fixed GreetingHeader double-padding** — outer padding in dashboard_page.dart reduced from (20,18) to (16,16); GreetingHeader itself now owns its (20,18) padding — no double margin
+3. **Standardized section spacing** — all section gap SizedBox heights normalized to 16/24 cadence:
+   - greeting to low stock: 8→16
+   - section→card gaps: 8→16, 12→16
+   - card→next section: 20→24, 14→16
+   - Inventory Health→Recent Transactions: 20→24
+   - Recent Transactions→bottom: 16 (kept)
+4. **Added haptic feedback** — all 6 QuickActionTiles now call `HapticFeedback.lightImpact()` before navigation (DashboardActionCard + 5 tiles in GridView + conditional Staff tile)
+5. **Improved `_sectionTitle`** — horizontal padding 4→16, fontSize 13, letterSpacing 0.8, color #787880 for a subtle section label look
+
+### Files Modified
+- `lib/features/dashboard/presentation/pages/dashboard_page.dart` — notification icon removal, spacing, haptics, _sectionTitle + `flutter/services.dart` import
+- `lib/core/widgets/greeting_header.dart` — outer padding (20,18) → (16,16)
+
+### flutter analyze
+- 0 errors, 0 warnings ✅ — 1 info-level false positive (FontFeature factory constructor) left
+
+---
 ## Current Session: 2026-07-23 — prefer_const_constructors Lint Warnings Fix ✅
 
 ### What Was Done

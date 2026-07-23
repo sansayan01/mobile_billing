@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
 /// Big prominent action card (e.g. "New Bill").
@@ -36,7 +37,10 @@ class DashboardActionCard extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap();
+          },
           borderRadius: BorderRadius.circular(20),
           splashColor: color.withValues(alpha: 0.18),
           highlightColor: color.withValues(alpha: 0.06),
@@ -150,7 +154,10 @@ class QuickActionTile extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap();
+          },
           borderRadius: BorderRadius.circular(20),
           splashColor: color.withValues(alpha: 0.15),
           child: Container(
