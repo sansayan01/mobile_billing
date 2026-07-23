@@ -32,6 +32,7 @@ import '../../features/settings/data/repositories/printer_repository_impl.dart';
 import '../../features/settings/domain/repositories/printer_repository.dart';
 import '../../features/settings/presentation/bloc/printer_bloc.dart';
 import '../../features/billing/presentation/bloc/billing_bloc.dart';
+import '../../core/theme/theme_cubit.dart';
 import 'realtime/realtime_service.dart';
 
 final sl = GetIt.instance;
@@ -173,6 +174,9 @@ Future<void> init() async {
       authBloc: sl(),
     ),
   );
+
+  // ============== Theme ==============
+  sl.registerSingleton(ThemeCubit());
 
   // ============== Report Feature ==============
   // Repository

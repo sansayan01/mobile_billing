@@ -12,6 +12,7 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Drawer(
       child: Column(
         children: [
@@ -129,7 +130,7 @@ class AppDrawer extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(color: Colors.grey[200]!),
+                top: BorderSide(color: theme.dividerColor),
               ),
             ),
             child: InkWell(
@@ -147,17 +148,19 @@ class AppDrawer extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: theme.colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(Icons.logout_rounded,
-                          size: 18, color: Colors.grey[600]),
+                          size: 18,
+                          color: theme.colorScheme.onSurfaceVariant),
                     ),
                     const SizedBox(width: 12),
                     Text(
                       'Logout',
                       style: TextStyle(
-                        color: Colors.grey[600],
+                        color: theme.colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -277,6 +280,7 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 6),
       child: Text(
@@ -285,7 +289,7 @@ class _SectionHeader extends StatelessWidget {
           fontSize: 11,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.5,
-          color: Colors.grey[500],
+          color: theme.colorScheme.onSurfaceVariant,
         ),
       ),
     );
@@ -309,6 +313,7 @@ class _DrawerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final isActive = currentRoute == route ||
         (route != '/' && currentRoute.startsWith(route));
 
@@ -316,14 +321,16 @@ class _DrawerItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: isActive
-            ? Theme.of(context).primaryColor.withValues(alpha: 0.08)
+            ? theme.colorScheme.primary.withValues(alpha: 0.08)
             : null,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
         leading: Icon(
           icon,
-          color: isActive ? Theme.of(context).primaryColor : Colors.grey[600],
+          color: isActive
+              ? theme.colorScheme.primary
+              : theme.colorScheme.onSurfaceVariant,
           size: 22,
         ),
         title: Text(
@@ -331,7 +338,9 @@ class _DrawerItem extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-            color: isActive ? Theme.of(context).primaryColor : Colors.black87,
+            color: isActive
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface,
           ),
         ),
         shape:

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
 /// A glass-effect card that displays a mini sales trend line chart
@@ -20,6 +21,9 @@ class SalesTrendCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    const darkSurface = AppTheme.darkSurface;
     final double total = values.fold(0.0, (sum, v) => sum + v);
     final double average = values.isEmpty ? 0 : total / values.length;
 
@@ -28,10 +32,14 @@ class SalesTrendCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.55),
+          color: isDark
+              ? darkSurface.withValues(alpha: 0.70)
+              : theme.colorScheme.surface.withValues(alpha: 0.55),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.2),
+            color: isDark
+                ? darkSurface.withValues(alpha: 0.50)
+                : theme.colorScheme.surface.withValues(alpha: 0.35),
             width: 1,
           ),
           boxShadow: [
@@ -41,7 +49,9 @@ class SalesTrendCard extends StatelessWidget {
               offset: const Offset(0, 8),
             ),
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: isDark
+                  ? darkSurface.withValues(alpha: 0.35)
+                  : Colors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -51,9 +61,9 @@ class SalesTrendCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Title ──
-            const Text(
+            Text(
               'Weekly Sales Trend',
-              style: AppTextStyles.trendTitle,
+              style: AppTextStyles.of(context).trendTitle,
             ),
             const SizedBox(height: 16),
 
@@ -68,27 +78,28 @@ class SalesTrendCard extends StatelessWidget {
                       values: values,
                       labels: labels,
                       primaryColor: _primaryColor,
-                      labelStyle: AppTextStyles.trendChipLabel,
-                      valueStyle: AppTextStyles.trendChipValue,
-                      placeholderStyle: AppTextStyles.trendPlaceholder,
+                      dotFillColor: isDark ? darkSurface : Colors.white,
+                      labelStyle: AppTextStyles.of(context).trendChipLabel,
+                      valueStyle: AppTextStyles.of(context).trendChipValue,
+                      placeholderStyle: AppTextStyles.of(context).trendPlaceholder,
                     ),
                   ),
                 ),
               )
             else
-              _buildPlaceholder(),
+              _buildPlaceholder(context),
 
             const SizedBox(height: 12),
 
             // ── Total & Average Row ──
-            _buildStatsRow(total, average),
+            _buildStatsRow(context, total, average),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(BuildContext context) {
     return Container(
       height: 120,
       alignment: Alignment.center,
@@ -101,25 +112,27 @@ class SalesTrendCard extends StatelessWidget {
             color: _primaryColor.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'No data yet',
-            style: AppTextStyles.trendPlaceholder,
+            style: AppTextStyles.of(context).trendPlaceholder,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatsRow(double total, double average) {
+  Widget _buildStatsRow(BuildContext context, double total, double average) {
     return Row(
       children: [
         _buildStatChip(
+          context: context,
           label: 'Total',
           value: _formatCurrency(total),
           color: _primaryColor,
         ),
         const SizedBox(width: 10),
         _buildStatChip(
+          context: context,
           label: 'Avg/day',
           value: _formatCurrency(average),
           color: const Color(0xFF00C9A7),
@@ -129,6 +142,7 @@ class SalesTrendCard extends StatelessWidget {
   }
 
   Widget _buildStatChip({
+    required BuildContext context,
     required String label,
     required String value,
     required Color color,
@@ -145,12 +159,13 @@ class SalesTrendCard extends StatelessWidget {
           children: [
             Text(
               label,
-              style: AppTextStyles.trendChipLabel.copyWith(color: Colors.grey.shade500),
+              style: AppTextStyles.of(context).trendChipLabel.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 2),
             Text(
               value,
-              style: AppTextStyles.trendChipValue.copyWith(color: color),
+              style: AppTextStyles.of(context).trendChipValue.copyWith(color: color),
             ),
           ],
         ),
@@ -174,6 +189,7 @@ class _SalesTrendPainter extends CustomPainter {
   final List<double> values;
   final List<String> labels;
   final Color primaryColor;
+  final Color dotFillColor;
   final TextStyle labelStyle;
   final TextStyle valueStyle;
   final TextStyle placeholderStyle;
@@ -182,6 +198,7 @@ class _SalesTrendPainter extends CustomPainter {
     required this.values,
     required this.labels,
     required this.primaryColor,
+    required this.dotFillColor,
     required this.labelStyle,
     required this.valueStyle,
     required this.placeholderStyle,
@@ -260,7 +277,7 @@ class _SalesTrendPainter extends CustomPainter {
     canvas.drawPath(linePath, linePaint);
 
     // ── Dots ──
-    final Paint dotFill = Paint()..color = Colors.white;
+    final Paint dotFill = Paint()..color = dotFillColor;
     final Paint dotBorder = Paint()
       ..color = primaryColor
       ..style = PaintingStyle.stroke

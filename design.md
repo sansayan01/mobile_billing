@@ -1,13 +1,20 @@
 # Design
 
-## Theme — Liquid Glass
+## Theme — Liquid Glass + Dark Mode
 - **Material 3** — Flutter Material Design 3
 - **Design Language**: Liquid Glass / Glassmorphism
-- **Primary Color**: `#6C63FF` (Purple-ish)
+- **Theme Mode**: Light/Dark toggle in Settings (`ThemeCubit` + Hive persistence)
+- **Primary Color**: `#6C63FF` (Purple-ish) — same in both modes
 - **Secondary**: `#03DAC6` (Teal)
-- **Background**: Gradient (Lavender `#E8EAF6` → Light Blue `#E3F2FD` → Light Purple `#F3E5F5` → Light Green `#E8F5E9`)
-- **Surface**: Semi-transparent white glass (`Colors.white @ 0.45–0.55 alpha`)
-- **Error**: `#B00020` (Red)
+- **Light Background Gradient**: Lavender `#E8EAF6` → Light Blue `#E3F2FD` → Light Cyan `#E0F7FA`
+- **Dark Background Gradient**: Dark Navy `#0E0E18` → Dark Blue `#1A1A2E` → Deep Blue `#16213E`
+- **Light Surface**: Semi-transparent white glass (`Colors.white @ 0.45–0.55 alpha`)
+- **Dark Surface**: Semi-transparent dark glass (`#1A1A2E @ 0.55 alpha`)
+- **Light Error**: `#B00020` (Red)
+- **Dark Error**: `#CF6679` (Pink-red for a11y on dark bg)
+- **Dark Background**: `#0E0E18`
+- **Dark Card**: `#22223A`
+- **Dark Input**: `#2A2A42`
 - **Glass Effect**: `ClipRRect` → `BackdropFilter(ImageFilter.blur(sigma: 18-20))` → semi-transparent container
 
 ## Typography

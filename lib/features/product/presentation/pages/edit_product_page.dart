@@ -150,12 +150,12 @@ class _EditProductPageState extends State<EditProductPage> {
                     initialValue: _price.toStringAsFixed(2),
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       prefixText: '₹ ',
                       prefixStyle: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: Colors.black),
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
                     validator: AppValidators.price,
                     onSaved: (value) => _price = double.parse(value!),
@@ -243,6 +243,7 @@ class _EditProductPageState extends State<EditProductPage> {
   Future<void> _showCategoryPicker(
       BuildContext context, List<Category> categories) async {
     final searchController = TextEditingController();
+    const kSheetRadius = Radius.circular(20);
     final selected = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
@@ -258,12 +259,12 @@ class _EditProductPageState extends State<EditProductPage> {
                         c.name.toLowerCase().contains(queryLocal.toLowerCase()))
                     .toList();
 
+            final sheetRadius = BorderRadius.vertical(top: kSheetRadius);
             return Container(
               height: MediaQuery.of(context).size.height * 0.55,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(20)),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: sheetRadius,
               ),
               child: Column(
                 children: [
@@ -273,7 +274,7 @@ class _EditProductPageState extends State<EditProductPage> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.grey[100],
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: TextField(
@@ -292,7 +293,7 @@ class _EditProductPageState extends State<EditProductPage> {
                     child: filtered.isEmpty
                         ? Center(
                             child: Text('No categories found',
-                                style: TextStyle(color: Colors.grey[500])),
+                                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                           )
                         : ListView.builder(
                             itemCount: filtered.length + 1,
@@ -311,7 +312,7 @@ class _EditProductPageState extends State<EditProductPage> {
                                         fontWeight: FontWeight.w500,
                                         color: _categoryId == null
                                             ? AppTheme.primaryColor
-                                            : Colors.black87,
+                                            : Theme.of(context).colorScheme.onSurface,
                                       ),
                                     ),
                                   ),
@@ -342,7 +343,7 @@ class _EditProductPageState extends State<EditProductPage> {
                                                 : FontWeight.w400,
                                             color: isSelected
                                                 ? AppTheme.primaryColor
-                                                : Colors.black87,
+                                                : Theme.of(context).colorScheme.onSurface,
                                           ),
                                         ),
                                       ),

@@ -2,14 +2,16 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 /// Reusable glassmorphism card — frosted glass effect with backdrop blur.
-/// Use [blur] to control intensity, [tint] for color overlay, and [borderOpacity]
-/// for the subtle glass border.
+///
+/// Automatically adapts [tint], border, and shadow colours to the current
+/// theme brightness.  Pass an explicit [tint] to override the automatic
+/// adaptation.
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final double blur;
-  final Color tint;
+  final Color? tint;
   final double borderOpacity;
   final double borderRadius;
   final double? width;
@@ -22,7 +24,7 @@ class GlassCard extends StatelessWidget {
     this.padding,
     this.margin,
     this.blur = 20,
-    this.tint = Colors.white,
+    this.tint,
     this.borderOpacity = 0.2,
     this.borderRadius = 20,
     this.width,
@@ -32,6 +34,34 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final effectiveTint = tint ??
+        (isDark ? const Color(0xFF1A1A2E) : Colors.white);
+    final effectiveBorderColor = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.white.withValues(alpha: borderOpacity);
+    final boxShadows = isDark
+        ? [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.3),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ]
+        : [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.4),
+              blurRadius: 12,
+              offset: const Offset(0, -2),
+            ),
+          ];
+
     final card = ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: BackdropFilter(
@@ -41,24 +71,13 @@ class GlassCard extends StatelessWidget {
           height: height,
           margin: margin,
           decoration: BoxDecoration(
-            color: tint.withValues(alpha: 0.55),
+            color: effectiveTint.withValues(alpha: 0.55),
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-              color: Colors.white.withValues(alpha: borderOpacity),
+              color: effectiveBorderColor,
               width: 1.2,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-              ),
-              BoxShadow(
-                color: Colors.white.withValues(alpha: 0.4),
-                blurRadius: 12,
-                offset: const Offset(0, -2),
-              ),
-            ],
+            boxShadow: boxShadows,
           ),
           child: Padding(
             padding: padding ?? const EdgeInsets.all(16),

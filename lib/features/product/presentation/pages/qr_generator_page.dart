@@ -41,9 +41,9 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
 
   Future<void> _saveQrImage() async {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('QR rendered on screen. Use share/Screenshot to save.'),
-        backgroundColor: Colors.green,
+      SnackBar(
+        content: const Text('QR rendered on screen. Use share/Screenshot to save.'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
     );
   }
@@ -84,7 +84,7 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                       height: 120,
                       width: 120,
                       decoration: BoxDecoration(
-                        color: Colors.grey[200],
+                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(Icons.image_not_supported, size: 40),
@@ -109,7 +109,7 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                 'Barcode: ${widget.product.barcode}',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontFamily: 'monospace',
                 ),
                 textAlign: TextAlign.center,
@@ -131,21 +131,21 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: const [
+                  boxShadow: [
                     BoxShadow(
-                      color: Colors.black12,
+                      color: Theme.of(context).shadowColor.withValues(alpha: 0.12),
                       blurRadius: 12,
-                      offset: Offset(0, 4),
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
                 child: PrettyQrView.data(
                   data: _qrDataController.text,
-                  decoration: const PrettyQrDecoration(
+                  decoration: PrettyQrDecoration(
                     shape: PrettyQrSmoothSymbol(
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -162,7 +162,7 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                       label: const Text('Save QR'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryColor,
-                        foregroundColor: Colors.white,
+                        foregroundColor: Theme.of(context).colorScheme.surface,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -178,7 +178,7 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                       label: const Text('Share'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.secondaryColor,
-                        foregroundColor: Colors.white,
+                        foregroundColor: Theme.of(context).colorScheme.surface,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

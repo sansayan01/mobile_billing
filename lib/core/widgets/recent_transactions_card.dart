@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
 /// Simple data class representing a recent transaction/bill.
@@ -86,6 +87,9 @@ class RecentTransactionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const darkSurface = AppTheme.darkSurface;
+
     final displayTransactions =
         transactions.length > 5 ? transactions.sublist(0, 5) : transactions;
 
@@ -94,20 +98,28 @@ class RecentTransactionsCard extends StatelessWidget {
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.55),
+          color: isDark
+              ? darkSurface.withValues(alpha: 0.70)
+              : Theme.of(context).colorScheme.surface.withValues(alpha: 0.55),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.2),
+            color: isDark
+                ? darkSurface.withValues(alpha: 0.50)
+                : Theme.of(context).colorScheme.surface.withValues(alpha: 0.35),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
+              color: isDark
+                  ? darkSurface.withValues(alpha: 0.45)
+                  : Colors.black.withValues(alpha: 0.06),
               blurRadius: 24,
               offset: const Offset(0, 8),
             ),
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: isDark
+                  ? darkSurface.withValues(alpha: 0.25)
+                  : Colors.black.withValues(alpha: 0.03),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -122,15 +134,15 @@ class RecentTransactionsCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Recent Transactions',
-                    style: AppTextStyles.txnTitle,
+                    style: AppTextStyles.of(context).txnTitle,
                   ),
                   GestureDetector(
                     onTap: onViewAll,
-                    child: const Text(
+                    child: Text(
                       'See All',
-                      style: AppTextStyles.txnSeeAll,
+                      style: AppTextStyles.of(context).txnSeeAll,
                     ),
                   ),
                 ],
@@ -140,7 +152,7 @@ class RecentTransactionsCard extends StatelessWidget {
 
               // ── Transaction list or empty state ──
               if (displayTransactions.isEmpty)
-                _buildEmptyState()
+                _buildEmptyState(context)
               else
                 ...displayTransactions.asMap().entries.map((entry) {
                   final index = entry.key;
@@ -149,15 +161,16 @@ class RecentTransactionsCard extends StatelessWidget {
 
                   return Column(
                     children: [
-                      _buildTransactionItem(txn),
+                      _buildTransactionItem(context, txn),
                       if (!isLast)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Divider(
                             height: 1,
                             thickness: 0.8,
-                            color:
-                                Colors.grey.shade300.withValues(alpha: 0.5),
+                            color: Theme.of(context)
+                                .dividerColor
+                                .withValues(alpha: 0.5),
                           ),
                         ),
                     ],
@@ -172,7 +185,7 @@ class RecentTransactionsCard extends StatelessWidget {
 
   // ── Individual transaction row ───────────────────────────────────────
 
-  Widget _buildTransactionItem(RecentTransaction txn) {
+  Widget _buildTransactionItem(BuildContext context, RecentTransaction txn) {
     final badgeColor = _paymentColor(txn.paymentMethod);
 
     return Padding(
@@ -190,21 +203,21 @@ class RecentTransactionsCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         txn.staffName,
-                        style: AppTextStyles.txnStaffName,
+                        style: AppTextStyles.of(context).txnStaffName,
 
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 8),
                     // Payment badge
-                    _buildPaymentBadge(txn.paymentMethod, badgeColor),
+                    _buildPaymentBadge(context, txn.paymentMethod, badgeColor),
                   ],
                 ),
                 const SizedBox(height: 3),
                 // Time ago + item count
                 Text(
                   '${_timeAgo(txn.createdAt)}  •  ${txn.itemCount} item${txn.itemCount != 1 ? 's' : ''}',
-                  style: AppTextStyles.txnMeta,
+                  style: AppTextStyles.of(context).txnMeta,
 
                 ),
               ],
@@ -216,7 +229,7 @@ class RecentTransactionsCard extends StatelessWidget {
           // ── Right: amount ──
           Text(
             _formatCurrency(txn.grandTotal),
-            style: AppTextStyles.txnAmount,
+            style: AppTextStyles.of(context).txnAmount,
 
           ),
         ],
@@ -226,11 +239,13 @@ class RecentTransactionsCard extends StatelessWidget {
 
   // ── Payment badge chip ───────────────────────────────────────────────
 
-  Widget _buildPaymentBadge(String method, Color color) {
+  Widget _buildPaymentBadge(BuildContext context, String method, Color color) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? color.withValues(alpha: 0.20) : color.withValues(alpha: 0.12);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: bg,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -247,7 +262,7 @@ class RecentTransactionsCard extends StatelessWidget {
 
   // ── Empty state ──────────────────────────────────────────────────────
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 24),
       child: Center(
@@ -256,17 +271,21 @@ class RecentTransactionsCard extends StatelessWidget {
             Icon(
               Icons.receipt_long_rounded,
               size: 40,
-              color: Colors.grey.shade400,
+              color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'No transactions yet',
-              style: AppTextStyles.txnEmptyTitle,
+              style: AppTextStyles.of(context).txnEmptyTitle.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Completed bills will appear here',
-              style: AppTextStyles.txnEmptySubtitle,
+              style: AppTextStyles.of(context).txnEmptySubtitle.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),

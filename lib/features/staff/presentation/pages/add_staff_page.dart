@@ -69,9 +69,9 @@ class _AddStaffPageState extends State<AddStaffPage> {
         if (_submitted &&
             (state is EmailVerificationPending || state is Authenticated)) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Staff account created. Verification email sent.'),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: const Text('Staff account created. Verification email sent.'),
+              backgroundColor: theme.colorScheme.primaryContainer,
             ),
           );
           context.pop();
@@ -104,12 +104,12 @@ class _AddStaffPageState extends State<AddStaffPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.block_rounded,
-                        size: 64, color: Colors.grey[400]),
+                        size: 64, color: theme.colorScheme.onSurfaceVariant),
                     const SizedBox(height: 16),
                     Text(
                       'Only the shop owner can add staff.',
                       style: TextStyle(
-                        color: Colors.grey[600],
+                        color: theme.colorScheme.onSurfaceVariant,
                         fontSize: 16,
                       ),
                     ),
@@ -239,7 +239,7 @@ class _AddStaffPageState extends State<AddStaffPage> {
                       Text(
                         'Staff will be added to your shop and can log in with these credentials.',
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 13,
                         ),
                       ),

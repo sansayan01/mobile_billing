@@ -54,7 +54,7 @@ class _ProductListPageState extends State<ProductListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = Colors.grey[100]!;
+    final borderColor = Theme.of(context).dividerColor;
 
     return Scaffold(
       appBar: AppBar(
@@ -90,7 +90,7 @@ class _ProductListPageState extends State<ProductListPage> {
                             hintText: 'Search product name, barcode or description',
                             prefixIcon: Icon(
                               Icons.search,
-                              color: Colors.grey[400],
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                           ),
                           validator:
@@ -113,8 +113,8 @@ class _ProductListPageState extends State<ProductListPage> {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  const Text('Tap the icon to open camera scanner',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF4C669A))),
+                  Text('Tap the icon to open camera scanner',
+                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7))),
                 ],
               );
             }),
@@ -171,7 +171,7 @@ class _ProductListPageState extends State<ProductListPage> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                           content: Text(state.message!),
-                          backgroundColor: Colors.red),
+                          backgroundColor: Theme.of(context).colorScheme.error),
                     );
                   }
                 },
@@ -220,12 +220,12 @@ class _ProductListPageState extends State<ProductListPage> {
                             extra: product),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(color: borderColor),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                                color: Theme.of(context).shadowColor.withValues(alpha: 0.04),
                                 blurRadius: 10,
                                 offset: const Offset(0, 2),
                               ),
@@ -278,10 +278,10 @@ class _ProductListPageState extends State<ProductListPage> {
                                       // Line 1: Product Name
                                       Text(
                                         product.name,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 14,
-                                          color: Color(0xFF0F172A),
+                                          color: Theme.of(context).colorScheme.onSurface,
                                           letterSpacing: -0.2,
                                         ),
                                         maxLines: 1,
@@ -337,7 +337,7 @@ class _ProductListPageState extends State<ProductListPage> {
                                 child: Icon(
                                   Icons.chevron_right_rounded,
                                   size: 18,
-                                  color: Colors.grey[300],
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                                 ),
                               ),
                             ],
@@ -353,7 +353,7 @@ class _ProductListPageState extends State<ProductListPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/products/add'),
         backgroundColor: AppTheme.primaryColor,
-        foregroundColor: Colors.white,
+        foregroundColor: Theme.of(context).colorScheme.surface,
         shape: const CircleBorder(),
         child: const Icon(Icons.add, size: 32),
       ),
@@ -365,11 +365,11 @@ class _ProductListPageState extends State<ProductListPage> {
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: const Icon(Icons.inventory_2_outlined,
-          color: Color(0xFF94A3B8), size: 20),
+      child: Icon(Icons.inventory_2_outlined,
+          color: Theme.of(context).colorScheme.onSurfaceVariant, size: 20),
     );
   }
 
@@ -400,14 +400,14 @@ class _ProductListPageState extends State<ProductListPage> {
   }
 
   Widget _dotSeparator() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 6),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6),
       child: Text(
         '·',
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w700,
-          color: Color(0xFFCBD5E1),
+          color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
         ),
       ),
     );
@@ -417,14 +417,14 @@ class _ProductListPageState extends State<ProductListPage> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 11, color: const Color(0xFF94A3B8)),
+        Icon(icon, size: 11, color: Theme.of(context).colorScheme.onSurfaceVariant),
         const SizedBox(width: 3),
         Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: Color(0xFF64748B),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -494,7 +494,7 @@ class _ProductListPageState extends State<ProductListPage> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: selected ? Colors.white : AppTheme.primaryColor,
+            color: selected ? Theme.of(context).colorScheme.onPrimary : AppTheme.primaryColor,
           ),
         ),
       ),

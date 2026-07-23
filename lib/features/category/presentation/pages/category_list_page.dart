@@ -35,7 +35,8 @@ class _CategoryListPageState extends State<CategoryListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = Colors.grey[100]!;
+    final theme = Theme.of(context);
+    final borderColor = theme.dividerColor;
 
     return Scaffold(
       appBar: AppBar(
@@ -46,9 +47,9 @@ class _CategoryListPageState extends State<CategoryListPage> {
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Categories',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 18, color: theme.colorScheme.onSurface),
         ),
         centerTitle: true,
       ),
@@ -64,7 +65,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
                 hintText: 'Search categories...',
                 prefixIcon: Icon(
                   Icons.search,
-                  color: Colors.grey[400],
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -78,7 +79,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(state.message!),
-                      backgroundColor: Colors.green,
+                      backgroundColor: theme.colorScheme.primaryContainer,
                     ),
                   );
                 } else if (state.status == CategoryStatus.error &&
@@ -86,7 +87,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(state.message!),
-                      backgroundColor: Colors.red,
+                      backgroundColor: theme.colorScheme.error,
                     ),
                   );
                 }
@@ -106,13 +107,13 @@ class _CategoryListPageState extends State<CategoryListPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.error_outline,
-                                size: 64, color: Colors.grey[400]),
+                                size: 64, color: theme.colorScheme.onSurfaceVariant),
                             const SizedBox(height: 16),
                             Text(
                               'Error: ${state.message}',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: Colors.grey[600],
+                                color: theme.colorScheme.onSurfaceVariant,
                                 fontSize: 16,
                               ),
                             ),
@@ -126,12 +127,12 @@ class _CategoryListPageState extends State<CategoryListPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.category_outlined,
-                            size: 64, color: Colors.grey[400]),
+                            size: 64, color: theme.colorScheme.onSurfaceVariant),
                         const SizedBox(height: 16),
                         Text(
                           'No categories found',
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: theme.colorScheme.onSurfaceVariant,
                             fontSize: 16,
                           ),
                         ),
@@ -151,12 +152,12 @@ class _CategoryListPageState extends State<CategoryListPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.search_off,
-                            size: 64, color: Colors.grey[400]),
+                            size: 64, color: theme.colorScheme.onSurfaceVariant),
                         const SizedBox(height: 16),
                         Text(
                           'No categories match your search.',
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: theme.colorScheme.onSurfaceVariant,
                             fontSize: 16,
                           ),
                         ),
@@ -175,14 +176,14 @@ class _CategoryListPageState extends State<CategoryListPage> {
                     final category = filteredCategories[index];
                     return Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: theme.colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: borderColor),
-                        boxShadow: const [
+                        boxShadow: [
                           BoxShadow(
-                              color: Colors.black12,
+                              color: theme.shadowColor.withValues(alpha: 0.1),
                               blurRadius: 4,
-                              offset: Offset(0, 2))
+                              offset: const Offset(0, 2))
                         ],
                       ),
                       padding: const EdgeInsets.all(16),
@@ -206,7 +207,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
                                     category.description!,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.grey[600],
+                                      color: theme.colorScheme.onSurfaceVariant,
                                       fontSize: 13,
                                     ),
                                     maxLines: 2,
@@ -237,13 +238,13 @@ class _CategoryListPageState extends State<CategoryListPage> {
                               const SizedBox(width: 8),
                               Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.red.withValues(alpha: 0.1),
+                                  color: theme.colorScheme.error.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: IconButton(
-                                  icon: const Icon(
+                                  icon: Icon(
                                       Icons.delete_outline_rounded,
-                                      color: Colors.red,
+                                      color: theme.colorScheme.error,
                                       size: 20),
                                   constraints: const BoxConstraints(),
                                   padding: const EdgeInsets.all(8),
@@ -265,8 +266,8 @@ class _CategoryListPageState extends State<CategoryListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openAddEditDialog(),
-        backgroundColor: AppTheme.primaryColor,
-        foregroundColor: Colors.white,
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
         shape: const CircleBorder(),
         child: const Icon(Icons.add, size: 32),
       ),
@@ -300,8 +301,8 @@ class _CategoryListPageState extends State<CategoryListPage> {
                     .add(DeleteCategory(category.id));
                 Navigator.pop(innerContext);
               },
-              child: const Text('Delete',
-                  style: TextStyle(color: Colors.red)),
+              child: Text('Delete',
+                  style: TextStyle(color: Theme.of(innerContext).colorScheme.error)),
             ),
           ],
         );

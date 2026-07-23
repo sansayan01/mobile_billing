@@ -94,16 +94,18 @@ class _BillDetailPageState extends State<BillDetailPage> {
 
   void _showSnack(String message, {required bool isError}) {
     if (!mounted) return;
+    final theme = Theme.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? AppTheme.errorColor : Colors.green,
+        backgroundColor: isError ? theme.colorScheme.error : theme.colorScheme.primaryContainer,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final dateFormat = DateFormat('dd MMM yyyy, hh:mm a');
     final numberFormat =
         NumberFormat.currency(symbol: '₹', decimalDigits: 0);
@@ -223,7 +225,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
                           'No items found',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[500],
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       )
@@ -276,15 +278,15 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                         itemPrice,
                                         style: TextStyle(
                                           fontSize: 12,
-                                          color: Colors.grey[600],
+                                          color: theme.colorScheme.onSurfaceVariant,
                                         ),
                                       ),
                                       Text(
                                         itemTotal,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
-                                          color: Colors.black87,
+                                          color: theme.colorScheme.onSurface,
                                         ),
                                       ),
                                     ],
@@ -314,10 +316,10 @@ class _BillDetailPageState extends State<BillDetailPage> {
                       _infoRow(
                         'Discount',
                         '-${numberFormat.format(bill.discount)}',
-                        valueStyle: const TextStyle(
+                        valueStyle: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
-                          color: Colors.green,
+                          color: theme.colorScheme.primary.withValues(alpha: 0.8),
                         ),
                       ),
                     ],
@@ -353,6 +355,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
   }
 
   void _showEditDialog(BuildContext context) {
+    final theme = Theme.of(context);
     final bill = context.read<ReportBloc>().state.billDetail ?? widget.bill;
     final nameController = TextEditingController(text: bill.customerName ?? '');
     final phoneController = TextEditingController(text: bill.customerPhone ?? '');
@@ -464,7 +467,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
                             child: Text(
                               'No items. Tap "Add Item" to add products.',
                               style: TextStyle(
-                                color: Colors.grey[500],
+                                color: theme.colorScheme.onSurfaceVariant,
                                 fontSize: 13,
                               ),
                             ),
@@ -497,7 +500,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                           '₹${item.price.toStringAsFixed(0)} each',
                                           style: TextStyle(
                                             fontSize: 11,
-                                            color: Colors.grey[600],
+                                            color: theme.colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                       ],
@@ -522,7 +525,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                           : Icons.delete_outline,
                                       size: 20,
                                       color: item.quantity > 1
-                                          ? Colors.grey[600]
+                                          ? Theme.of(context).colorScheme.onSurfaceVariant
                                           : AppTheme.errorColor,
                                     ),
                                     padding: EdgeInsets.zero,
@@ -580,7 +583,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
                       if (discount > 0)
                         _editInfoRow('Discount',
                             '-₹${discount.toStringAsFixed(0)}',
-                            valueColor: Colors.green),
+                            valueColor: Theme.of(context).colorScheme.primary),
                       const Divider(),
                       _editInfoRow(
                         'Grand Total',
@@ -629,6 +632,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
     List<BillItem> editItems,
     StateSetter setDialogState,
   ) async {
+    final theme = Theme.of(context);
     // Fetch all products for the shop
     final authState = context.read<AuthBloc>().state;
     final shopId =
@@ -704,19 +708,19 @@ class _BillDetailPageState extends State<BillDetailPage> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: alreadyAdded ? Colors.grey : null,
+                                color: alreadyAdded ? Theme.of(context).colorScheme.onSurfaceVariant : null,
                               ),
                             ),
                             subtitle: Text(
                               '₹${product.price.toStringAsFixed(0)} • Stock: ${product.stock}',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey[600],
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                             trailing: alreadyAdded
-                                ? const Icon(Icons.check_circle,
-                                    color: Colors.green, size: 20)
+                                ? Icon(Icons.check_circle,
+                                    color: theme.colorScheme.primary, size: 20)
                                 : null,
                             onTap: alreadyAdded
                                 ? null
@@ -759,6 +763,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
     bool isBold = false,
     Color? valueColor,
   }) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -768,7 +773,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
             label,
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey[600],
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           Text(
@@ -804,10 +809,10 @@ class _BillDetailPageState extends State<BillDetailPage> {
                     .add(DeleteBill(widget.bill.id));
                 Navigator.of(dialogContext).pop();
               },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text(
+              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+              child: Text(
                 'Delete',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
           ],
@@ -821,16 +826,17 @@ class _BillDetailPageState extends State<BillDetailPage> {
     required String title,
     required List<Widget> children,
   }) {
+    final theme = Theme.of(context);
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Colors.black12,
+            color: theme.shadowColor.withValues(alpha: 0.1),
             blurRadius: 4,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -857,6 +863,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
     String value, {
     TextStyle? valueStyle,
   }) {
+    final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -864,7 +871,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
           label,
           style: TextStyle(
             fontSize: 13,
-            color: Colors.grey[600],
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
         Expanded(

@@ -105,7 +105,7 @@ class _ScannerPageState extends State<ScannerPage> {
                   width: 250,
                   height: 250,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.green, width: 2),
+                    border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(5.0),
@@ -128,14 +128,14 @@ class _ScannerPageState extends State<ScannerPage> {
 
             // Hint text
             if (_cameraStatus == PermissionStatus.granted)
-              const Positioned(
+              Positioned(
                 bottom: 40,
                 left: 0,
                 right: 0,
                 child: Text(
                   'Align barcode within frame',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
                 ),
               ),
           ],
@@ -149,7 +149,7 @@ class _ScannerPageState extends State<ScannerPage> {
         _cameraStatus == PermissionStatus.permanentlyDenied;
 
     return Container(
-      color: Colors.black,
+      color: Theme.of(context).colorScheme.surface,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(32.0),
@@ -159,15 +159,15 @@ class _ScannerPageState extends State<ScannerPage> {
               Icon(
                 Icons.camera_alt_outlined,
                 size: 80,
-                color: Colors.grey[600],
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               const SizedBox(height: 24),
               Text(
                 isPermanentlyDenied
                     ? 'Camera Permission Required'
                     : 'Camera Access Needed',
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -179,7 +179,7 @@ class _ScannerPageState extends State<ScannerPage> {
                     ? 'Camera permission was permanently denied. Please enable it from app settings to scan barcodes.'
                     : 'This app needs camera access to scan barcodes. Please grant the permission.',
                 style: TextStyle(
-                  color: Colors.grey[400],
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 14,
                 ),
                 textAlign: TextAlign.center,
@@ -221,7 +221,7 @@ class _ScannerPageState extends State<ScannerPage> {
       height: 15,
       decoration: BoxDecoration(
         color: Colors.transparent,
-        border: Border.all(color: Colors.white, width: 2),
+        border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
       ),
     );
   }

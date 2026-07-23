@@ -111,7 +111,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       'Create your account to get started',
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        color: Colors.grey[600],
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 36),
@@ -259,11 +259,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _onSignUp,
                         child: _isLoading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 22,
                                 height: 22,
                                 child: CircularProgressIndicator(
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onPrimary,
                                   strokeWidth: 2.5,
                                 ),
                               )
@@ -284,7 +284,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         Text(
                           'Already have an account? ',
-                          style: TextStyle(color: Colors.grey[600]),
+                          style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
                         ),
                         GestureDetector(
                           onTap: () => context.pop(),

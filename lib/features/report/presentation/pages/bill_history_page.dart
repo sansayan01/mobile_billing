@@ -88,6 +88,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final dateFormat = DateFormat('dd MMM yyyy');
 
     return Scaffold(
@@ -123,11 +124,11 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                         : null,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
+                      borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
+                      borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -162,16 +163,16 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: theme.colorScheme.surface,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey[300]!),
+                          border: Border.all(color: theme.colorScheme.outlineVariant),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: _paymentMethodFilter ?? 'All',
                             isDense: true,
-                            icon: Icon(Icons.arrow_drop_down, size: 18, color: Colors.grey[600]),
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87),
+                            icon: Icon(Icons.arrow_drop_down, size: 18, color: theme.colorScheme.onSurfaceVariant),
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: theme.colorScheme.onSurface),
                             items: const [
                               DropdownMenuItem(value: 'All', child: Text('All')),
                               DropdownMenuItem(value: 'cash', child: Text('Cash')),
@@ -237,14 +238,14 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                         Icon(
                           Icons.receipt_long,
                           size: 64,
-                          color: Colors.grey[300],
+                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                         ),
                         const SizedBox(height: 16),
-                        const Text(
+                        Text(
                           'No bills found',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey,
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -306,6 +307,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
     BillSummary bill,
     DateFormat dateFormat,
   ) {
+    final theme = Theme.of(context);
     final shortId = bill.id.length > 8 ? bill.id.substring(0, 8) : bill.id;
     final numberFormat =
         NumberFormat.currency(symbol: '₹', decimalDigits: 0);
@@ -317,13 +319,13 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
             context.push('/reports/bills/${bill.id}', extra: bill),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                color: Colors.black12,
+                color: theme.shadowColor.withValues(alpha: 0.1),
                 blurRadius: 4,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -359,23 +361,23 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                   Icon(
                     Icons.person_outline,
                     size: 14,
-                    color: Colors.grey[500],
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     bill.staffName,
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.grey[700],
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const Spacer(),
                   if (bill.discount > 0)
                     Text(
                       '-${_formatDiscount(bill.discount)}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Colors.green,
+                        color: theme.colorScheme.primary.withValues(alpha: 0.8),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -396,14 +398,14 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                       Icon(
                         Icons.person_outline,
                         size: 14,
-                        color: Colors.grey[500],
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         bill.customerName!,
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -412,14 +414,14 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                       Icon(
                         Icons.phone_outlined,
                         size: 12,
-                        color: Colors.grey[500],
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 2),
                       Text(
                         bill.customerPhone!,
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -432,14 +434,14 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                   Icon(
                     Icons.calendar_today,
                     size: 14,
-                    color: Colors.grey[500],
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     dateFormat.format(bill.createdAt),
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[500],
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const Spacer(),
@@ -480,6 +482,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
     required String formatted,
     required VoidCallback onTap,
   }) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -488,9 +491,9 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
           vertical: 12,
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[300]!),
+          border: Border.all(color: theme.colorScheme.outlineVariant),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -499,7 +502,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
               label,
               style: TextStyle(
                 fontSize: 11,
-                color: Colors.grey[500],
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 4),

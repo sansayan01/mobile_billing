@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
 /// Liquid-glass stat card — semi-transparent colour-tinted container.
@@ -18,6 +19,10 @@ class PremiumStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    const darkSurfaceColor = AppTheme.darkSurface;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -44,7 +49,9 @@ class PremiumStatCard extends StatelessWidget {
           color: color.withValues(alpha: 0.13),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.20),
+            color: isDark
+                ? darkSurfaceColor.withValues(alpha: 0.40)
+                : Theme.of(context).colorScheme.surface.withValues(alpha: 0.60),
             width: 1,
           ),
         ),
@@ -77,7 +84,8 @@ class PremiumStatCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           label,
-                          style: AppTextStyles.statLabel.copyWith(color: color.withValues(alpha: 0.85)),
+                          style: AppTextStyles.of(context).statLabel.copyWith(
+                            color: color.withValues(alpha: 0.85)),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -87,7 +95,7 @@ class PremiumStatCard extends StatelessWidget {
                   // Big value
                   Text(
                     value,
-                    style: AppTextStyles.statValue.copyWith(color: color),
+                    style: AppTextStyles.of(context).statValue.copyWith(color: color),
                   ),
                 ],
               ),
@@ -101,7 +109,7 @@ class PremiumStatCard extends StatelessWidget {
                 child: Icon(
                   icon,
                   size: 58,
-                  color: Colors.white.withValues(alpha: 0.06),
+                  color: darkSurfaceColor.withValues(alpha: 0.12),
                 ),
               ),
           ],

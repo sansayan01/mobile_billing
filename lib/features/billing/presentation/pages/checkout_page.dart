@@ -43,7 +43,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    const borderColor = Color(0xFFE5E5EA);
+    final borderColor = Theme.of(context).dividerColor;
 
     return PopScope(
         canPop: true,
@@ -102,7 +102,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
               if (state.error != null) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(state.error!),
-                    backgroundColor: Colors.red));
+                    backgroundColor: Theme.of(context).colorScheme.error),
+                );
               }
               if (state.stockErrors != null &&
                   state.stockErrors!.isNotEmpty &&
@@ -140,13 +141,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             // Table
                             Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(color: borderColor),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        Colors.black.withValues(alpha: 0.05),
+                                    color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
                                   )
@@ -155,7 +155,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
                                 child: Table(
-                                  border: const TableBorder(
+                                  border: TableBorder(
                                     horizontalInside:
                                         BorderSide(color: borderColor),
                                     bottom: BorderSide(color: borderColor),
@@ -163,8 +163,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   children: [
                                     // Header row
                                     TableRow(
-                                      decoration: const BoxDecoration(
-                                        color: Color(0xFFF8FAFC),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
                                         border: Border(
                                             bottom: BorderSide(
                                                 color: borderColor)),
@@ -205,7 +205,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                     fontWeight: FontWeight.w500,
                                                     color: isLowStock
                                                         ? Colors.red.shade700
-                                                        : Colors.black87,
+                                                        : Theme.of(context).colorScheme.onSurface,
                                                   ),
                                                 ),
                                                 if (isLowStock)
@@ -289,13 +289,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                                   decoration: BoxDecoration(
                                                     color: item.customPrice != null
-                                                        ? const Color(0xFFFFF7ED)
-                                                        : const Color(0xFFF3F4F6),
+                                                        ? Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.5)
+                                                        : Theme.of(context).colorScheme.surfaceContainerHighest,
                                                     borderRadius: BorderRadius.circular(6),
                                                     border: Border.all(
                                                       color: item.customPrice != null
-                                                          ? const Color(0xFFFDBA74)
-                                                          : const Color(0xFFE5E7EB),
+                                                          ? Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.5)
+                                                          : Theme.of(context).dividerColor,
                                                       width: 1,
                                                     ),
                                                   ),
@@ -311,18 +311,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                               ? FontWeight.w700
                                                               : FontWeight.w600,
                                                           color: item.customPrice != null
-                                                              ? const Color(0xFFC2410C)
-                                                              : const Color(0xFF111827),
+                                                              ? Theme.of(context).colorScheme.tertiary
+                                                              : Theme.of(context).colorScheme.onSurface,
                                                           letterSpacing: -0.2,
                                                         ),
                                                       ),
                                                       if (item.customPrice != null)
-                                                        const Padding(
-                                                          padding: EdgeInsets.only(left: 4),
+                                                        Padding(
+                                                          padding: const EdgeInsets.only(left: 4),
                                                           child: Icon(
                                                             Icons.edit_rounded,
                                                             size: 12,
-                                                            color: Color(0xFFC2410C),
+                                                            color: Theme.of(context).colorScheme.tertiary,
                                                           ),
                                                         ),
                                                     ],
@@ -347,7 +347,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             // Customer Info Section
                             Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(color: borderColor),
                               ),
@@ -461,7 +461,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             // Discount Section
                             Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(color: borderColor),
                               ),
@@ -570,18 +570,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: Colors.orange.shade50,
+                                  color: Theme.of(context).colorScheme.errorContainer.withValues(alpha: 0.3),
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.orange.shade200),
+                                  border: Border.all(color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3)),
                                 ),
                                 child: Row(
                                   children: [
-                                    Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700, size: 20),
+                                    Icon(Icons.warning_amber_rounded, color: Theme.of(context).colorScheme.onErrorContainer, size: 20),
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Text(
                                         'UPI ID not configured. Please add UPI ID in Shop Settings.',
-                                        style: TextStyle(fontSize: 13, color: Colors.orange.shade800),
+                                        style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onErrorContainer),
                                       ),
                                     ),
                                   ],
@@ -595,13 +595,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     // Bottom Bar
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.9),
+                        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
                         borderRadius: const BorderRadius.horizontal(
                             left: Radius.circular(24),
                             right: Radius.circular(24)),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
+                            color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
                             blurRadius: 10,
                             offset: const Offset(0, -4),
                           ),
@@ -655,12 +655,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   Column(
                                     children: [
                                       const SizedBox(height: 8),
-                                      const Text(
+                                      Text(
                                         'Scan to Pay',
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.black87,
+                                          color: Theme.of(context).colorScheme.onSurface,
                                           letterSpacing: 1.0,
                                         ),
                                       ),
@@ -688,7 +688,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                           style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.grey[400],
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                                             letterSpacing: 1.2,
                                           ),
                                         ),
@@ -700,7 +700,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 6, vertical: 1),
                                             decoration: BoxDecoration(
-                                              color: Colors.orange.shade50,
+                                              color: Theme.of(context).colorScheme.tertiaryContainer,
                                               borderRadius:
                                                   BorderRadius.circular(4),
                                             ),
@@ -708,7 +708,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                               'manual',
                                               style: TextStyle(
                                                 fontSize: 9,
-                                                color: Colors.orange.shade700,
+                                                color: Theme.of(context).colorScheme.onTertiaryContainer,
                                               ),
                                             ),
                                           ),
@@ -732,11 +732,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                 border: InputBorder.none,
                                                 isDense: true,
                                               ),
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontSize: 24,
                                                 fontWeight: FontWeight.bold,
                                                 letterSpacing: -0.5,
-                                                color: Color(0xFF0F172A),
+                                                color: Theme.of(context).colorScheme.onSurface,
                                               ),
                                               onChanged: (value) {
                                                 final total = value.isEmpty
@@ -769,11 +769,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                         children: [
                                           Text(
                                             '₹${_formatPrice(billingState.totalAmount)}',
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 24,
                                               fontWeight: FontWeight.bold,
                                               letterSpacing: -0.5,
-                                              color: Color(0xFF0F172A),
+                                              color: Theme.of(context).colorScheme.onSurface,
                                             ),
                                           ),
                                           IconButton(
@@ -829,8 +829,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                     ? 'Checking...'
                                     : 'Save Bill'),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  foregroundColor: Colors.white,
+                                  backgroundColor: Theme.of(context).colorScheme.primary,
+                                  foregroundColor: Theme.of(context).colorScheme.surface,
                                   padding: const EdgeInsets.symmetric(vertical: 14),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
@@ -858,12 +858,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
       builder: (ctx) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.error_outline, color: Colors.red.shade700, size: 24),
+            Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error, size: 24),
             const SizedBox(width: 8),
-            const Expanded(
+            Expanded(
               child: Text(
                 'Insufficient Stock',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
               ),
             ),
           ],
@@ -872,9 +872,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Some items don\'t have enough stock. Please adjust quantities or remove items:',
-              style: TextStyle(fontSize: 14, color: Colors.black87),
+              style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
             ),
             const SizedBox(height: 16),
             ...errors.map(
@@ -884,14 +884,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(Icons.warning_amber_rounded,
-                        size: 18, color: Colors.orange.shade700),
+                        size: 18, color: Theme.of(context).colorScheme.error),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         error,
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.red.shade800,
+                          color: Theme.of(context).colorScheme.error,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -935,7 +935,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: Colors.grey[900],
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -948,9 +948,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[200]!),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -960,7 +960,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Colors.grey[700],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   Text(
@@ -968,7 +968,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey[900],
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -986,7 +986,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Theme.of(context).colorScheme.surface,
               ),
               autofocus: true,
             ),
@@ -1032,11 +1032,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
       child: Text(
         text.toUpperCase(),
         textAlign: align,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.bold,
           letterSpacing: 1,
-          color: Colors.grey,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       ),
     );
@@ -1052,7 +1052,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         style: TextStyle(
           fontSize: isSubtitle ? 12 : 14,
           fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
-          color: isSubtitle ? Colors.grey[500] : Colors.black87,
+          color: isSubtitle ? Theme.of(context).colorScheme.onSurfaceVariant : Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );

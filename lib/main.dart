@@ -5,6 +5,7 @@ import 'core/data/hive_database.dart';
 import 'core/service_locator.dart' as di;
 import 'core/supabase/supabase_client.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_cubit.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
@@ -55,12 +56,20 @@ class MyApp extends StatelessWidget {
             create: (context) => di.sl<ReportBloc>()),
         BlocProvider<PrinterBloc>(
             create: (context) => di.sl<PrinterBloc>()..add(InitPrinterEvent())),
+        BlocProvider<ThemeCubit>(
+            create: (context) => di.sl<ThemeCubit>()),
       ],
-      child: MaterialApp.router(
-        title: 'Billing App',
-        theme: AppTheme.lightTheme,
-        routerConfig: createRouter(di.sl<AuthBloc>()),
-        debugShowCheckedModeBanner: false,
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return MaterialApp.router(
+            title: 'Billing App',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeMode,
+            routerConfig: createRouter(di.sl<AuthBloc>()),
+            debugShowCheckedModeBanner: false,
+          );
+        },
       ),
     );
   }

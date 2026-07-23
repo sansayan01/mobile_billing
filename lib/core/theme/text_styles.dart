@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 /// Pre-computed IBM Plex Sans text styles — computed once at load time,
 /// not on every widget rebuild. Use these instead of calling
 /// GoogleFonts.ibmPlexSans() inline inside build() methods.
+///
+/// For dark-mode‑aware styles, call [of] with the current [BuildContext].
 class AppTextStyles {
   AppTextStyles._();
 
@@ -157,4 +159,81 @@ class AppTextStyles {
     fontSize: 13,
     fontWeight: FontWeight.w500,
   );
+
+  // ── Dynamic text styles (dark‑mode aware) ────────────────────────────
+
+  /// Returns text styles adapted to the current theme brightness.
+  static AdaptiveTextStyles of(BuildContext context) {
+    return AdaptiveTextStyles._(Theme.of(context).brightness);
+  }
+}
+
+/// Theme‑aware text style set.  Call [AppTextStyles.of(context)] to get one.
+class AdaptiveTextStyles {
+  final Brightness _brightness;
+  AdaptiveTextStyles._(this._brightness);
+
+  bool get _isDark => _brightness == Brightness.dark;
+
+  Color get _onSurface => _isDark ? Colors.white : const Color(0xFF1A1A2E);
+  Color get _onSurfaceVariant =>
+      _isDark ? const Color(0xFFB0B0C0) : const Color(0xFF9E9EA7);
+  Color get _onSurfaceDisabled =>
+      _isDark ? const Color(0xFF888898) : const Color(0xFFB0B0BA);
+  Color get _onSurfaceMeta =>
+      _isDark ? const Color(0xFF808090) : const Color(0xFF8E8E9A);
+  Color get _onSurfaceMuted =>
+      _isDark ? const Color(0xFF707080) : const Color(0xFF757580);
+  Color get _primary => const Color(0xFF6C63FF);
+
+  TextStyle get sectionTitle =>
+      AppTextStyles.sectionTitle.copyWith(color: _onSurface);
+  TextStyle get greetingName =>
+      AppTextStyles.greetingName.copyWith(color: _onSurface);
+  TextStyle get greetingSubtitle =>
+      AppTextStyles.greetingSubtitle.copyWith(color: _onSurfaceVariant);
+  TextStyle get greetingDate =>
+      AppTextStyles.greetingDate.copyWith(color: _onSurfaceDisabled);
+  TextStyle get tileLabel =>
+      AppTextStyles.tileLabel.copyWith(color: _onSurface);
+  TextStyle get actionCardTitle =>
+      AppTextStyles.actionCardTitle.copyWith(color: _onSurface);
+  TextStyle get actionCardSubtitle =>
+      AppTextStyles.actionCardSubtitle.copyWith(color: _onSurfaceMuted);
+  TextStyle get txnTitle => AppTextStyles.txnTitle.copyWith(color: _onSurface);
+  TextStyle get txnStaffName =>
+      AppTextStyles.txnStaffName.copyWith(color: _onSurface);
+  TextStyle get txnMeta =>
+      AppTextStyles.txnMeta.copyWith(color: _onSurfaceMeta);
+  TextStyle get txnAmount =>
+      AppTextStyles.txnAmount.copyWith(color: _onSurface);
+  TextStyle get txnSeeAll => AppTextStyles.txnSeeAll.copyWith(color: _primary);
+  TextStyle get txnEmptyTitle =>
+      AppTextStyles.txnEmptyTitle.copyWith(color: _onSurfaceMeta);
+  TextStyle get txnEmptySubtitle =>
+      AppTextStyles.txnEmptySubtitle.copyWith(color: _onSurfaceDisabled);
+  TextStyle get trendTitle =>
+      AppTextStyles.trendTitle.copyWith(color: _onSurface);
+  TextStyle get trendChipLabel =>
+      AppTextStyles.trendChipLabel.copyWith(color: _onSurfaceVariant);
+  TextStyle get trendChipValue =>
+      AppTextStyles.trendChipValue.copyWith(color: _onSurface);
+  TextStyle get trendPlaceholder =>
+      AppTextStyles.trendPlaceholder.copyWith(color: _onSurfaceDisabled);
+  TextStyle get lowStockText => AppTextStyles.lowStockText;
+  TextStyle get statLabel =>
+      AppTextStyles.statLabel.copyWith(color: _onSurfaceVariant);
+  TextStyle get statValue =>
+      AppTextStyles.statValue.copyWith(color: Colors.white);
+  TextStyle get healthLabel =>
+      AppTextStyles.healthLabel.copyWith(color: _isDark ? Colors.white : _onSurface);
+  TextStyle get inventoryTitle =>
+      AppTextStyles.inventoryTitle.copyWith(color: _isDark ? Colors.white : _onSurface);
+  TextStyle get inventoryEmpty =>
+      AppTextStyles.inventoryEmpty.copyWith(
+          color: _isDark ? Colors.white.withValues(alpha: 0.6) : _onSurfaceVariant);
+  TextStyle get statCount =>
+      AppTextStyles.statCount.copyWith(color: _isDark ? Colors.white : _onSurface);
+  TextStyle get statLabelSmall =>
+      AppTextStyles.statLabelSmall.copyWith(color: _isDark ? Colors.white.withValues(alpha: 0.6) : _onSurfaceVariant);
 }

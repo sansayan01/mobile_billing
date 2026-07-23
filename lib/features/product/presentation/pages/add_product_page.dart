@@ -79,7 +79,7 @@ class _AddProductPageState extends State<AddProductPage> {
               children: [
                 Text(
                   'A product with barcode "$barcode" is already in your inventory.',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
                 const SizedBox(height: 14),
                 InkWell(
@@ -91,7 +91,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey[100],
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -112,14 +112,14 @@ class _AddProductPageState extends State<AddProductPage> {
                                 '₹${existingProduct.price.toStringAsFixed(2)}  ·  Stock: ${existingProduct.stock}',
                                 style: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
                           ),
                         ),
                         Icon(Icons.arrow_forward_rounded,
-                            size: 18, color: Colors.grey[400]),
+                            size: 18, color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ],
                     ),
                   ),
@@ -142,7 +142,7 @@ class _AddProductPageState extends State<AddProductPage> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE8850C),
-                  foregroundColor: Colors.white,
+                  foregroundColor: Theme.of(context).colorScheme.surface,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -159,6 +159,7 @@ class _AddProductPageState extends State<AddProductPage> {
   Future<void> _showCategoryPicker(
       BuildContext context, List<Category> categories) async {
     final searchController = TextEditingController();
+    const kSheetRadius = Radius.circular(20);
     final selected = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
@@ -174,12 +175,12 @@ class _AddProductPageState extends State<AddProductPage> {
                         c.name.toLowerCase().contains(queryLocal.toLowerCase()))
                     .toList();
 
+            final sheetRadius = BorderRadius.vertical(top: kSheetRadius);
             return Container(
               height: MediaQuery.of(context).size.height * 0.55,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(20)),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: sheetRadius,
               ),
               child: Column(
                 children: [
@@ -189,7 +190,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.grey[100],
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: TextField(
@@ -208,7 +209,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     child: filtered.isEmpty
                         ? Center(
                             child: Text('No categories found',
-                                style: TextStyle(color: Colors.grey[500])),
+                                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                           )
                         : ListView.builder(
                             itemCount: filtered.length + 1,
@@ -227,7 +228,7 @@ class _AddProductPageState extends State<AddProductPage> {
                                         fontWeight: FontWeight.w500,
                                         color: _categoryId == null
                                             ? AppTheme.primaryColor
-                                            : Colors.black87,
+                                            : Theme.of(context).colorScheme.onSurface,
                                       ),
                                     ),
                                   ),
@@ -258,7 +259,7 @@ class _AddProductPageState extends State<AddProductPage> {
                                                 : FontWeight.w400,
                                             color: isSelected
                                                 ? AppTheme.primaryColor
-                                                : Colors.black87,
+                                                : Theme.of(context).colorScheme.onSurface,
                                           ),
                                         ),
                                       ),
@@ -299,7 +300,7 @@ class _AddProductPageState extends State<AddProductPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Product with barcode "$barcode" already exists!'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
         return;
@@ -380,8 +381,8 @@ class _AddProductPageState extends State<AddProductPage> {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  const Text('Tap the icon to open camera scanner',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF4C669A))),
+                  Text('Tap the icon to open camera scanner',
+                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7))),
                   const SizedBox(height: 24),
                   const InputLabel(text: 'Product Name'),
                   TextFormField(
@@ -419,13 +420,13 @@ class _AddProductPageState extends State<AddProductPage> {
                   TextFormField(
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: '0.00',
                       prefixText: '₹ ',
                       prefixStyle: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: Colors.black),
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
                     validator: AppValidators.price,
                     onSaved: (value) => _price = double.parse(value!),

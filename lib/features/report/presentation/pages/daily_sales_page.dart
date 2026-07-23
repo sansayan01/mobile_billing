@@ -100,6 +100,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -126,14 +127,14 @@ class _DailySalesPageState extends State<DailySalesPage> {
                     Icon(
                       Icons.error_outline,
                       size: 64,
-                      color: Colors.grey[400],
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       state.error ?? 'Something went wrong',
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.grey[600],
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -150,19 +151,19 @@ class _DailySalesPageState extends State<DailySalesPage> {
           if (state.status == ReportStatus.loaded &&
               state.dailySales == null &&
               state.salesRange.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.receipt_long,
                     size: 64,
-                    color: Colors.grey,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     'No sales data available',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    style: TextStyle(fontSize: 16, color: theme.colorScheme.onSurfaceVariant),
                   ),
                 ],
               ),
@@ -220,6 +221,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
   }
 
   Widget _buildDateNavigation() {
+    final theme = Theme.of(context);
     final dateFormat = DateFormat('d MMM yyyy');
     final isToday = _selectedDate.day == DateTime.now().day &&
         _selectedDate.month == DateTime.now().month &&
@@ -238,13 +240,13 @@ class _DailySalesPageState extends State<DailySalesPage> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.calendar_today, size: 18, color: Colors.grey),
+                  Icon(Icons.calendar_today, size: 18, color: theme.colorScheme.onSurfaceVariant),
                   const SizedBox(width: 8),
                   Text(
                     dateFormat.format(_selectedDate),
@@ -268,7 +270,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
           onPressed: isToday ? null : _goToday,
           style: TextButton.styleFrom(
             foregroundColor: AppTheme.primaryColor,
-            disabledForegroundColor: Colors.grey[400],
+            disabledForegroundColor: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
           ),
           child: const Text('Today'),
         ),
@@ -327,11 +329,12 @@ class _DailySalesPageState extends State<DailySalesPage> {
     required String value,
     required Color color,
   }) {
+    final theme = Theme.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -339,9 +342,9 @@ class _DailySalesPageState extends State<DailySalesPage> {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Colors.grey,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),
@@ -359,18 +362,19 @@ class _DailySalesPageState extends State<DailySalesPage> {
   }
 
   Widget _buildBarChart(List<DailySales> salesRange, double maxSales) {
+    final theme = Theme.of(context);
     if (salesRange.isEmpty) {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
             'No sales data for the past 7 days',
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
           ),
         ),
       );
@@ -380,7 +384,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: SizedBox(
@@ -399,9 +403,9 @@ class _DailySalesPageState extends State<DailySalesPage> {
                   children: [
                     Text(
                       _formatCurrency(sale.totalSales),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 9,
-                        color: Colors.grey,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -417,10 +421,10 @@ class _DailySalesPageState extends State<DailySalesPage> {
                     const SizedBox(height: 6),
                     Text(
                       _dayAbbr(sale.date),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: Colors.grey,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],

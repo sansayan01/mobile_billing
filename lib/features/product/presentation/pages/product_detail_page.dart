@@ -66,10 +66,10 @@ class ProductDetailPage extends StatelessWidget {
             Center(
               child: Text(
                 product.name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -200,9 +200,9 @@ class ProductDetailPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,7 +228,7 @@ class ProductDetailPage extends StatelessWidget {
                       'Description',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[500],
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -256,10 +256,10 @@ class ProductDetailPage extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -275,9 +275,9 @@ class ProductDetailPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         children: [
@@ -302,7 +302,7 @@ class ProductDetailPage extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[500],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -313,8 +313,8 @@ class ProductDetailPage extends StatelessWidget {
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: badge
-                        ? (inStock ? Colors.green[700] : Colors.red)
-                        : (valueColor ?? Colors.black87),
+                        ? (inStock ? Colors.green[700] : Theme.of(context).colorScheme.error)
+                        : (valueColor ?? Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
               ],
@@ -340,7 +340,7 @@ class ProductDetailPage extends StatelessWidget {
       bool rightInStock = false}) {
     return Row(
       children: [
-        _detailCard(
+        _detailCard(context,
           label: leftLabel,
           value: leftValue,
           icon: leftIcon,
@@ -349,7 +349,7 @@ class ProductDetailPage extends StatelessWidget {
           inStock: leftInStock,
         ),
         const SizedBox(width: 10),
-        _detailCard(
+        _detailCard(context,
           label: rightLabel,
           value: rightValue,
           icon: rightIcon,
@@ -361,7 +361,7 @@ class ProductDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _detailCard(
+  Widget _detailCard(BuildContext context,
       {required String label,
       required String value,
       IconData? icon,
@@ -372,9 +372,9 @@ class ProductDetailPage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[200]!),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Row(
           children: [
@@ -399,7 +399,7 @@ class ProductDetailPage extends StatelessWidget {
                     label,
                     style: TextStyle(
                       fontSize: 11,
-                      color: Colors.grey[500],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -410,8 +410,8 @@ class ProductDetailPage extends StatelessWidget {
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: badge
-                          ? (inStock ? Colors.green[700] : Colors.red)
-                          : (valueColor ?? Colors.black87),
+                          ? (inStock ? Colors.green[700] : Theme.of(context).colorScheme.error)
+                          : (valueColor ?? Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                 ],
@@ -449,7 +449,7 @@ class ProductDetailPage extends StatelessWidget {
             label: Text(label),
             style: ElevatedButton.styleFrom(
               backgroundColor: color,
-              foregroundColor: Colors.white,
+              foregroundColor: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -492,8 +492,8 @@ class ProductDetailPage extends StatelessWidget {
                 Navigator.pop(innerContext);
                 context.go('/products');
               },
-              child: const Text('Delete',
-                  style: TextStyle(color: Colors.red)),
+              child: Text('Delete',
+                  style: TextStyle(color: Theme.of(context).colorScheme.error)),
             ),
           ],
         );

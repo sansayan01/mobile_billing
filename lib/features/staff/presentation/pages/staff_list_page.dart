@@ -45,7 +45,8 @@ class _StaffListPageState extends State<StaffListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = Colors.grey[100]!;
+    final theme = Theme.of(context);
+    final borderColor = theme.dividerColor;
 
     // Owner check — FAB sirf owner ke liye show karein.
     final isOwner = context.read<AuthBloc>().state is Authenticated &&
@@ -77,7 +78,7 @@ class _StaffListPageState extends State<StaffListPage> {
                 hintText: 'Search staff...',
                 prefixIcon: Icon(
                   Icons.search,
-                  color: Colors.grey[400],
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -91,7 +92,7 @@ class _StaffListPageState extends State<StaffListPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(state.message!),
-                      backgroundColor: Colors.green,
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                     ),
                   );
                 } else if (state.status == StaffStatus.error &&
@@ -99,7 +100,7 @@ class _StaffListPageState extends State<StaffListPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(state.message!),
-                      backgroundColor: Colors.red,
+                      backgroundColor: Theme.of(context).colorScheme.error,
                     ),
                   );
                 }
@@ -119,13 +120,13 @@ class _StaffListPageState extends State<StaffListPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.error_outline,
-                                size: 64, color: Colors.grey[400]),
+                                size: 64, color: theme.colorScheme.onSurfaceVariant),
                             const SizedBox(height: 16),
                             Text(
                               'Error: ${state.message}',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: Colors.grey[600],
+                                color: theme.colorScheme.onSurfaceVariant,
                                 fontSize: 16,
                               ),
                             ),
@@ -139,12 +140,12 @@ class _StaffListPageState extends State<StaffListPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.people_outlined,
-                            size: 64, color: Colors.grey[400]),
+                            size: 64, color: theme.colorScheme.onSurfaceVariant),
                         const SizedBox(height: 16),
                         Text(
                           'No staff found',
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: theme.colorScheme.onSurfaceVariant,
                             fontSize: 16,
                           ),
                         ),
@@ -164,12 +165,12 @@ class _StaffListPageState extends State<StaffListPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.search_off,
-                            size: 64, color: Colors.grey[400]),
+                            size: 64, color: theme.colorScheme.onSurfaceVariant),
                         const SizedBox(height: 16),
                         Text(
                           'No staff match your search.',
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: theme.colorScheme.onSurfaceVariant,
                             fontSize: 16,
                           ),
                         ),
@@ -188,14 +189,14 @@ class _StaffListPageState extends State<StaffListPage> {
                     final user = filteredStaff[index];
                     return Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: theme.colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: borderColor),
-                        boxShadow: const [
+                        boxShadow: [
                           BoxShadow(
-                              color: Colors.black12,
+                              color: theme.shadowColor.withValues(alpha: 0.1),
                               blurRadius: 4,
-                              offset: Offset(0, 2))
+                              offset: const Offset(0, 2))
                         ],
                       ),
                       padding: const EdgeInsets.all(16),
@@ -228,7 +229,7 @@ class _StaffListPageState extends State<StaffListPage> {
                                 Text(
                                   user.email,
                                   style: TextStyle(
-                                    color: Colors.grey[600],
+                                    color: theme.colorScheme.onSurfaceVariant,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -238,12 +239,12 @@ class _StaffListPageState extends State<StaffListPage> {
                                   Row(
                                     children: [
                                       Icon(Icons.phone,
-                                          size: 13, color: Colors.grey[500]),
+                                          size: 13, color: theme.colorScheme.onSurfaceVariant),
                                       const SizedBox(width: 4),
                                       Text(
                                         user.phone!,
                                         style: TextStyle(
-                                          color: Colors.grey[600],
+                                          color: theme.colorScheme.onSurfaceVariant,
                                           fontSize: 13,
                                         ),
                                       ),
@@ -273,12 +274,12 @@ class _StaffListPageState extends State<StaffListPage> {
                           ),
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.red.withValues(alpha: 0.1),
+                              color: theme.colorScheme.error.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: IconButton(
-                              icon: const Icon(Icons.delete_outline_rounded,
-                                  color: Colors.red, size: 20),
+                              icon: Icon(Icons.delete_outline_rounded,
+                                  color: theme.colorScheme.error, size: 20),
                               constraints: const BoxConstraints(),
                               padding: const EdgeInsets.all(8),
                               onPressed: () => _confirmDelete(context, user),
@@ -298,7 +299,7 @@ class _StaffListPageState extends State<StaffListPage> {
           ? FloatingActionButton(
               onPressed: () => context.push('/staff/add'),
               backgroundColor: AppTheme.primaryColor,
-              foregroundColor: Colors.white,
+              foregroundColor: theme.colorScheme.onPrimary,
               shape: const CircleBorder(),
               child: const Icon(Icons.add, size: 32),
             )
@@ -324,8 +325,8 @@ class _StaffListPageState extends State<StaffListPage> {
                 context.read<StaffBloc>().add(DeleteStaffMember(user.id));
                 Navigator.pop(innerContext);
               },
-              child: const Text('Delete',
-                  style: TextStyle(color: Colors.red)),
+              child: Text('Delete',
+                  style: TextStyle(color: Theme.of(context).colorScheme.error)),
             ),
           ],
         );

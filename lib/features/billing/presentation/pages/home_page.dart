@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.error!),
-                backgroundColor: Colors.red,
+                backgroundColor: Theme.of(context).colorScheme.error,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> {
               left: 8,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black45,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45),
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: IconButton(
@@ -420,13 +420,13 @@ class _HomePageState extends State<HomePage> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.inventory_2_outlined, size: 36, color: Colors.grey[400]),
+                                      Icon(Icons.inventory_2_outlined, size: 36, color: Theme.of(context).colorScheme.onSurfaceVariant),
                                       const SizedBox(height: 8),
                                       Text(
                                         searchController.text.trim().isEmpty
                                             ? 'No products found'
                                             : 'No match for "${searchController.text.trim()}"',
-                                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                                        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13),
                                       ),
                                     ],
                                   ),
@@ -452,7 +452,7 @@ class _HomePageState extends State<HomePage> {
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                                           decoration: BoxDecoration(
-                                            border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+                                            border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
                                           ),
                                           child: Row(
                                             children: [
@@ -467,7 +467,7 @@ class _HomePageState extends State<HomePage> {
                                                     const SizedBox(height: 2),
                                                     Text(
                                                       'Code: ${product.barcode}',
-                                                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                                                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                                                     ),
                                                   ],
                                                 ),
@@ -477,7 +477,7 @@ class _HomePageState extends State<HomePage> {
                                                 children: [
                                                   Text(
                                                     'Stock: ${product.stock}',
-                                                    style: TextStyle(fontSize: 12, color: product.stock > 0 ? Colors.grey[700] : Colors.red),
+                                                    style: TextStyle(fontSize: 12, color: product.stock > 0 ? Theme.of(context).colorScheme.onSurfaceVariant : Theme.of(context).colorScheme.error),
                                                   ),
                                                   Text(
                                                     '₹${product.price.toStringAsFixed(2)}',
@@ -514,9 +514,9 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-              color: Colors.black26, blurRadius: 15, offset: Offset(0, -5))
+              color: Theme.of(context).shadowColor, blurRadius: 15, offset: const Offset(0, -5))
         ],
       ),
       child: Column(
@@ -527,7 +527,7 @@ class _HomePageState extends State<HomePage> {
             height: 4,
             margin: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.3),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -550,18 +550,18 @@ class _HomePageState extends State<HomePage> {
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.w600)),
                         Text('$totalItems items total',
-                            style: const TextStyle(
-                                fontSize: 12, color: Colors.grey)),
+                            style: TextStyle(
+                                fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       ],
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const Text('TOTAL PRICE',
+                        Text('TOTAL PRICE',
                             style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.grey,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 letterSpacing: 1.2)),
                         Text(
                           '₹${state.totalAmount.toStringAsFixed(2)}',
@@ -617,23 +617,22 @@ class _HomePageState extends State<HomePage> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child:
-                Icon(Icons.shopping_basket, size: 40, color: Colors.grey[300]),
+            child: Icon(Icons.shopping_basket, size: 40, color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
           ),
           const SizedBox(height: 16),
           const Text('List is empty',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           const SizedBox(height: 8),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 40),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
               'Scanned items will appear here as you scan them with the camera above.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14),
             ),
           ),
         ],
@@ -647,11 +646,11 @@ class _HomePageState extends State<HomePage> {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
+        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: [
+          BoxShadow(color: Theme.of(context).shadowColor, blurRadius: 4, offset: const Offset(0, 2))
         ],
       ),
       padding: const EdgeInsets.all(16),
@@ -676,14 +675,14 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
-                      color: Colors.grey[600]),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ],
             ),
           ),
           Container(
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(8),
             ),
             padding: const EdgeInsets.all(4),
@@ -731,7 +730,7 @@ class _HomePageState extends State<HomePage> {
       borderRadius: BorderRadius.circular(8),
       child: Padding(
         padding: const EdgeInsets.all(4.0),
-        child: Icon(icon, size: 20, color: Colors.grey[600]),
+        child: Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
     );
   }

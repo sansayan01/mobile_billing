@@ -58,7 +58,7 @@ class _DashboardViewState extends State<_DashboardView> {
       body: Container(
         // ignore: prefer_const_constructors
         decoration: BoxDecoration(
-          gradient: AppTheme.aiGradient,
+          gradient: AppTheme.gradientFor(context),
         ),
         child: SafeArea(
           child: RefreshIndicator(
@@ -88,14 +88,17 @@ class _DashboardViewState extends State<_DashboardView> {
                   title: Text(
                     'Dashboard',
                     style: TextStyle(
-                      color: Colors.grey[800],
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   actions: [
                     IconButton(
                       onPressed: () => _showProductSearch(context),
-                      icon: Icon(Icons.search_rounded, color: Colors.grey[700]),
+                      icon: Icon(
+                        Icons.search_rounded,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                       tooltip: 'Search products',
                     ),
                   ],
@@ -191,10 +194,10 @@ class _DashboardViewState extends State<_DashboardView> {
 
   Widget _sectionTitle(String text) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16),
-    child: Text(text, style: AppTextStyles.sectionTitle.copyWith(
+    child: Text(text, style: AppTextStyles.of(context).sectionTitle.copyWith(
       fontSize: 13,
       letterSpacing: 0.8,
-      color: const Color(0xFF787880),
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
     )),
   );
 
@@ -414,7 +417,7 @@ class _RecentTransactions extends StatelessWidget {
         }).toList();
 
         if (isLoading) {
-          return _buildLoadingPlaceholder();
+          return _buildLoadingPlaceholder(context);
         }
 
         return RecentTransactionsCard(
@@ -425,22 +428,30 @@ class _RecentTransactions extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadingPlaceholder() {
+  Widget _buildLoadingPlaceholder(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const darkSurface = AppTheme.darkSurface;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.55),
+        color: isDark
+            ? darkSurface.withValues(alpha: 0.70)
+            : Theme.of(context).colorScheme.surface.withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.2),
+          color: isDark
+              ? darkSurface.withValues(alpha: 0.50)
+              : Theme.of(context).colorScheme.surface.withValues(alpha: 0.35),
           width: 1,
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Recent Transactions', style: AppTextStyles.txnTitle),
+          Text('Recent Transactions',
+              style: AppTextStyles.of(context).txnTitle),
           const SizedBox(height: 20),
           ...List.generate(3, (i) => const Padding(
             padding: EdgeInsets.only(bottom: 12),
@@ -492,7 +503,7 @@ class _SkeletonBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: 0.15),
+        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(radius),
       ),
     );
@@ -628,9 +639,9 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
   ThemeData appBarTheme(BuildContext searchContext) {
     final theme = Theme.of(searchContext);
     return theme.copyWith(
-      inputDecorationTheme: const InputDecorationTheme(
+      inputDecorationTheme: InputDecorationTheme(
         border: InputBorder.none,
-        hintStyle: TextStyle(color: Colors.grey),
+        hintStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
       ),
     );
   }
@@ -674,7 +685,9 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
       return Center(
         child: Text(
           'Type to search products',
-          style: TextStyle(color: Colors.grey[500], fontSize: 15),
+          style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontSize: 15),
         ),
       );
     }
@@ -689,7 +702,9 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
       return Center(
         child: Text(
           'No products found for "$query"',
-          style: TextStyle(color: Colors.grey[500], fontSize: 15),
+          style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontSize: 15),
         ),
       );
     }
@@ -700,9 +715,9 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
       itemBuilder: (context, index) {
         final product = results[index];
         return ListTile(
-          leading: const CircleAvatar(
-            backgroundColor: Color(0x1A6C63FF),
-            child: Icon(Icons.inventory_2_outlined,
+          leading: CircleAvatar(
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+            child: const Icon(Icons.inventory_2_outlined,
                 color: AppTheme.primaryColor, size: 20),
           ),
           title: Text(
@@ -725,7 +740,9 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
                   const SizedBox(width: 8),
                   Text(
                     'Barcode: ${product.barcode}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 ],
               ),
@@ -735,7 +752,7 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
                       .toLowerCase()
                       .contains(queryLower)) ...[
                 const SizedBox(height: 4),
-                _buildDescriptionSnippet(product.description!, queryLower),
+                _buildDescriptionSnippet(context, product.description!, queryLower),
               ],
             ],
           ),
@@ -749,7 +766,9 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
     );
   }
 
-  Widget _buildDescriptionSnippet(String description, String query) {
+  Widget _buildDescriptionSnippet(BuildContext context, String description, String query) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final lowerDesc = description.toLowerCase();
     final index = lowerDesc.indexOf(query);
 
@@ -762,23 +781,24 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: const Color(0xFFFEF3C7),
+        color: isDark ? const Color(0xFF3A2A00) : const Color(0xFFFEF3C7),
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: const Color(0xFFFDE68A)),
+        border: Border.all(
+            color: isDark ? const Color(0xFF5C4000) : const Color(0xFFFDE68A)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.saved_search_rounded,
-              size: 12, color: Color(0xFFD97706)),
+          Icon(Icons.saved_search_rounded,
+              size: 12, color: isDark ? const Color(0xFFFFB800) : const Color(0xFFD97706)),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
               snippet,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF92400E),
+                color: isDark ? const Color(0xFFFFF3CD) : const Color(0xFF92400E),
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

@@ -91,16 +91,16 @@ class _StockMovementPageState extends State<StockMovementPage> {
     }
   }
 
-  Color _chipColor(String changeType) {
+  Color _chipColor(String changeType, ColorScheme colorScheme) {
     switch (changeType.toLowerCase()) {
       case 'add':
       case 'return':
-        return Colors.green;
+        return colorScheme.primary;
       case 'sale':
       case 'remove':
-        return Colors.red;
+        return colorScheme.error;
       default:
-        return Colors.grey;
+        return colorScheme.onSurfaceVariant;
     }
   }
 
@@ -110,6 +110,7 @@ class _StockMovementPageState extends State<StockMovementPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final dateFormat = DateFormat('d MMM yyyy');
 
     return Scaffold(
@@ -134,9 +135,9 @@ class _StockMovementPageState extends State<StockMovementPage> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: theme.colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[300]!),
+                    border: Border.all(color: theme.colorScheme.outlineVariant),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
@@ -176,9 +177,9 @@ class _StockMovementPageState extends State<StockMovementPage> {
                             horizontal: 12,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: theme.colorScheme.surface,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey[300]!),
+                            border: Border.all(color: theme.colorScheme.outlineVariant),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -186,7 +187,7 @@ class _StockMovementPageState extends State<StockMovementPage> {
                               Icon(
                                 Icons.date_range,
                                 size: 16,
-                                color: Colors.grey[600],
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(width: 6),
                               Text(
@@ -206,7 +207,7 @@ class _StockMovementPageState extends State<StockMovementPage> {
                       child: Text(
                         'to',
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 13,
                         ),
                       ),
@@ -220,9 +221,9 @@ class _StockMovementPageState extends State<StockMovementPage> {
                             horizontal: 12,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: theme.colorScheme.surface,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey[300]!),
+                            border: Border.all(color: theme.colorScheme.outlineVariant),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -230,7 +231,7 @@ class _StockMovementPageState extends State<StockMovementPage> {
                               Icon(
                                 Icons.date_range,
                                 size: 16,
-                                color: Colors.grey[600],
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(width: 6),
                               Text(
@@ -280,14 +281,14 @@ class _StockMovementPageState extends State<StockMovementPage> {
                           Icon(
                             Icons.error_outline,
                             size: 64,
-                            color: Colors.grey[400],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(height: 16),
                           Text(
                             state.error ?? 'Something went wrong',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.grey[600],
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -312,7 +313,7 @@ class _StockMovementPageState extends State<StockMovementPage> {
                         Icon(
                           Icons.inventory_2_outlined,
                           size: 72,
-                          color: Colors.grey[300],
+                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -320,7 +321,7 @@ class _StockMovementPageState extends State<StockMovementPage> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[500],
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -328,7 +329,7 @@ class _StockMovementPageState extends State<StockMovementPage> {
                           'Try adjusting your filters',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[400],
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -362,6 +363,7 @@ class _StockMovementPageState extends State<StockMovementPage> {
   }
 
   Widget _buildMovementCard(StockMovement movement) {
+    final theme = Theme.of(context);
     final isPositive = movement.changeType == 'add' ||
         movement.changeType == 'return';
     final quantitySign = isPositive ? '+' : '-';
@@ -372,7 +374,7 @@ class _StockMovementPageState extends State<StockMovementPage> {
         width: double.infinity,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -399,14 +401,14 @@ class _StockMovementPageState extends State<StockMovementPage> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: _chipColor(movement.changeType),
+                    color: _chipColor(movement.changeType, theme.colorScheme),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     movement.changeType,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white,
+                      color: theme.colorScheme.surface,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -423,17 +425,17 @@ class _StockMovementPageState extends State<StockMovementPage> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: isPositive ? Colors.green : Colors.red,
+                    color: isPositive ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.error,
                   ),
                 ),
                 const SizedBox(width: 12),
-                Icon(Icons.person_outline, size: 14, color: Colors.grey[500]),
+                Icon(Icons.person_outline, size: 14, color: theme.colorScheme.onSurfaceVariant),
                 const SizedBox(width: 4),
                 Text(
                   movement.staffName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: Colors.grey,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -443,13 +445,13 @@ class _StockMovementPageState extends State<StockMovementPage> {
             // Date + Notes
             Row(
               children: [
-                Icon(Icons.access_time, size: 14, color: Colors.grey[400]),
+                Icon(Icons.access_time, size: 14, color: theme.colorScheme.onSurfaceVariant),
                 const SizedBox(width: 4),
                 Text(
                   _formatDate(movement.createdAt),
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[500],
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -460,7 +462,7 @@ class _StockMovementPageState extends State<StockMovementPage> {
                 movement.notes!,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[400],
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                   fontStyle: FontStyle.italic,
                 ),
                 maxLines: 2,

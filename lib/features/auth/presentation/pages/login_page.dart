@@ -95,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
                       'Sign in to your account',
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        color: Colors.grey[600],
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 40),
@@ -164,11 +164,11 @@ class _LoginPageState extends State<LoginPage> {
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _onLogin,
                         child: _isLoading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 22,
                                 height: 22,
                                 child: CircularProgressIndicator(
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onPrimary,
                                   strokeWidth: 2.5,
                                 ),
                               )
@@ -189,7 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         Text(
                           "Don't have an account? ",
-                          style: TextStyle(color: Colors.grey[600]),
+                          style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
                         ),
                         GestureDetector(
                           onTap: () {

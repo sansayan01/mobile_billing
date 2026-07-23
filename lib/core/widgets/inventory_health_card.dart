@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
 class InventoryHealthCard extends StatelessWidget {
@@ -23,16 +24,24 @@ class InventoryHealthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final onSurface = theme.colorScheme.onSurface;
+    final onSurfaceVariant = theme.colorScheme.onSurfaceVariant;
+
     if (totalProducts == 0) {
       return _buildGlassContainer(
+        context: context,
+        isDark: isDark,
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Inventory Health',
-                style: AppTextStyles.inventoryTitle,
+                style: AppTextStyles.of(context).inventoryTitle.copyWith(
+                  color: isDark ? Colors.white : onSurface),
               ),
               const SizedBox(height: 16),
               Center(
@@ -41,12 +50,18 @@ class InventoryHealthCard extends StatelessWidget {
                     Icon(
                       Icons.inventory_2_outlined,
                       size: 36,
-                      color: Colors.white.withValues(alpha: 0.5),
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.5)
+                          : onSurfaceVariant.withValues(alpha: 0.5),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'No products yet',
-                      style: AppTextStyles.inventoryEmpty,
+                      style: AppTextStyles.of(context).inventoryEmpty.copyWith(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.6)
+                            : onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -63,6 +78,8 @@ class InventoryHealthCard extends StatelessWidget {
     final outRatio = totalProducts > 0 ? outOfStockCount / totalProducts : 0.0;
 
     return _buildGlassContainer(
+      context: context,
+      isDark: isDark,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -72,9 +89,10 @@ class InventoryHealthCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Inventory Health',
-                  style: AppTextStyles.inventoryTitle,
+                  style: AppTextStyles.of(context).inventoryTitle.copyWith(
+                    color: isDark ? Colors.white : onSurface),
                 ),
                 if (onViewDetails != null)
                   GestureDetector(
@@ -84,7 +102,9 @@ class InventoryHealthCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: Colors.white.withValues(alpha: 0.7),
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.7)
+                            : AppTheme.primaryColor.withValues(alpha: 0.75),
                       ),
                     ),
                   ),
@@ -160,7 +180,8 @@ class InventoryHealthCard extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(
                   'Health: ${_healthInfo.$1}',
-                  style: AppTextStyles.healthLabel.copyWith(color: _healthInfo.$2),
+                  style: AppTextStyles.of(context).healthLabel.copyWith(
+                    color: isDark ? Colors.white : onSurface),
                 ),
               ],
             ),
@@ -170,18 +191,29 @@ class InventoryHealthCard extends StatelessWidget {
     );
   }
 
-  Widget _buildGlassContainer({required Widget child}) {
+  Widget _buildGlassContainer({
+    required BuildContext context,
+    required bool isDark,
+    required Widget child,
+  }) {
+    const darkSurface = AppTheme.darkSurface;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.55),
+        color: isDark
+            ? darkSurface.withValues(alpha: 0.70)
+            : Theme.of(context).colorScheme.surface.withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.2),
+          color: isDark
+              ? darkSurface.withValues(alpha: 0.50)
+              : Theme.of(context).colorScheme.surface.withValues(alpha: 0.35),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: isDark
+                ? darkSurface.withValues(alpha: 0.40)
+                : Colors.black.withValues(alpha: 0.06),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -222,11 +254,11 @@ class _StatItem extends StatelessWidget {
           children: [
             Text(
               '$count',
-              style: AppTextStyles.statCount,
+              style: AppTextStyles.of(context).statCount,
             ),
             Text(
               label,
-              style: AppTextStyles.statLabelSmall,
+              style: AppTextStyles.of(context).statLabelSmall,
             ),
           ],
         ),

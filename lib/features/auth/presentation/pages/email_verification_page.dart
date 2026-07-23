@@ -80,7 +80,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Verification email resent. Check your inbox.'),
-              backgroundColor: Colors.green[700],
+              backgroundColor: theme.colorScheme.primaryContainer,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -132,7 +132,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                     'We sent a verification link to',
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyLarge
-                        ?.copyWith(color: Colors.grey[600]),
+                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -148,7 +148,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                     'Open the link in the same device to confirm your account.',
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium
-                        ?.copyWith(color: Colors.grey[600]),
+                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 36),
 
@@ -158,11 +158,11 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                     child: ElevatedButton.icon(
                       onPressed: _isChecking ? null : _onContinue,
                       icon: _isChecking
-                          ? const SizedBox(
+                          ? SizedBox(
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(
-                                color: Colors.white,
+                                color: theme.colorScheme.onPrimary,
                                 strokeWidth: 2.5,
                               ),
                             )
@@ -203,7 +203,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                     children: [
                       Text(
                         'Already verified? ',
-                        style: TextStyle(color: Colors.grey[600]),
+                        style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
                       ),
                       GestureDetector(
                         onTap: () {

@@ -1,4 +1,3 @@
-import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 // ignore_for_file: prefer_const_constructors
@@ -53,19 +52,19 @@ class _LowStockPageState extends State<LowStockPage> {
       _loadProducts();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid positive number'),
-          backgroundColor: AppTheme.errorColor,
+        SnackBar(
+          content: const Text('Please enter a valid positive number'),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }
   }
 
-  Color _stockColor(int stock) {
-    if (stock == 0) return Colors.red;
-    if (stock <= 3) return Colors.orange;
-    if (stock <= _threshold) return Colors.amber.shade700;
-    return Colors.grey;
+  Color _stockColor(int stock, ColorScheme colorScheme) {
+    if (stock == 0) return colorScheme.error;
+    if (stock <= 3) return colorScheme.tertiary;
+    if (stock <= _threshold) return colorScheme.tertiary;
+    return colorScheme.onSurfaceVariant;
   }
 
   String _formatCurrency(dynamic value) {
@@ -83,6 +82,7 @@ class _LowStockPageState extends State<LowStockPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -159,14 +159,14 @@ class _LowStockPageState extends State<LowStockPage> {
                           Icon(
                             Icons.error_outline,
                             size: 64,
-                            color: Colors.grey[400],
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(height: 16),
                           Text(
                             state.error ?? 'Something went wrong',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.grey[600],
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -191,22 +191,22 @@ class _LowStockPageState extends State<LowStockPage> {
                           width: 80,
                           height: 80,
                           decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.1),
+                            color: theme.colorScheme.primaryContainer,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.check,
                             size: 48,
-                            color: Colors.green,
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
+                        Text(
                           'All products are well-stocked! ✓',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey,
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -227,7 +227,7 @@ class _LowStockPageState extends State<LowStockPage> {
                       'No products match your search',
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.grey[500],
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   );
@@ -254,7 +254,7 @@ class _LowStockPageState extends State<LowStockPage> {
                           width: double.infinity,
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: theme.colorScheme.surface,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
@@ -280,7 +280,7 @@ class _LowStockPageState extends State<LowStockPage> {
                                     style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
-                                      color: _stockColor(stock),
+                                      color: _stockColor(stock, theme.colorScheme),
                                     ),
                                   ),
                                 ],
@@ -290,9 +290,9 @@ class _LowStockPageState extends State<LowStockPage> {
                                 children: [
                                   Text(
                                     _formatCurrency(price),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 14,
-                                      color: Colors.grey,
+                                      color: theme.colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                   const SizedBox(width: 12),
@@ -302,14 +302,14 @@ class _LowStockPageState extends State<LowStockPage> {
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Colors.grey[200],
+                                      color: theme.colorScheme.surfaceContainerHighest,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
                                       category,
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: Colors.grey[700],
+                                        color: theme.colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                                   ),

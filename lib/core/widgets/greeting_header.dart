@@ -21,16 +21,23 @@ class GreetingHeader extends StatelessWidget {
 
     final dateStr = '${now.day} ${_monthName(now.month)}, ${now.year}';
     final initial = userName.isNotEmpty ? userName[0].toUpperCase() : '?';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const darkSurface = AppTheme.darkSurface;
+    final surface = Theme.of(context).colorScheme.surface;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.5),
+          color: isDark
+              ? darkSurface.withValues(alpha: 0.7)
+              : surface.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.2),
+            color: isDark
+                ? darkSurface.withValues(alpha: 0.60)
+                : surface.withValues(alpha: 0.40),
             width: 1.5,
           ),
         ),
@@ -64,7 +71,7 @@ class GreetingHeader extends StatelessWidget {
                       child: Center(
                         child: Text(
                           initial,
-                          style: AppTextStyles.greetingName.copyWith(
+                          style: AppTextStyles.of(context).greetingName.copyWith(
                             fontSize: 24,
                             color: Colors.white,
                           ),
@@ -78,12 +85,12 @@ class GreetingHeader extends StatelessWidget {
                         children: [
                           Text(
                             '$greeting,',
-                            style: AppTextStyles.greetingSubtitle,
+                            style: AppTextStyles.of(context).greetingSubtitle,
                           ),
                           const SizedBox(height: 3),
                           Text(
                             userName,
-                            style: AppTextStyles.greetingName,
+                            style: AppTextStyles.of(context).greetingName,
                           ),
                         ],
                       ),
@@ -101,7 +108,7 @@ class GreetingHeader extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 68),
                   child: Text(
                     dateStr,
-                    style: AppTextStyles.greetingDate,
+                    style: AppTextStyles.of(context).greetingDate,
                   ),
                 ),
               ],

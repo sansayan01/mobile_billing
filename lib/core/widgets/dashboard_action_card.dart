@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
 /// Big prominent action card (e.g. "New Bill").
@@ -24,6 +25,9 @@ class DashboardActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const darkSurface = AppTheme.darkSurface;
+
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: const Duration(milliseconds: 1200),
@@ -48,7 +52,9 @@ class DashboardActionCard extends StatelessWidget {
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
               // Frosted glass background
-              color: Colors.white.withValues(alpha: 0.50),
+              color: isDark
+                  ? darkSurface.withValues(alpha: 0.70)
+                  : Theme.of(context).colorScheme.surface.withValues(alpha: 0.50),
               borderRadius: BorderRadius.circular(20),
               // Subtle coloured border
               border: Border.all(
@@ -63,7 +69,9 @@ class DashboardActionCard extends StatelessWidget {
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
+                  color: isDark
+                      ? darkSurface.withValues(alpha: 0.50)
+                      : Colors.black.withValues(alpha: 0.04),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -88,13 +96,13 @@ class DashboardActionCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: AppTextStyles.actionCardTitle.copyWith(color: color),
+                        style: AppTextStyles.of(context).actionCardTitle.copyWith(color: color),
                       ),
                       if (subtitle != null) ...[
                         const SizedBox(height: 3),
                         Text(
                           subtitle!,
-                          style: AppTextStyles.actionCardSubtitle,
+                          style: AppTextStyles.of(context).actionCardSubtitle,
                         ),
                       ],
                     ],
@@ -141,6 +149,9 @@ class QuickActionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const darkSurface = AppTheme.darkSurface;
+
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: const Duration(milliseconds: 400),
@@ -165,21 +176,29 @@ class QuickActionTile extends StatelessWidget {
                 const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
             decoration: BoxDecoration(
               // Frosted glass background
-              color: Colors.white.withValues(alpha: 0.45),
+              color: isDark
+                  ? darkSurface.withValues(alpha: 0.70)
+                  : Theme.of(context).colorScheme.surface.withValues(alpha: 0.45),
               borderRadius: BorderRadius.circular(20),
               // Subtle white border
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.20),
+                color: isDark
+                    ? darkSurface.withValues(alpha: 0.50)
+                    : Theme.of(context).colorScheme.surface.withValues(alpha: 0.50),
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: isDark
+                      ? darkSurface.withValues(alpha: 0.35)
+                      : Colors.black.withValues(alpha: 0.05),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.02),
+                  color: isDark
+                      ? darkSurface.withValues(alpha: 0.25)
+                      : Colors.black.withValues(alpha: 0.02),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -204,7 +223,7 @@ class QuickActionTile extends StatelessWidget {
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.tileLabel,
+                  style: AppTextStyles.of(context).tileLabel,
                 ),
               ],
             ),

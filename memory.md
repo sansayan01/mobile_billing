@@ -1,6 +1,67 @@
 # Memory — Session Log & Context
 
-## Current Session: 2026-07-23 — Dashboard Redesign Polish (tabular nums, haptics, gradient, spacing) ✅
+## Current Session: 2026-07-23 — Dark Mode: Auth/Category/Report/Shop/Staff Pages ✅
+
+### What Was Done
+1. **15 files updated for dark mode** — all hardcoded Colors replaced with `Theme.of(context)` based colors:
+   - **Auth pages (4)**: `login_page.dart`, `register_page.dart`, `email_verification_page.dart`, `auth_gate.dart` (no changes needed)
+   - **Category pages (2)**: `category_list_page.dart`, `add_edit_category_dialog.dart` (no changes needed)
+   - **Report pages (6)**: `reports_home_page.dart`, `bill_history_page.dart`, `bill_detail_page.dart`, `daily_sales_page.dart`, `low_stock_page.dart`, `stock_movement_page.dart`
+   - **Shop page (1)**: `shop_details_page.dart`
+   - **Staff pages (2)**: `staff_list_page.dart`, `add_staff_page.dart`
+
+### Key Replacements
+- `Colors.white` backgrounds → `theme.colorScheme.surface`
+- `Colors.black87`/`Colors.black` text → `theme.colorScheme.onSurface`
+- `Colors.grey[100]` borders → `theme.dividerColor`
+- `Colors.grey[400/500/600]` meta/icons → `theme.colorScheme.onSurfaceVariant`
+- `Colors.red` snackbars → `theme.colorScheme.error`
+- `Colors.green` success snackbars → `theme.colorScheme.primaryContainer`
+- `Colors.grey[200]` container bg → `theme.colorScheme.surfaceContainerHighest`
+- `Colors.white` CircularProgressIndicator on buttons → `theme.colorScheme.onPrimary`
+- `Colors.grey[300]` borders → `theme.colorScheme.outlineVariant`
+- `Colors.black12` boxShadow kept as-is (works in both modes)
+
+### flutter analyze
+- 0 errors, 0 warnings ✅
+
+---
+
+## Current Session: 2026-07-23 — Full Dark Mode Implementation 🎨🌙
+
+### What Was Done
+A. **Core Theme Infrastructure**
+1. **New: `theme_cubit.dart`** — ThemeMode Cubit with Hive persistence (reads/writes 'theme_mode' key in settings box). Supports light/dark/system modes.
+2. **Updated: `app_theme.dart`** — Added `AppTheme.darkTheme` with full dark color scheme:
+   - `darkBackground: #0E0E18`, `darkSurface: #1A1A2E`, `darkCard: #22223A`, `darkInput: #2A2A42`
+   - Dark `ColorScheme.fromSeed` with `Brightness.dark`, error color `#CF6679`
+   - All widget themes adapted: AppBar, Card, InputDecoration, ElevatedButton, Dialog, SnackBar, FAB, Switch
+   - Added `AppTheme.darkGradient` for dashboard background + `AppTheme.gradientFor(context)` helper
+   - Shared `_baseInputTheme()` avoids color duplication between light/dark
+3. **Updated: `text_styles.dart`** — Added `AppTextStyles.of(context)` that returns `_AdaptiveTextStyles` with colors resolved per brightness (`onSurface`, `onSurfaceVariant`, etc.). Old static consts preserved for backward compat.
+4. **Updated: `service_locator.dart`** — Registered `ThemeCubit` as singleton
+5. **Updated: `main.dart`** — Added `ThemeCubit` BlocProvider, wrapped MaterialApp.router in `BlocBuilder<ThemeCubit, ThemeMode>` with `darkTheme: AppTheme.darkTheme` and `themeMode: themeMode`
+
+B. **Shared Widgets**
+6. **Updated: `glass_card.dart`** — Dynamic tint/border/shadows based on brightness (white glass in light, dark surface glass in dark)
+7. **Updated: `app_drawer.dart`** — All hardcoded `Colors.grey[]` replaced with `theme.colorScheme.onSurface`, `onSurfaceVariant`, `dividerColor`, etc.
+8. **Updated: `settings_page.dart`** — Added "Appearance" section with Dark Mode Switch toggle + all colors made theme-aware
+
+C. **Billing + Product Pages (9 files) — Dark Mode Color Replacements**
+9. **`receipt_preview_page.dart`** — Fixed: `Colors.white` → `surface`, `Colors.black54/45/38/87` → `onSurface`/`onSurfaceVariant`, `Colors.red` snackbars → `colorScheme.error`, `Colors.blue` done btn → `colorScheme.primary`
+10. **`scanner_page.dart`** — Fixed: Permissions prompt uses theme colors, `const` removed from Positioned/TextStyle using `Theme.of(context)`
+11. **`checkout_page.dart`** — Fixed: All `Colors.white` containers → `surface`, `Color(0xFFF8FAFC)` header → `surfaceContainerHighest`, `borderColor` → `dividerColor`, `Color(0xFF0F172A)` totals → `onSurface`, `Colors.red` → `error`, custom price styling uses `tertiary`/`surfaceContainerHighest`, UPI warning uses `errorContainer`
+12. **`home_page.dart`** — Fixed: `Colors.white` card bg → `surface`, `Colors.grey[100]`/`[200]` → `surfaceContainerHighest`/`dividerColor`, `Colors.grey[600]` meta → `onSurfaceVariant`, `Colors.red` snackbar → `error`, empty cart icon uses surfaceContainerHighest. Camera overlay colors kept intentionally (dark for visibility over live feed)
+13. **`product_list_page.dart`** — Fixed: `borderColor` → `dividerColor`, `Colors.white` cards → `surface`, `Color(0xFF0F172A)` → `onSurface`, `Color(0xFFF1F5F9)` placeholder → `surfaceContainerHighest`, `Color(0xFF94A3B8)` icons → `onSurfaceVariant`, `Color(0xFF4C669A)` hint → `primary.withAlpha`
+14. **`add_product_page.dart`** — Fixed: `Colors.grey[100]` bottom sheet bg → `surfaceContainerHighest`, `Colors.black` price prefix → `onSurface`, `Colors.black87` → `onSurface`, bottom sheet bg `Colors.white` → `surface`, `Colors.red` snackbar → `error`, `const` removed where Theme.of used
+15. **`edit_product_page.dart`** — Fixed: `Colors.black` price prefix → `onSurface`, `Colors.grey[100]` bottom sheet → `surfaceContainerHighest`, `Colors.black87` → `onSurface`, bottom sheet `Colors.white` → `surface`
+16. **`product_detail_page.dart`** — Fixed: `Colors.black87` product name → `onSurface`, `Colors.grey[200]` containers → `surface` + `dividerColor`, `Colors.grey[500]` labels → `onSurfaceVariant`, `Colors.red` delete → `error`, `Colors.white` → `surface`. `_placeholder()` reverted to hardcoded grey (no build context available in errorBuilder)
+17. **`qr_generator_page.dart`** — Fixed: QR container `Colors.white` → `surface`, `Colors.grey[200]` placeholder → themed, `Colors.black` QR dot → `onSurface`, `Colors.grey[600]` barcode → `onSurfaceVariant`, button foregrounds → `surface`, `Colors.green` snackbar → `primary`
+
+### Design System Changes
+- `design.md` updated with full dark mode documentation
+- Dark mode toggle: Settings page → Appearance → Dark Mode toggle
+- All GlassCard, PremiumStatCard, DashboardActionCard auto-adapt to dark
 
 ### What Was Done
 1. **Removed dead notification icon** from AppBar — sirf search icon rah gaya

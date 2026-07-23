@@ -70,7 +70,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
           if (!connected) {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Failed to connect to printer'), backgroundColor: Colors.red),
+                SnackBar(content: const Text('Failed to connect to printer'), backgroundColor: Theme.of(context).colorScheme.error),
               );
             }
             return;
@@ -78,7 +78,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Printer not configured'), backgroundColor: Colors.red),
+              SnackBar(content: const Text('Printer not configured'), backgroundColor: Theme.of(context).colorScheme.error),
             );
           }
           return;
@@ -115,7 +115,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Print failed: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Print failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     }
@@ -164,7 +164,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('WhatsApp not available: ${e.message}'),
-                backgroundColor: Colors.red,
+                backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
           }
@@ -182,7 +182,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to share: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed to share: $e'), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     } finally {
@@ -219,7 +219,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
             child: Container(
               constraints: const BoxConstraints(maxWidth: 360),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(4),
                 boxShadow: [
                   BoxShadow(
@@ -249,13 +249,13 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                         ),
                         const SizedBox(height: 6),
                         if (widget.address1.isNotEmpty)
-                          Text(widget.address1, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, color: Colors.black54)),
+                          Text(widget.address1, textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                         if (widget.address2.isNotEmpty)
-                          Text(widget.address2, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, color: Colors.black54)),
+                          Text(widget.address2, textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                         if (widget.phone.isNotEmpty)
-                          Text(widget.phone, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, color: Colors.black54)),
+                          Text(widget.phone, textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                         const SizedBox(height: 6),
-                        Text(dateStr, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12, color: Colors.black45)),
+                        Text(dateStr, textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       ],
                     ),
                   ),
@@ -269,7 +269,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                   if (widget.billId.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 4, left: 24, right: 24, bottom: 4),
-                      child: Text('Bill ID: ${widget.billId}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: Colors.black38, fontStyle: FontStyle.italic)),
+                      child: Text('Bill ID: ${widget.billId}', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant, fontStyle: FontStyle.italic)),
                     ),
 
                   // Customer info
@@ -278,9 +278,9 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 2),
                       child: Row(
                         children: [
-                          const Text('Customer:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87)),
+                          Text('Customer:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
                           const SizedBox(width: 8),
-                          Expanded(child: Text(widget.customerName!, style: const TextStyle(fontSize: 13, color: Colors.black54))),
+                          Expanded(child: Text(widget.customerName!, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant))),
                         ],
                       ),
                     ),
@@ -289,9 +289,9 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 2),
                       child: Row(
                         children: [
-                          const Text('Phone:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87)),
+                          Text('Phone:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
                           const SizedBox(width: 8),
-                          Expanded(child: Text(widget.customerPhone!, style: const TextStyle(fontSize: 13, color: Colors.black54))),
+                          Expanded(child: Text(widget.customerPhone!, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant))),
                         ],
                       ),
                     ),
@@ -302,14 +302,14 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                   ),
 
                   // Items table header
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Row(
                       children: [
-                        Expanded(flex: 3, child: Text('Item', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.8, color: Colors.black45))),
-                        Expanded(flex: 1, child: Text('Qty', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.8, color: Colors.black45), textAlign: TextAlign.center)),
-                        Expanded(flex: 2, child: Text('Price', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.8, color: Colors.black45), textAlign: TextAlign.right)),
-                        Expanded(flex: 2, child: Text('Total', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.8, color: Colors.black45), textAlign: TextAlign.right)),
+                        Expanded(flex: 3, child: Text('Item', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.8, color: Theme.of(context).colorScheme.onSurfaceVariant))),
+                        Expanded(flex: 1, child: Text('Qty', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.8, color: Theme.of(context).colorScheme.onSurfaceVariant), textAlign: TextAlign.center)),
+                        Expanded(flex: 2, child: Text('Price', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.8, color: Theme.of(context).colorScheme.onSurfaceVariant), textAlign: TextAlign.right)),
+                        Expanded(flex: 2, child: Text('Total', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.8, color: Theme.of(context).colorScheme.onSurfaceVariant), textAlign: TextAlign.right)),
                       ],
                     ),
                   ),
@@ -325,21 +325,21 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                             flex: 3,
                             child: Text(
                               item.product.name,
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87),
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           Expanded(
                             flex: 1,
-                            child: Text('${item.quantity}x', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Colors.grey[700]!)),
+                            child: Text('${item.quantity}x', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                           ),
                           Expanded(
                             flex: 2,
-                            child: Text('₹${_formatPrice(item.unitPrice)}', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, color: Colors.grey[700]!)),
+                            child: Text('₹${_formatPrice(item.unitPrice)}', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                           ),
                           Expanded(
                             flex: 2,
-                            child: Text('₹${_formatPrice(item.total)}', textAlign: TextAlign.right, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87)),
+                            child: Text('₹${_formatPrice(item.total)}', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
                           ),
                         ],
                       ),
@@ -358,8 +358,8 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Subtotal', style: TextStyle(fontSize: 13, color: Colors.black54)),
-                        Text('₹${_formatPrice(baseTotal)}', style: const TextStyle(fontSize: 13, color: Colors.black54)),
+                        Text('Subtotal', style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                        Text('₹${_formatPrice(baseTotal)}', style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       ],
                     ),
                   ),
@@ -371,9 +371,9 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                         children: [
                           Text(
                             widget.discountIsPercentage ? 'Discount (${widget.discount.toStringAsFixed(0)}%)' : 'Discount',
-                            style: const TextStyle(fontSize: 13, color: Colors.green),
+                            style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary),
                           ),
-                          Text('-₹${_formatPrice(discountAmount)}', style: const TextStyle(fontSize: 13, color: Colors.green)),
+                          Text('-₹${_formatPrice(discountAmount)}', style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary)),
                         ],
                       ),
                     ),
@@ -399,12 +399,12 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     child: Column(
                       children: [
-                        Text('Payment: ${widget.paymentMethod.toUpperCase()}', style: const TextStyle(fontSize: 13, color: Colors.black45)),
+                        Text('Payment: ${widget.paymentMethod.toUpperCase()}', style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                         const SizedBox(height: 6),
                         Text('Thank you for your purchase!', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Theme.of(context).primaryColor)),
                         if (widget.footer.isNotEmpty) ...[
                           const SizedBox(height: 4),
-                          Text(widget.footer, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12, color: Colors.black45)),
+                          Text(widget.footer, textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                         ],
                       ],
                     ),
@@ -431,7 +431,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                     label: const Text('Print'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
+                      foregroundColor: Theme.of(context).colorScheme.surface,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -452,7 +452,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                     label: Text(_isSharing ? 'Sending...' : 'WhatsApp'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF25D366),
-                      foregroundColor: Colors.white,
+                      foregroundColor: Theme.of(context).colorScheme.surface,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -471,8 +471,8 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                 icon: const Icon(Icons.check_circle, size: 18),
                 label: const Text('Done'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.surface,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),

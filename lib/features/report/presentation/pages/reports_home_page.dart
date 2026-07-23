@@ -70,17 +70,18 @@ class _ReportsHomePageState extends State<ReportsHomePage> {
     required Color color,
     required VoidCallback onTap,
   }) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: Colors.black12,
+              color: theme.shadowColor.withValues(alpha: 0.1),
               blurRadius: 4,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -101,7 +102,7 @@ class _ReportsHomePageState extends State<ReportsHomePage> {
             Text(
               subtitle,
               style: TextStyle(
-                color: Colors.grey[600],
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 12,
               ),
               textAlign: TextAlign.center,

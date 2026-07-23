@@ -91,9 +91,9 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
             if (state is ShopLoaded) {
               _updateControllers(state.shop);
             } else if (state is ShopOperationSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Shop details saved!'),
-                  backgroundColor: Colors.green));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: const Text('Shop details saved!'),
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer));
               if (Navigator.of(context).canPop()) {
                 context.pop();
               } else {
@@ -101,7 +101,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
               }
             } else if (state is ShopError) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(state.message), backgroundColor: Colors.red));
+                  content: Text(state.message), backgroundColor: Theme.of(context).colorScheme.error));
             }
           },
           buildWhen: (previous, current) =>
@@ -130,7 +130,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
                     ),
                     Text(
                       'These details will appear on your digital and printed receipts.',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     const SizedBox(height: 24),
                     const InputLabel(text: 'Shop Name'),
@@ -173,7 +173,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
                         const InputLabel(text: 'Receipt Footer Text'),
                         Text('Max 150 chars',
                             style: TextStyle(
-                                fontSize: 11, color: Colors.grey[400])),
+                                fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       ],
                     ),
                     _buildTextField(
