@@ -122,13 +122,13 @@ class RecentTransactionsCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Recent Transactions',
                     style: AppTextStyles.txnTitle,
                   ),
                   GestureDetector(
                     onTap: onViewAll,
-                    child: Text(
+                    child: const Text(
                       'See All',
                       style: AppTextStyles.txnSeeAll,
                     ),
@@ -259,16 +259,14 @@ class RecentTransactionsCard extends StatelessWidget {
               color: Colors.grey.shade400,
             ),
             const SizedBox(height: 10),
-            Text(
+            const Text(
               'No transactions yet',
               style: AppTextStyles.txnEmptyTitle,
-
             ),
             const SizedBox(height: 4),
-            Text(
+            const Text(
               'Completed bills will appear here',
               style: AppTextStyles.txnEmptySubtitle,
-
             ),
           ],
         ),

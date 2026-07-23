@@ -30,7 +30,7 @@ class InventoryHealthCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Inventory Health',
                 style: AppTextStyles.inventoryTitle,
               ),
@@ -44,7 +44,7 @@ class InventoryHealthCard extends StatelessWidget {
                       color: Colors.white.withValues(alpha: 0.5),
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    const Text(
                       'No products yet',
                       style: AppTextStyles.inventoryEmpty,
                     ),
@@ -72,7 +72,7 @@ class InventoryHealthCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Inventory Health',
                   style: AppTextStyles.inventoryTitle,
                 ),

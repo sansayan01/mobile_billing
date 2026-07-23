@@ -448,7 +448,7 @@ class _RecentTransactions extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Recent Transactions', style: AppTextStyles.txnTitle),
+          const Text('Recent Transactions', style: AppTextStyles.txnTitle),
           const SizedBox(height: 20),
           ...List.generate(3, (i) => const Padding(
             padding: EdgeInsets.only(bottom: 12),

@@ -51,7 +51,7 @@ class SalesTrendCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Title ──
-            Text(
+            const Text(
               'Weekly Sales Trend',
               style: AppTextStyles.trendTitle,
             ),
@@ -101,7 +101,7 @@ class SalesTrendCard extends StatelessWidget {
             color: _primaryColor.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'No data yet',
             style: AppTextStyles.trendPlaceholder,
           ),
