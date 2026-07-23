@@ -110,22 +110,40 @@
 - Icon in errorColor 15% bg chip (radius 10), icon size 20
 - Text: 14px w600 errorColor; chevron: errorColor 70%, size 20
 
+### Analytics Widgets (fl_chart based)
+- **PaymentDonutChart** (`lib/core/widgets/payment_donut_chart.dart`): Pie/donut chart showing UPI/Cash/Card/Credit breakdown with percentage labels + legend with bill counts
+- **TopProductsBarChart** (`lib/core/widgets/top_products_bar_chart.dart`): Vertical bar chart showing top 5 products by quantity sold, bars color-coded by revenue (purple→green gradient), tooltips on tap showing product name + units + revenue
+- **MonthlyTrendCard** (`lib/core/widgets/monthly_tonthly_trend_card.dart`): FL LineChart showing 30-day sales trend with curved line, gradient fill below, interactive tooltips, total/avg stat chips
+- **StaffPerformanceCard** (`lib/core/widgets/staff_performance_card.dart`): Owner-only card showing staff leaderboard with rank badges (#1 gold), avatar circles with initials, animated progress bars by revenue, bill count metadata
+
 ### Dashboard Screen — Liquid Glass Layout
 - Background: 4-color gradient (lavender → blue → purple → green)
 - `SliverAppBar` with transparent bg, floating + snap
 - Greeting: `GreetingHeader` glass card (avatar + name + date)
 - Low-stock alert: glass error banner (tappable → /reports/low-stock)
 - Today's Sales: 4 `PremiumStatCard` glass cards in 2×2 grid
-- Weekly Trend: `SalesTrendCard` glass card (7-day chart from billHistory)
+- Quick Actions: 1 `DashboardActionCard` glass ("New Bill") + 3-col `QuickActionTile` glass grid (6-7 tiles)
+- Weekly Trend: `SalesTrendCard` glass card (7-day CustomPainter bezier chart from billHistory)
+- Payment Methods: `PaymentDonutChart` glass card (pie chart from billHistory aggregation)
+- Top Products: `TopProductsBarChart` glass card (bar chart from billHistory items aggregation)
+- Monthly Trend: `MonthlyTrendCard` glass card (30-day FL line chart from salesRange)
 - Recent Transactions: `RecentTransactionsCard` glass card (last 5 bills)
 - Inventory Health: `InventoryHealthCard` glass card (product stats from ProductBloc)
-- Quick Actions: 1 `DashboardActionCard` glass ("New Bill") + 3-col `QuickActionTile` glass grid (6-7 tiles)
+- Staff Performance: `StaffPerformanceCard` glass card (owner-only, from billHistory staff aggregation)
+
+### Analytics Data Sources
+- Payment donut + top products + staff: derived from `ReportBloc.billHistory` (client-side aggregation in widget)
+- Monthly trend: derived from `ReportBloc.salesRange` (fetched via `LoadSalesRange` event, 30-day window)
+- All analytics widgets use the same glass container style as existing dashboard cards (consistent border radius 20, dual shadows, theme-aware colors)
 
 ### Animations
 - DashboardActionCard: scale 0.98→1.0 on mount (1200ms)
 - QuickActionTile: scale 0.85→1.0 stagger (400ms easeOutBack)
 - All stat cards: glass effect renders instantly (no animation to avoid layout jitter)
 - SalesTrendCard: CustomPainter renders smooth bezier curve on mount
+- MonthlyTrendCard: FL LineChart with animated curve entrance
+- TopProductsBarChart: FL BarChart with colored bars (revenue-based hue)
+- PaymentDonutChart: FL PieChart with center hole (donut style)
 
 ### Scanner Screen
 - Camera occupies top 40% of screen

@@ -1,5 +1,47 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-07-24 — Advanced Dashboard Analytics (fl_chart + 4 new widgets) ✅
+
+### What Was Done
+1. **Added `fl_chart: ^0.69.0`** to pubspec.yaml — zero chart libraries earlier, now have pie/bar/line charts
+2. **4 new analytics widgets created** in `lib/core/widgets/`:
+   - `payment_donut_chart.dart` — Pie chart: UPI/Cash/Card/Credit breakdown with percentages + bill counts
+   - `top_products_bar_chart.dart` — Horizontal-ish bar chart: top 5 products by quantity sold, color-coded by revenue
+   - `monthly_trend_card.dart` — FL line chart: 30-day sales trend with tooltips + total/avg chips
+   - `staff_performance_card.dart` — Progress bars + rank badges: staff leaderboard by revenue (owner-only)
+3. **Dashboard layout updated** (`dashboard_page.dart`):
+   - Quick Actions moved UP — right after Today's Sales, before Weekly Trend
+   - Payment Donut + Top Products added between Weekly Trend and Inventory Health
+   - Monthly Trend + Staff Performance added after Recent Transactions
+   - `LoadSalesRange` event added to initState + onRefresh for 30-day data
+4. **All helpers made public** — `ProductSales`, `ProductAggregator`, `StaffStat`, `StaffAggregator` renamed from private (no `_`) so dashboard can use them
+5. **Fixed lint errors**: pct scope, private types in public API, num→int type mismatch, unused variables, unnecessary toList
+
+### Dashboard Layout (final)
+```
+GreetingHeader
+Low Stock Banner
+Today's Sales (4 PremiumStatCards)
+Quick Actions (DashboardActionCard + 6 tiles)
+This Week (SalesTrendCard — 7-day CustomPainter)
+Payment Methods Donut (fl_chart Pie)
+Top Products Bar Chart (fl_chart Bar)
+Inventory Health
+Recent Transactions
+Monthly Trend (fl_chart Line — 30-day)
+Staff Performance (owner-only)
+```
+
+### Analytics Data Pipeline
+- Payment donut + top products: derived from `ReportBloc.billHistory` (client-side aggregation)
+- Monthly trend: derived from `ReportBloc.salesRange` (fetch via `LoadSalesRange`)
+- Staff performance: derived from `ReportBloc.billHistory` + owner-only guard
+
+### flutter analyze
+- 0 errors, 0 warnings ✅ (only 2 pre-existing info on add/edit product pages)
+
+---
+
 ## Current Session: 2026-07-23 — Dark Mode: Auth/Category/Report/Shop/Staff Pages ✅
 
 ### What Was Done

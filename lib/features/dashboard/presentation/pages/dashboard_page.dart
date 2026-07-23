@@ -6,6 +6,10 @@ import 'package:billing_app/core/widgets/inventory_health_card.dart';
 import 'package:billing_app/core/widgets/premium_stat_card.dart';
 import 'package:billing_app/core/widgets/recent_transactions_card.dart';
 import 'package:billing_app/core/widgets/sales_trend_card.dart';
+import 'package:billing_app/core/widgets/payment_donut_chart.dart';
+import 'package:billing_app/core/widgets/top_products_bar_chart.dart';
+import 'package:billing_app/core/widgets/monthly_trend_card.dart';
+import 'package:billing_app/core/widgets/staff_performance_card.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:billing_app/features/product/presentation/bloc/product_bloc.dart';
@@ -49,7 +53,8 @@ class _DashboardViewState extends State<_DashboardView> {
     context.read<ReportBloc>()
       ..add(LoadDailySales(now))
       ..add(const LoadLowStockProducts(DashboardPage._lowStockThreshold))
-      ..add(LoadBillHistory(from: weekAgo, to: now, page: 1));
+      ..add(LoadBillHistory(from: weekAgo, to: now, page: 1))
+      ..add(LoadSalesRange(from: DateTime(now.year, now.month, 1), to: now));
   }
 
   @override
@@ -68,7 +73,8 @@ class _DashboardViewState extends State<_DashboardView> {
               context.read<ReportBloc>()
                 ..add(LoadDailySales(now))
                 ..add(const LoadLowStockProducts(DashboardPage._lowStockThreshold))
-                ..add(LoadBillHistory(from: weekAgo, to: now, page: 1));
+                ..add(LoadBillHistory(from: weekAgo, to: now, page: 1))
+                ..add(LoadSalesRange(from: DateTime(now.year, now.month, 1), to: now));
               await Future<void>.delayed(const Duration(milliseconds: 600));
             },
             child: CustomScrollView(
@@ -135,12 +141,6 @@ class _DashboardViewState extends State<_DashboardView> {
                       _sectionTitle("Today's Sales"),
                       const SizedBox(height: 16),
                       const _TodaysSales(),
-                      const SizedBox(height: 20),
-
-                      // ── Weekly Trend ──
-                      _sectionTitle('This Week'),
-                      const SizedBox(height: 16),
-                      const _WeeklyTrend(),
                       const SizedBox(height: 24),
 
                       // ── Quick Actions ──
@@ -163,12 +163,34 @@ class _DashboardViewState extends State<_DashboardView> {
                       ),
                       const SizedBox(height: 24),
 
+                      // ── Weekly Trend ──
+                      _sectionTitle('This Week'),
+                      const SizedBox(height: 16),
+                      const _WeeklyTrend(),
+                      const SizedBox(height: 24),
+
+                      // ── Payment Methods Donut ──
+                      const _PaymentMethodsSection(),
+                      const SizedBox(height: 24),
+
+                      // ── Top Products Bar Chart ──
+                      const _TopProductsSection(),
+                      const SizedBox(height: 24),
+
                       // ── Inventory Health ──
                       const _InventoryHealth(),
                       const SizedBox(height: 24),
 
                       // ── Recent Transactions ──
                       const _RecentTransactions(),
+                      const SizedBox(height: 24),
+
+                      // ── Monthly / 30-Day Trend ──
+                       const _MonthlyTrendSection(),
+                      const SizedBox(height: 24),
+
+                      // ── Staff Performance ──
+                      const _StaffPerformanceSection(),
                       const SizedBox(height: 16),
                     ], // Column children
                   ), // Column
@@ -506,6 +528,107 @@ class _SkeletonBox extends StatelessWidget {
         color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(radius),
       ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Payment Methods Donut Chart
+// ═══════════════════════════════════════════════════════════════════════
+
+class _PaymentMethodsSection extends StatelessWidget {
+  const _PaymentMethodsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ReportBloc, ReportState>(
+      buildWhen: (a, b) => a.billHistory != b.billHistory,
+      builder: (context, state) {
+        final Map<String, double> totals = {};
+        final Map<String, int> counts = {};
+        for (final bill in state.billHistory) {
+          final method = bill.paymentMethod.isEmpty ? 'Unknown' : bill.paymentMethod;
+          totals[method] = (totals[method] ?? 0) + bill.grandTotal;
+          counts[method] = (counts[method] ?? 0) + 1;
+        }
+        return PaymentDonutChart(paymentTotals: totals, paymentCounts: counts);
+      },
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Top Products Bar Chart
+// ═══════════════════════════════════════════════════════════════════════
+
+class _TopProductsSection extends StatelessWidget {
+  const _TopProductsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ReportBloc, ReportState>(
+      buildWhen: (a, b) => a.billHistory != b.billHistory,
+      builder: (context, state) {
+        final products = ProductAggregator.topProducts(state.billHistory, limit: 5);
+        return TopProductsBarChart(products: products);
+      },
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Monthly / 30-Day Sales Trend
+// ═══════════════════════════════════════════════════════════════════════
+
+class _MonthlyTrendSection extends StatelessWidget {
+  const _MonthlyTrendSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ReportBloc, ReportState>(
+      buildWhen: (a, b) => a.salesRange != b.salesRange,
+      builder: (context, state) {
+        final range = state.salesRange;
+        if (range.isEmpty) {
+          return const MonthlyTrendCard(values: [], labels: []);
+        }
+        final now = DateTime.now();
+        final thirtyDaysAgo = now.subtract(const Duration(days: 29));
+        final filtered = range
+            .where((d) => d.date.isAfter(thirtyDaysAgo.subtract(const Duration(days: 1))))
+            .toList();
+        filtered.sort((a, b) => a.date.compareTo(b.date));
+
+        final values = filtered.map((d) => d.totalSales).toList();
+        final labels = filtered.map((d) => DateFormat('dd MMM').format(d.date)).toList();
+        return MonthlyTrendCard(values: values, labels: labels);
+      },
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Staff Performance Leaderboard
+// ═══════════════════════════════════════════════════════════════════════
+
+class _StaffPerformanceSection extends StatelessWidget {
+  const _StaffPerformanceSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthBloc, AuthState>(
+      buildWhen: (a, b) => a is Authenticated && b is Authenticated && a.user.role != b.user.role,
+      builder: (context, authState) {
+        final isOwner = authState is Authenticated && authState.user.role == 'owner';
+        if (!isOwner) return const SizedBox.shrink();
+        return BlocBuilder<ReportBloc, ReportState>(
+          buildWhen: (a, b) => a.billHistory != b.billHistory,
+          builder: (context, state) {
+            final staff = StaffAggregator.weeklyPerformance(state.billHistory, limit: 5);
+            return StaffPerformanceCard(staff: staff);
+          },
+        );
+      },
     );
   }
 }

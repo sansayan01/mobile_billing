@@ -70,6 +70,13 @@
 - [x] Scanner moved to `/scan` (`/scan/checkout`, `/scan/scanner` children)
 - [x] Reusable widgets: StatCard, DashboardActionCard, QuickActionTile
 - [x] Improved AppDrawer: profile header (AuthBloc), working logout (LogoutRequested), sectioned menu + Dashboard link
+- [x] **Advanced Visual Analytics** (fl_chart added):
+  - [x] Payment Methods Donut Chart — UPI/Cash/Card/Credit breakdown with percentages
+  - [x] Top Products Bar Chart — top 5 products by quantity sold, revenue-colored bars
+  - [x] Monthly Trend Card — 30-day sales trend line chart with FL LineChart
+  - [x] Staff Performance Card — owner-only leaderboard with rank badges + progress bars
+  - [x] Quick Actions repositioned: moved up right after Today's Sales section
+  - [x] `LoadSalesRange` event triggered on dashboard init + pull-to-refresh for 30-day data
 
 ---
 

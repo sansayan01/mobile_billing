@@ -58,6 +58,13 @@ Flutter-based **billing + inventory management** app for a phone shop (phones, h
 - [x] **Bill History** — search by customer name/bill ID, payment method filter (Cash/UPI/Card), discount shown in cards, pagination
 - [x] **Bill Detail** — individual items list (qty + name + price + total), Amount Summary, Print Receipt (thermal), View Receipt (preview page with print + WhatsApp)
 - [x] **Full Bill Edit** (owner-only) — edit customer info, payment method, items (qty +/-, remove, add new via product search), automatic stock adjustment + inventory logging
+- [x] **Dashboard Visual Analytics** (fl_chart):
+  - [x] Payment Methods Donut — UPI/Cash/Card/Credit % breakdown with bill counts
+  - [x] Top Products Bar Chart — top 5 products by quantity sold, revenue-colored bars
+  - [x] Monthly Sales Trend — 30-day line chart with interactive tooltips
+  - [x] Staff Performance — owner-only leaderboard with rank badges + progress bars
+  - [x] Quick Actions repositioned: below Today's Sales, above Weekly Trend
+  - [x] Analytics data auto-refreshes on pull-to-refresh
 
 ### 8. Staff Management (Owner-only)
 - [x] Owner can **create staff account** (Supabase Auth signUp + shop_id link) with name, email, phone, password

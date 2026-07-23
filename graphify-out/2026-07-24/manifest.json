@@ -385,8 +385,8 @@
     "semantic_hash": "1ebf58eeee52c3e600609117b929b415"
   },
   "RPD.md": {
-    "mtime": 1784833075.98719,
-    "ast_hash": "3406b6dbdeabca7083a8ad6e70022235",
+    "mtime": 1784747395.8019266,
+    "ast_hash": "45b51d9b4ff8f89ecda6d126049248cd",
     "semantic_hash": ""
   },
   "analysis_options.yaml": {
@@ -400,8 +400,8 @@
     "semantic_hash": "dd51899fcf8e4fce686c8d0788715b6e"
   },
   "design.md": {
-    "mtime": 1784832546.8458073,
-    "ast_hash": "530111c0bef43fe5a1be736318ad16ce",
+    "mtime": 1784818877.5474021,
+    "ast_hash": "c460f35bd0cac66bb2a095359b1f8955",
     "semantic_hash": ""
   },
   "ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md": {
@@ -410,19 +410,19 @@
     "semantic_hash": "e175e436acacf76c814d83532d0b662c"
   },
   "memory.md": {
-    "mtime": 1784832479.653994,
-    "ast_hash": "09ada6c9df7e5e959d1dbc7ee8996d98",
+    "mtime": 1784821247.5074677,
+    "ast_hash": "ebeb5f49a37228ba3aa54d23f68fa915",
     "semantic_hash": ""
   },
   "phases.md": {
-    "mtime": 1784832941.1462755,
-    "ast_hash": "31512711d992140102192bacc4efbbf6",
+    "mtime": 1784747397.263,
+    "ast_hash": "75c81bb117070e6b1902cd57121e1b42",
     "semantic_hash": ""
   },
   "pubspec.yaml": {
-    "mtime": 1784828789.0469236,
-    "ast_hash": "6de70eae0db5bb793d79b45e3054dc5d",
-    "semantic_hash": ""
+    "mtime": 1784591971.0902436,
+    "ast_hash": "66161597871d91e71906b575c7be25fd",
+    "semantic_hash": "66161597871d91e71906b575c7be25fd"
   },
   "rules.md": {
     "mtime": 1784243589.6922345,
@@ -725,8 +725,8 @@
     "semantic_hash": ""
   },
   "lib/features/dashboard/presentation/pages/dashboard_page.dart": {
-    "mtime": 1784832313.8937993,
-    "ast_hash": "b5d9a4933c966246e3bb42f992613f80",
+    "mtime": 1784825322.6569104,
+    "ast_hash": "5880eca3eff8d7739c76d4e2a8f0a6e5",
     "semantic_hash": ""
   },
   "lib/core/widgets/app_back_button.dart": {
@@ -887,26 +887,6 @@
   "lib/core/theme/theme_cubit.dart": {
     "mtime": 1784818667.3660967,
     "ast_hash": "d4de6809d4cd9aba8c61a8bb7db50218",
-    "semantic_hash": ""
-  },
-  "lib/core/widgets/monthly_trend_card.dart": {
-    "mtime": 1784829572.7309494,
-    "ast_hash": "43b36de19f2e917628f998c77d8e9353",
-    "semantic_hash": ""
-  },
-  "lib/core/widgets/payment_donut_chart.dart": {
-    "mtime": 1784830894.6184504,
-    "ast_hash": "4c56aeba53b4e72ce9e87976c449205b",
-    "semantic_hash": ""
-  },
-  "lib/core/widgets/staff_performance_card.dart": {
-    "mtime": 1784832097.0612128,
-    "ast_hash": "d6f5cea15058bcf258a8dd8167839f0c",
-    "semantic_hash": ""
-  },
-  "lib/core/widgets/top_products_bar_chart.dart": {
-    "mtime": 1784831521.3156638,
-    "ast_hash": "3b755d161c700f41b7ca5f65346e567c",
     "semantic_hash": ""
   }
 }
