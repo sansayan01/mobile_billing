@@ -486,6 +486,35 @@ C. **Billing + Product Pages (9 files) — Dark Mode Color Replacements**
 
 ---
 
+## Current Session: 2026-07-28 — README.md Update ✅
+
+### What Was Done
+1. **README.md completely rewritten** — old version was missing Supabase, Realtime, staff management, dashboard analytics, QR code generation, and all features added after initial scaffold
+2. **Updated content includes**:
+   - Full feature list (scanner, cart, thermal printing, UPI QR, inventory, staff mgmt, analytics)
+   - Complete tech stack table with all dependencies
+   - Feature structure with all 11 features listed (auth, billing, product, category, shop, settings, report, staff, dashboard)
+   - 3-Tier Role System (Super Admin / Owner / Staff) with access table
+   - Shop Isolation explanation (3 layers: RLS, repo filtering, BLoC propagation)
+   - Real-time sync details
+   - Dashboard analytics widget table
+   - Updated getting-started guide with all migrations listed
+   - Contributing guidelines updated with current conventions
+   - Project docs reference table
+3. **Old README gaps fixed**:
+   - Was Hive-only, no mention of Supabase cloud sync
+   - No staff management section
+   - No QR code generation feature
+   - No analytics/dashboard section
+   - No real-time sync
+   - Missing features: category CRUD, shop settings, report system, 3-tier roles
+
+### What Was NOT Changed
+- CLAUDE.md, RPD.md, architecture.md, phases.md, design.md, rules.md — these are authoritative docs
+- No code changes, no dependency changes
+
+---
+
 ## Current Session: 2026-07-21 — Fixed Category Switch Animation Glitch ✅
 
 ### What Was Done

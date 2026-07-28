@@ -1,101 +1,200 @@
-# 🛒 Mobile POS & Billing App 
+# 🛒 Mobile POS & Billing App
 
-A feature-rich, high-performance offline-first billing and Point of Sale (POS) application built with Flutter. Designed for seamless retail checkout operations featuring barcode scanning, thermal Bluetooth printing, and robust local data persistence.
+A feature-rich, offline-first billing and POS application built with Flutter + Supabase. Designed for phone shops and accessories retail — supporting multi-staff real-time sync, barcode/QR scanning, Bluetooth thermal receipt printing, UPI payments, and visual sales analytics.
 
 ## Screenshot
 
+![App Screenshot](https://github.com/user-attachments/assets/f2d16454-5408-43b3-b207-cd843bbc2c9e)
 
-https://github.com/user-attachments/assets/f2d16454-5408-43b3-b207-cd843bbc2c9e
+## 🎯 What It Does
 
+Complete offline-first POS system for small to medium retail shops (phone & accessories). Handles checkout, inventory, staff management, and real-time multi-user sync — all on-device with optional Supabase cloud backup.
 
+### Core Features at a Glance
 
-## 🎯 Project Scope
+- **Barcode & QR Scanner** — camera-based scanning to add products to cart instantly
+- **Smart Cart & Checkout** — multi-product billing with ₹/%, manual discount, grand total override
+- **Bluetooth Thermal Receipt Printing** — instant ESC/POS receipts with shop branding
+- **UPI QR Payment** — generate UPI QR on bill for instant collection
+- **Product Management** — full CRUD with categories, shelf/location, stock tracking, QR generation
+- **3-Tier Role System** — Super Admin / Owner / Staff with automatic shop isolation (RLS)
+- **Real-time Multi-User Sync** — Supabase Realtime keeps inventory & bills in sync across all staff
+- **Dashboard & Analytics** — donut charts, bar charts, 30-day trends, staff leaderboard
+- **Reports & History** — bill search/filter, daily sales, low-stock alerts, stock movement log, full bill edit
+- **Offline-First** — Hive local DB works without internet; auto-syncs on reconnect
 
-This application serves as a complete offline POS system for small to medium-sized retail shops. It streamlines the checkout process, catalog management, and receipt generation securely entirely on-device.
+## 🛠 Tech Stack
 
-### Core Features:
-- **Product Management System**: Complete CRUD operations for inventory items with barcode/QR code support.
-- **Smart Checkout System**: Rapid cart building via camera-based barcode scanning or manual entry, and robust order calculation functionality.
-- **Bluetooth Thermal Printing**: Direct integration with thermal printers (`print_bluetooth_thermal`) to instantly output physical receipts.
-- **Shop Settings & Customization**: Centrally managed shop details printed dynamically on receipts.
-- **Offline-First Architecture**: Powered by `Hive` for lightning-fast localized NoSQL data storage. No active internet connectivity required.
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Flutter 3.x (Dart) |
+| **State Management** | `flutter_bloc` (BLoC pattern) |
+| **Cloud DB** | Supabase (PostgreSQL + Realtime) |
+| **Local Cache** | Hive (offline fallback) |
+| **Auth** | Supabase Auth (email/password + Google OAuth) |
+| **Dependency Injection** | `get_it` |
+| **Navigation** | `go_router` |
+| **Code Gen** | `json_serializable` + `build_runner` |
+| **FP** | `fpdart` (Either<Failure, T> pattern) |
+| **Scanner** | `mobile_scanner` (barcode + QR decode) |
+| **QR Gen** | `pretty_qr_code` |
+| **Printer** | `print_bluetooth_thermal` (ESC/POS) |
+| **Charts** | `fl_chart` (pie, bar, line) |
+| **UI** | Material 3 + Liquid Glass / Glassmorphism |
+| **Sharing** | `share_plus` (WhatsApp receipt share) |
+| **Config** | `app_settings` (open app settings) |
 
-## 🛠 Tech Stack & Architecture
-
-Built leveraging industry-standard architectural principles (Clean Architecture & Feature-Driven Design) ensuring scalability, separation of concerns, and robust testability. 
-
-- **Framework**: [Flutter](https://flutter.dev/) (SDK >=3.1.0)
-- **State Management**: `flutter_bloc`
-- **Dependency Injection**: `get_it`
-- **Routing**: `go_router`
-- **Local Database**: `hive` & `hive_flutter`
-- **Data Modeling**: `json_serializable`, `equatable`
-- **Functional Programming**: `fpdart`
-- **Hardware Integrations**: `mobile_scanner` (barcodes), `print_bluetooth_thermal`
-
-## 📁 File Structure
-
-The codebase is organized using a **Feature-First Clean Architecture** utilizing domain-driven concepts.
+## 📁 Feature Structure (Clean Architecture)
 
 ```text
 lib/
-├── core/                       # Core application utilities and shared components
-│   ├── data/                   # Global data sources (e.g., Hive initialization)
-│   ├── error/                  # Standardized Failure/Exception models (fpdart compatible)
-│   ├── theme/                  # UI aesthetics, typography, styling
-│   ├── usecase/                # Base UseCase contracts
-│   ├── utils/                  # Helpers (e.g., PrinterHelper, formatters)
-│   ├── widgets/                # Reusable global UI widgets (AppBars, generic buttons)
-│   └── service_locator.dart    # get_it dependency injection setup
+├── config/routes/               # go_router — AppShell + nested routes
+├── core/
+│   ├── data/                    # Hive DB init & helpers
+│   ├── error/                   # Failure/Exception models (fpdart)
+│   ├── realtime/                # Supabase Realtime subscription manager
+│   ├── supabase/                # Supabase client setup
+│   ├── theme/                   # AppTheme + TextStyles + ThemeCubit
+│   ├── usecase/                 # Base UseCase contract
+│   ├── utils/                   # PrinterHelper, AppValidators
+│   ├── config/                  # Deep link config
+│   └── widgets/                 # Shared: GlassCard, PrimaryButton, StatCard,
+│                                 # DashboardActionCard, Chart widgets, etc.
+│   └── service_locator.dart     # get_it DI registration
 │
-└── features/                   # Independent feature modules
-    ├── billing/                # Core POS operations: Cart, Checkout, Invoice Generation
-    ├── product/                # Inventory management: Adding, Listing, Scanning products
-    ├── settings/               # App configuration: Printer connections, App settings
-    └── shop/                   # Shop details configuration
+└── features/
+    ├── auth/                    # Login, Register, Email Verification
+    │                             # Roles: owner (default on signup) / staff (owner-created)
+    ├── billing/                 # Scanner, Cart, Checkout, Receipt Preview
+    ├── product/                 # Product CRUD, QR code generation
+    ├── category/                # Category management (CRUD)
+    ├── shop/                    # Shop details UPI ID, address, name
+    ├── settings/                # Printer connection, app settings
+    ├── report/                  # Bill history, daily sales, low stock,
+    │                             # stock movements, analytics (fl_chart)
+    ├── staff/                   # Staff management (owner-only: add/delete)
+    └── dashboard/               # Homepage — greeting, stats, quick actions,
+                                 # analytics cards (donut, bar, line, leaderboard)
 ```
 
-*Note: Each feature is further subdivided internally into Clean Architecture layers: `data`, `domain`, and `presentation`.*
+*Each feature follows Clean Architecture: data (repo impl + models) → domain (entities + interfaces + use cases) → presentation (BLoC + UI pages).*
 
-## 💡 Use Cases
+## 👥 Roles & Access
 
-- **Rapid Billing Entry**: A cashier launches the app, navigates to the checkout page, and uses the device camera to instantly scan product barcodes. The products are added to the cart, the total is calculated including taxes, and a receipt is finalized.
-- **Physical Receipt Generation**: After checkout confirmation, the app triggers a connected external Bluetooth thermal POS printer to instantly print an itemized paper receipt with the shop’s header.
-- **Inventory Sideloading**: A manager opens the Product feature to add new stock to the local database, taking a picture of the barcode to bind the SKU for future lightning-fast checkouts.
-- **No-Connection Operation**: The business operates a stall at an exhibition with poor networking. The app functions entirely via its embedded Hive local database and Bluetooth, completely undisturbed by network drops.
+| Role | Description | Permissions |
+|------|------------|-------------|
+| **Super Admin** | SaaS-level admin (manual assignment) | Cross-shop data access — sees all shops |
+| **Owner** | Default role on signup — auto-created with shop | Full access: products, categories, billing, reports, staff mgmt, settings |
+| **Staff** | Added by owner via invite | Billing (scan → sell → print), view products & stock. No staff/settings access |
+
+### Shop Isolation
+Every record is scoped to a shop via `shop_id`. Enforcement at 3 layers:
+1. **Database RLS** — strongest guard, `belongs_to_shop(shop_id)` on all business tables
+2. **Repository queries** — `_resolveShopId()` auto-filters every Supabase call
+3. **BLoC propagation** — `_currentShopId` from AuthBloc passed to all use cases
+
+## 📡 Real-time Sync
+- Supabase Realtime on `products`, `bills`, `inventory_log`
+- ProductBloc auto-refreshes on INSERT/UPDATE/DELETE from any device
+- Stock validation before bill submit (prevents overselling)
+- Graceful fallback — app works without Realtime connection
+
+## 📊 Dashboard Analytics
+
+| Widget | Chart Type | Data Source |
+|--------|-----------|-------------|
+| Payment Methods | Donut (pie) | Bill aggregation — UPI/Cash/Card/Credit % |
+| Top Products | Bar chart | Top 5 by quantity sold, revenue-colored |
+| Monthly Trend | Line chart (30 days) | `LoadSalesRange` event, FL LineChart |
+| Staff Performance | Leaderboard | Owner-only, rank badges + progress bars |
+| Inventory Health | Progress bar | In stock / low stock / out of stock |
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Flutter SDK `^3.1.0` or higher
-- Android Studio / Xcode for emulators and building.
-- *Optional*: A physical Android/iOS device and a Bluetooth Thermal Printer for testing hardware integrations natively.
+- Flutter SDK `^3.1.0`
+- Dart `>=3.1.0`
+- Android Studio / Xcode (for emulators and building)
+- A Supabase project (create at https://supabase.com)
+- Optional: Bluetooth thermal printer for testing receipts
 
-### Installation
+### 1. Clone & Setup
 
-1. Clone the repository and navigate to the project directory:
-   ```bash
-   git clone <repository_url>
-   cd billing_app
-   ```
+```bash
+git clone <repository_url>
+cd billing_app
+```
 
-2. Fetch dependencies:
-   ```bash
-   flutter pub get
-   ```
+### 2. Supabase Configuration
 
-3. Run code generation (required for Hive adapters and JSON serialization):
-   ```bash
-   dart run build_runner build --delete-conflicting-outputs
-   ```
+1. Create a Supabase project at https://supabase.com
+2. Run the migrations (applied in order):
+   - `supabase/migrations/001_initial_schema.sql` — core tables
+   - `supabase/migrations/003_saas_shops.sql` — multi-shop support
+   - `supabase/migrations/004_shop_data_scoping.sql` — RLS scopes
+   - `supabase/migrations/005_add_staff_phone.sql` — staff phone column
+   - `supabase/migrations/006_three_tier_roles.sql` — Super Admin/Owner/Staff roles
+   - `supabase/migrations/007_fix_signup_trigger_order.sql`
+   - `supabase/migrations/008_fix_rls_recursion_profiles.sql`
+   - `supabase/migrations/009_add_customer_phone_to_bills.sql`
+3. Add your Supabase URL and anon key to the app config (see `lib/core/supabase/supabase_client.dart`)
 
-4. Run the project:
-   ```bash
-   flutter run
-   ```
+### 3. Install Dependencies
 
-## 🤝 Contributing Guidelines
-As a senior-focused project, please adhere to:
-1. **Clean Architecture Rules**: Maintain strict boundaries between `domain`, `data`, and `presentation` layers.
-2. **Immutable States**: Emit only immutable states from BLoCs utilizing `equatable`.
-3. **No Direct Exceptions in Domain**: Utilize `fpdart`'s `Either<Failure, Type>` pattern to handle control flow for exceptions.
+```bash
+flutter pub get
+```
+
+### 4. Run Code Generation
+
+Required for Hive adapters and JSON serialization:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+
+### 5. Run the App
+
+```bash
+flutter run
+```
+
+## 🧪 Test
+
+```bash
+flutter test
+```
+
+## 📦 Build APK (Release)
+
+```bash
+flutter build apk --release --split-per-abi
+```
+
+Output split per architecture goes to `build/app/outputs/flutter-apk/`.
+
+## 🤝 Contributing
+
+Follow these conventions:
+
+1. **Clean Architecture** — keep domain/data/presentation boundaries strict
+2. **Immutable States** — BLoC states must use `equatable`
+3. **Error Handling** — use `fpdart`'s `Either<Failure, Type>`, never throw raw exceptions in domain layer
+4. **No `SELECT *`** or FK joins in queries — fetch per-column
+5. **Realtime** — normalizeLinkedMap() before `.fromJson()` for newRecord/oldRecord
+6. **Dates** — use `.gte()` with `YYYY-MM-DD` format
+7. **Dart-first** — fix in Dart code before touching SQL migrations
+8. **Graphify** — run `graphify update .` after every code change
+
+## 📁 Project Docs
+
+| File | Purpose |
+|------|---------|
+| `RPD.md` | Requirements & Product Definition — features, user stories, scope |
+| `architecture.md` | Detailed architecture, DB tables, offline strategy, state flow |
+| `design.md` | UI design system — theme, typography, component specs, animations |
+| `phases.md` | Roadmap — all phases with status (✅ done / 🔧 in progress) |
+| `rules.md` | Dev rules & conventions |
+| `CLAUDE.md` | Project-specific rules & critical update reminders |
+| `memory.md` | Session log — key decisions, edits, todos |
+| `supabase/migrations/` | SQL migration files in sequential order |
