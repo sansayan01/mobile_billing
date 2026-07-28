@@ -486,6 +486,26 @@ C. **Billing + Product Pages (9 files) — Dark Mode Color Replacements**
 
 ---
 
+## Current Session: 2026-07-28 — README.md Owner-Focused Rewrite ✅
+
+### What Was Done
+1. **README.md completely rewritten** — reorganized for shop owners as primary audience
+2. **Key changes**:
+   - **Hero section**: "The last billing app your phone shop will ever need" — direct to owners
+   - **"Why Shop Owners Love This App" table**: pain points → solutions format (owners scan this first)
+   - **Owner's Checklist**: all features grouped by business value (Inventory → Billing → Staff → Analytics → Reports → Settings)
+   - **Analytics widgets table**: what each chart tells owners
+   - **"Who This Is For" closing section**: phone shops, accessories shops, small retail
+   - **Screens table**: route → what owner sees
+   - Roles table reframed from "technical roles" to "who does what"
+   - Tech stack still present but de-emphasized (owners care about features, not frameworks)
+   - Getting started simplified to "5 minutes"
+   - "Pain Point → Solution" layout throughout — owners self-identify instantly
+3. **All features preserved**: Supabase, Realtime, staff mgmt, QR gen, thermal printing, UPI, dashboards, offline-first, 3-tier roles, all 11 features
+4. **What was NOT changed**: code, dependencies, CLAUDE.md, RPD.md, architecture.md, phases.md, design.md, rules.md
+
+---
+
 ## Current Session: 2026-07-28 — README.md Update ✅
 
 ### What Was Done
