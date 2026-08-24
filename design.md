@@ -1,5 +1,51 @@
 # Design
 
+> **⚠ v2 UPDATE (2026-08-24 — Premium UI/UX Redesign):** Neeche ke original sections
+> valid hain, lekin ab inke upar ek formal design system layer hai. Naye kaam ke liye
+> PEHLE ye use karo, purane hardcoded values ko migrate karte jao.
+
+## Design System v2 — Tokens & Components (Source of Truth)
+
+### Tokens (`lib/core/theme/app_dimensions.dart`)
+- **Spacing (4-pt grid):** xs=4 · sm=8 · md=12 · lg=16 · xl=24 · xxl=32 · xxxl=48
+  - Micro-gaps (2/6px icon-label pairing) intentional hain — tokens pe force mat karo
+- **Radius:** sm=8 · md=12 · lg=16 · xl=20 · full=pill
+- **Elevation:** low=1 · mid=3 · high=8 (+ `shadowLow/Mid` tinted-shadow helpers)
+- **Durations:** fast=150ms · normal=250ms · slow=400ms; Curves: `AppDurations.ease` (easeOutCubic), `.spring` (easeOutBack)
+- **Touch targets:** min=48dp, button/input height=52dp
+
+### Typography Scale (`lib/core/theme/app_typography.dart`)
+| Style | Size/Weight | Use |
+|---|---|---|
+| displayLarge | 32 w800 | Rare hero numbers |
+| displaySmall | 28 w800 | Greeting name |
+| headlineLarge | 24 w700 | Page heroes |
+| headlineSmall | 20 w700 | Section heroes |
+| titleLarge | 18 w700 | AppBar titles |
+| titleMedium/Small | 16/14 w600 | Card titles |
+| bodyLarge/Medium | 16/14 w400 | Content (MIN body = 14) |
+| labelLarge/Medium/Small | 14/12/11 w600+ | Chips, captions, nav |
+
+- Font: IBM Plex Sans — global `textTheme` ab is scale se banta hai
+- **Naye Text kabhi hardcoded fontSize mat do** — textTheme ya AppTextStyles use karo
+
+### Navigation Pattern
+- **Bottom nav (5 tabs):** Home · Products · **Billing (center raised gradient)** · Reports · More(opens drawer)
+- Drawer = sirf secondary features (Catalog/Business/Shop/Staff) — primary destinations drawer mein NAHI
+- Scanner/Checkout/Receipt = fullscreen, nav auto-hide (`app_shell.dart` `_fullScreenRoutes`)
+
+### Feedback System (`lib/core/widgets/app_feedback.dart`)
+- `AppFeedback.success/error/info(context, msg)` — ek hi tarika, har jagah
+- Loading lists → `AppSkeletonList` (`app_skeleton.dart`), spinners sirf buttons/dialogs/pagination mein
+
+### Motion Rules
+- Page transitions: fade + 3% slide-up, global (`AppTheme.pageTransitions`)
+- Stat cards: entrance fade+slide, value crossfade on refresh
+- Buttons: press-scale 0.97 (`PrimaryButton`)
+- Motion purposeful ho — decoration animation mat daalo
+
+---
+
 ## Theme — Liquid Glass + Dark Mode
 - **Material 3** — Flutter Material Design 3
 - **Design Language**: Liquid Glass / Glassmorphism
@@ -150,6 +196,26 @@
 - Bottom panel has 24px overlap (rounded top corners)
 - Scanner overlay: 250×250 bounding box with green accent corners
 - Floating overlay buttons: circular, black45 background
+
+### Product Management Screen — Dual View (`lib/features/product/presentation/pages/product_list_page.dart` + `product_coverflow_view.dart`)
+- **Style**: NOT glass — solid surface cards on app gradient bg. Distinct from dashboard.
+- **Dual view system**: shell page + view switcher. **Default = Classic List** (har app open pe). Cover-flow optional. View toggle = AppBar icon (`Icons.view_carousel_rounded` ↔ `Icons.view_list_rounded`, animated rotation). No persistence — choice session-only.
+- **Switching**: `AnimatedSwitcher` (350ms fade) between `_ClassicListView` (shell file) and `ProductCoverflowView` (own file). Search query + sort + category filter shared across both views.
+- **View A — Classic List (default)**: category FilterChips (All + categories, counts) → `ListView.separated` of **compact cards** (~60px) wrapped in **`Dismissible`** (swipe right = green "Stock +" → quick stock sheet, swipe left = red "Delete" → confirm dialog; `confirmDismiss` returns false, card snaps back). Compact card: stock-color accent bar (left, 4px) + image (40px, radius 10) + **Line 1**: name (w600 14, 1 line) + price (w700 14 primary, right-aligned) + **Line 2**: stock badge (colored dot + count) + category (gray, flexible/ellipsis) + location (gray, flexible/ellipsis, `·` separator). Trailing **30px circular add-to-cart button** (primary, `add_shopping_cart` icon → `AddProductToCartEvent` + green snackbar). **Out-of-stock** (stock ≤ 0) cards rendered at 50% opacity (accent bar stays red). **Image placeholder** = initial-letter avatar (first letter of name, color from `Colors.primaries[name.hashCode]`). **Long-press** → bottom sheet: Edit / Show QR Code / **Copy barcode** / Delete. No chevron / description snippet / unit badge / barcode on card. Haptic + `FilterChip` selected = primary fill.
+- **Header bar (shared, both views)**: below search — **Low-stock pill toggle** (amber `warning` icon + count of `isLowStock` products; active = amber fill, white text; filters list to low/out-of-stock) + **mini stats text** `total · low · out` (gray 11.5). Hidden when no products.
+- **Search** matches name, barcode, description **and location**.
+- **Selection mode (bulk)**: AppBar `checklist` icon → AppBar swaps to Close + `N selected` + export (`ios_share`) + delete (`delete`, red) actions. Cards tap/long-press toggle selection, `Dismissible` disabled (`DismissDirection.none`), trailing becomes a circular check indicator (selected = primary fill + white check, else outline), selected card gets 2px primary border. Bulk delete has confirm dialog + Undo snackbar; bulk export shares selected via `CsvExportImport`.
+- **Delete** (single swipe, long-press menu, or detail) → confirm dialog → `DeleteProduct` + **Undo snackbar** (`AddProduct` restores).
+- **Import from CSV** = real file picker (`CsvExportImport.importProducts`) → parses rows → `AddProduct` each; skips empty names; shows count snackbar. CSV columns: Name, Barcode, Price, Stock, Min Stock Level, Unit, Category ID, Location, Description, Warranty Type, Warranty Duration, Warranty Unit.
+- **View B — Spotlight Cover-flow**: hero search (top) → category dial (horizontal pill carousel) → **3D cover-flow carousel** → bottom panel (dots + position)
+- **Cover-flow**: `PageView` (viewportFraction 0.72) + `_CoverFlowItem` 3D transform — `Matrix4` perspective (`setEntry(3,2,0.0016)`) + `rotateY(angle = offset*0.72)` + `scaleByDouble(1 - offset*0.16)` + opacity fade for side cards.
+- **Cover card**: big product image (Hero `product-{id}`) + category badge (purple) + stock badge (green/orange/red) + low-stock amber banner + name (17 w700) + price (22 w800 primary) + unit chip + barcode text + **Edit / QR Code** action buttons.
+- **Category dial**: horizontal pill items (icon + label + count), selected = primary fill + glow shadow, auto-centered via `Scrollable.ensureVisible(alignment: 0.5)`, haptic on select.
+- **Hero search**: 56px rounded pill (primary border glow) + "Spotlight search..." hint + gradient scanner button (56px, radius 18).
+- **Bottom panel**: animated dot indicators (active pill widens 7→22px) + "N of M · Swipe to browse" + swipe icon. Dots shown only ≤12 products.
+- **Expandable FAB**: Add (primary) → expand (easeOutBack + fade) → Scan mini-FAB (secondary/teal). `IgnorePointer` when collapsed.
+- **Motion**: 3D cover-flow rotation on swipe, animated card border/glow for center card, skeleton carousel shimmer, animated empty state.
+- **Navigation**: card tap → detail; Edit/QR buttons on card → edit/qr routes.
 
 ### Icons
 - Settings gear (top right, scanner screen)

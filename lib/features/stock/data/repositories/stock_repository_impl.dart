@@ -42,7 +42,7 @@ class StockRepositoryImpl implements StockRepository {
           _supabase.from('products').select('stock').eq('id', productId);
       final productData = await productQuery.maybeSingle();
       if (productData == null) {
-        return Left(ServerFailure('Product not found'));
+        return const Left(ServerFailure('Product not found'));
       }
 
       final currentStock = productData['stock'] as int;
@@ -50,7 +50,7 @@ class StockRepositoryImpl implements StockRepository {
 
       // Prevent negative stock
       if (newStock < 0) {
-        return Left(ServerFailure('Stock cannot go below zero'));
+        return const Left(ServerFailure('Stock cannot go below zero'));
       }
 
       // Update product stock

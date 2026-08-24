@@ -124,7 +124,7 @@ class DuePaymentsRepositoryImpl implements DuePaymentsRepository {
 
       final billRow = await billQuery.maybeSingle();
       if (billRow == null) {
-        return Left(ServerFailure('Bill not found'));
+        return const Left(ServerFailure('Bill not found'));
       }
 
       final currentAmountPaid = (billRow['amount_paid'] as num?)?.toDouble() ?? 0.0;
@@ -132,10 +132,10 @@ class DuePaymentsRepositoryImpl implements DuePaymentsRepository {
 
       // 2. Validate payment amount
       if (amount <= 0) {
-        return Left(ServerFailure('Payment amount must be greater than 0'));
+        return const Left(ServerFailure('Payment amount must be greater than 0'));
       }
       if (amount > currentDueAmount) {
-        return Left(ServerFailure('Payment amount exceeds due amount'));
+        return const Left(ServerFailure('Payment amount exceeds due amount'));
       }
 
       // 3. Calculate new values
@@ -187,7 +187,7 @@ class DuePaymentsRepositoryImpl implements DuePaymentsRepository {
 
       final row = await query.maybeSingle();
       if (row == null) {
-        return Left(ServerFailure('Bill not found'));
+        return const Left(ServerFailure('Bill not found'));
       }
 
       final profileData = row['profiles'] as Map<String, dynamic>?;

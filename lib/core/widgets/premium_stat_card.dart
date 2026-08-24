@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/app_dimensions.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
 /// Liquid-glass stat card — semi-transparent colour-tinted container.
@@ -23,7 +24,18 @@ class PremiumStatCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     const darkSurfaceColor = AppTheme.darkSurface;
 
-    return Container(
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: 1.0),
+      duration: AppDurations.slow,
+      curve: AppDurations.ease,
+      builder: (context, t, child) => Opacity(
+        opacity: t,
+        child: Transform.translate(
+          offset: Offset(0, 12 * (1 - t)),
+          child: child,
+        ),
+      ),
+      child: Container(
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -92,10 +104,21 @@ class PremiumStatCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 14),
-                  // Big value
-                  Text(
-                    value,
-                    style: AppTextStyles.of(context).statValue.copyWith(color: color),
+                  // Big value — crossfades smoothly on refresh
+                  AnimatedSwitcher(
+                    duration: AppDurations.normal,
+                    switchInCurve: AppDurations.ease,
+                    switchOutCurve: AppDurations.ease,
+                    transitionBuilder: (child, animation) => FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    ),
+                    child: Text(
+                      value,
+                      key: ValueKey<String>(value),
+                      style:
+                          AppTextStyles.of(context).statValue.copyWith(color: color),
+                    ),
                   ),
                 ],
               ),
@@ -115,6 +138,7 @@ class PremiumStatCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+        ),
+      );
   }
 }

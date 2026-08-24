@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'app_typography.dart';
+
 class AppTheme {
   AppTheme._();
 
@@ -9,6 +11,16 @@ class AppTheme {
   static const Color backgroundColor = Color(0xFFF2F2F7);
   static const Color surfaceColor = Colors.white;
   static const Color errorColor = Color(0xFFB00020);
+
+  static const PageTransitionsTheme pageTransitions = PageTransitionsTheme(
+    builders: {
+      TargetPlatform.android: _FadeSlideUpTransition(),
+      TargetPlatform.iOS: _FadeSlideUpTransition(),
+      TargetPlatform.macOS: _FadeSlideUpTransition(),
+      TargetPlatform.windows: _FadeSlideUpTransition(),
+      TargetPlatform.linux: _FadeSlideUpTransition(),
+    },
+  );
 
   // Dark theme surface colors
   static const Color darkBackground = Color(0xFF0E0E18);
@@ -43,10 +55,18 @@ class AppTheme {
   }
 
   static final TextTheme textTheme =
-      GoogleFonts.ibmPlexSansTextTheme().copyWith(
+      GoogleFonts.ibmPlexSansTextTheme(AppTypography.textTheme).copyWith(
     bodyLarge: GoogleFonts.ibmPlexSans(
-      fontSize: 15,
-      fontWeight: FontWeight.w500,
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      height: 1.5,
+      color: Colors.black,
+      fontFeatures: const [FontFeature.tabularFigures()],
+    ),
+    bodyMedium: GoogleFonts.ibmPlexSans(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      height: 1.45,
       color: Colors.black,
       fontFeatures: const [FontFeature.tabularFigures()],
     ),
@@ -97,6 +117,7 @@ class AppTheme {
       brightness: Brightness.light,
       primaryColor: primaryColor,
       scaffoldBackgroundColor: backgroundColor,
+      pageTransitionsTheme: pageTransitions,
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: Colors.transparent,
       ),
@@ -171,6 +192,7 @@ class AppTheme {
       brightness: Brightness.dark,
       primaryColor: primaryColor,
       scaffoldBackgroundColor: darkBackground,
+      pageTransitionsTheme: pageTransitions,
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: Colors.transparent,
       ),
@@ -241,6 +263,32 @@ class AppTheme {
           }
           return Colors.grey[700];
         }),
+      ),
+    );
+  }
+}
+
+class _FadeSlideUpTransition extends PageTransitionsBuilder {
+  const _FadeSlideUpTransition();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    final curved =
+        CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+    return FadeTransition(
+      opacity: curved,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.03),
+          end: Offset.zero,
+        ).animate(curved),
+        child: child,
       ),
     );
   }

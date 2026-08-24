@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +15,7 @@ import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../../../../core/service_locator.dart' as di;
 import '../bloc/billing_bloc.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../domain/entities/cart_item.dart';
 import '../../../customer/domain/entities/customer.dart';
 import '../../../customer/presentation/bloc/customer_bloc.dart';
@@ -68,26 +70,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.menu,
-                  size: 24, color: Theme.of(context).primaryColor),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-              tooltip: 'Open menu',
-            ),
+            leading: const AdaptiveAppBarLeading(),
           ),
           body: BlocConsumer<BillingBloc, BillingState>(
             listener: (context, state) {
               if (state.printSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Printed successfully'),
-                    backgroundColor: Colors.green,
-                    duration: Duration(seconds: 1)));
+                AppFeedback.success(context, 'Printed successfully');
               }
               if (state.submitSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Bill saved'),
-                    backgroundColor: Colors.green,
-                    duration: Duration(seconds: 2)));
+                AppFeedback.success(context, 'Bill saved');
                 context.read<BillingBloc>().add(ClearCartEvent());
 
                 // Navigate to receipt preview
@@ -116,11 +107,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 }
               }
               if (state.error != null) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(state.error!),
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                    duration: const Duration(seconds: 3)),
-                );
+                AppFeedback.error(context, state.error!);
               }
               if (state.stockErrors != null &&
                   state.stockErrors!.isNotEmpty &&
@@ -1086,7 +1073,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           onPressed: () async {
                             Navigator.pop(ctx);
                             final result = await pageContext.push<String>('/scan/scanner');
-                            if (result != null && result.isNotEmpty && mounted) {
+                            if (result != null && result.isNotEmpty && pageContext.mounted) {
                               pageContext
                                   .read<BillingBloc>()
                                   .add(ScanBarcodeEvent(result));
@@ -1466,7 +1453,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
     final TextEditingController searchCtl = TextEditingController();
 
-    await showModalBottomSheet<Customer?>(
+    final picked = await showModalBottomSheet<Customer?>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -1567,10 +1554,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 child: ListTile(
                                   leading: CircleAvatar(
                                     backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                                    child: Text(initial, style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700)),
+                                    child: Text(
+                                      initial,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                      ),
+                                    ),
                                   ),
-                                  title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                                  subtitle: Text(c.phone),
+                                  title: Text(
+                                    c.name,
+                                    style: const TextStyle(fontWeight: FontWeight.w600),
+                                  ),
+                                  subtitle: Text(
+                                    c.phone.isNotEmpty ? c.phone : 'No phone',
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
                                   trailing: const Icon(Icons.chevron_right, size: 20),
                                   onTap: () {
                                     Navigator.of(sheetContext).pop(c);
@@ -1589,13 +1588,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
           },
         );
       },
-    ).then((picked) {
-      if (picked != null && mounted) {
-        context.read<BillingBloc>().add(SelectCustomerEvent(picked));
-        _customerNameController.text = picked.name;
-        _customerPhoneController.text = picked.phone;
-      }
-    });
+    );
+
+    if (picked != null && context.mounted) {
+      context.read<BillingBloc>().add(SelectCustomerEvent(picked));
+      _customerNameController.text = picked.name;
+      _customerPhoneController.text = picked.phone;
+    }
   }
 
   Widget _warrantyTypeChip(BuildContext ctx, String label, String value, String selected, Function(String) onTap) {

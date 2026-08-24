@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:billing_app/core/widgets/input_label.dart';
 import 'package:billing_app/core/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -117,11 +118,13 @@ class _EditProductPageState extends State<EditProductPage> {
 
       // Upload compressed image to Supabase Storage if new image picked
       String? uploadedImageUrl = _imageUrl.isNotEmpty ? _imageUrl : null;
-      if (_imageFile != null && mounted) {
+      if (_imageFile != null) {
         uploadedImageUrl = await ImageUploadService.uploadProductImage(
           _imageFile!, widget.product.id,
         );
       }
+
+      if (!mounted) return;
 
       final updatedProduct = widget.product.copyWith(
         name: _name,
@@ -152,12 +155,7 @@ class _EditProductPageState extends State<EditProductPage> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.menu,
-                size: 24, color: Theme.of(context).primaryColor),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-            tooltip: 'Open menu',
-          ),
+          leading: const AdaptiveAppBarLeading(),
           title: const Text('Edit Product',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           centerTitle: true,
@@ -492,10 +490,13 @@ class _EditProductPageState extends State<EditProductPage> {
             ),
           ),
         ),
-        bottomNavigationBar: PrimaryButton(
-          onPressed: _isUploading ? null : _submit,
-          icon: Icons.save,
-          label: _isUploading ? 'Uploading...' : 'Save Changes',
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: PrimaryButton(
+            onPressed: _isUploading ? null : _submit,
+            icon: Icons.save,
+            label: _isUploading ? 'Uploading...' : 'Save Changes',
+          ),
         ));
   }
 
@@ -518,7 +519,7 @@ class _EditProductPageState extends State<EditProductPage> {
                         c.name.toLowerCase().contains(queryLocal.toLowerCase()))
                     .toList();
 
-            final sheetRadius = BorderRadius.vertical(top: kSheetRadius);
+            const sheetRadius = BorderRadius.vertical(top: kSheetRadius);
             return Container(
               height: MediaQuery.of(context).size.height * 0.55,
               decoration: BoxDecoration(

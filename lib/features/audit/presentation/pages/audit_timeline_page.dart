@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/widgets/app_feedback.dart';
 import 'package:billing_app/features/audit/domain/entities/audit_log.dart';
 import 'package:billing_app/features/audit/presentation/bloc/audit_bloc.dart';
 import 'package:billing_app/features/audit/presentation/bloc/audit_event.dart';
@@ -1631,7 +1632,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
     final logs = context.read<AuditBloc>().state.logs;
     if (logs.isEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No logs to export')));
+        AppFeedback.info(context, 'No logs to export');
       }
       return;
     }

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_state.dart';
+import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -134,7 +136,7 @@ class _LowStockPageState extends State<LowStockPage> with SingleTickerProviderSt
             builder: (context, state) {
               if (state.status == ReportStatus.loading) {
                 return const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator()),
+                  child: SingleChildScrollView(child: AppSkeletonList(itemCount: 6)),
                 );
               }
 
@@ -592,9 +594,7 @@ class _LowStockPageState extends State<LowStockPage> with SingleTickerProviderSt
   void _shareReorderWhatsApp() {
     final products = context.read<ReportBloc>().state.lowStockProducts;
     if (products.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No low stock products to reorder')),
-      );
+      AppFeedback.info(context, 'No low stock products to reorder');
       return;
     }
 
@@ -621,9 +621,7 @@ class _LowStockPageState extends State<LowStockPage> with SingleTickerProviderSt
     final products = context.read<ReportBloc>().state.lowStockProducts;
     if (products.isEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No products to export')),
-        );
+        AppFeedback.info(context, 'No products to export');
       }
       return;
     }

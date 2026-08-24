@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/widgets/app_feedback.dart';
 import 'package:billing_app/core/widgets/primary_button.dart';
 import 'package:billing_app/core/utils/printer_helper.dart';
 import 'package:billing_app/core/data/hive_database.dart';
@@ -95,13 +97,11 @@ class _BillDetailPageState extends State<BillDetailPage> {
 
   void _showSnack(String message, {required bool isError}) {
     if (!mounted) return;
-    final theme = Theme.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? theme.colorScheme.error : theme.colorScheme.primaryContainer,
-      ),
-    );
+    if (isError) {
+      AppFeedback.error(context, message);
+    } else {
+      AppFeedback.success(context, message);
+    }
   }
 
   @override
@@ -125,10 +125,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
+          leading: const AdaptiveAppBarLeading(),
           title: const Text('Bill Details'),
           actions: isOwner
               ? [
@@ -749,17 +746,13 @@ class _BillDetailPageState extends State<BillDetailPage> {
       result.fold(
         (failure) {
           if (!context.mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to load products: ${failure.message}')),
-          );
+          AppFeedback.error(context, 'Failed to load products: ${failure.message}');
         },
         (products) => allProducts = products,
       );
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading products: $e')),
-      );
+      AppFeedback.error(context, 'Error loading products: $e');
       return;
     }
 
@@ -1014,30 +1007,24 @@ class _BillDetailPageState extends State<BillDetailPage> {
                     billId: bill.id,
                     amount: amount,
                   );
-                  result.fold(
-                    (failure) {
-                      if (dialogContext.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(failure.message), backgroundColor: Colors.red),
-                        );
-                      }
-                    },
-                    (_) {
-                      if (dialogContext.mounted) {
-                        Navigator.of(dialogContext).pop();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Payment collected successfully!'), backgroundColor: Colors.green),
-                        );
-                        // Refresh bill detail
-                        context.read<ReportBloc>().add(LoadBillDetail(bill.id));
-                      }
-                    },
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter a valid amount'), backgroundColor: Colors.red),
-                  );
-                }
+                result.fold(
+                  (failure) {
+                    if (dialogContext.mounted) {
+                      AppFeedback.error(context, failure.message);
+                    }
+                  },
+                  (_) {
+                    if (dialogContext.mounted) {
+                      Navigator.of(dialogContext).pop();
+                      AppFeedback.success(context, 'Payment collected');
+                      // Refresh bill detail
+                      context.read<ReportBloc>().add(LoadBillDetail(bill.id));
+                    }
+                  },
+                );
+              } else {
+                AppFeedback.error(context, 'Please enter a valid amount');
+              }
               },
               icon: const Icon(Icons.check_circle, size: 18),
               label: const Text('Collect'),
@@ -1117,16 +1104,8 @@ class _BillDetailPageState extends State<BillDetailPage> {
     receipt += 'Thank you for shopping with us! 🙏';
 
     // Note: url_launcher needed for WhatsApp
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Receipt copied to clipboard!'),
-        backgroundColor: Colors.green,
-        action: SnackBarAction(label: 'Copy', textColor: Colors.white, onPressed: () {
-          Clipboard.setData(ClipboardData(text: receipt));
-        }),
-      ),
-    );
     Clipboard.setData(ClipboardData(text: receipt));
+    AppFeedback.success(context, 'Receipt copied to clipboard');
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -1156,9 +1135,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
               onPressed: () {
                 // TODO: Implement void bill via ReportBloc
                 Navigator.pop(dialogContext);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Bill voided successfully'), backgroundColor: Colors.orange),
-                );
+                AppFeedback.info(context, 'Bill voided');
               },
               style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
               child: const Text('Void Bill'),
@@ -1194,9 +1171,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
               onPressed: () {
                 // Save notes
                 Navigator.pop(dialogContext);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Notes saved!'), backgroundColor: Colors.green),
-                );
+                AppFeedback.success(context, 'Notes saved');
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
               child: const Text('Save'),

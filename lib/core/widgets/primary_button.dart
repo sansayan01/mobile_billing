@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-class PrimaryButton extends StatelessWidget {
+import '../theme/app_dimensions.dart';
+
+class PrimaryButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final String label;
   final IconData? icon;
@@ -16,7 +18,7 @@ class PrimaryButton extends StatelessWidget {
     required this.onPressed,
     required this.label,
     this.icon,
-    this.elevation = 8.0,
+    this.elevation = 4.0,
     this.borderRadius = 16.0,
     this.padding = const EdgeInsets.symmetric(vertical: 16),
     this.isFullWidth = true,
@@ -25,49 +27,53 @@ class PrimaryButton extends StatelessWidget {
   });
 
   @override
+  State<PrimaryButton> createState() => _PrimaryButtonState();
+}
+
+class _PrimaryButtonState extends State<PrimaryButton> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
+    final enabled = widget.onPressed != null && !widget.isLoading;
+
     final style = ElevatedButton.styleFrom(
       backgroundColor: Theme.of(context).primaryColor,
       foregroundColor: Theme.of(context).colorScheme.onPrimary,
-      padding: padding,
+      padding: widget.padding,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(borderRadius),
+        borderRadius: BorderRadius.circular(widget.borderRadius),
       ),
-      elevation: elevation,
-      shadowColor: Theme.of(context).primaryColor.withValues(alpha: 0.4),
-      minimumSize: isFullWidth ? const Size.fromHeight(50) : null,
+      elevation: widget.elevation,
+      shadowColor: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+      minimumSize: widget.isFullWidth ? const Size.fromHeight(50) : null,
     );
 
-    if (icon != null) {
-      return Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: ElevatedButton.icon(
-          onPressed: isLoading ? null : onPressed,
-          icon: isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                )
-              : Icon(icon),
-          label: Text(
-            label,
-            style: textStyle,
-          ),
-          style: style,
+    Widget button;
+    if (widget.icon != null) {
+      button = ElevatedButton.icon(
+        onPressed: widget.isLoading ? null : widget.onPressed,
+        icon: widget.isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Icon(widget.icon),
+        label: Text(
+          widget.label,
+          style: widget.textStyle,
         ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
         style: style,
-        child: isLoading
+      );
+    } else {
+      button = ElevatedButton(
+        onPressed: widget.isLoading ? null : widget.onPressed,
+        style: style,
+        child: widget.isLoading
             ? const SizedBox(
                 width: 20,
                 height: 20,
@@ -77,9 +83,26 @@ class PrimaryButton extends StatelessWidget {
                 ),
               )
             : Text(
-                label,
-                style: textStyle,
+                widget.label,
+                style: widget.textStyle,
               ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Listener(
+        onPointerDown: (_) {
+          if (enabled) setState(() => _pressed = true);
+        },
+        onPointerUp: (_) => setState(() => _pressed = false),
+        onPointerCancel: (_) => setState(() => _pressed = false),
+        child: AnimatedScale(
+          scale: _pressed ? 0.97 : 1.0,
+          duration: AppDurations.fast,
+          curve: AppDurations.ease,
+          child: button,
+        ),
       ),
     );
   }

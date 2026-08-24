@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 // ignore_for_file: prefer_const_constructors
 import 'package:share_plus/share_plus.dart';
@@ -54,11 +55,7 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-          tooltip: 'Open menu',
-        ),
+        leading: const AdaptiveAppBarLeading(),
         title: const Text('QR Code',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,

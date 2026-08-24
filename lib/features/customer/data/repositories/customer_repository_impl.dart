@@ -119,7 +119,7 @@ class CustomerRepositoryImpl implements CustomerRepository {
       return Right(CustomerModel.fromJson(response).toEntity());
     } on PostgrestException catch (e) {
       if (e.code == '23505') {
-        return Left(ServerFailure('Customer with this phone already exists'));
+        return const Left(ServerFailure('Customer with this phone already exists'));
       }
       return Left(ServerFailure('Failed to add customer: $e'));
     } catch (e) {
@@ -139,7 +139,7 @@ class CustomerRepositoryImpl implements CustomerRepository {
           .maybeSingle();
 
       if (row == null) {
-        return Left(ServerFailure('Customer not found'));
+        return const Left(ServerFailure('Customer not found'));
       }
 
       return Right(CustomerModel.fromJson(row).toEntity());

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_skeleton.dart';
 import '../bloc/warranty_bloc.dart';
 import '../../domain/entities/warranty_claim.dart';
 import '../../../report/domain/entities/report_entities.dart';
@@ -57,9 +59,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
   }
 
   void _showErrorSnack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Theme.of(context).colorScheme.error),
-    );
+    AppFeedback.error(context, message);
   }
 
   /// Dart-side warranty expiry check. Returns the date the warranty ends,
@@ -174,7 +174,9 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
             child: BlocBuilder<WarrantyBloc, WarrantyState>(
               builder: (context, state) {
                 if (state.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const SingleChildScrollView(
+                    child: AppSkeletonList(itemCount: 5),
+                  );
                 }
 
                 if (state.error != null) {
@@ -616,11 +618,11 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
             final isExpired = endDate != null && endDate.isBefore(DateTime.now());
 
             return AlertDialog(
-              title: Row(
+              title: const Row(
                 children: [
-                  const Icon(Icons.qr_code_2_rounded, size: 20),
-                  const SizedBox(width: 8),
-                  const Expanded(child: Text('Claim from Bill')),
+                  Icon(Icons.qr_code_2_rounded, size: 20),
+                  SizedBox(width: 8),
+                  Expanded(child: Text('Claim from Bill')),
                 ],
               ),
               content: SingleChildScrollView(
@@ -652,7 +654,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                     const Text('Product', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<BillItem>(
-                      value: selectedItem,
+                      initialValue: selectedItem,
                       isExpanded: true,
                       items: bill.items.map((item) {
                         final warrantyTxt = item.hasWarranty ? '  (${item.warrantyLabel})' : '';
@@ -747,11 +749,9 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                           warrantyUnit: selectedItem.warrantyUnit,
                         ));
                     Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Warranty claim submitted successfully'),
-                        backgroundColor: Colors.green,
-                      ),
+                    AppFeedback.success(
+                      context,
+                      'Warranty claim submitted successfully',
                     );
                   },
                   child: const Text('Submit'),

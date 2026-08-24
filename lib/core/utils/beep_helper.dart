@@ -50,10 +50,10 @@ class BeepHelper {
     required double volume,
   }) {
     final numSamples = (sampleRate * durationMs / 1000).round();
-    final numChannels = 1;
-    final bitsPerSample = 16;
+    const numChannels = 1;
+    const bitsPerSample = 16;
     final byteRate = sampleRate * numChannels * bitsPerSample ~/ 8;
-    final blockAlign = numChannels * bitsPerSample ~/ 8;
+    const blockAlign = numChannels * bitsPerSample ~/ 8;
     final dataSize = numSamples * blockAlign;
     final fileSize = 44 + dataSize;
 

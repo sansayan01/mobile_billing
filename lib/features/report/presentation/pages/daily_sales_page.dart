@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:billing_app/core/widgets/app_feedback.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -99,9 +101,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
     await file.writeAsString(csv);
     await Share.shareXFiles([XFile(file.path)], text: 'Daily Sales Export');
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Exported ${sales.length} days!'), backgroundColor: Colors.green),
-      );
+      AppFeedback.success(context, 'Exported ${sales.length} days');
     }
   }
 
@@ -115,10 +115,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu_rounded, color: theme.primaryColor),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-        ),
+        leading: const AdaptiveAppBarLeading(),
         title: const Text('Daily Sales', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         actions: [
@@ -265,7 +262,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
         if (!isToday)
           TextButton(
             onPressed: _goToday,
-            child: Text('Today', style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.w600)),
+            child: const Text('Today', style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.w600)),
           ),
       ]),
     );
@@ -539,7 +536,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            Icon(Icons.pie_chart_rounded, size: 16, color: AppTheme.primaryColor),
+            const Icon(Icons.pie_chart_rounded, size: 16, color: AppTheme.primaryColor),
             const SizedBox(width: 8),
             Text('Payment Split', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: t.colorScheme.onSurfaceVariant)),
           ]),
@@ -670,7 +667,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
                 ),
                 const SizedBox(width: 10),
                 Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  Text('${item.value} units', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.primaryColor)),
+                  Text('${item.value} units', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.primaryColor)),
                   Text(_fc(productRevenue[item.key] ?? 0),
                       style: TextStyle(fontSize: 10, color: t.colorScheme.onSurfaceVariant)),
                 ]),
@@ -717,7 +714,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            Icon(Icons.access_time_rounded, size: 16, color: AppTheme.primaryColor),
+            const Icon(Icons.access_time_rounded, size: 16, color: AppTheme.primaryColor),
             const SizedBox(width: 8),
             Text('Sales by Time Block', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: t.colorScheme.onSurfaceVariant)),
           ]),

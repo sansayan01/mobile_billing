@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_skeleton.dart';
 import 'package:intl/intl.dart';
 import 'package:csv/csv.dart';
 import 'package:pdf/pdf.dart';
@@ -137,9 +140,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
     await file.writeAsString(csv);
     await Share.shareXFiles([XFile(file.path)], text: 'Bills Export');
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Exported ${bills.length} bills!'), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-      );
+      AppFeedback.success(context, 'Exported ${bills.length} bills');
     }
   }
 
@@ -198,9 +199,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
 
     await Printing.layoutPdf(onLayout: (format) async => pdf.save());
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PDF exported!'), backgroundColor: Colors.green),
-      );
+      AppFeedback.success(context, 'PDF exported');
     }
   }
 
@@ -212,10 +211,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: theme.primaryColor),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-        ),
+        leading: const AdaptiveAppBarLeading(),
         title: const Text('Bill History', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         actions: [
@@ -224,7 +220,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
             onPressed: () {
               final bills = context.read<ReportBloc>().state.billHistory;
               if (bills.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('No bills to export'), backgroundColor: Colors.orange));
+                AppFeedback.info(context, 'No bills to export');
               } else {
                 _exportPdf(bills);
               }
@@ -236,7 +232,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
             onPressed: () {
               final bills = context.read<ReportBloc>().state.billHistory;
               if (bills.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('No bills to export'), backgroundColor: Colors.orange));
+                AppFeedback.info(context, 'No bills to export');
               } else {
                 _exportBills(bills);
               }
@@ -343,7 +339,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
             child: BlocBuilder<ReportBloc, ReportState>(
               builder: (context, state) {
                 if (state.status == ReportStatus.loading && state.billHistory.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const SingleChildScrollView(child: AppSkeletonList(itemCount: 7));
                 }
 
                 if (state.status == ReportStatus.error && state.billHistory.isEmpty) {
@@ -1006,7 +1002,7 @@ class _LineChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (values.length < 2 || maxValue == 0) return;
 
-    final padding = const EdgeInsets.fromLTRB(4, 8, 4, 24);
+    const padding = EdgeInsets.fromLTRB(4, 8, 4, 24);
     final chartWidth = size.width - padding.left - padding.right;
     final chartHeight = size.height - padding.top - padding.bottom;
 

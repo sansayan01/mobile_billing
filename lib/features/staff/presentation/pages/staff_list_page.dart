@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_skeleton.dart';
 import '../../../../features/auth/domain/entities/user.dart';
 import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../../../features/auth/presentation/bloc/auth_state.dart';
@@ -57,10 +60,7 @@ class _StaffListPageState extends State<StaffListPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.menu_rounded),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-        ),
+        leading: const AdaptiveAppBarLeading(),
         title: const Text(
           'Staff',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -89,26 +89,18 @@ class _StaffListPageState extends State<StaffListPage> {
               listener: (context, state) {
                 if (state.status == StaffStatus.success &&
                     state.message != null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.message!),
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                    ),
-                  );
+                  AppFeedback.success(context, state.message!);
                 } else if (state.status == StaffStatus.error &&
                     state.message != null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.message!),
-                      backgroundColor: Theme.of(context).colorScheme.error,
-                    ),
-                  );
+                  AppFeedback.error(context, state.message!);
                 }
               },
               builder: (context, state) {
                 if (state.status == StaffStatus.loading &&
                     state.staff.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const SingleChildScrollView(
+                    child: AppSkeletonList(itemCount: 5),
+                  );
                 }
 
                 if (state.staff.isEmpty) {

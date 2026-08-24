@@ -81,7 +81,7 @@ class AppTextStyles {
     color: Color(0xFF1A1A2E),
   );
   static const TextStyle txnMeta = TextStyle(
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: FontWeight.w400,
     color: Color(0xFF8E8E9A),
   );

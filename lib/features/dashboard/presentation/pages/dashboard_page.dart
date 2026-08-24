@@ -18,6 +18,7 @@ import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_state.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -45,9 +46,7 @@ class _DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<_DashboardView> {
-  @override
-  void initState() {
-    super.initState();
+  void _loadDashboardData() {
     final now = DateTime.now();
     final weekAgo = now.subtract(const Duration(days: 6));
     context.read<ReportBloc>()
@@ -55,6 +54,12 @@ class _DashboardViewState extends State<_DashboardView> {
       ..add(const LoadLowStockProducts(DashboardPage._lowStockThreshold))
       ..add(LoadBillHistory(from: weekAgo, to: now, page: 1))
       ..add(LoadSalesRange(from: DateTime(now.year, now.month, 1), to: now));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDashboardData());
   }
 
   @override
@@ -76,13 +81,7 @@ class _DashboardViewState extends State<_DashboardView> {
         child: SafeArea(
           child: RefreshIndicator(
             onRefresh: () async {
-              final now = DateTime.now();
-              final weekAgo = now.subtract(const Duration(days: 6));
-              context.read<ReportBloc>()
-                ..add(LoadDailySales(now))
-                ..add(const LoadLowStockProducts(DashboardPage._lowStockThreshold))
-                ..add(LoadBillHistory(from: weekAgo, to: now, page: 1))
-                ..add(LoadSalesRange(from: DateTime(now.year, now.month, 1), to: now));
+              _loadDashboardData();
               await Future<void>.delayed(const Duration(milliseconds: 600));
             },
             child: CustomScrollView(
@@ -94,11 +93,7 @@ class _DashboardViewState extends State<_DashboardView> {
                   snap: true,
                   backgroundColor: Colors.transparent,
                   elevation: 0,
-                  leading: IconButton(
-                    icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
-                    onPressed: () => Scaffold.of(context).openDrawer(),
-                    tooltip: 'Open menu',
-                  ),
+                  leading: const AdaptiveAppBarLeading(),
                   title: Text(
                     'Dashboard',
                     style: TextStyle(
@@ -226,8 +221,8 @@ class _DashboardViewState extends State<_DashboardView> {
   Widget _sectionTitle(String text) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Text(text, style: AppTextStyles.of(context).sectionTitle.copyWith(
-      fontSize: 13,
-      letterSpacing: 0.8,
+      fontSize: 14,
+      letterSpacing: 0.3,
       color: Theme.of(context).colorScheme.onSurfaceVariant,
     )),
   );
@@ -239,19 +234,27 @@ class _DashboardViewState extends State<_DashboardView> {
     // Build widgets inline to avoid allocating a List that's recreated
     // on every auth change. Only the owner tile is conditional;
     // the rest are direct children with zero alloc.
+    // NOTE: Products & Reports tiles removed — bottom nav now owns
+    // those destinations. Surface secondary business features instead.
     return GridView.count(
       crossAxisCount: 3,
-      mainAxisSpacing: 14,
-      crossAxisSpacing: 14,
+      mainAxisSpacing: 16,
+      crossAxisSpacing: 16,
       childAspectRatio: 0.95,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
         QuickActionTile(
-          icon: Icons.inventory_2_rounded,
-          label: 'Products',
+          icon: Icons.payments_outlined,
+          label: 'Due Payments',
           color: AppTheme.primaryColor,
-          onTap: () { HapticFeedback.lightImpact(); context.go('/products'); },
+          onTap: () { HapticFeedback.lightImpact(); context.go('/due-payments'); },
+        ),
+        QuickActionTile(
+          icon: Icons.people_outline_rounded,
+          label: 'Customers',
+          color: AppTheme.primaryColor,
+          onTap: () { HapticFeedback.lightImpact(); context.go('/customers'); },
         ),
         QuickActionTile(
           icon: Icons.category_rounded,
@@ -260,10 +263,10 @@ class _DashboardViewState extends State<_DashboardView> {
           onTap: () { HapticFeedback.lightImpact(); context.go('/categories'); },
         ),
         QuickActionTile(
-          icon: Icons.bar_chart_rounded,
-          label: 'Reports',
+          icon: Icons.verified_outlined,
+          label: 'Warranty',
           color: AppTheme.primaryColor,
-          onTap: () { HapticFeedback.lightImpact(); context.go('/reports'); },
+          onTap: () { HapticFeedback.lightImpact(); context.go('/warranty'); },
         ),
         QuickActionTile(
           icon: Icons.store_rounded,
@@ -333,10 +336,10 @@ class _TodaysSales extends StatelessWidget {
                     icon: Icons.currency_rupee_rounded,
                   ),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: PremiumStatCard(
-                    label: 'Bills',
+                const SizedBox(width: 16),
+                 Expanded(
+                   child: PremiumStatCard(
+                     label: 'Bills',
                     value: billCount,
                     color: AppTheme.primaryColor,
                     icon: Icons.receipt_long_rounded,
@@ -344,12 +347,12 @@ class _TodaysSales extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: PremiumStatCard(
-                    label: 'Avg Bill',
+            const SizedBox(height: 16),
+             Row(
+               children: [
+                 Expanded(
+                   child: PremiumStatCard(
+                     label: 'Avg Bill',
                     value: avgBill,
                     color: const Color(0xFFFF9800),
                     icon: Icons.trending_up_rounded,

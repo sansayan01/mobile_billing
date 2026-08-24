@@ -1,6 +1,8 @@
+import 'package:billing_app/core/widgets/app_feedback.dart';
 import 'package:billing_app/core/widgets/input_label.dart';
 import 'package:billing_app/core/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/entities/shop.dart';
@@ -79,11 +81,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-            tooltip: 'Open menu',
-          ),
+          leading: const AdaptiveAppBarLeading(),
           title: const Text('Shop Details'),
         ),
         body: BlocConsumer<ShopBloc, ShopState>(
@@ -91,17 +89,14 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
             if (state is ShopLoaded) {
               _updateControllers(state.shop);
             } else if (state is ShopOperationSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: const Text('Shop details saved!'),
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer));
+              AppFeedback.success(context, 'Shop details saved');
               if (Navigator.of(context).canPop()) {
                 context.pop();
               } else {
                 context.go('/');
               }
             } else if (state is ShopError) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(state.message), backgroundColor: Theme.of(context).colorScheme.error));
+              AppFeedback.error(context, state.message);
             }
           },
           buildWhen: (previous, current) =>
@@ -188,10 +183,13 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
             );
           },
         ),
-        bottomNavigationBar: PrimaryButton(
-          onPressed: _saveShop,
-          icon: Icons.save,
-          label: 'Save Details',
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: PrimaryButton(
+            onPressed: _saveShop,
+            icon: Icons.save,
+            label: 'Save Details',
+          ),
         ));
   }
 

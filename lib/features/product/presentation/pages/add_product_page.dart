@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:billing_app/core/widgets/input_label.dart';
 import 'package:billing_app/core/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -203,7 +204,7 @@ class _AddProductPageState extends State<AddProductPage> {
                         c.name.toLowerCase().contains(queryLocal.toLowerCase()))
                     .toList();
 
-            final sheetRadius = BorderRadius.vertical(top: kSheetRadius);
+            const sheetRadius = BorderRadius.vertical(top: kSheetRadius);
             return Container(
               height: MediaQuery.of(context).size.height * 0.55,
               decoration: BoxDecoration(
@@ -398,9 +399,11 @@ class _AddProductPageState extends State<AddProductPage> {
 
       // Upload image to Supabase Storage if picked
       String? uploadedImageUrl = _imageUrl.isNotEmpty ? _imageUrl : null;
-      if (_imageFile != null && mounted) {
+      if (_imageFile != null) {
         uploadedImageUrl = await ImageUploadService.uploadProductImage(_imageFile!, productId);
       }
+
+      if (!mounted) return;
 
       final product = Product(
         id: productId,
@@ -433,12 +436,7 @@ class _AddProductPageState extends State<AddProductPage> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.menu,
-                size: 24, color: Theme.of(context).primaryColor),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-            tooltip: 'Open menu',
-          ),
+          leading: const AdaptiveAppBarLeading(),
           title: const Text('Add Product',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           centerTitle: true,
@@ -773,10 +771,12 @@ class _AddProductPageState extends State<AddProductPage> {
                             ),
                             validator: _warrantyType != 'none'
                                 ? (val) {
-                                    if (val == null || val.isEmpty)
+                                    if (val == null || val.isEmpty) {
                                       return 'Required';
-                                    if (int.tryParse(val) == null)
+                                    }
+                                    if (int.tryParse(val) == null) {
                                       return 'Invalid';
+                                    }
                                     return null;
                                   }
                                 : null,
@@ -816,10 +816,13 @@ class _AddProductPageState extends State<AddProductPage> {
             ),
           ),
         ),
-        bottomNavigationBar: PrimaryButton(
-          onPressed: _isUploading ? null : _submit,
-          icon: Icons.add_circle,
-          label: _isUploading ? 'Uploading...' : 'Add Product',
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: PrimaryButton(
+            onPressed: _isUploading ? null : _submit,
+            icon: Icons.add_circle,
+            label: _isUploading ? 'Uploading...' : 'Add Product',
+          ),
         ));
   }
 }

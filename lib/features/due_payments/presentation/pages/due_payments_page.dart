@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:billing_app/features/due_payments/presentation/bloc/due_payments_bloc.dart';
 import 'package:billing_app/features/due_payments/domain/entities/due_payment.dart';
+import 'package:billing_app/core/widgets/app_feedback.dart';
+import 'package:billing_app/core/widgets/app_skeleton.dart';
 
 class DuePaymentsPage extends StatefulWidget {
   const DuePaymentsPage({super.key});
@@ -166,12 +168,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                 ));
                 Navigator.of(ctx).pop();
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please enter a valid amount'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                AppFeedback.error(context, 'Please enter a valid amount');
               }
             },
             icon: const Icon(Icons.check_circle, size: 18),
@@ -203,21 +200,11 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
       body: BlocConsumer<DuePaymentsBloc, DuePaymentsState>(
         listener: (context, state) {
           if (state.successMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.successMessage!),
-                backgroundColor: Colors.green,
-              ),
-            );
+            AppFeedback.success(context, state.successMessage!);
             context.read<DuePaymentsBloc>().add(const LoadDuePayments());
           }
           if (state.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error!),
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
-            );
+            AppFeedback.error(context, state.error!);
             context.read<DuePaymentsBloc>().add(const LoadDuePayments());
           }
         },
@@ -332,7 +319,9 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
               // Due Payments List
               Expanded(
                 child: state.isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? const SingleChildScrollView(
+                        child: AppSkeletonList(itemCount: 6),
+                      )
                     : state.duePayments.isEmpty
                         ? Center(
                             child: Column(

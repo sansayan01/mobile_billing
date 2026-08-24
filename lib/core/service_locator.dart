@@ -49,6 +49,7 @@ import '../../features/damaged_products/data/repositories/damaged_products_repos
 import '../../features/damaged_products/domain/repositories/damaged_products_repository.dart';
 import '../../features/damaged_products/presentation/bloc/damaged_products_bloc.dart';
 import '../../core/theme/theme_cubit.dart';
+import '../../core/navigation/navigation_cubit.dart';
 import 'realtime/realtime_service.dart';
 import '../../features/audit/data/repositories/audit_repository_impl.dart';
 import '../../features/audit/domain/repositories/audit_repository.dart';
@@ -287,6 +288,9 @@ Future<void> init() async {
 
   // ============== Theme ==============
   sl.registerSingleton(ThemeCubit());
+
+  // ============== Navigation ==============
+  sl.registerSingleton(NavigationCubit());
 
   // ============== Report Feature ==============
   // Repository

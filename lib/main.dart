@@ -7,6 +7,7 @@ import 'core/service_locator.dart' as di;
 import 'core/supabase/supabase_client.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_cubit.dart';
+import 'core/navigation/navigation_cubit.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
@@ -62,6 +63,8 @@ class MyApp extends StatelessWidget {
             create: (context) => di.sl<PrinterBloc>()..add(InitPrinterEvent())),
         BlocProvider<ThemeCubit>(
             create: (context) => di.sl<ThemeCubit>()),
+        BlocProvider<NavigationCubit>(
+            create: (context) => di.sl<NavigationCubit>()),
         BlocProvider<StockBloc>(
             create: (context) => di.sl<StockBloc>()),
         BlocProvider<DamagedProductsBloc>(

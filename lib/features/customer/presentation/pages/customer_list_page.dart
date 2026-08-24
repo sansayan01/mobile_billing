@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:billing_app/core/service_locator.dart';
+import 'package:billing_app/core/widgets/app_feedback.dart';
+import 'package:billing_app/core/widgets/app_skeleton.dart';
 import 'package:billing_app/features/customer/domain/entities/customer.dart';
 import 'package:billing_app/features/customer/presentation/bloc/customer_bloc.dart';
 
@@ -88,18 +90,15 @@ class _CustomerListPageState extends State<CustomerListPage> {
               child: BlocConsumer<CustomerBloc, CustomerState>(
                 listener: (context, state) {
                   if (state.error != null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.error!),
-                        backgroundColor: Theme.of(context).colorScheme.error,
-                      ),
-                    );
+                    AppFeedback.error(context, state.error!);
                     sl<CustomerBloc>().add(const ClearCustomerMessage());
                   }
                 },
                 builder: (context, state) {
                   if (state.isLoading && state.customers.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const SingleChildScrollView(
+                      child: AppSkeletonList(itemCount: 6),
+                    );
                   }
 
                   if (state.customers.isEmpty) {

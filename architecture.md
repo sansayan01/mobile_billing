@@ -51,6 +51,7 @@
 - `bill_items` — id, bill_id, product_id, quantity, price, total
 - `locations` — id, name (Rack/Shelf/Box), description, created_at
 - `inventory_log` — id, product_id, change_type (add/sell/remove), quantity, staff_id, created_at
+- `customers` — id, shop_id, name, phone (unique per shop), created_at  *(PLANNED — Customer CMS v1: name+phone only)*
 
 ### Real-time Sync
 - Supabase Realtime enabled on `products`, `bills`, `inventory_log` tables

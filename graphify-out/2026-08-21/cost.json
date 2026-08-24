@@ -1,0 +1,80 @@
+{
+  "runs": [
+    {
+      "date": "2026-07-16T23:33:41.198348+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 115
+    },
+    {
+      "date": "2026-07-17T00:16:00.965922+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 17
+    },
+    {
+      "date": "2026-07-17T00:27:59.986496+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 19
+    },
+    {
+      "date": "2026-07-17T01:15:00.124338+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 19,
+      "mode": "update-code-only"
+    },
+    {
+      "date": "2026-07-17T01:45:11.092832+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 10,
+      "mode": "update-dashboard"
+    },
+    {
+      "date": "2026-07-17T02:43:37.951401+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 3
+    },
+    {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 3,
+      "mode": "update-navfixes"
+    },
+    {
+      "date": "2026-07-17T04:51:54.911072+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 148
+    },
+    {
+      "date": "2026-07-17T06:08:24.506751+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 13
+    },
+    {
+      "date": "2026-07-17T07:49:34.316578+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 152
+    },
+    {
+      "date": "2026-07-17T08:55:43.619310+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 153
+    },
+    {
+      "date": "2026-07-22T19:08:03.396779+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 68
+    }
+  ],
+  "total_input_tokens": 0,
+  "total_output_tokens": 0
+}

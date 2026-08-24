@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -992,12 +993,7 @@ class _ProductListPageState extends State<ProductListPage> {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      leading: IconButton(
-        icon: Icon(Icons.menu,
-            size: 24, color: Theme.of(context).primaryColor),
-        onPressed: () => Scaffold.of(context).openDrawer(),
-        tooltip: 'Open menu',
-      ),
+      leading: const AdaptiveAppBarLeading(),
       title: const Text('Products',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
       centerTitle: true,

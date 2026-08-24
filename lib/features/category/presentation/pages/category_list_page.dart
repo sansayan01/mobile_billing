@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/widgets/app_skeleton.dart';
 import '../bloc/category_bloc.dart';
 import '../../domain/entities/category.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -92,10 +95,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                       _selectedIds.clear();
                     }),
                   )
-                : IconButton(
-                    icon: Icon(Icons.menu_rounded, color: t.primaryColor),
-                    onPressed: () => Scaffold.of(context).openDrawer(),
-                  ),
+                : const AdaptiveAppBarLeading(),
             title: _isSelectionMode
                 ? AnimatedSwitcher(
                     duration: const Duration(milliseconds: 250),
@@ -205,20 +205,14 @@ class _CategoryListPageState extends State<CategoryListPage>
           BlocConsumer<CategoryBloc, CategoryState>(
             listener: (context, state) {
               if (state.status == CategoryStatus.success && state.message != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message!),
-                    backgroundColor: Colors.green.shade600,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    margin: const EdgeInsets.all(16),
-                  ),
-                );
+                AppFeedback.success(context, state.message!);
               }
             },
             builder: (context, state) {
               if (state.status == CategoryStatus.loading && state.categories.isEmpty) {
-                return const SliverFillRemaining(child: Center(child: CircularProgressIndicator()));
+                return const SliverFillRemaining(
+                  child: SingleChildScrollView(child: AppSkeletonList(itemCount: 5)),
+                );
               }
 
               if (state.categories.isEmpty) {
@@ -379,7 +373,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                   color: AppTheme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Icon(Icons.local_fire_department_rounded, size: 14, color: AppTheme.primaryColor),
+                child: const Icon(Icons.local_fire_department_rounded, size: 14, color: AppTheme.primaryColor),
               ),
               const SizedBox(width: 8),
               Text('Top Categories',
@@ -419,6 +413,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // ignore: non_const_argument_for_const_parameter
                         Icon(IconData(cat.iconCodePoint, fontFamily: 'MaterialIcons'), size: 15, color: color),
                         const SizedBox(width: 6),
                         Text(cat.name, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: color)),
@@ -445,6 +440,7 @@ class _CategoryListPageState extends State<CategoryListPage>
   // ═══════════════════════════════════════════════════════════════
   Widget _categoryCard(Category cat, int count, bool selected, ThemeData t) {
     final color = Color(cat.colorValue);
+    // ignore: non_const_argument_for_const_parameter
     final icon = IconData(cat.iconCodePoint, fontFamily: 'MaterialIcons');
 
     return GestureDetector(
@@ -642,7 +638,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                     ),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.category_rounded, size: 56, color: AppTheme.primaryColor),
+                  child: const Icon(Icons.category_rounded, size: 56, color: AppTheme.primaryColor),
                 ),
               ),
               const SizedBox(height: 32),
@@ -692,6 +688,7 @@ class _CategoryListPageState extends State<CategoryListPage>
     final t = Theme.of(context);
     final count = _count(cat);
     final color = Color(cat.colorValue);
+    // ignore: non_const_argument_for_const_parameter
     final icon = IconData(cat.iconCodePoint, fontFamily: 'MaterialIcons');
 
     showDialog(
@@ -820,9 +817,10 @@ class _CategoryListPageState extends State<CategoryListPage>
       ),
     );
 
-    if (confirmed == true) {
+    if (confirmed == true && mounted) {
+      final bloc = context.read<CategoryBloc>();
       for (final id in _selectedIds) {
-        context.read<CategoryBloc>().add(DeleteCategory(id));
+        bloc.add(DeleteCategory(id));
       }
       setState(() {
         _isSelectionMode = false;

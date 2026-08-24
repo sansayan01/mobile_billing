@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:go_router/go_router.dart';
@@ -82,12 +83,7 @@ class _ScannerPageState extends State<ScannerPage> {
       canPop: true,
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.menu,
-                size: 24, color: Theme.of(context).primaryColor),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-            tooltip: 'Open menu',
-          ),
+          leading: const AdaptiveAppBarLeading(),
           title: const Text('Scan Barcode',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         ),

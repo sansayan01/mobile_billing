@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:app_settings/app_settings.dart';
 
+import '../../../../core/navigation/navigation_cubit.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/theme/theme_cubit.dart';
 import '../../../shop/presentation/bloc/shop_bloc.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/auth_event.dart';
 import '../bloc/printer_bloc.dart';
 import '../bloc/printer_event.dart';
 import '../bloc/printer_state.dart';
@@ -29,11 +35,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-          tooltip: 'Open menu',
-        ),
+        leading: const AdaptiveAppBarLeading(),
         title: const Text('Settings',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
@@ -121,6 +123,88 @@ class _SettingsPageState extends State<SettingsPage> {
                     );
                   },
                 ),
+                BlocBuilder<NavigationCubit, AppNavigationMode>(
+                  builder: (context, navMode) {
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryColor
+                                      .withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.swap_horiz_rounded,
+                                  color: AppTheme.primaryColor,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Navigation Style',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14,
+                                            color:
+                                                theme.colorScheme.onSurface)),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      navMode == AppNavigationMode.bottomNav
+                                          ? 'Bottom bar with quick actions'
+                                          : 'Classic hamburger menu',
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: theme
+                                              .colorScheme.onSurfaceVariant),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: SegmentedButton<AppNavigationMode>(
+                              showSelectedIcon: false,
+                              segments: const [
+                                ButtonSegment(
+                                  value: AppNavigationMode.bottomNav,
+                                  icon: Icon(Icons.space_dashboard_rounded,
+                                      size: 18),
+                                  label: Text('Bottom Bar'),
+                                ),
+                                ButtonSegment(
+                                  value: AppNavigationMode.drawer,
+                                  icon: Icon(Icons.menu_rounded, size: 18),
+                                  label: Text('Hamburger'),
+                                ),
+                              ],
+                              selected: {navMode},
+                              onSelectionChanged: (selection) {
+                                HapticFeedback.selectionClick();
+                                context
+                                    .read<NavigationCubit>()
+                                    .setMode(selection.first);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
 
@@ -138,6 +222,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   subtitle: 'Edit business info & address',
                   onTap: () => context.push('/shop'),
                 ),
+                _buildListItem(
+                  theme: theme,
+                  icon: Icons.logout_rounded,
+                  title: 'Logout',
+                  subtitle: 'Sign out of your account',
+                  iconColor: theme.colorScheme.error,
+                  onTap: () {
+                    context.read<AuthBloc>().add(const LogoutRequested());
+                  },
+                ),
               ],
             ),
 
@@ -148,13 +242,9 @@ class _SettingsPageState extends State<SettingsPage> {
             BlocConsumer<PrinterBloc, PrinterState>(
               listener: (context, state) {
                 if (state.errorMessage != null) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(state.errorMessage!),
-                      backgroundColor: theme.colorScheme.error));
+                  AppFeedback.error(context, state.errorMessage!);
                 } else if (state.status == PrinterStatus.connected) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Connected to printer'),
-                      backgroundColor: Colors.green));
+                  AppFeedback.success(context, 'Connected to printer');
                 }
               },
               builder: (context, state) {
@@ -286,6 +376,7 @@ class _SettingsPageState extends State<SettingsPage> {
     required ThemeData theme,
     required IconData icon,
     required String title,
+    Color? iconColor,
     String? subtitle,
     Widget? subtitleWidget,
     Widget? trailingWidget,
@@ -306,7 +397,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, color: AppTheme.primaryColor, size: 20),
+              child: Icon(icon, color: iconColor ?? AppTheme.primaryColor, size: 20),
             ),
             const SizedBox(width: 16),
             Expanded(

@@ -147,7 +147,7 @@ class WarrantyRepositoryImpl implements WarrantyRepository {
         return Right(_fromMap(response));
       }
 
-      return Left(ServerFailure('Claim not found after update'));
+      return const Left(ServerFailure('Claim not found after update'));
     } catch (e) {
       return Left(ServerFailure('Failed to update claim status: $e'));
     }

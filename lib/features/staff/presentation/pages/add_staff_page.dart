@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -92,11 +93,7 @@ class _AddStaffPageState extends State<AddStaffPage> {
           if (!isOwner) {
             return Scaffold(
               appBar: AppBar(
-                leading: IconButton(
-                  icon: Icon(Icons.menu, size: 24, color: Theme.of(context).primaryColor),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
-                  tooltip: 'Open menu',
-                ),
+                leading: const AdaptiveAppBarLeading(),
                 title: const Text('Add Staff'),
               ),
               body: Center(
@@ -121,11 +118,7 @@ class _AddStaffPageState extends State<AddStaffPage> {
 
           return Scaffold(
             appBar: AppBar(
-              leading: IconButton(
-                icon: Icon(Icons.menu, size: 24, color: Theme.of(context).primaryColor),
-                onPressed: () => Scaffold.of(context).openDrawer(),
-                tooltip: 'Open menu',
-              ),
+              leading: const AdaptiveAppBarLeading(),
               title: const Text('Add Staff'),
             ),
             body: SafeArea(

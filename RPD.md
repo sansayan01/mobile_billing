@@ -66,6 +66,23 @@ Flutter-based **billing + inventory management** app for a phone shop (phones, h
   - [x] Quick Actions repositioned: below Today's Sales, above Weekly Trend
   - [x] Analytics data auto-refreshes on pull-to-refresh
 
+### 9. Due Payments Management (NEW)
+- [x] **Partial Payment Tracking** — track amount paid vs due at checkout
+- [x] **Payment Status** — bills marked as 'paid', 'partial', or 'due'
+- [x] **Due Payments Dashboard** — view all pending dues with total pending amount
+- [x] **Collect Payment** — collect partial payments against pending bills
+- [x] **Search Due Payments** — search by customer name or bill ID
+- [x] **Receipt Integration** — show due amount on receipt if partial payment
+
+### 10. Damaged Products Management (NEW)
+- [x] **Mark as Damaged** — mark products as damaged from product detail page + long-press menu
+- [x] **Damage Types** — Broken, Defective, Expired, Water Damage, Scratched, Other
+- [x] **Auto Stock Decrease** — stock automatically decreases when product marked as damaged
+- [x] **Damaged Products Dashboard** — total damage loss (₹) + count of damaged products
+- [x] **Search & Filter** — search by product name/barcode, filter by date range
+- [x] **Audit Trail** — damage logged in stock_adjustments + audit_logs tables
+- [x] **Damage History** — full list with product name, barcode, quantity, loss amount, date
+
 ### 8. Staff Management (Owner-only)
 - [x] Owner can **create staff account** (Supabase Auth signUp + shop_id link) with name, email, phone, password
 - [x] Staff **list view** (own shop only, scoped by RLS) — name, email, role badge, phone
@@ -103,6 +120,15 @@ Shop isolation is enforced at **3 layers**:
 - All queries (products, categories, bills, bill_items, inventory_log, staff) filtered by shop_id
 - Bill submission scopes inserts + stock updates + inventory log by shop_id
 - Realtime product events filtered by shop_id before reaching ProductBloc
+
+### 11. Customer CMS (Minimal) — PLANNED
+- [ ] **Scope (v1):** only `name` + `phone` (per user — no email/address/notes)
+- [ ] Supabase `customers` table (id, shop_id, name, phone unique per shop, created_at) + RLS
+- [ ] Customer list — search by name OR phone
+- [ ] Add customer — name + phone, phone validated + unique per shop
+- [ ] Customer detail — linked purchase/warranty/due history
+- [ ] Light link: billing checkout customer select-by-phone
+- [ ] Full plan: `customer_cms_plan.md`
 
 ---
 

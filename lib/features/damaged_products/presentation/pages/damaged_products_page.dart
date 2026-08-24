@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:billing_app/core/utils/csv_export_import.dart';
+import 'package:billing_app/core/widgets/app_feedback.dart';
+import 'package:billing_app/core/widgets/app_skeleton.dart';
 import 'package:billing_app/features/damaged_products/domain/entities/damaged_product.dart';
 import 'package:billing_app/features/damaged_products/presentation/bloc/damaged_products_bloc.dart';
 
@@ -32,8 +34,6 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) => context.go('/'),
@@ -58,12 +58,7 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
                           );
                         } catch (e) {
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Export failed: $e'),
-                                backgroundColor: theme.colorScheme.error,
-                              ),
-                            );
+                            AppFeedback.error(context, 'Export failed: $e');
                           }
                         }
                       },
@@ -81,20 +76,10 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
       body: BlocConsumer<DamagedProductsBloc, DamagedProductsState>(
         listener: (context, state) {
           if (state.successMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.successMessage!),
-                backgroundColor: theme.colorScheme.primary,
-              ),
-            );
+            AppFeedback.success(context, state.successMessage!);
           }
           if (state.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error!),
-                backgroundColor: theme.colorScheme.error,
-              ),
-            );
+            AppFeedback.error(context, state.error!);
           }
         },
         builder: (context, state) {
@@ -181,7 +166,9 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
               // Damaged products list
               Expanded(
                 child: state.isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? const SingleChildScrollView(
+                        child: AppSkeletonList(itemCount: 6),
+                      )
                     : state.damagedProducts.isEmpty
                         ? _buildEmptyState(context)
                         : _buildDamagedProductsList(context, state),

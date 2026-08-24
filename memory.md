@@ -1,5 +1,473 @@
 # Memory — Session Log & Context
 
+## STANDING RULE (2026-08-21, user-confirmed) — Use Graphify, Don't Full-Read Files ⚡
+When investigating/understanding code (finding a symbol, tracing call paths, locating a
+widget/method, understanding a feature's wiring), **DO NOT full-read files** — it wastes
+tokens + time. Use graphify instead (fast, no LLM needed after build):
+- `graphify explain "SymbolName"`  → node + neighbors plain explanation (e.g. `graphify explain "_buildProductTile"`)
+- `graphify query "X"`             → BFS traversal around a symbol (add `--budget N` for more nodes)
+- `graphify path "A" "B"`          → shortest call/data path between two nodes
+- `graphify get_node <name>`       → specific symbol detail
+Only read_file the EXACT small region once graphify tells you the file+line, then patch.
+Graphify is already built/updated (graphify-out/). After each code change run `graphify update .`.
+
+## STANDING RULE (2026-08-21, user-confirmed) — Post-change Hot Restart on Device ⚡
+After ANY code change is complete:
+1. `flutter analyze lib` → 0 errors FIRST.
+2. **IMMEDIATELY hot restart the device** (before md/graphify): in same Herdr tab (w8:t8), the OTHER pane **w8:p9** is the user's phone running APK via **wireless debugging** (`flutter run` active, PID ~7139). Send capital `R` (Shift+R) via `herdr pane send-text w8:p9 \"R\"` to hot-restart. Do this right after analyze is clean so the USER can START TESTING immediately.
+3. THEN update md files (memory.md etc) + `graphify update .` (background; user is testing meanwhile).
+4. Logs check (w8:p9 read) allowed anytime for error/crash/error-handling investigation.
+
+## Current Session: 2026-08-24 — PREMIUM UI/UX REDESIGN PROJECT 🚀 (Research Phase ✅)
+
+### Project Goal (user's master prompt)
+- Full premium UI/UX redesign — NOT reskin. Layout/nav/hierarchy/motion sab redesign allowed.
+- **Functionality preserve karna hai** — BLoC/Supabase/auth/printing/scanner logic untouched.
+- Skills use karne ka permission: ui-ux-pro-max (design system) + taste-skill (audit).
+- ⚡ **ELECTRICITY RULE:** har sub-phase ke baad `graphify update .` + memory.md update (power cuts se progress bachane ke liye).
+
+### Research Done (2026-08-24)
+1. **ui-ux-pro-max installed** — `npm i -g ui-ux-pro-max-cli` + `uipro init --ai opencode` → `.opencode/skills/ui-ux-pro-max/`. Python 3.11 available as `python` (not python3 on this Windows box).
+2. **Generated design system direction** (`python search.py "invoice billing POS..." --design-system`): Minimalism/Swiss style, trust-focused pattern, navy+green palette suggestion, Poppins/Open Sans fonts.
+3. **Existing theme audited**:
+   - Primary purple `#6C63FF`, secondary teal `#03DAC6` (classic AI-default combo), IBM Plex Sans via google_fonts
+   - Dark mode FULLY exists (theme_cubit + Hive persistence) — redesign must keep it
+   - Cards elevation 4 / radius 16, inputs radius 12 filled, buttons elevation 4 colored shadow
+   - `aiGradient` (lavender→blue→cyan) used on dashboard bg
+   - text_styles.dart has hardcoded hex colors + good tabularFigures() usage already
+4. **Navigation audited** — CRITICAL FINDING: drawer-only nav (AppShell → AppDrawer), **no bottom navigation**. Drawer = 16 items across 7 sections (Main/Inventory/Reports/Warranty/Payments/Settings/Staff). POS app ke liye ye critical UX issue hai.
+5. **Scale**: 170 dart files, 16 features, 31 pages, 16 core/widgets (mostly dashboard-specific cards).
+
+### Design Direction Decision (pending user confirmation)
+- Option A: Purple identity rakhо, polish karo (safer, brand continuity)
+- Option B: Generated navy+green professional palette (trust feel for billing)
+- Mockup images banake dikhana better hai (imagegen-frontend-mobile skill)
+
+### Next Steps
+1. ~~Audit report~~ ✅ DONE (2026-08-24) — C1 drawer-only nav, C2 tiny fonts (11-13px body), C3 no tokens (179 hardcoded colors, 10 radii), H1 25 files generic spinners, H2 28 files snackbars inconsistent, H3 AI-default purple/teal
+2. ~~Design tokens~~ ✅ DONE (2026-08-24) — `lib/core/theme/app_dimensions.dart` created: AppSpacing (4-pt grid: xs4/sm8/md12/lg16/xl24/xxl32), AppRadius (sm8/md12/lg16/xl20/full), AppElevation (low1/mid3/high8 + tinted shadow helpers), AppDurations (150/250/400ms + easeOutCubic/spring curves), AppTouchTarget (min48/button52). analyze clean. **Abhi koi file use nahi kar rahi — wiring screens ke saath hogi**
+3. Navigation redesign (bottom nav) — **IN PROGRESS (2026-08-24)**:
+   - ✅ `lib/core/widgets/app_bottom_nav.dart` CREATED — 5 tabs: Home(/) · Products(/products) · **Billing CENTER raised gradient circle** (/scan, TweenAnimationBuilder scale on active) · Reports(/reports) · More(opens drawer via Scaffold.of)
+   - Active state: pill highlight (primary @12% alpha) + AnimatedContainer 250ms easeOutCubic + HapticFeedback.selectionClick
+   - SafeArea(top:false) + surface color + hairline top border. Touch targets ≥48. Semantics labels added.
+4. **[RECOVERED SUMMARY — kuch entries editor se lost thi, condensed]** Drawer slimmed 16→9 (Catalog/Business/Shop/Staff sections). Dashboard pass#1 (Due Payments/Customers/Warranty tiles added, _loadDashboardData dedupe). Typography scale `app_typography.dart` wired into app_theme (body 16/14). Components: `app_skeleton.dart` (AppSkeleton/ListTile/List pulse) + `app_feedback.dart` (AppFeedback.success/error/info). **Migration 18 files complete** (skeletons 9 list pages, ~40 snackbars unified; button/dialog/pagination spinners intentionally KEPT). Motion: global _FadeSlideUpTransition page transitions, PremiumStatCard entrance+value crossfade, PrimaryButton press-scale 0.97 + elevation 8→4. design.md updated with Design System v2 section. Full analyze 0 errors maintained.
+5. **EXPANDABLE TAB BAR (video-inspired) DONE (2026-08-25)** — user bheja "Expandable Tab Bar.mp4" (ffmpeg frames se analyze). **`quick_actions_panel.dart` NEW:** QuickActionsState.open (global ValueNotifier) + QuickActionsPanel.show() → transparent PageRouteBuilder (300ms in/250ms out) — scrim(tap-close) + glass grid panel (4-col, 8 actions: Categories/Customers/DuePay/Warranty/Damaged/Shop/Settings/Staff-owner, spring scale from bottomRight) + close button. **`app_bottom_nav.dart` REWRITTEN video-style:** floating glass pill (BackdropFilter 18, icon-only 4 tabs Home/Products/Billing/Reports, active=rounded-square primary@14%) + separate 56px circular gradient + button. **SMOOTH MORPH:** Hero(tag 'quick-actions-toggle') dono buttons pe (same gradient circle, same position right:16/bottom:10) + TweenAnimationBuilder rotates + icon 0→45° (=X, spring) on open; hero reverse flight on pop. Nav pill AnimatedOpacity→0 + scale 0.92 when open. Drawer intact (dashboard AppBar hamburger se — logout wahan). analyze lib = 0 issues TOTAL.
+   - **Tweak (user feedback):** `extendBody: true` in app_shell (content pill ke PEECHE se scroll hoti hai — true transparency, glass blur visible) + nav padding (16,6,16,4) + panel offsets matched (X bottom=+7, panel=+76). NOTE: extendBody se lambi lists ka last item pill ke peeche chhup sakta hai — jo page ajeeb lage uska bottom padding badhana.
+   - **FIX (user screenshot — Shop Details):** pinned bottom buttons nav ke peeche chhupe the. Fix = `SafeArea(top:false)` wrap on inner bottomNavigationBar/bottomSheet (extendBody nav-height MediaQuery.padding.bottom inject karta hai, SafeArea use consume karke button pill ke upar lift hota hai): shop_details Save, edit_product Save, add_product Add, home_page Review Order bottomSheet. product_list cart bar me PEHLE SE inner SafeArea tha (auto-fix, koi change nahi). receipt_preview + checkout = fullscreen routes (nav hidden) — fix not needed. Pattern: **naye pages me pinned bottom UI hamesha SafeArea(top:false) me wrap karo**.
+6. **NAVIGATION STYLE TOGGLE (user idea) DONE (2026-08-25)** — `lib/core/navigation/navigation_cubit.dart` NEW: `AppNavigationMode {bottomNav, drawer}` (⚠ Flutter material.dart ka apna NavigationMode hota hai — NAME CLASH hota hai, isliye App prefix) + NavigationCubit w/ Hive persistence ('nav_mode' key in settings box, default bottomNav). Wired: service_locator (singleton), main.dart (BlocProvider), **app_shell.dart** BlocBuilder — bottomNav mode = extendBody+AppBottomNav, drawer mode = no bottom nav + normal scaffold (drawer via existing AppBars hamburgers: dashboard/products/reports pages). **Settings → Appearance → 'Navigation Style'** tile: SegmentedButton (Bottom Bar 🆚 Hamburger) + haptic + live switch. Lesson: enum naam Flutter SDK se clash check karo pehle.
+7. **NAV MODE RULES (user requirement) IMPLEMENTED (2026-08-25)** — Rules: drawer mode = drawer me SARE features; bottomNav mode = KISI bhi page pe hamburger NAHI. (a) **`adaptive_app_bar_leading.dart` NEW**: drawer mode→hamburger, bottomNav mode→back btn (route=='/' pe hidden). **17 pages bulk-patched** via PowerShell tempered regex (`leading: IconButton(...openDrawer...)` → `leading: const AdaptiveAppBarLeading(),` + import auto-add). category_list ternary + home_page floating camera menu button manually (home: drawer mode pe hi dikhega). (b) **AppDrawer mode-aware**: drawer mode = FULL menu (Main/Inventory/Reports sub-pages/Warranty sections restored) + slim for bottomNav (+Reports Home link). (c) **Settings Logout item** added (bottomNav mode me drawer unreachable — logout access chahiye) w/ `_buildListItem iconColor` param (⚠ regex ne _buildSwitchItem ko bhi touch kiya tha — revert kiya). (d) product_detail bottom buttons = scroll content ke end me the → scroll padding bottom = 16+MediaQuery.padding.bottom. analyze lib clean (1 pre-existing info).
+8. **HAMBUGER FIX (user report: "hamburger kaam nahi kar raha")** — ROOT CAUSE: pages ke nested inner Scaffolds hain; AdaptiveAppBarLeading ka apna context INNER scaffold ko dhoondta tha (drawerless) → openDrawer silent no-op. Pehle kaam karta tha kyunki original code PAGE-STATE ka context use karta tha (inner scaffold ke UPAR → outer shell scaffold milta tha). **FIX: `AppShell.scaffoldKey` (static GlobalKey<ScaffoldState>)** — shell Scaffold pe assign, AdaptiveAppBarLeading ab `AppShell.scaffoldKey.currentState?.openDrawer()` call karta hai. **LESSON: nested Scaffolds me `Scaffold.of(context)` context depth pe depend karta hai — cross-scaffold drawer access ke liye GlobalKey use karo.** User ne bola: use 'boss' mat bolo. analyze clean.
+
+## Current Session: 2026-08-21 — Customer CMS planning ✅ (build pending)
+- User approved: full Customer CMS (name+phone only, NO email/address). Link to bills + warranty + due payments via `customer_id`.
+- **Full plan:** `customer_cms_plan.md`. Build order + risks documented there.
+- **KEY DISCOVERY (verify before any migration):** repo business tables (products, bills, due_payments, warranty_claims) have **NO RLS** — shop isolation is Dart-side via `_resolveShopId()` + `.eq('shop_id', effectiveShopId)` (confirmed in product_/due_payments_repository_impl). Only `profiles` has RLS. So `customers` table = NO RLS, Dart filtering. Don't invent `app.shop_id` session RLS.
+- Migrations needed (2): (1) `customers` table + unique(shop_id,phone) + indexes; (2) `bills`/`warranty_claims` add `customer_id` FK + phone backfill.
+- Phone normalize helper shared at every capture point.
+- Standing rule: after build → analyze → hot restart w8:p9 → docs + graphify.
+
+---
+
+## Current Session: 2026-08-21 — Product Page: Remove Redundant Add Button ✅
+
+### Change
+- User: product page mein FAB already hai, toh search-bar ke upar wala add button hata do.
+- That "button above search bar" = the AppBar `Icons.add_rounded` IconButton I added earlier (to compensate for FAB hiding on cart).
+- Removed AppBar add IconButton from `_buildAppBar`.
+- Also removed the FAB `Visibility` hide-on-cart wrapper → FAB now ALWAYS visible (so add-product stays reachable even when cart bar shows). FAB auto-floats above the cart bar (no clash).
+- Empty-state "Add Product" button (when no products) kept — still useful.
+
+### Verify
+- `flutter analyze lib/features/product/presentation/pages/product_list_page.dart` → 0 issues.
+
+---
+
+## Current Session: 2026-08-21 — Checkout Dialog: Scanner Add Broken ✅
+
+### Problem (user reported)
+- Checkout "Add Product" dialog: list-selection add works, but scanner (camera) add + manual barcode entry does NOT add to cart.
+
+### Root Cause
+- The dialog's `StatefulBuilder` shadows the page `context` with its own `context` param.
+- Scanner/manual handlers did `Navigator.pop(ctx)` (closes dialog) THEN used the **disposed dialog `context`** to `context.push('/scan/scanner')` and `context.read<BillingBloc>().add(ScanBarcodeEvent(...))`.
+- Reading BillingBloc / navigating from an unmounted dialog context silently fails → scan never reaches the cart.
+- List-add worked because it does NOT pop the dialog first (context still valid).
+
+### Fix (checkout_page.dart)
+1. Captured `final pageContext = context;` BEFORE `showDialog` (page-level context, never shadowed).
+2. Scanner button: use `pageContext.push('/scan/scanner')` + `pageContext.read<BillingBloc>().add(ScanBarcodeEvent(result))`.
+3. Manual barcode `onSubmitted`: same switch to `pageContext`.
+- Removed dead `if (mounted) {}` empty blocks.
+
+### Verify
+- `flutter analyze lib/features/billing/presentation/pages/checkout_page.dart` → 0 errors (1 pre-existing info lint at 988, safe).
+
+---
+
+## Current Session: 2026-08-21 — Billing Scanner Beep Sound Missing ✅
+
+### Problem (user reported)
+- Product page scanner (search) → beep sound aa raha tha.
+- Billing / scan & billing page → product scan karte time beep nahi aa raha tha.
+
+### Root Cause
+- Billing product-scan flow uses `home_page.dart` inline `MobileScanner` with its own `_onDetect` (line 65). That handler only called `Vibration.vibrate()` — **`BeepHelper.playBeep()` call missing** (aur `beep_helper` import bhi nahi tha).
+- Standalone `scanner_page.dart` (used by product search + checkout scan button) DOES call `BeepHelper.playBeep()` — that's why those beep the right way.
+- Checkout's scan button correctly `context.push('/scan/scanner')` → uses the beep-enabled page, so it was fine.
+
+### Fix
+1. Added `import '../../../../core/utils/beep_helper.dart';` to `home_page.dart`.
+2. Added `BeepHelper.playBeep();` in `HomePage._onDetect` right after the vibration, before `ScanBarcodeEvent`.
+3. **Softened vibration**: was `Vibration.vibrate()` (default 500ms, max amplitude = too harsh). Changed to `Vibration.vibrate(duration: 120, amplitude: 128)` (short + ~half intensity).
+
+### Verify
+- `flutter analyze lib/features/billing` → 0 errors (only 1 pre-existing info lint at checkout_page.dart:983, unrelated).
+
+---
+
+## Current Session: 2026-08-21 — Navigation Back-Button Fix (app close bug) ✅
+
+### Problem (user reported)
+From any sub-page, Android back button closed the whole app instead of returning to Dashboard. Dashboard back should close the app (correct), but sub-pages should land on dashboard first.
+
+### Root Cause (graphify + code)
+- `lib/config/routes/app_shell.dart` wrapped the ENTIRE shell in `PopScope(canPop:false)` → `onPopInvoked` forced `goRouter.go('/')` on EVERY back press. This swallowed sub-page pops and, because `go('/')` resets the stack, the system saw no remaining history and closed the activity. Dashboard back also didn't reliably exit.
+
+### Fix
+1. **Removed global PopScope from `app_shell.dart`** — pages now pop normally via go_router's navigator stack (ShellRoute handles `/products` → `/` etc).
+2. **Added `PopScope(canPop:false)` + `SystemNavigator.pop()` to `DashboardPage`** (`_DashboardViewState.build`) — back on dashboard now cleanly exits the app.
+- `services.dart` already imported (SystemNavigator available).
+- Sub-pages already use `context.pop()`/`Navigator.pop()` → land on parent → eventually dashboard.
+
+### Verify
+- `flutter analyze lib` → 0 errors. Both edited files clean.
+
+### Flow now
+sub-page back → parent page → ... → Dashboard → (back) → app closes. ✅
+
+---
+
+## Current Session: 2026-08-21 — Products Page: Persistent Cart Bar (FAB overlap fix) ✅
+
+### What Was Done
+1. **Swipe-to-add cart feedback changed from SnackBar → persistent mini-cart bar** (user chose Option 3).
+   - `product_list_page.dart`: removed floating `SnackBar` in `_addToCart` (it overlapped + hid the add-product FAB at bottom-right).
+   - Added `bottomNavigationBar` = `BlocBuilder<BillingBloc>` mini-cart bar: shows item count + `totalAmount` + "View Cart" button (pushes `/scan/checkout`). Hidden (`SizedBox.shrink`) when cart empty.
+   - FAB (`_buildFab`, add product) now wrapped in `Visibility` — hidden when cart non-empty so it doesn't clash with the cart bar.
+   - Added "Add product" `IconButton` to the AppBar so add-product stays reachable even when FAB is hidden.
+   - Cart bar uses `AppTheme.primaryColor` gradient, `SafeArea` for notch, rounded 16 radius.
+
+   **flutter analyze:** 0 errors (whole lib: 0 errors). Only pre-existing info lints remain.
+
+---
+
+## Current Session: 2026-08-21 — Damaged Products Management Feature ✅
+
+### What Was Done
+1. **Damaged Products Management Feature** — complete implementation for tracking and managing damaged inventory:
+
+   **Domain Layer:**
+   - `DamagedProduct` entity: id, productId, productName, barcode, image, price, quantityDamaged, previousStock, newStock, damageType, notes, damageDate, reportedByName, estimatedLoss
+   - `DamagedProductsRepository` interface: getDamagedProducts, getTotalDamageLoss, getDamagedProductsCount, markAsDamaged
+
+   **Data Layer:**
+   - `DamagedProductsRepositoryImpl`: queries `stock_adjustments` where `reason='damage'`, joined with products for name/barcode/price/image. Mark as damaged: decreases stock + logs adjustment + audit log. No new DB migration needed — reuses existing `stock_adjustments` table.
+
+   **BLoC Layer:**
+   - `DamagedProductsBloc`: LoadDamagedProducts, SearchDamagedProducts, FilterDamagedProductsByDate, MarkProductAsDamaged events
+   - State: damagedProducts, totalLoss, totalCount, isLoading, isMarking, error, successMessage, searchQuery, startDate, endDate
+
+   **Presentation Layer:**
+   - `DamagedProductsPage`: red gradient summary card (total loss ₹ + count), search bar, date range filter chips, list view with product image/name/barcode, quantity badge, price badge, damage type, loss amount, date
+   - `MarkDamagedDialog`: quantity +/- selector, 6 damage type choice chips (Broken, Defective, Expired, Water Damage, Scratched, Other), optional notes field, stock validation
+
+   **Integration:**
+   - Product Detail Page: 'Mark as Damaged' button in Stock Adjustment section (disabled when stock=0)
+   - Product List Page: 'Mark as Damaged' in long-press menu (only when stock>0)
+   - Route: `/damaged-products` with BlocProvider in app_routes.dart
+   - Drawer: 'Damaged Products' menu item under Payments section
+   - DI: DamagedProductsRepository + DamagedProductsBloc registered in service_locator.dart
+   - main.dart: DamagedProductsBloc added to MultiBlocProvider
+
+   **Files Created:**
+   - `lib/features/damaged_products/domain/entities/damaged_product.dart`
+   - `lib/features/damaged_products/domain/repositories/damaged_products_repository.dart`
+   - `lib/features/damaged_products/data/repositories/damaged_products_repository_impl.dart`
+   - `lib/features/damaged_products/presentation/bloc/damaged_products_bloc.dart`
+   - `lib/features/damaged_products/presentation/bloc/damaged_products_event.dart`
+   - `lib/features/damaged_products/presentation/bloc/damaged_products_state.dart`
+   - `lib/features/damaged_products/presentation/pages/damaged_products_page.dart`
+   - `lib/features/damaged_products/presentation/pages/mark_damaged_dialog.dart`
+
+   **Files Modified:**
+   - `lib/core/service_locator.dart` — DI registration
+   - `lib/config/routes/app_routes.dart` — route + imports
+   - `lib/core/widgets/app_drawer.dart` — drawer menu item
+   - `lib/main.dart` — MultiBlocProvider
+   - `lib/features/product/presentation/pages/product_detail_page.dart` — Mark as Damaged button
+   - `lib/features/product/presentation/pages/product_list_page.dart` — long-press menu + import
+   - `RPD.md` — Section 10 added
+   - `phases.md` — Phase 7 added
+
+   **Design Decisions:**
+   - No new DB migration — leverages existing `stock_adjustments` table with `reason='damage'`
+   - Client-side search for product name/barcode (joined data not searchable server-side)
+   - Damage type + free-form notes both stored in `note` field as `"type|notes"` (no schema change) — encoded/decoded via `DamagedProduct.encodeNote`/`decodeNote`
+   - Stock decreases automatically when product marked as damaged
+   - Date range filter uses Supabase `gte`/`lt` on `created_at`
+
+   **Improvements (2026-08-21 — same session):**
+   1. **Notes bug fixed** — earlier `damageType` + `notes` both wrote to `note` column, so notes were lost. Now encoded as `"type|notes"` (Dart-only, no migration). Legacy rows (only type stored) still decode correctly via `decodeNote`.
+   2. **Human-readable damage type** — page shows "Broken"/"Water Damage" etc via `DamagedProduct.damageTypeLabel` instead of raw DB value.
+   3. **Notes now visible** — list card shows "Note:" line when notes present.
+   4. **reportedByName** — now resolves to staff display name (via `_resolveStaffName`) instead of raw UUID.
+   5. **CSV Export** — new `CsvExportImport.exportDamagedProducts` + AppBar download button (disabled when empty).
+   6. **Pull-to-refresh** — `RefreshIndicator` wraps the list.
+   7. **Undo / Reverse damage** — new `undoDamage` repo method + `UndoDamagedProduct` event + confirm dialog (restores stock, deletes adjustment row, audit log). Per-card undo IconButton.
+
+   **flutter analyze:** 0 errors, 0 warnings ✅ (whole lib: 0 errors)
+
+---
+
+## Current Session: 2026-08-20 — Signed Release APK + Split-per-ABI 📦
+
+### What Was Done
+1. **Release keystore generated** — `android/app/billing_app-release.keystore` (alias `billing_app`, RSA 2048, 10000 days, auto-generated password stored in `android/key.properties` — both gitignored)
+2. **`android/app/build.gradle.kts`** — signing config (loads `key.properties`), release buildType now uses release signing (debug fallback), `isMinifyEnabled=true` + `isShrinkResources=true`
+3. **`android/app/proguard-rules.pro` (new)** — Flutter keep rules + `-dontwarn` for Play Core split install (R8 fix)
+4. **Build command** — `flutter build apk --release --split-per-abi --no-tree-shake-icons`
+   - Output: `app-armeabi-v7a-release.apk` (24.9MB), `app-arm64-v8a-release.apk` (28.5MB), `app-x86_64-release.apk` (31.0MB)
+   - Signing verified via apksigner ✅
+5. **`--no-tree-shake-icons` required** — category pages use dynamic `IconData` (non-const), tree-shaking fails. Fix later = make IconData const.
+
+### Notes
+- KGP warning (Built-in Kotlin migration) — non-blocking, plugins migrate karne par hoga
+- Release build uses minification — R8 missing rules were added to proguard-rules.pro
+
+---
+
+## Previous Session: 2026-08-20 — Report Pages Modernization 📊✨
+
+### What Was Done
+1. **Reports Home Page** — CustomScrollView + SliverAppBar, gradient stat cards, modern grid layout with 4 report cards (Daily Sales, Low Stock, Bill History, Stock Movement)
+2. **Daily Sales Page** — Gradient summary header with animated counters, bar chart, weekly/monthly toggle, export CSV
+3. **Low Stock Page** — Gradient summary card (red gradient), category filter chips, animated product cards with stock progress bars, reorder threshold, export CSV
+4. **Stock Movement Page** — Summary stats (Total/Added/Removed), type filter chips with icons, date range picker, staggered card animations, export CSV
+5. All pages: CustomScrollView, SliverAppBar, modern card designs, haptic feedback, staggered animations
+
+### flutter analyze
+- 0 errors, 0 warnings ✅ (low_stock_page.dart + stock_movement_page.dart verified)
+
+---
+
+## Previous Session: 2026-08-20 — Dual View (Classic List + Cover-flow) 🔀
+
+### Decision
+- User: Spotlight cover-flow **accha laga** ❌ lekin default nahi rakh sakte
+- **2 views**: Classic List (default) + Cover-flow (optional)
+- **Har baar default** = Classic List (no persistence, session-only toggle)
+- Toggle button = **AppBar icon**
+
+### What Was Done
+1. **`product_coverflow_view.dart` (new file)** — Cover-flow view extracted: `ProductCoverflowView` (own PageController + dial keys + currentIndex state, resets to page 0 when first product changes via `didUpdateWidget`) + `_CoverFlowItem` + `_CoverCard` + `ProductCoverflowSkeleton` (public)
+2. **`product_list_page.dart` (rewrite as shell)**:
+   - Shell: AppBar (menu + **view toggle icon** animated rotation + refresh + sort + export/import) + hero search (shared) + `AnimatedSwitcher` (350ms fade) between views
+   - **`_ClassicListView` (restored original pre-Bento UI)**: category FilterChips (All + counts) + classic tiles (stock accent bar, image, name, description snippet, stock/unit/barcode meta, price)
+   - `_isCarousel` bool state — no persistence
+   - Loading: `_isCarousel` ? `ProductCoverflowSkeleton` : spinner
+   - Shared across views: search query, sort, category filter, FAB
+3. flutter analyze: **0 issues** ✅ (both files)
+4. **Fix (user feedback)**: Classic list cards ab **bilkul pehle jesa** — card `margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6)` + ListView `padding: symmetric(vertical: 8)` restored (pehle cards flush `EdgeInsets.zero` the, ab per-card inset + gaps). Tile content already faithful (stock accent bar, 64px image, name+chevron, desc snippet, stock/unit/barcode meta, price).
+5. **Verified via graphify backup**: `graphify-out/2026-08-20/graph.json` backup confirmed pre-Bento file had exactly `_buildProductTile`, `_productImage`, `_stockBadge`, `_dotSeparator`, `_unitBadge`, `_metaText` — restored card is structurally identical ✅ (user confirmed — bas refresh karna tha, no further change needed).
+6. **Compact Classic card (user request)**: card ko **compact** kiya (100px → ~60px):
+   - Decisions: **price name ke right**, keep **stock + category + unit** (barcode/desc-snippet/chevron removed), **image 40px**
+   - New layout: accent bar + 40px image + Line1(name w600 14 + price w700 14 right) + Line2(stock badge + category gray flexible + unit purple)
+   - Removed dead code: `_dotSeparator`, `_metaText`, `_buildDescriptionSnippet`, `_ClassicListView.searchQuery` param + call site
+7. **Tweak (user request)**: unit **hataya** cards se, **location add** kiya — Line 2 ab: stock badge + category + location (gray, `·` separator, both flexible/ellipsis). `_unitBadge` method removed.
+8. **Card improvements (user picked 5/6, mini stock bar skip kiya)**:
+   - **Out-of-stock gray out**: stock ≤ 0 → card content 50% opacity (accent bar stays red)
+   - **Swipe actions**: `Dismissible` — right swipe = green "Stock +" quick-stock bottom sheet (`UpdateProduct.copyWith(stock)`), left swipe = red "Delete" confirm dialog (`DeleteProduct`); `confirmDismiss` returns false (card snaps back)
+   - **Long-press menu**: bottom sheet → Edit / Show QR Code / Delete
+   - **Initial-letter avatar**: no-image placeholder ab first letter of name, color from `Colors.primaries[name.hashCode]`
+   - **Add-to-cart button**: trailing 30px circular primary button → `BillingBloc.AddProductToCartEvent` + green snackbar
+   - Shell methods: `_showLongPressMenu`, `_confirmDelete` (with `mounted` guard), `_quickStock`, `_addToCart`; `_ClassicListView` gets 4 new callbacks
+9. **Batch 2 — user picked ALL 7 suggestions**:
+   - **Low-stock filter**: amber pill toggle in shared header bar (below search, both views) — count = `isLowStock` products; active = amber fill; filters list to low/out. Plus **mini stats text** `total · low · out` (hidden jab no products)
+   - **Undo delete**: delete ke baad green snackbar "Undo" → `AddProduct(product)` restore (single + bulk dono me)
+   - **Bulk selection**: AppBar `checklist` icon → selection mode (Close + N selected + export + red delete actions); tap/long-press toggle select; Dismissible disabled (`DismissDirection.none`); trailing circular check indicator (selected = primary fill + white check); selected card = 2px primary border. Bulk delete = confirm + Undo snackbar; bulk export = `CsvExportImport.exportProducts(selected)`
+   - **Real CSV import**: `more_vert → Import from CSV` ab real hai — `CsvExportImport.importProducts()` (file_picker + csv parse) → `_productFromCsvMap` (uuid v4 id, skip empty names) → `AddProduct` each + count snackbar
+   - **Copy barcode**: long-press menu me "Copy barcode" → `Clipboard.setData` + snackbar
+   - **Search by location**: filtering me `product.location` match add kiya
+   - Fix: `Dismissible` me `enabled` param exist nahi → `DismissDirection.none` use kiya (selection mode)
+   - `flutter analyze product_list_page.dart` → 0 issues ✅
+10. **Bug fix (user reported): "categories kabhi kabhi show nahi ho rahe"** — Race condition: categories `context.read<CategoryBloc>().state.categories` read kiya ja raha tha ProductBloc ke `BlocConsumer` builder ke andar → `context.read` subscribe nahi karta → jab CategoryBloc async load hoke emit karta, product list UI rebuild nahi hota → chips empty/stale reh jaate. **Fix**: shell build me `BlocConsumer<ProductBloc>` ke builder ke andar `BlocBuilder<CategoryBloc, CategoryState>` wrap kiya — ab CategoryBloc emit hota hai to chips + coverflow categoryNames turant rebuild hote hain. `flutter analyze` → 0 issues ✅
+
+### Reminder
+- ⚠️ Pre-existing errors `category_list_page.dart` (uncommitted): `context.go` undefined, `theme` undefined — abhi bhi baaki
+- Bento code fully gone (user rejected)
+
+---
+
+## Previous: 2026-08-20 — Product Page UI Upgrade v2 (Spotlight Cover-flow) 🎡
+
+### Context
+- Pehle **Bento Inventory** design banaya tha — user ko maza nahi aaya ❌ → poocha aur **Spotlight Cover-flow** chuna ✅
+
+### What Was Done
+1. **ProductListPage redesigned → "Spotlight Cover-flow"** (`product_list_page.dart`):
+   - **3D cover-flow carousel** (`PageView` viewportFraction 0.72 + `_CoverFlowItem`): `Matrix4` perspective + `rotateY(offset*0.72)` + scale + opacity fade — side cards peek karte hai, center card front
+   - **Cover card** (radius 28): bada product image (Hero `product-{id}`), category badge (purple), stock badge (green/orange/red), low-stock amber banner, name + ₹ price (22 w800) + unit chip + barcode + **Edit/QR buttons**
+   - **Category dial** (horizontal pills): icon + label + count, selected = primary fill + glow, auto-center (`Scrollable.ensureVisible alignment 0.5`), haptic
+   - **Hero search**: 56px pill with primary border glow + "Spotlight search..." + gradient scanner button
+   - **Bottom panel**: animated dots (active widens) + "N of M · Swipe to browse" (dots sirf ≤12 products pe)
+   - **AppBar**: menu + **Refresh button** (add) + sort + export/import
+   - Expandable FAB (Add → Scan) retained, `IgnorePointer` fix retained
+2. **Bugs fixed earlier (retained)**: realtime DELETE fix, edit barcode controller, Hero on detail page
+3. **Motion**: 3D rotateY cover-flow, card border/glow animates for center, skeleton carousel shimmer, animated empty state
+
+### Lessons
+- **Design direction user ko pehle dikha ke confirm karo** — Bento pick karne ke baad bhi maza nahi aaya, dobara poochhna pada. Ek hi file me 2 baar full redesign = time waste. Ab "Mix — tu decide" wala option bhi user ko de.
+
+### flutter analyze
+- Meri files: 0 issues ✅ (product_list_page clean)
+- ⚠️ Pre-existing errors `category_list_page.dart` (uncommitted): `context.go` undefined, `theme` undefined — abhi bhi baaki
+
+---
+
+## Previous: 2026-08-20 — Product Page UI Upgrade (Bento Inventory) 🎨
+
+### What Was Done
+1. **ProductListPage full redesign** — new "Bento Inventory" UI (`product_list_page.dart`):
+   - **Category rail** (left, 92px): vertical pill rail with icon + label + count badge, animated selection (scale spring + glow shadow)
+   - **Bento grid** (right): rhythm `[featured, pair, pair]` — featured full-width card (image + stock progress bar), normal 2-col tiles (image top + price + stock dot + unit chip + category)
+   - **Search bar**: rounded pill + scanner button (gradient), clear (X) button, no more barcode validator on search field
+   - **Expandable FAB**: tap = Add, expands to reveal "Scan barcode" mini-FAB (easeOutBack + fade)
+   - **Motion**: `_StaggerIn` staggered fade+slide entrance (keyed by product id — filter/search pe re-animate nahi hota), `_Pressable` tap scale 0.97 + haptic, Hero flight list→detail
+   - **States**: skeleton shimmer loading, animated empty state + CTA, no-match state with clear button
+   - **RefreshIndicator** → reload products; sort + export/import menus retained
+2. **Bug fixes**:
+   - `realtime_service.dart` — DELETE events drop ho rahe the (newRecord empty on delete → shop filter `oldRecord['shop_id']` se read karo). Ab deleted products realtime me list se hat jayenge.
+   - `edit_product_page.dart` — barcode scan field ab `TextEditingController` use karta hai (pehle `initialValue` + setState se scanned barcode field me dikhta hi nahi tha)
+   - `product_detail_page.dart` — image pe `Hero` add (list→detail flight)
+3. **Navigation:** sab existing routes same — detail/edit/add/qr untouched
+
+### flutter analyze
+- Meri files: 0 errors ✅ (product_list_page, realtime_service, edit_product_page clean)
+- ⚠️ Pre-existing errors `category_list_page.dart` (uncommitted kaam me): `context.go` undefined, `theme` undefined — is session me touch nahi kiya, baaki session me fix karna hai
+
+---
+
+## Previous: 2026-08-20 — Product Management Enhancements ✅
+
+### What Was Done
+1. **Product Management Enhancements** — 6 major features added:
+
+   **Database (Supabase Migration)**:
+   - `012_add_product_enhancements.sql`: Added `min_stock_level`, `unit` columns to products table
+   - Created `stock_adjustments` table for tracking stock movements
+   - RLS policies for stock_adjustments (shop_id scoped)
+   - Indexes for performance
+
+   **New Packages Added**:
+   - `image_picker: ^1.1.2` — Camera/Gallery image selection
+   - `flutter_image_compress: ^2.3.4` — 90% image compression
+   - `csv: ^6.0.0` — CSV export/import
+   - `file_picker: ^8.0.3` — File picking for CSV import
+
+   **Domain Layer**:
+   - `Product` entity updated: Added `minStockLevel` (default: 5), `unit` (default: 'pcs')
+   - `StockAdjustment` entity: id, productId, previousStock, newStock, quantityChanged, reason, note, createdAt, createdBy
+   - `StockRepository` interface: adjustStock, getStockHistory, getAllAdjustments
+
+   **Data Layer**:
+   - `ProductModel` updated with min_stock_level, unit fields
+   - `ProductRepositoryImpl` updated with new fields in all queries
+   - `StockRepositoryImpl`: Full Supabase implementation with stock adjustment tracking
+
+   **BLoC Layer**:
+   - `StockBloc`: AdjustStock, LoadStockHistory, LoadAllAdjustments events
+   - State: status, adjustments, message
+
+   **Presentation Layer**:
+   - `AddProductPage`: Image picker (Camera/Gallery) + auto-compress + unit dropdown + min stock level input
+   - `EditProductPage`: Same image picker support + new fields
+   - `ProductListPage`: Sort options (Newest, Price Low/High, Name A-Z, Stock Low) + Export/Import CSV buttons + Unit badge + Low stock warning icon
+   - `ProductDetailPage`: Unit badge, Min Stock Level display, Stock Status indicator, Stock Adjustment section with +/- buttons, Reason dialog (Sale, Damage, Return, Sample, Theft, Restock, Found, Adjustment)
+
+   **Utilities**:
+   - `ImageCompress`: 90% compression utility for Supabase free tier storage
+   - `CsvExportImport`: Export products to CSV, Import from CSV
+
+   **DI Registration**:
+   - `StockRepository` + `StockBloc` registered in service_locator.dart
+
+   **Migration Required**:
+   - Run `012_add_product_enhancements.sql` in Supabase SQL Editor
+
+---
+
+## Previous Session: 2026-08-19 — Due Payments Management Feature ✅
+
+### What Was Done
+1. **Due Payments Management Feature** — complete implementation for tracking partial payments:
+
+   **Database (Supabase Migration)**:
+   - `011_add_due_payments.sql`: Added `amount_paid`, `due_amount`, `payment_status` columns to bills table
+   - Added index on `payment_status` for fast queries
+   - Created `due_payments_view` for pending dues
+
+   **Domain Layer**:
+   - `DuePayment` entity: billId, customerName, customerPhone, grandTotal, amountPaid, dueAmount, paymentMethod, staffName, billDate
+   - `DuePaymentsRepository` interface: getDuePayments, getTotalPendingDue, collectPayment, getBillForDuePayment
+
+   **Data Layer**:
+   - `DuePaymentsRepositoryImpl`: Full Supabase implementation with shop_id scoping, search, payment collection
+
+   **BLoC Layer**:
+   - `DuePaymentsBloc`: LoadDuePayments, CollectPayment, SearchDuePayments events
+   - State: duePayments, totalPendingDue, isLoading, isCollecting, error, successMessage, searchQuery
+
+   **Presentation Layer**:
+   - `DuePaymentsPage`: Orange gradient card showing total pending due, search bar, list of due payments with collect button
+   - Collect Payment Dialog: Shows bill total, paid amount, due amount, input field for new payment
+   - Full dark mode support
+
+   **Integration**:
+   - CheckoutPage: Added "Payment" section with amount paid input field + due amount badge
+   - BillingState: Added `amountPaid` field
+   - BillingBloc: Added `UpdateAmountPaidEvent` + updated `_onSubmitBill` to save payment status
+   - ReceiptPreviewPage: Shows due amount if partial payment (orange card with paid/due breakdown)
+   - Routes: Added `/due-payments` route with BlocProvider
+   - AppDrawer: Added "Due Payments" menu item under "Payments" section
+   - ServiceLocator: Registered DuePaymentsRepository + DuePaymentsBloc
+
+   **RPD.md Updated**: Added Section 9 (Due Payments Management) with all features
+
+### Files Created/Modified
+- `supabase/migrations/011_add_due_payments.sql` (NEW)
+- `lib/features/due_payments/domain/entities/due_payment.dart` (NEW)
+- `lib/features/due_payments/domain/repositories/due_payments_repository.dart` (NEW)
+- `lib/features/due_payments/data/repositories/due_payments_repository_impl.dart` (NEW)
+- `lib/features/due_payments/presentation/bloc/due_payments_bloc.dart` (NEW)
+- `lib/features/due_payments/presentation/bloc/due_payments_event.dart` (NEW)
+- `lib/features/due_payments/presentation/bloc/due_payments_state.dart` (NEW)
+- `lib/features/due_payments/presentation/pages/due_payments_page.dart` (NEW)
+- `lib/features/report/domain/entities/report_entities.dart` (UPDATED)
+- `lib/features/report/data/models/report_models.dart` (UPDATED)
+- `lib/features/billing/presentation/bloc/billing_state.dart` (UPDATED)
+- `lib/features/billing/presentation/bloc/billing_event.dart` (UPDATED)
+- `lib/features/billing/presentation/bloc/billing_bloc.dart` (UPDATED)
+- `lib/features/billing/presentation/pages/checkout_page.dart` (UPDATED)
+- `lib/features/billing/presentation/pages/receipt_preview_page.dart` (UPDATED)
+- `lib/config/routes/app_routes.dart` (UPDATED)
+- `lib/config/routes/app_shell.dart` (READ ONLY)
+- `lib/core/widgets/app_drawer.dart` (UPDATED)
+- `lib/core/service_locator.dart` (UPDATED)
+- `RPD.md` (UPDATED)
+- `memory.md` (UPDATED)
+
+---
+
 ## Current Session: 2026-07-24 — Advanced Dashboard Analytics (fl_chart + 4 new widgets) ✅
 
 ### What Was Done
@@ -926,3 +1394,309 @@ C. **Billing + Product Pages (9 files) — Dark Mode Color Replacements**
 ### flutter analyze
 - 0 errors ✅
 
+
+---
+
+## Current Session: 2026-08-21 - Customer CMS FEATURE BUILT (needs device verify)
+
+### What Was Done
+1. Plan: customer_cms_plan.md (name+phone only, link bills/warranty via customer_id). User said 'jo accha lage krde'.
+2. Migrations (user runs manually - no billing MCP in Hermes): 016 (customers, wrong UUID+FK) + 017 (MERGED: drop+recreate customers TEXT shop_id NO FK + link bills/warranty + backfill). 018 deleted/merged.
+3. Built via parallel sub-agents: domain/data(4), phone_utils, bloc(3), pages(3). Wiring done by Jerry (agent hit 429).
+4. Wiring: service_locator, app_routes(/customers,/customers/add,/customers/detail), app_drawer(Customers menu), billing_bloc(checkout auto find/create customer -> customer_id).
+5. flutter analyze lib = 0 errors, 0 new warnings.
+6. GOTCHA: sl import = '../../../../core/service_locator.dart' as di (relative, not package:.../di/).
+7. Hot-restart FAILED: w8:p9 flutter run died (Lost connection to device). User must reconnect + flutter run.
+
+### MCP WARNING (critical)
+- supabase_prod + supabase_staging = MICROFLOW project, NOT billing. Billing = wwutchscfnhwijxyftlw.supabase.co (no MCP). Never migrate billing via those.
+
+### Remaining
+- User restarts flutter run -> hot restart -> verify Customers + checkout link on device.
+- graphify update .
+
+---
+
+## Fix: 2026-08-21 - Receipt due/payment not showing
+
+### Root Cause
+Receipt preview page (receipt_preview_page.dart) SUPPORTS `amountPaid`/`dueAmount` + shows Due block
+when `hasDue`, but checkout_page.dart navigation `extra` map NEVER passed them -> stayed null -> block hidden.
+Printed receipt (printer_helper.printReceipt) also never printed payment/due.
+
+### Fix
+1. checkout_page.dart: pass `amountPaid` (state.amountPaid ?? total) + `dueAmount` (null if <=0) to receipt-preview nav.
+2. printer_helper.printReceipt: added optional `paymentMethod`,`amountPaid`,`dueAmount`; prints Payment + Paid/DUE lines.
+3. receipt_preview_page._printReceipt: forward widget.amountPaid/dueAmount/paymentMethod to printer.
+4. billing_bloc print handler: forward state.amountPaid/paymentMethod/dueAmount for consistency.
+flutter analyze = clean (printer_helper only).
+
+### Remaining
+- graphify update .
+
+---
+
+## Fix: 2026-08-21 - Customer search popup not visible properly
+
+### Root Cause
+`_showCustomerPicker` in checkout_page had redundant `StatefulBuilder` inside `BlocProvider.value` + `DraggableScrollableSheet`. The nested builders caused rendering issues — popup wasn't fully visible or responsive.
+
+### Fix
+Simplified the bottom sheet:
+1. Removed `StatefulBuilder` (BlocBuilder handles state already)
+2. Added drag handle indicator at top
+3. Added title row ("Select Customer") with close button
+4. Search bar now autofocuses
+5. Customer list items wrapped in `Card` for better visual separation
+6. Empty state has icon + text instead of plain text
+7. `ListView` uses `scrollController` from DraggableScrollableSheet for proper scrolling
+flutter analyze = clean.
+
+### Remaining
+- graphify update .
+
+---
+
+## Feature: 2026-08-21 - Auto bill-id QR on every receipt
+
+### What
+User wanted a scannable QR encoding each bill's unique `billId` (UUID) on every receipt, both on-screen and printed.
+
+### Fix
+1. receipt_preview_page.dart: import pretty_qr_code; after "Bill ID: xxxx" text, render `PrettyQrView.data(data: widget.billId)` (110x110) + "Scan to view bill" caption. Reuses already-installed `pretty_qr_code: ^3.3.0`.
+2. printer_helper.dart: added `_qrCodeBytes()` — native ESC/POS GS(0x28 0x6B QR command (Model 2, EC level M=33, module size 4). printReceipt now prints the bill text line then the QR (centered) after the Bill: id. No new dependency.
+QR encodes ONLY the billId (Option A) — small, prints clean on 58mm thermal, easy to look up bill for warranty/return.
+
+### Verify
+flutter analyze = clean. Hot-restart sent to w8:p9 (phone) = Restarted application.
+
+### Remaining
+- none
+
+---
+
+## Feature: 2026-08-21 - Warranty claim via scanned bill QR
+
+### What
+User wanted the receipt bill QR (encodes billId) to shortcut the warranty claim entry. Implemented scan-to-claim flow.
+
+### Flow added
+1. Warranty FAB opens a source sheet: "Scan Bill QR" (fast) or "Enter Manually" (fallback kept).
+2. Scan -> `/scan/scanner` returns raw billId -> `ReportRepository.getBillDetail(billId)` fetches bill from DB.
+3. Pre-filled dialog: customer/date auto from bill (read-only), product Dropdown populated ONLY from `bill.items` (error-proof, no typo), reason field.
+4. Dart-side expiry guard: `_warrantyEndDate(bill.createdAt + item.warrantyDuration/Unit)` shows green "Under warranty until" / red "Warranty expired on" banner (non-blocking).
+5. Submit passes real `productId` + `warrantyDuration/Unit` (fixed prior hardcoded `productId: ''`).
+
+### Error-proofing
+- Scan cancel -> ignored. Bill not found / network -> error snack, no crash. Loading dialog while fetching. Empty bill items -> blocked with message. Empty reason -> blocked.
+
+### Files
+lib/features/warranty/presentation/pages/warranty_claims_page.dart
+Reuses: mobile_scanner (scanner_page), ReportRepository (getBillDetail), WarrantyBloc (CreateWarrantyClaim). No new dependency.
+
+### Verify
+flutter analyze clean (0 errors). Hot-restart w8:p9 = Restarted application.
+
+---
+
+## BUG FIX: 2026-08-21 - Warranty scan crashed (blank screen)
+### Symptom
+After scanning bill QR: loading dialog flashed, then blank screen + crash:
+`GoRouterDelegate._debugAssertMatchListNotEmpty` + `!_debugLocked` assertion at
+`_WarrantyClaimsPageState._scanBillAndCreateClaim` line ~43 (Navigator.pop).
+### Root cause
+Used `showDialog` + `Navigator.pop(context)` to close a loading dialog immediately
+after `context.push('/scan/scanner')` returned. GoRouter keeps the navigator LOCKED
+during the pop transition, so popping a dialog in that window throws and blanks UI.
+### Fix
+Removed the loading Dialog entirely. Replaced with an in-page `Stack` overlay driven
+by `_isFetchingBill` bool (setState true/false). No Navigator.pop during route lock ->
+no crash. Loading now shows "Fetching bill…" overlay on the warranty page itself.
+### Lesson (future-proof)
+NEVER call Navigator.pop / showDialog synchronously right after a go_router
+`context.push(...)` returns — the navigator is locked. Use in-widget state (Stack
+overlay / setState) for post-navigation loading, not dialogs.
+### Verify
+flutter analyze = 0 errors. Hot-restart w8:p9 = Restarted application.
+
+---
+
+## BUG FIX 2: 2026-08-21 - scan open prefilled dialog crash (firstWhere type)
+### Symptom
+Scan succeeded (loading overlay OK) but prefilled dialog never opened; crash:
+`type '() => BillItem' is not a subtype of type '(() => BillItemModel)?' of 'orElse'`
+at _showPrefilledClaimDialog line 625.
+### Root cause
+`bill.items` is `List<BillItemModel>` (BillItemModel extends BillItem). Annotating the
+local as `BillItem? selectedItem` made `firstWhere` infer orElse must return BillItemModel,
+clashing with the `BillItem?` annotation -> runtime cast error.
+### Fix
+Removed the `BillItem?` annotation: `final items = bill.items; var selectedItem = items.firstWhere((i)=>i.hasWarranty, orElse: ()=>items.first);` Let Dart infer type. Also dropped now-unneeded `selectedItem!` null-asserts in banner + submit.
+### Verify
+flutter analyze = 0 errors. Hot-restart w8:p9 = Restarted application.
+
+---
+
+## BUG FIX 3: 2026-08-21 - scan prefilled dialog STILL crashing (firstWhere)
+### Symptom
+After fix 2, SAME crash persisted: `type '() => BillItem' is not a subtype of
+type '(() => BillItemModel)?' of 'orElse'` at line 626.
+### Root cause
+`BillSummary.items` is declared `List<BillItem>` but is populated at runtime with
+`BillItemModel` (BillItemModel extends BillItem). `ListBase.firstWhere`'s orElse
+closure type is covariant-strict, so the inferred closure `() => BillItem` still
+failed the runtime `BillItemModel` expectation. firstWhere + orElse is fragile here.
+### Fix
+Dropped firstWhere entirely. Used explicit `final List<BillItem> items = bill.items;`
++ `items.where((i)=>i.hasWarranty).toList()` -> pick first warranted, else items.first.
+No orElse closure -> no subtype clash. selectedItem is non-nullable BillItem.
+### Verify
+flutter analyze = 0 errors. Hot-restart w8:p9 = Restarted application.
+### Lesson
+With List<Base> populated by Subclass at runtime, AVOID firstWhere(orElse:). Use
+where().toList() + manual pick. Firstwhere-orElse covariant typing is a known trap.
+
+---
+
+## BUG FIX 4: 2026-08-21 - card tap crash (Scaffold wrapped in Stack)
+### Symptom
+After filing a claim, tapping a claim card (to open detail sheet) crashed with:
+`Failed assertion: '!semantics.parentDataDirty': is not true.` (rendering/object.dart:5705).
+### Root cause
+I had wrapped the whole `Scaffold` in a `Stack` (to show the fetching overlay).
+Wrapping Scaffold in Stack breaks Scaffold's internal overlay/semantics management;
+when showModalBottomSheet/_showClaimDetail pushed a route, the dirty parentData
+assertion fired. Card tap itself was fine — the Stack broke the tree.
+### Fix
+Moved the overlay INSIDE the Scaffold body: `body: Stack(children:[ Column(...), if(_isFetchingBill) overlay ])`.
+Scaffold is now a direct return (not wrapped). Overlay is a body child, so Scaffold's
+overlay/semantics stay intact. (Also removed a duplicate orphaned overlay block left
+from the earlier Stack approach.)
+### Verify
+flutter analyze = 0 errors. Hot-restart w8:p9 = Restarted application.
+### Lesson
+NEVER wrap Scaffold in Stack/Container that alters its render parent during route push.
+Put loading overlays inside body via Stack. Scaffold must manage its own Overlay.
+
+---
+
+## BUG FIX 5: 2026-08-21 - card tap crash (Spacer in fixed-height bottom sheet)
+### Symptom
+After fix 4 (Scaffold unwrap), card tap STILL crashed: `RenderBox was not laid out:
+RenderPhysicalShape` + `'!semantics.parentDataDirty'`. Same on every claim-card tap.
+### Root cause
+_showClaimDetail bottom sheet: `Container(height: 0.7)` -> `Column` -> `Padding` ->
+`Column` with `const Spacer()` at the end. Spacer() inside a flex child of a
+fixed-height Container during the sheet's route-push layout triggers parentDataDirty.
+(This method was pre-existing, never hit before because card-tap wasn't tested until now.)
+### Fix
+Rewrote sheet: `Column[ handle, Expanded(SingleChildScrollView(detail rows)),
+Padding(pinned action buttons) ]`. Removed Spacer() entirely. Details scroll, buttons
+stay pinned at bottom. Bulletproof layout.
+### Verify
+flutter analyze = 0 errors. Hot-restart w8:p9 = Restarted application.
+### Lesson
+NEVER use Spacer() inside a Column that lives in a fixed-height Container / modal sheet.
+Use Expanded(SingleChildScrollView) for content + a separate pinned footer widget.
+
+---
+
+## Fix: 2026-08-21 - Product long-press menu UI improvement
+
+### Root Cause
+`_showLongPressMenu` in product_list_page was a basic bottom sheet with plain `ListTile` items — no drag handle, no product info header, no visual hierarchy. Looked cluttered and wasn't properly visible.
+
+### Fix
+Rewrote `_showLongPressMenu` + added helper `_menuActionTile`:
+1. Added drag handle indicator at top
+2. Product info header with avatar initial, name, price, and stock badge
+3. Each action is a custom tile with colored icon background + chevron
+4. Destructive action (delete) visually distinct with red styling
+5. Better spacing and padding throughout
+flutter analyze = clean.
+
+### Remaining
+- graphify update .
+
+---
+
+## CHANGE: 2026-08-21 - Manual warranty entry REMOVED (scan-only)
+### What
+User: "manual entry hata de, sirf scan rehne de". Removed the manual claim dialog
+(_showCreateClaimDialog) and the source bottom-sheet (_showClaimSourceSheet).
+### Result
+- FAB "New Claim" now calls `_startNewClaim()` -> directly `_scanBillAndCreateClaim()`.
+- No manual entry path remains. Scan receipt QR is the ONLY way to file a warranty claim.
+- `_showCreateClaimDialog` (the 180-line manual form) deleted entirely.
+### Why
+Simpler + error-proof: scan auto-fills customer + product from DB, no typos, no fake
+bill IDs. Manual was a fallback but user wants scan-only.
+### Verify
+flutter analyze = 0 errors. Hot-restart triggered.
+
+---
+
+## BUG FIX 6: 2026-08-21 - warranty back button black screen
+### Symptom
+On /warranty page, tapping top-left back button -> black screen + crash:
+`You have popped the last page off of the stack, there are no pages left to show`
++ `'!_debugLocked'`.
+### Root cause
+/warranty is a DIRECT GoRoute under GoRouter root (NOT inside the ShellRoute).
+The back button used `Navigator.of(context).pop()` which pops the only page on the
+material navigator -> empty stack -> black screen.
+### Fix
+Changed back button to `context.go('/')` (go_router) -> always returns to Dashboard
+per AGENTS.md nav rule (sub-page back -> '/', dashboard back -> close app). go_router
+import already present.
+### Verify
+flutter analyze = 0 errors. Hot-restart triggered.
+### Lesson
+For direct GoRoutes (not shell children), never use Navigator.pop() for back —
+use context.go('/') or context.pop() only when there IS a parent in the stack.
+ScannerPage back correctly uses context.pop(value) (returns to caller) - leave as-is.
+
+
+## BUG FIX 7: 2026-08-21 back button black screen on Due Payments / Damaged / Customers
+Same class as warranty fix 6. Direct GoRoutes (/due-payments, /damaged-products, /customers) popped only page -> black screen.
+Fix: all three leading back buttons now context.go("/") returns to Dashboard. due_payments and damaged got go_router import added. customer_detail/add use context.pop() - correct, left as-is.
+Verify: flutter analyze 0 errors on all 3. Hot-restart done.
+
+## BUG FIX 8: 2026-08-24 - AddProductPage category select crash (type mismatch)
+### Symptom
+Tapping category field on Add Product page -> red screen error:
+"type '() => Category' is not a subtype of type '() => CategoryModel?' of 'orElse'"
+### Root cause
+Line 596-599: `cats.firstWhere((c) => c.id == _categoryId, orElse: () => cats.first).name`
+Runtime pe `cats` list actually contains `CategoryModel` instances, but `firstWhere`'s `orElse` lambda return type inference caused a subtype mismatch between `Category` and `CategoryModel`. The `orElse` fallback `() => cats.first` was typed as `() => Category` while the generic expected `() => CategoryModel?`.
+### Fix
+Replaced `firstWhere(..., orElse: () => cats.first)` with `where((c) => c.id == _categoryId).firstOrNull` — avoids the `orElse` type mismatch entirely. Also added `cats.isNotEmpty` guard before accessing.
+Bonus fix: side effect in build (`_categoryController.text = ...`) now only runs when `_categoryId != null && cats.isNotEmpty`, not on every rebuild. "No Category" selection now properly clears controller.
+### Verify
+flutter analyze pending. Hot-restart triggered after fix.
+
+## DESIGN FIX: 2026-08-24 - Reports Home page redesign
+### Symptom
+Reports & History landing page design thoda flat + outdated lag raha (gradient grid cards, hardcoded "4 sections" stat jo galat bhi tha — grid mein 5 cards hain).
+### Fix
+Dashboard ke premium style match karne ke liye rewrite kiya:
+- Reuse kiye `PremiumStatCard` (hero: This Month Revenue) + 2-col row (Bills / Low Stock)
+- Reuse kiye `DashboardActionCard` for 5 sections (Bill History, Daily Sales, Low Stock, Stock Movement, Audit Trail) — list rows with live counts
+- Live data wire kiya ReportBloc se: `state.billHistory` (month filter) + `state.lowStockProducts.length`
+- `AppTheme.gradientFor(context)` background, `RefreshIndicator` add kiya
+- "4 sections" bug auto-fix ho gaya (dynamic counts ab)
+### Verify
+flutter analyze = 0 errors (1 const hint). Hot-restart triggered.
+### Lesson
+Report sub-pages detailed hain but home page consistent premium design chahiye (dashboard-matched). Reuse existing widgets, don't reinvent.
+
+## NAV FIX: 2026-08-24 - Reports sub-pages added to sidebar
+### Change
+- Removed single "Reports" parent item from drawer
+- Added 5 direct sub-items under "Reports" section header with `indented: true` visual hierarchy:
+  Bill History, Daily Sales, Low Stock, Stock Movement, Audit Trail
+- Each routes to its own page directly (`/reports/bills`, `/reports/daily-sales`, `/reports/low-stock`, `/reports/stock-movements`, `/reports/audit-trail`)
+### Bonus
+- `_DrawerItem` widget gains optional `indented` param for deeper hierarchy in future
+### Verify
+flutter analyze = 0 errors. Hot-restart triggered.

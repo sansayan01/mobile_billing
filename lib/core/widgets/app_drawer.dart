@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../navigation/navigation_cubit.dart';
+
 class AppDrawer extends StatelessWidget {
   final String currentRoute;
 
@@ -13,48 +15,55 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDrawerMode =
+        context.watch<NavigationCubit>().state == AppNavigationMode.drawer;
     return Drawer(
       child: Column(
         children: [
           const _ProfileHeader(),
 
           // Menu Items (sectioned)
+          // bottomNav mode: pill handles primary destinations → secondary only.
+          // drawer mode: FULL menu — every feature reachable from here.
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(vertical: 8),
               children: [
-                const _SectionHeader('Main'),
-                _DrawerItem(
-                  icon: Icons.dashboard_rounded,
-                  label: 'Dashboard',
-                  route: '/',
-                  currentRoute: currentRoute,
-                  onTap: () {
-                    context.pop();
-                    if (currentRoute != '/') context.go('/');
-                  },
-                ),
-                _DrawerItem(
-                  icon: Icons.qr_code_scanner_rounded,
-                  label: 'Scan & Billing',
-                  route: '/scan',
-                  currentRoute: currentRoute,
-                  onTap: () {
-                    context.pop();
-                    context.go('/scan');
-                  },
-                ),
-                const _SectionHeader('Inventory'),
-                _DrawerItem(
-                  icon: Icons.inventory_2_rounded,
-                  label: 'Products',
-                  route: '/products',
-                  currentRoute: currentRoute,
-                  onTap: () {
-                    context.pop();
-                    context.go('/products');
-                  },
-                ),
+                if (isDrawerMode) ...[
+                  const _SectionHeader('Main'),
+                  _DrawerItem(
+                    icon: Icons.dashboard_rounded,
+                    label: 'Dashboard',
+                    route: '/',
+                    currentRoute: currentRoute,
+                    onTap: () {
+                      context.pop();
+                      if (currentRoute != '/') context.go('/');
+                    },
+                  ),
+                  _DrawerItem(
+                    icon: Icons.qr_code_scanner_rounded,
+                    label: 'Scan & Billing',
+                    route: '/scan',
+                    currentRoute: currentRoute,
+                    onTap: () {
+                      context.pop();
+                      context.go('/scan');
+                    },
+                  ),
+                  const _SectionHeader('Inventory'),
+                  _DrawerItem(
+                    icon: Icons.inventory_2_rounded,
+                    label: 'Products',
+                    route: '/products',
+                    currentRoute: currentRoute,
+                    onTap: () {
+                      context.pop();
+                      context.go('/products');
+                    },
+                  ),
+                ],
+                const _SectionHeader('Catalog'),
                 _DrawerItem(
                   icon: Icons.category_rounded,
                   label: 'Categories',
@@ -65,49 +74,73 @@ class AppDrawer extends StatelessWidget {
                     context.go('/categories');
                   },
                 ),
-                const _SectionHeader('Reports'),
-                _DrawerItem(
-                  icon: Icons.bar_chart_rounded,
-                  label: 'Reports',
-                  route: '/reports',
-                  currentRoute: currentRoute,
-                  onTap: () {
-                    context.pop();
-                    context.go('/reports');
-                  },
-                ),
-                const _SectionHeader('Warranty'),
-                _DrawerItem(
-                  icon: Icons.verified_outlined,
-                  label: 'Warranty Claims',
-                  route: '/warranty',
-                  currentRoute: currentRoute,
-                  onTap: () {
-                    context.pop();
-                    context.go('/warranty');
-                  },
-                ),
-                const _SectionHeader('Payments'),
-                _DrawerItem(
-                  icon: Icons.payments_outlined,
-                  label: 'Due Payments',
-                  route: '/due-payments',
-                  currentRoute: currentRoute,
-                  onTap: () {
-                    context.pop();
-                    context.go('/due-payments');
-                  },
-                ),
-                _DrawerItem(
-                  icon: Icons.broken_image_rounded,
-                  label: 'Damaged Products',
-                  route: '/damaged-products',
-                  currentRoute: currentRoute,
-                  onTap: () {
-                    context.pop();
-                    context.go('/damaged-products');
-                  },
-                ),
+                if (isDrawerMode) ...[
+                  const _SectionHeader('Reports'),
+                  _DrawerItem(
+                    icon: Icons.receipt_long_rounded,
+                    label: 'Bill History',
+                    route: '/reports/bills',
+                    currentRoute: currentRoute,
+                    onTap: () {
+                      context.pop();
+                      context.go('/reports/bills');
+                    },
+                  ),
+                  _DrawerItem(
+                    icon: Icons.trending_up_rounded,
+                    label: 'Daily Sales',
+                    route: '/reports/daily-sales',
+                    currentRoute: currentRoute,
+                    onTap: () {
+                      context.pop();
+                      context.go('/reports/daily-sales');
+                    },
+                  ),
+                  _DrawerItem(
+                    icon: Icons.warning_amber_rounded,
+                    label: 'Low Stock',
+                    route: '/reports/low-stock',
+                    currentRoute: currentRoute,
+                    onTap: () {
+                      context.pop();
+                      context.go('/reports/low-stock');
+                    },
+                  ),
+                  _DrawerItem(
+                    icon: Icons.swap_horiz_rounded,
+                    label: 'Stock Movement',
+                    route: '/reports/stock-movements',
+                    currentRoute: currentRoute,
+                    onTap: () {
+                      context.pop();
+                      context.go('/reports/stock-movements');
+                    },
+                  ),
+                  _DrawerItem(
+                    icon: Icons.history_rounded,
+                    label: 'Audit Trail',
+                    route: '/reports/audit-trail',
+                    currentRoute: currentRoute,
+                    onTap: () {
+                      context.pop();
+                      context.go('/reports/audit-trail');
+                    },
+                  ),
+                  const _SectionHeader('Warranty'),
+                  _DrawerItem(
+                    icon: Icons.verified_outlined,
+                    label: 'Warranty Claims',
+                    route: '/warranty',
+                    currentRoute: currentRoute,
+                    onTap: () {
+                      context.pop();
+                      context.go('/warranty');
+                    },
+                  ),
+                  const _SectionHeader('Payments'),
+                ] else ...[
+                  const _SectionHeader('Business'),
+                ],
                 _DrawerItem(
                   icon: Icons.people_outline,
                   label: 'Customers',
@@ -118,7 +151,39 @@ class AppDrawer extends StatelessWidget {
                     context.go('/customers');
                   },
                 ),
-                const _SectionHeader('Settings'),
+                _DrawerItem(
+                  icon: Icons.payments_outlined,
+                  label: 'Due Payments',
+                  route: '/due-payments',
+                  currentRoute: currentRoute,
+                  onTap: () {
+                    context.pop();
+                    context.go('/due-payments');
+                  },
+                ),
+                if (!isDrawerMode) ...[
+                  _DrawerItem(
+                    icon: Icons.verified_outlined,
+                    label: 'Warranty Claims',
+                    route: '/warranty',
+                    currentRoute: currentRoute,
+                    onTap: () {
+                      context.pop();
+                      context.go('/warranty');
+                    },
+                  ),
+                ],
+                _DrawerItem(
+                  icon: Icons.broken_image_rounded,
+                  label: 'Damaged Products',
+                  route: '/damaged-products',
+                  currentRoute: currentRoute,
+                  onTap: () {
+                    context.pop();
+                    context.go('/damaged-products');
+                  },
+                ),
+                const _SectionHeader('Shop'),
                 _DrawerItem(
                   icon: Icons.store_rounded,
                   label: 'Shop Details',
@@ -139,6 +204,21 @@ class AppDrawer extends StatelessWidget {
                     context.go('/settings');
                   },
                 ),
+                // Reports tab (bottomNav mode me) Reports home pe le jata hai —
+                // wahan saare report cards hain. Drawer mode me direct links upar.
+                if (!isDrawerMode) ...[
+                  const _SectionHeader('Reports'),
+                  _DrawerItem(
+                    icon: Icons.bar_chart_rounded,
+                    label: 'Reports Home',
+                    route: '/reports',
+                    currentRoute: currentRoute,
+                    onTap: () {
+                      context.pop();
+                      context.go('/reports');
+                    },
+                  ),
+                ],
                 // Staff section — sirf owner ko dikhaye (staff ko nahi)
                 BlocBuilder<AuthBloc, AuthState>(
                   builder: (context, state) {
@@ -360,7 +440,10 @@ class _DrawerItem extends StatelessWidget {
         (route != '/' && currentRoute.startsWith(route));
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 2,
+      ),
       decoration: BoxDecoration(
         color: isActive
             ? theme.colorScheme.primary.withValues(alpha: 0.08)

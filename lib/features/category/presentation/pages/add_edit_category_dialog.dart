@@ -76,7 +76,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
     _descriptionController =
         TextEditingController(text: widget.category?.description ?? '');
     _selectedIconCodePoint = widget.category?.iconCodePoint ?? _categoryIcons[21].codePoint;
-    _selectedColor = Color(widget.category?.colorValue ?? _categoryColors[0].value);
+    _selectedColor = Color(widget.category?.colorValue ?? _categoryColors[0].toARGB32());
   }
 
   @override
@@ -127,7 +127,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                 spacing: 8,
                 runSpacing: 8,
                 children: _categoryColors.map((color) {
-                  final isSelected = _selectedColor.value == color.value;
+                  final isSelected = _selectedColor.toARGB32() == color.toARGB32();
                   return GestureDetector(
                     onTap: () => setState(() => _selectedColor = color),
                     child: Container(
@@ -229,6 +229,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
+                        // ignore: non_const_argument_for_const_parameter
                         IconData(_selectedIconCodePoint, fontFamily: 'MaterialIcons'),
                         color: _selectedColor,
                         size: 22,
@@ -282,14 +283,14 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
         name: name,
         description: description.isNotEmpty ? description : null,
         iconCodePoint: _selectedIconCodePoint,
-        colorValue: _selectedColor.value,
+        colorValue: _selectedColor.toARGB32(),
       ));
     } else {
       bloc.add(AddCategory(
         name: name,
         description: description.isNotEmpty ? description : null,
         iconCodePoint: _selectedIconCodePoint,
-        colorValue: _selectedColor.value,
+        colorValue: _selectedColor.toARGB32(),
       ));
     }
 

@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:billing_app/core/widgets/app_feedback.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:billing_app/features/billing/domain/entities/cart_item.dart';
 import 'package:billing_app/core/utils/printer_helper.dart';
@@ -76,17 +78,13 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
           final connected = await printerHelper.connect(savedMac);
           if (!connected) {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: const Text('Failed to connect to printer'), backgroundColor: Theme.of(context).colorScheme.error),
-              );
+              AppFeedback.error(context, 'Failed to connect to printer');
             }
             return;
           }
         } else {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: const Text('Printer not configured'), backgroundColor: Theme.of(context).colorScheme.error),
-            );
+            AppFeedback.error(context, 'Printer not configured');
           }
           return;
         }
@@ -119,15 +117,11 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Printed successfully'), backgroundColor: Colors.green),
-        );
+        AppFeedback.success(context, 'Printed successfully');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Print failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
-        );
+        AppFeedback.error(context, 'Print failed: $e');
       }
     }
   }
@@ -172,12 +166,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
           }
         } on PlatformException catch (e) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('WhatsApp not available: ${e.message}'),
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
-            );
+            AppFeedback.error(context, 'WhatsApp not available: ${e.message}');
           }
         }
       } else {
@@ -192,9 +181,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to share: $e'), backgroundColor: Theme.of(context).colorScheme.error),
-        );
+        AppFeedback.error(context, 'Failed to share: $e');
       }
     } finally {
       setState(() => _isSharing = false);
@@ -215,11 +202,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: Theme.of(context).primaryColor),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-          tooltip: 'Open menu',
-        ),
+        leading: const AdaptiveAppBarLeading(),
         actions: const [],
       ),
       body: SingleChildScrollView(

@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/widgets/app_feedback.dart';
+import 'package:billing_app/core/widgets/app_skeleton.dart';
 import 'package:billing_app/features/report/domain/entities/report_entities.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
@@ -175,7 +177,7 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
             builder: (context, state) {
               if (state.status == ReportStatus.loading) {
                 return const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator()),
+                  child: SingleChildScrollView(child: AppSkeletonList(itemCount: 6)),
                 );
               }
 
@@ -435,7 +437,7 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         // Product name
         Row(children: [
-          Icon(Icons.inventory_2_rounded, size: 18, color: AppTheme.primaryColor),
+          const Icon(Icons.inventory_2_rounded, size: 18, color: AppTheme.primaryColor),
           const SizedBox(width: 8),
           Expanded(
             child: Text(productName, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700), overflow: TextOverflow.ellipsis),
@@ -450,7 +452,7 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Icon(Icons.add_circle_rounded, size: 12, color: Colors.green),
+              const Icon(Icons.add_circle_rounded, size: 12, color: Colors.green),
               const SizedBox(width: 4),
               Text('+$totalAdded', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.green)),
             ]),
@@ -461,7 +463,7 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Icon(Icons.remove_circle_rounded, size: 12, color: Colors.red),
+              const Icon(Icons.remove_circle_rounded, size: 12, color: Colors.red),
               const SizedBox(width: 4),
               Text('-$totalRemoved', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.red)),
             ]),
@@ -725,9 +727,7 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
     final movements = context.read<ReportBloc>().state.stockMovements;
     if (movements.isEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No movements to export')),
-        );
+        AppFeedback.info(context, 'No movements to export');
       }
       return;
     }

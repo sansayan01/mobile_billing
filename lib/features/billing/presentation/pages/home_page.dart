@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../../../core/navigation/navigation_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vibration/vibration.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../billing/presentation/bloc/billing_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/primary_button.dart';
@@ -107,13 +109,7 @@ class _HomePageState extends State<HomePage> {
             previous.error != current.error && current.error != null,
         listener: (context, state) {
           if (state.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error!),
-                backgroundColor: Theme.of(context).colorScheme.error,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
+            AppFeedback.error(context, state.error!);
           }
         },
         child: Stack(
@@ -131,18 +127,29 @@ class _HomePageState extends State<HomePage> {
             Positioned(
               top: MediaQuery.of(context).padding.top + 64,
               left: 8,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.white, size: 24),
-                  onPressed: () {
-                    // AppShell ka drawer open karo (ShellRoute wala scaffold)
-                    Scaffold.of(context).openDrawer();
-                  },
-                ),
+              child: BlocBuilder<NavigationCubit, AppNavigationMode>(
+                builder: (context, navMode) {
+                  if (navMode != AppNavigationMode.drawer) {
+                    return const SizedBox.shrink();
+                  }
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.45),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                          Icons.menu, color: Colors.white, size: 24),
+                      onPressed: () {
+                        // AppShell ka drawer open karo (ShellRoute wala scaffold)
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
+                  );
+                },
               ),
             ),
 
@@ -159,18 +166,21 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomSheet:
           BlocBuilder<BillingBloc, BillingState>(builder: (context, state) {
-        return PrimaryButton(
-          onPressed: state.cartItems.isEmpty
-              ? null
-              : () async {
-                  setState(() => _isCheckingOut = true);
-                  _scannerController.stop();
-                  await context.push('/scan/checkout');
-                  if (mounted && _isCameraOn) _scannerController.start();
-                  if (mounted) setState(() => _isCheckingOut = false);
-                },
-          icon: Icons.payment,
-          label: 'Review Order',
+        return SafeArea(
+          top: false,
+          child: PrimaryButton(
+            onPressed: state.cartItems.isEmpty
+                ? null
+                : () async {
+                    setState(() => _isCheckingOut = true);
+                    _scannerController.stop();
+                    await context.push('/scan/checkout');
+                    if (mounted && _isCameraOn) _scannerController.start();
+                    if (mounted) setState(() => _isCheckingOut = false);
+                  },
+            icon: Icons.payment,
+            label: 'Review Order',
+          ),
         );
       }),
     );

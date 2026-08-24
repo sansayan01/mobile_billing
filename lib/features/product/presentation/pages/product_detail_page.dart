@@ -1,6 +1,7 @@
 import 'package:billing_app/features/product/domain/entities/product.dart';
 import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -38,12 +39,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu,
-              size: 24, color: Theme.of(context).primaryColor),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-          tooltip: 'Open menu',
-        ),
+        leading: const AdaptiveAppBarLeading(),
         title: const Text('Product Details',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
@@ -58,7 +54,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          16 + MediaQuery.of(context).padding.bottom,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -445,7 +446,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               Theme.of(context).colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 6),
                   DropdownButtonFormField<StockAdjustmentReason>(
-                    value: selectedReason,
+                    initialValue: selectedReason,
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.receipt_long_outlined),
                     ),
