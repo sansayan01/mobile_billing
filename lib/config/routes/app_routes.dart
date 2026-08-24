@@ -32,6 +32,19 @@ import '../../features/category/presentation/pages/category_list_page.dart';
 import '../../features/staff/presentation/pages/staff_list_page.dart';
 import '../../features/staff/presentation/pages/add_staff_page.dart';
 import '../../features/staff/presentation/bloc/staff_bloc.dart';
+import '../../features/warranty/presentation/pages/warranty_claims_page.dart';
+import '../../features/warranty/presentation/bloc/warranty_bloc.dart';
+import '../../features/due_payments/presentation/pages/due_payments_page.dart';
+import '../../features/due_payments/presentation/bloc/due_payments_bloc.dart';
+import '../../features/customer/presentation/pages/customer_list_page.dart';
+import '../../features/customer/presentation/pages/add_customer_page.dart';
+import '../../features/customer/presentation/pages/customer_detail_page.dart';
+import '../../features/customer/domain/entities/customer.dart';
+import '../../features/damaged_products/presentation/pages/damaged_products_page.dart';
+import '../../features/damaged_products/presentation/bloc/damaged_products_bloc.dart';
+import '../../features/audit/presentation/pages/audit_timeline_page.dart';
+import '../../features/audit/presentation/bloc/audit_bloc.dart';
+import '../../features/audit/presentation/bloc/audit_event.dart';
 import '../../../core/service_locator.dart';
 import 'app_shell.dart';
 
@@ -145,6 +158,8 @@ GoRouter createRouter(AuthBloc authBloc) {
                     customerPhone: extra['customerPhone'] as String?,
                     paymentMethod: extra['paymentMethod'] as String? ?? 'UPI',
                     billId: extra['billId'] as String? ?? '',
+                    amountPaid: (extra['amountPaid'] as num?)?.toDouble(),
+                    dueAmount: (extra['dueAmount'] as num?)?.toDouble(),
                   );
                 },
               ),
@@ -220,6 +235,47 @@ GoRouter createRouter(AuthBloc authBloc) {
             builder: (context, state) => const ShopDetailsPage(),
           ),
           GoRoute(
+            path: '/warranty',
+            builder: (context, state) => BlocProvider<WarrantyBloc>(
+              create: (_) => sl<WarrantyBloc>()..add(const LoadWarrantyClaims()),
+              child: const WarrantyClaimsPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/due-payments',
+            builder: (context, state) => BlocProvider<DuePaymentsBloc>(
+              create: (_) => sl<DuePaymentsBloc>()..add(const LoadDuePayments()),
+              child: const DuePaymentsPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/damaged-products',
+            builder: (context, state) => BlocProvider<DamagedProductsBloc>(
+              create: (_) => sl<DamagedProductsBloc>()..add(const LoadDamagedProducts()),
+              child: const DamagedProductsPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/customers',
+            builder: (context, state) => const CustomerListPage(),
+            routes: [
+              GoRoute(
+                path: 'add',
+                builder: (context, state) => const AddCustomerPage(),
+              ),
+              GoRoute(
+                path: 'detail',
+                builder: (context, state) {
+                  final customer = state.extra as Customer?;
+                  if (customer == null) {
+                    return const CustomerListPage();
+                  }
+                  return CustomerDetailPage(customer: customer);
+                },
+              ),
+            ],
+          ),
+          GoRoute(
             path: '/reports',
             builder: (context, state) => const ReportsHomePage(),
             routes: [
@@ -250,6 +306,13 @@ GoRouter createRouter(AuthBloc authBloc) {
               GoRoute(
                 path: 'stock-movements',
                 builder: (context, state) => const StockMovementPage(),
+              ),
+              GoRoute(
+                path: 'audit-trail',
+                builder: (context, state) => BlocProvider<AuditBloc>(
+                  create: (_) => sl<AuditBloc>()..add(const LoadAuditLogs()),
+                  child: const AuditTimelinePage(),
+                ),
               ),
             ],
           ),

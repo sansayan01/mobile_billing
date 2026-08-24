@@ -14,6 +14,35 @@ class EscPos {
   static const List<int> lineFeed = [0x0A];
 }
 
+/// Native ESC/POS QR code command (printer encodes it itself).
+/// Model 2, error correction level 33 (≈M), module size 4, centered below.
+List<int> _qrCodeBytes(String data) {
+  List<int> bytes = [];
+  // QR Code: Model 2
+  bytes += [0x1D, 0x28, 0x6B, 0x04, 0x00, 0x31, 0x41, 0x32, 0x00];
+  // Error correction level (33 = M)
+  bytes += [0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x45, 0x33];
+  // Store data
+  final dataBytes = data.codeUnits;
+  final len = dataBytes.length + 3;
+  bytes += [
+    0x1D,
+    0x28,
+    0x6B,
+    len & 0xFF,
+    (len >> 8) & 0xFF,
+    0x31,
+    0x50,
+    0x30,
+    ...dataBytes,
+  ];
+  // Module size (4 = readable on 58mm thermal)
+  bytes += [0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x43, 0x04];
+  // Print the QR code
+  bytes += [0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x51, 0x30];
+  return bytes;
+}
+
 class PrinterHelper {
   // Singleton
   static final PrinterHelper _instance = PrinterHelper._internal();
@@ -114,6 +143,9 @@ class PrinterHelper {
     String? customerName,
     String? customerPhone,
     String? billId,
+    String? paymentMethod,
+    double? amountPaid,
+    double? dueAmount,
   }) async {
     if (!_isConnected) return;
 
@@ -154,6 +186,12 @@ class PrinterHelper {
     if (billId != null && billId.isNotEmpty) {
       bytes += _textToBytes('Bill: $billId');
       bytes += EscPos.lineFeed;
+      // Scannable QR encoding the unique bill id
+      bytes += EscPos.alignCenter;
+      bytes += _qrCodeBytes(billId);
+      bytes += EscPos.lineFeed;
+      bytes += EscPos.lineFeed;
+      bytes += EscPos.alignLeft;
     }
 
     // Customer Info (if provided)
@@ -187,6 +225,7 @@ class PrinterHelper {
       String qty = item['qty'].toString();
       String price = item['price'].toString();
       String totalItem = item['total'].toString();
+      String? warranty = item['warranty']?.toString();
 
       String prefix = '${qty}x $name';
       if (prefix.length > 16) prefix = prefix.substring(0, 16);
@@ -194,6 +233,12 @@ class PrinterHelper {
       String line = prefix.padRight(16) + price.padRight(8) + totalItem;
       bytes += _textToBytes(line);
       bytes += EscPos.lineFeed;
+
+      // Show warranty info below the item if available
+      if (warranty != null && warranty.isNotEmpty) {
+        bytes += _textToBytes('  $warranty');
+        bytes += EscPos.lineFeed;
+      }
     }
 
     bytes += _textToBytes('--------------------------------');
@@ -206,6 +251,22 @@ class PrinterHelper {
     bytes += EscPos.lineFeed;
     bytes += EscPos.boldOff;
     bytes += EscPos.lineFeed;
+
+    // Payment & Due
+    if (paymentMethod != null && paymentMethod.isNotEmpty) {
+      bytes += EscPos.alignLeft;
+      bytes += _textToBytes('Payment: $paymentMethod');
+      bytes += EscPos.lineFeed;
+    }
+    if (dueAmount != null && dueAmount > 0) {
+      bytes += EscPos.alignLeft;
+      bytes += _textToBytes('Paid: ${amountPaid ?? 0}');
+      bytes += EscPos.lineFeed;
+      bytes += EscPos.boldOn;
+      bytes += _textToBytes('DUE: $dueAmount');
+      bytes += EscPos.lineFeed;
+      bytes += EscPos.boldOff;
+    }
 
     // Footer (Center)
     bytes += EscPos.alignCenter;

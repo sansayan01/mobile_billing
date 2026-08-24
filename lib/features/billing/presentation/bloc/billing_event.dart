@@ -43,6 +43,23 @@ class UpdateItemPriceEvent extends BillingEvent {
   List<Object> get props => [productId, customPrice ?? -1.0];
 }
 
+class UpdateItemWarrantyEvent extends BillingEvent {
+  final String productId;
+  final String? warrantyType;
+  final int? warrantyDuration;
+  final String? warrantyUnit;
+
+  const UpdateItemWarrantyEvent({
+    required this.productId,
+    this.warrantyType,
+    this.warrantyDuration,
+    this.warrantyUnit,
+  });
+
+  @override
+  List<Object> get props => [productId, warrantyType ?? '', warrantyDuration ?? -1, warrantyUnit ?? ''];
+}
+
 class ClearCartEvent extends BillingEvent {}
 
 class PrintReceiptEvent extends BillingEvent {
@@ -122,12 +139,28 @@ class UpdateCustomerInfoEvent extends BillingEvent {
   List<Object> get props => [customerName ?? '', customerPhone ?? ''];
 }
 
+class SelectCustomerEvent extends BillingEvent {
+  final Customer customer;
+  const SelectCustomerEvent(this.customer);
+
+  @override
+  List<Object> get props => [customer.id, customer.name, customer.phone];
+}
+
 class UpdatePaymentMethodEvent extends BillingEvent {
   final String paymentMethod;
   const UpdatePaymentMethodEvent(this.paymentMethod);
 
   @override
   List<Object> get props => [paymentMethod];
+}
+
+class UpdateAmountPaidEvent extends BillingEvent {
+  final double? amountPaid;
+  const UpdateAmountPaidEvent(this.amountPaid);
+
+  @override
+  List<Object> get props => [amountPaid ?? 0.0];
 }
 
 class _ProductStockUpdatedEvent extends BillingEvent {

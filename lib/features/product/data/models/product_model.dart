@@ -43,6 +43,21 @@ class ProductModel extends Product {
   @override
   @HiveField(11)
   final DateTime? updatedAt;
+  @override
+  @HiveField(12)
+  final String warrantyType;
+  @override
+  @HiveField(13)
+  final int? warrantyDuration;
+  @override
+  @HiveField(14)
+  final String? warrantyUnit;
+  @override
+  @HiveField(15)
+  final int minStockLevel;
+  @override
+  @HiveField(16)
+  final String unit;
 
   const ProductModel({
     required this.id,
@@ -57,6 +72,11 @@ class ProductModel extends Product {
     this.qrData,
     this.createdAt,
     this.updatedAt,
+    this.warrantyType = 'none',
+    this.warrantyDuration,
+    this.warrantyUnit,
+    this.minStockLevel = 5,
+    this.unit = 'pcs',
   }) : super(
           id: id,
           name: name,
@@ -70,6 +90,11 @@ class ProductModel extends Product {
           qrData: qrData,
           createdAt: createdAt,
           updatedAt: updatedAt,
+          warrantyType: warrantyType,
+          warrantyDuration: warrantyDuration,
+          warrantyUnit: warrantyUnit,
+          minStockLevel: minStockLevel,
+          unit: unit,
         );
 
   factory ProductModel.fromEntity(Product product) {
@@ -86,6 +111,11 @@ class ProductModel extends Product {
       qrData: product.qrData,
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
+      warrantyType: product.warrantyType,
+      warrantyDuration: product.warrantyDuration,
+      warrantyUnit: product.warrantyUnit,
+      minStockLevel: product.minStockLevel,
+      unit: product.unit,
     );
   }
 
@@ -107,6 +137,11 @@ class ProductModel extends Product {
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'] as String)
           : null,
+      warrantyType: json['warranty_type'] as String? ?? 'none',
+      warrantyDuration: json['warranty_duration'] as int?,
+      warrantyUnit: json['warranty_unit'] as String?,
+      minStockLevel: json['min_stock_level'] as int? ?? 5,
+      unit: json['unit'] as String? ?? 'pcs',
     );
   }
 
@@ -124,6 +159,11 @@ class ProductModel extends Product {
       'qr_data': qrData,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
+      'warranty_type': warrantyType,
+      'warranty_duration': warrantyDuration,
+      'warranty_unit': warrantyUnit,
+      'min_stock_level': minStockLevel,
+      'unit': unit,
     };
   }
 
@@ -141,6 +181,11 @@ class ProductModel extends Product {
       qrData: qrData,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      warrantyType: warrantyType,
+      warrantyDuration: warrantyDuration,
+      warrantyUnit: warrantyUnit,
+      minStockLevel: minStockLevel,
+      unit: unit,
     );
   }
 }

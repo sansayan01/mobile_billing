@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'config/routes/app_routes.dart';
+import 'core/utils/beep_helper.dart';
 import 'core/data/hive_database.dart';
 import 'core/service_locator.dart' as di;
 import 'core/supabase/supabase_client.dart';
@@ -16,12 +17,15 @@ import 'features/report/presentation/bloc/report_bloc.dart';
 import 'features/shop/presentation/bloc/shop_bloc.dart';
 import 'features/settings/presentation/bloc/printer_bloc.dart';
 import 'features/settings/presentation/bloc/printer_event.dart';
+import 'features/stock/presentation/bloc/stock_bloc.dart';
+import 'features/damaged_products/presentation/bloc/damaged_products_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseConfig.initialize();
   await HiveDatabase.init();
   await di.init();
+  await BeepHelper.init();
 
   // Auth state subscription ek baar hi setup — MyApp ke build() mein nahi,
   // warna har rebuild par naye listener banenge → infinite loop + spam logout.
@@ -58,6 +62,10 @@ class MyApp extends StatelessWidget {
             create: (context) => di.sl<PrinterBloc>()..add(InitPrinterEvent())),
         BlocProvider<ThemeCubit>(
             create: (context) => di.sl<ThemeCubit>()),
+        BlocProvider<StockBloc>(
+            create: (context) => di.sl<StockBloc>()),
+        BlocProvider<DamagedProductsBloc>(
+            create: (context) => di.sl<DamagedProductsBloc>()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {

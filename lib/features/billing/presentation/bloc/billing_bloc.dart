@@ -10,6 +10,10 @@ import 'package:billing_app/features/product/domain/entities/product.dart';
 import 'package:billing_app/features/product/domain/usecases/product_usecases.dart';
 import '../../../../core/utils/printer_helper.dart';
 import '../../../../core/data/hive_database.dart';
+import '../../../../core/service_locator.dart' as di;
+import 'package:billing_app/core/utils/phone_utils.dart';
+import 'package:billing_app/features/customer/domain/repositories/customer_repository.dart';
+import 'package:billing_app/features/customer/domain/entities/customer.dart';
 
 part 'billing_event.dart';
 part 'billing_state.dart';
@@ -38,7 +42,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     on<ValidateStockBeforeBill>(_onValidateStockBeforeBill);
     on<ClearStockErrorsEvent>(_onClearStockErrors);
     on<UpdateCustomerInfoEvent>(_onUpdateCustomerInfo);
+    on<SelectCustomerEvent>(_onSelectCustomer);
     on<UpdatePaymentMethodEvent>(_onUpdatePaymentMethod);
+    on<UpdateAmountPaidEvent>(_onUpdateAmountPaid);
+    on<UpdateItemWarrantyEvent>(_onUpdateItemWarranty);
     on<_ProductStockUpdatedEvent>(_onProductStockUpdated);
 
     _subscription = SupabaseConfig.client
@@ -188,9 +195,12 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
                 'qty': item.quantity,
                 'price': item.unitPrice,
                 'total': item.total,
+                'warranty': item.product.hasWarranty ? item.product.warrantyLabel : null,
               })
           .toList();
 
+      final paid = state.amountPaid ?? state.totalAmount;
+      final due = state.totalAmount - paid;
       await printerHelper.printReceipt(
           shopName: event.shopName,
           address1: event.address1,
@@ -201,7 +211,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           footer: event.footer,
           customerName: event.customerName,
           customerPhone: event.customerPhone,
-          billId: event.billId);
+          billId: event.billId,
+          paymentMethod: state.paymentMethod,
+          amountPaid: paid,
+          dueAmount: due > 0 ? due : null);
 
       emit(state.copyWith(isPrinting: false, printSuccess: true));
     } catch (e) {
@@ -231,6 +244,21 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     emit(state.copyWith(
       discountIsPercentage: event.isPercentage,
     ));
+  }
+
+  void _onUpdateItemWarranty(
+      UpdateItemWarrantyEvent event, Emitter<BillingState> emit) {
+    final updatedItems = state.cartItems.map((item) {
+      if (item.product.id == event.productId) {
+        return item.copyWith(
+          warrantyTypeOverride: event.warrantyType,
+          warrantyDurationOverride: event.warrantyDuration,
+          warrantyUnitOverride: event.warrantyUnit,
+        );
+      }
+      return item;
+    }).toList();
+    emit(state.copyWith(cartItems: updatedItems));
   }
 
   Future<void> _onSubmitBill(
@@ -294,6 +322,65 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           state.cartItems.fold<double>(0, (sum, item) => sum + item.total);
       final calculatedTotal = state.totalAmount;
 
+      // Calculate payment status and due amount
+      final amountPaid = state.amountPaid ?? calculatedTotal; // Default: full payment
+      final dueAmount = calculatedTotal - amountPaid;
+      String paymentStatus;
+      if (dueAmount <= 0) {
+        paymentStatus = 'paid';
+      } else if (amountPaid > 0) {
+        paymentStatus = 'partial';
+      } else {
+        paymentStatus = 'due';
+      }
+
+      // 0. Resolve / auto-create linked customer (if phone provided)
+      //    Keeps legacy free-text name/phone AND links a customer_id so the
+      //    customer's bill history shows up automatically.
+      String? linkedCustomerId;
+
+      // If a customer was picked from the picker, link by id directly
+      // (no phone-match round trip needed).
+      if (state.selectedCustomer != null &&
+          state.selectedCustomer!.id.isNotEmpty) {
+        linkedCustomerId = state.selectedCustomer!.id;
+      }
+
+      final rawPhone = state.customerPhone?.trim() ?? '';
+      final normalizedPhone = normalizePhone(rawPhone);
+      final customerName = state.customerName?.trim() ?? '';
+      if (linkedCustomerId == null && normalizedPhone.isNotEmpty) {
+        try {
+          final customerRepo = di.sl<CustomerRepository>();
+          final existing = await customerRepo.findCustomerByPhone(
+            normalizedPhone,
+            shopId,
+          );
+          await existing.fold(
+            (_) async {
+              // ignore lookup errors, save without link
+            },
+            (customer) async {
+              if (customer != null) {
+                linkedCustomerId = customer.id;
+              } else if (customerName.isNotEmpty) {
+                final created = await customerRepo.addCustomer(
+                  name: customerName,
+                  phone: normalizedPhone,
+                  shopId: shopId!,
+                );
+                created.fold(
+                  (_) {/* duplicate/error: skip link */},
+                  (c) => linkedCustomerId = c.id,
+                );
+              }
+            },
+          );
+        } catch (_) {
+          // Never block the bill save on a customer-link failure.
+        }
+      }
+
       // 1. Insert into bills table
       await SupabaseConfig.client.from('bills').insert({
         'id': billId,
@@ -307,6 +394,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
         'created_at': now,
         'customer_name': state.customerName,
         'customer_phone': state.customerPhone,
+        'customer_id': linkedCustomerId,
+        'amount_paid': amountPaid,
+        'due_amount': dueAmount,
+        'payment_status': paymentStatus,
       });
 
       // 2. Insert bill items, update stock, and log inventory
@@ -320,6 +411,9 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           'quantity': item.quantity,
           'price': item.unitPrice,
           'total': item.total,
+          'warranty_type': item.effectiveWarrantyType,
+          'warranty_duration': item.effectiveWarrantyDuration,
+          'warranty_unit': item.effectiveWarrantyUnit,
         });
 
         // Fetch fresh stock to avoid race conditions with concurrent sales
@@ -351,6 +445,41 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
           'notes': 'Sale: bill $billId',
         });
       }
+
+      // Audit log: bill created
+      try {
+        String? staffName;
+        final profile = await SupabaseConfig.client.from('profiles').select('name').eq('id', staffId).maybeSingle();
+        staffName = profile?['name'] as String?;
+
+        // Build rich items list for audit
+        final auditItems = state.cartItems.map((item) => {
+          'name': item.product.name,
+          'qty': item.quantity,
+          'unit_price': item.unitPrice,
+          'total': item.total,
+        }).toList();
+
+        await SupabaseConfig.client.from('audit_logs').insert({
+          'action': 'bill.created',
+          'entity_type': 'bill',
+          'entity_id': billId,
+          'entity_name': 'Bill #${billId.substring(0, billId.length > 8 ? 8 : billId.length)}',
+          'description': 'Bill created — ${state.cartItems.length} items, ₹${calculatedTotal.toStringAsFixed(0)} (${state.paymentMethod})',
+          'new_value': {
+            'total': calculatedTotal,
+            'payment': state.paymentMethod,
+            'status': paymentStatus,
+            if (state.customerName != null && state.customerName!.isNotEmpty)
+              'customer_name': state.customerName,
+            if (state.customerPhone != null && state.customerPhone!.isNotEmpty)
+              'customer_phone': state.customerPhone,
+            'items': auditItems,
+          },
+          'staff_name': staffName,
+          'shop_id': shopId,
+        });
+      } catch (_) {}
 
       emit(state.copyWith(isSubmitting: false, submitSuccess: true, lastBillId: billId));
     } catch (e) {
@@ -400,6 +529,19 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     emit(state.copyWith(
       customerName: event.customerName,
       customerPhone: event.customerPhone,
+    ));
+  }
+
+  /// A customer was picked from the search/list picker. Store the full
+  /// Customer (so the bill can link by id directly) and auto-fill the
+  /// name/phone fields so the UI stays in sync.
+  void _onSelectCustomer(
+      SelectCustomerEvent event, Emitter<BillingState> emit) {
+    final customer = event.customer;
+    emit(state.copyWith(
+      selectedCustomer: customer,
+      customerName: customer.name,
+      customerPhone: customer.phone,
     ));
   }
 
@@ -456,5 +598,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
   void _onUpdatePaymentMethod(
       UpdatePaymentMethodEvent event, Emitter<BillingState> emit) {
     emit(state.copyWith(paymentMethod: event.paymentMethod));
+  }
+
+  void _onUpdateAmountPaid(
+      UpdateAmountPaidEvent event, Emitter<BillingState> emit) {
+    emit(state.copyWith(amountPaid: event.amountPaid));
   }
 }

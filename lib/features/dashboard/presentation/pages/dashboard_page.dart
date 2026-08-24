@@ -59,7 +59,15 @@ class _DashboardViewState extends State<_DashboardView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (didPop) return;
+        // Dashboard is the app root — Android back here should close the app,
+        // not pop to a blank route. Sub-pages pop normally to land here.
+        SystemNavigator.pop();
+      },
+      child: Scaffold(
       body: Container(
         // ignore: prefer_const_constructors
         decoration: BoxDecoration(
@@ -204,7 +212,8 @@ class _DashboardViewState extends State<_DashboardView> {
   ), // RefreshIndicator
 ), // SafeArea
 ), // Container
-); // Scaffold
+), // Scaffold
+    ); // PopScope
   }
 
   void _showProductSearch(BuildContext context) {

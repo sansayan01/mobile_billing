@@ -56,6 +56,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       id: const Uuid().v4(),
       name: event.name,
       description: event.description,
+      iconCodePoint: event.iconCodePoint,
+      colorValue: event.colorValue,
     );
     final result = await addCategoryUseCase(category,
         shopId: _currentShopId);
@@ -78,6 +80,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       id: event.id,
       name: event.name,
       description: event.description,
+      iconCodePoint: event.iconCodePoint,
+      colorValue: event.colorValue,
     );
     final result = await updateCategoryUseCase(category,
         shopId: _currentShopId);

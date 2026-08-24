@@ -16,6 +16,7 @@ import '../../../../core/usecase/usecase.dart';
 import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../../../features/auth/presentation/bloc/auth_state.dart';
 import '../../../../core/service_locator.dart' as di;
+import '../../../../core/utils/beep_helper.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -81,11 +82,14 @@ class _HomePageState extends State<HomePage> {
 
         _lastScanTimes[rawValue] = now;
 
-        // Vibrate
+        // Vibrate — gentle feedback (was default full-power buzz, now softened)
         final hasVibrator = await Vibration.hasVibrator();
         if (hasVibrator == true) {
-          Vibration.vibrate();
+          Vibration.vibrate(duration: 120, amplitude: 128);
         }
+
+        // Play beep sound (same feedback as the standalone scanner page)
+        BeepHelper.playBeep();
 
         if (mounted) {
           context.read<BillingBloc>().add(ScanBarcodeEvent(rawValue));
@@ -441,13 +445,7 @@ class _HomePageState extends State<HomePage> {
                                         onTap: () {
                                           context.read<BillingBloc>().add(AddProductToCartEvent(product));
                                           Navigator.of(ctx).pop();
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Text('${product.name} added to cart'),
-                                              backgroundColor: Colors.green,
-                                              behavior: SnackBarBehavior.floating,
-                                            ),
-                                          );
+                                          // SnackBar removed — cart update is visual feedback enough
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),

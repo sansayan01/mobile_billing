@@ -11,22 +11,15 @@ class AppShell extends StatelessWidget {
   Widget build(BuildContext context) {
     // Get current route location from GoRouter
     final routerState = GoRouterState.of(context);
-    final goRouter = GoRouter.of(context);
     final currentRoute = routerState.matchedLocation;
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (bool didPop, dynamic result) {
-        if (didPop) return;
-        // System back → dashboard (GoRouter reference stored, not context-dependent)
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          goRouter.go('/');
-        });
-      },
-      child: Scaffold(
-        drawer: AppDrawer(currentRoute: currentRoute),
-        body: child,
-      ),
+    // NOTE: Do NOT wrap the whole shell in PopScope(canPop:false). That used to
+    // swallow every Android back press and force go('/'), which closed the app
+    // from sub-pages instead of returning to the dashboard. Individual pages
+    // now pop normally; only DashboardPage guards the "back = exit app" case.
+    return Scaffold(
+      drawer: AppDrawer(currentRoute: currentRoute),
+      body: child,
     );
   }
 }

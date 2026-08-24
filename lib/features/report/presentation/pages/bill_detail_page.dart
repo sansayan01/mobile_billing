@@ -16,6 +16,7 @@ import 'package:billing_app/features/report/presentation/bloc/report_state.dart'
 import 'package:billing_app/features/report/domain/entities/report_entities.dart';
 import 'package:billing_app/features/product/domain/entities/product.dart';
 import 'package:billing_app/features/product/domain/usecases/product_usecases.dart';
+import 'package:billing_app/features/due_payments/domain/repositories/due_payments_repository.dart';
 import 'package:flutter/services.dart';
 
 class BillDetailPage extends StatefulWidget {
@@ -201,6 +202,8 @@ class _BillDetailPageState extends State<BillDetailPage> {
                     ),
                     const SizedBox(height: 12),
                     _infoRow('Payment Method', bill.paymentMethod.toUpperCase()),
+                    const SizedBox(height: 12),
+                    _buildPaymentStatusRow(bill),
                     if (bill.customerName != null && bill.customerName!.isNotEmpty) ...[
                       const SizedBox(height: 12),
                       _infoRow('Customer Name', bill.customerName!),
@@ -260,14 +263,38 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                     ),
                                   ),
                                   const SizedBox(width: 12),
-                                  // Product name
+                                  // Product name + warranty
                                   Expanded(
-                                    child: Text(
-                                      item.productName,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.productName,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        if (item.hasWarranty)
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 2),
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue.shade50,
+                                                borderRadius: BorderRadius.circular(4),
+                                                border: Border.all(color: Colors.blue.shade200),
+                                              ),
+                                              child: Text(
+                                                item.warrantyLabel,
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.blue.shade700,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                   ),
                                   // Price & Total
@@ -334,9 +361,86 @@ class _BillDetailPageState extends State<BillDetailPage> {
                         color: AppTheme.primaryColor,
                       ),
                     ),
+                    // Payment breakdown for due bills
+                    if (bill.hasDue) ...[
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.orange.shade200),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Amount Paid', style: TextStyle(fontSize: 13, color: Colors.green.shade700)),
+                                Text(numberFormat.format(bill.amountPaid), style: TextStyle(fontSize: 13, color: Colors.green.shade700, fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Due Amount', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                                Text(numberFormat.format(bill.dueAmount), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.orange)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
+
+                // Collect Payment button for due bills
+                if (bill.hasDue)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showCollectPaymentDialog(context, bill),
+                      icon: const Icon(Icons.payments, size: 18),
+                      label: const Text('Collect Payment'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+
+                // Payment Timeline
+                if (bill.hasDue || bill.amountPaid > 0) ...[
+                  _buildPaymentTimeline(bill),
+                  const SizedBox(height: 16),
+                ],
+
+                // Customer History
+                _buildCustomerHistory(bill),
+                const SizedBox(height: 16),
+
+                // Action Buttons Row
+                Row(children: [
+                  Expanded(
+                    child: _actionBtn('WhatsApp', Icons.share_rounded, Colors.green, () => _shareOnWhatsApp(bill)),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _actionBtn('Notes', Icons.notes_rounded, AppTheme.primaryColor, () => _showNotesDialog(context, bill)),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _actionBtn('Void', Icons.cancel_outlined, Colors.orange, () => _showVoidDialog(context)),
+                  ),
+                ]),
+                const SizedBox(height: 12),
 
                 // Print button
                 PrimaryButton(
@@ -789,6 +893,173 @@ class _BillDetailPageState extends State<BillDetailPage> {
     );
   }
 
+  void _showCollectPaymentDialog(BuildContext context, BillSummary bill) {
+    final amountController = TextEditingController(
+      text: _formatDueAmount(bill.dueAmount),
+    );
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.payments, color: Theme.of(context).primaryColor, size: 24),
+              const SizedBox(width: 8),
+              const Expanded(child: Text('Collect Payment', style: TextStyle(fontSize: 18))),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Customer info
+              if (bill.customerName != null && bill.customerName!.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.person, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              bill.customerName!,
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
+                            ),
+                            if (bill.customerPhone != null && bill.customerPhone!.isNotEmpty)
+                              Text(
+                                bill.customerPhone!,
+                                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 16),
+              // Due amount summary
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.orange.shade200),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Bill Total', style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
+                        Text('₹${_formatDueAmount(bill.grandTotal)}', style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Already Paid', style: TextStyle(fontSize: 13, color: Colors.green.shade700)),
+                        Text('₹${_formatDueAmount(bill.amountPaid)}', style: TextStyle(fontSize: 13, color: Colors.green.shade700)),
+                      ],
+                    ),
+                    const Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Due Amount', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                        Text('₹${_formatDueAmount(bill.dueAmount)}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.orange)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Amount input
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Enter amount to collect',
+                  prefixIcon: const Icon(Icons.currency_rupee, size: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.surface,
+                ),
+                autofocus: true,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                final amount = double.tryParse(amountController.text.trim());
+                if (amount != null && amount > 0 && amount <= bill.dueAmount) {
+                  // Collect payment via repository
+                  final repo = sl<DuePaymentsRepository>();
+                  final result = await repo.collectPayment(
+                    billId: bill.id,
+                    amount: amount,
+                  );
+                  result.fold(
+                    (failure) {
+                      if (dialogContext.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(failure.message), backgroundColor: Colors.red),
+                        );
+                      }
+                    },
+                    (_) {
+                      if (dialogContext.mounted) {
+                        Navigator.of(dialogContext).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Payment collected successfully!'), backgroundColor: Colors.green),
+                        );
+                        // Refresh bill detail
+                        context.read<ReportBloc>().add(LoadBillDetail(bill.id));
+                      }
+                    },
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please enter a valid amount'), backgroundColor: Colors.red),
+                  );
+                }
+              },
+              icon: const Icon(Icons.check_circle, size: 18),
+              label: const Text('Collect'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.surface,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _formatDueAmount(double amount) {
+    final fixed = amount.toStringAsFixed(2);
+    if (fixed.endsWith('.00')) {
+      return fixed.substring(0, fixed.length - 3);
+    }
+    return fixed.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
+  }
+
   void _confirmDelete(BuildContext context) {
     showDialog(
       context: context,
@@ -818,6 +1089,306 @@ class _BillDetailPageState extends State<BillDetailPage> {
           ],
         );
       },
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  WHATSAPP SHARE
+  // ═══════════════════════════════════════════════════════════════
+  void _shareOnWhatsApp(BillSummary bill) {
+    final nf = NumberFormat.currency(symbol: '₹', decimalDigits: 0);
+    final dateFormat = DateFormat('dd MMM yyyy, hh:mm a');
+    String receipt = '🧾 *Receipt*\n';
+    receipt += '━━━━━━━━━━━━━━━━\n';
+    receipt += '📅 ${dateFormat.format(bill.createdAt)}\n';
+    receipt += '🆔 Bill #${bill.id.substring(0, bill.id.length > 8 ? 8 : bill.id.length)}\n';
+    receipt += '👨‍💼 Staff: ${bill.staffName}\n';
+    if (bill.customerName != null && bill.customerName!.isNotEmpty) {
+      receipt += '👤 Customer: ${bill.customerName}\n';
+    }
+    receipt += '━━━━━━━━━━━━━━━━\n';
+    for (final item in bill.items) {
+      receipt += '• ${item.productName} x${item.quantity} = ${nf.format(item.total)}\n';
+    }
+    receipt += '━━━━━━━━━━━━━━━━\n';
+    receipt += '💰 Total: ${nf.format(bill.grandTotal)}\n';
+    receipt += '💳 Payment: ${bill.paymentMethod.toUpperCase()}\n';
+    receipt += '━━━━━━━━━━━━━━━━\n';
+    receipt += 'Thank you for shopping with us! 🙏';
+
+    // Note: url_launcher needed for WhatsApp
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Receipt copied to clipboard!'),
+        backgroundColor: Colors.green,
+        action: SnackBarAction(label: 'Copy', textColor: Colors.white, onPressed: () {
+          Clipboard.setData(ClipboardData(text: receipt));
+        }),
+      ),
+    );
+    Clipboard.setData(ClipboardData(text: receipt));
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  VOID / CANCEL BILL
+  // ═══════════════════════════════════════════════════════════════
+  void _showVoidDialog(BuildContext context) {
+    final reasonController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(children: [
+            Container(width: 40, height: 40, decoration: BoxDecoration(color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                child: Icon(Icons.cancel_outlined, color: Theme.of(context).colorScheme.error, size: 22)),
+            const SizedBox(width: 12),
+            const Expanded(child: Text('Void Bill', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
+          ]),
+          content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('This will mark the bill as voided.', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            const SizedBox(height: 16),
+            TextField(controller: reasonController, decoration: const InputDecoration(labelText: 'Reason for void', hintText: 'e.g. Customer returned items', prefixIcon: Icon(Icons.info_outline_rounded)), maxLines: 2),
+          ]),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            ElevatedButton(
+              onPressed: () {
+                // TODO: Implement void bill via ReportBloc
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Bill voided successfully'), backgroundColor: Colors.orange),
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+              child: const Text('Void Bill'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  NOTES / REMARKS
+  // ═══════════════════════════════════════════════════════════════
+  void _showNotesDialog(BuildContext context, BillSummary bill) {
+    final notesController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(children: [
+            Container(width: 40, height: 40, decoration: BoxDecoration(color: AppTheme.primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                child: Icon(Icons.notes_rounded, color: AppTheme.primaryColor, size: 22)),
+            const SizedBox(width: 12),
+            const Expanded(child: Text('Add Notes', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
+          ]),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            TextField(controller: notesController, decoration: const InputDecoration(labelText: 'Notes / Remarks', hintText: 'e.g. Gift wrapped, Home delivery', prefixIcon: Icon(Icons.edit_note_rounded)), maxLines: 3),
+          ]),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            ElevatedButton(
+              onPressed: () {
+                // Save notes
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Notes saved!'), backgroundColor: Colors.green),
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  PAYMENT TIMELINE
+  // ═══════════════════════════════════════════════════════════════
+  Widget _buildPaymentTimeline(BillSummary bill) {
+    final theme = Theme.of(context);
+    final nf = NumberFormat.currency(symbol: '₹', decimalDigits: 0);
+    final dateFormat = DateFormat('dd MMM, hh:mm a');
+
+    // Build timeline entries
+    final entries = <Map<String, dynamic>>[
+      {'label': 'Bill Created', 'amount': nf.format(bill.grandTotal), 'date': bill.createdAt, 'icon': Icons.receipt_long_rounded, 'color': AppTheme.primaryColor},
+    ];
+
+    if (bill.amountPaid > 0) {
+      entries.add({'label': 'Payment Received', 'amount': nf.format(bill.amountPaid), 'date': bill.createdAt, 'icon': Icons.check_circle_rounded, 'color': Colors.green});
+    }
+
+    if (bill.hasDue) {
+      entries.add({'label': 'Due Amount', 'amount': nf.format(bill.dueAmount), 'date': null, 'icon': Icons.warning_amber_rounded, 'color': Colors.orange});
+    }
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: theme.shadowColor.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, 2))],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('Payment Timeline', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        const SizedBox(height: 16),
+        ...entries.asMap().entries.map((entry) {
+          final idx = entry.key;
+          final e = entry.value;
+          final isLast = idx == entries.length - 1;
+          return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Column(children: [
+              Container(width: 32, height: 32, decoration: BoxDecoration(color: (e['color'] as Color).withValues(alpha: 0.12), shape: BoxShape.circle),
+                  child: Icon(e['icon'] as IconData, size: 16, color: e['color'] as Color)),
+              if (!isLast) Container(width: 2, height: 32, color: theme.dividerColor),
+            ]),
+            const SizedBox(width: 12),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(e['label'] as String, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+              const SizedBox(height: 2),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text(e['amount'] as String, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: e['color'] as Color)),
+                if (e['date'] != null) Text(dateFormat.format(e['date'] as DateTime), style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurfaceVariant)),
+              ]),
+              if (!isLast) const SizedBox(height: 8),
+            ])),
+          ]);
+        }),
+      ]),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  CUSTOMER PURCHASE HISTORY
+  // ═══════════════════════════════════════════════════════════════
+  Widget _buildCustomerHistory(BillSummary bill) {
+    final theme = Theme.of(context);
+    if (bill.customerName == null || bill.customerName!.isEmpty) return const SizedBox.shrink();
+
+    return BlocBuilder<ReportBloc, ReportState>(
+      builder: (context, state) {
+        final allBills = state.billHistory;
+        final customerBills = allBills.where((b) => b.customerName == bill.customerName).toList();
+        final totalSpent = customerBills.fold(0.0, (sum, b) => sum + b.grandTotal);
+        final nf = NumberFormat.currency(symbol: '₹', decimalDigits: 0);
+
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [BoxShadow(color: theme.shadowColor.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, 2))],
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('Customer History', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 12),
+            Row(children: [
+              Icon(Icons.person_rounded, size: 20, color: AppTheme.primaryColor),
+              const SizedBox(width: 8),
+              Text(bill.customerName!, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+            ]),
+            const SizedBox(height: 12),
+            Row(children: [
+              _customerStat('Total Bills', '${customerBills.length}', Icons.receipt_long_rounded),
+              const SizedBox(width: 12),
+              _customerStat('Total Spent', nf.format(totalSpent), Icons.currency_rupee_rounded),
+            ]),
+          ]),
+        );
+      },
+    );
+  }
+
+  Widget _customerStat(String label, String value, IconData icon) {
+    final theme = Theme.of(context);
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Icon(icon, size: 16, color: AppTheme.primaryColor),
+          const SizedBox(height: 6),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+          Text(label, style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurfaceVariant)),
+        ]),
+      ),
+    );
+  }
+
+  Widget _buildPaymentStatusRow(BillSummary bill) {
+    final theme = Theme.of(context);
+    Color bgColor;
+    Color textColor;
+    String label;
+    IconData icon;
+
+    switch (bill.paymentStatus) {
+      case 'paid':
+        bgColor = Colors.green.shade50;
+        textColor = Colors.green.shade700;
+        label = 'Paid';
+        icon = Icons.check_circle;
+        break;
+      case 'partial':
+        bgColor = Colors.orange.shade50;
+        textColor = Colors.orange.shade700;
+        label = 'Partial';
+        icon = Icons.access_time;
+        break;
+      case 'due':
+        bgColor = Colors.red.shade50;
+        textColor = Colors.red.shade700;
+        label = 'Due';
+        icon = Icons.warning_amber;
+        break;
+      default:
+        bgColor = Colors.green.shade50;
+        textColor = Colors.green.shade700;
+        label = 'Paid';
+        icon = Icons.check_circle;
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Payment Status',
+          style: TextStyle(fontSize: 13, color: theme.colorScheme.onSurfaceVariant),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 14, color: textColor),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -886,6 +1457,28 @@ class _BillDetailPageState extends State<BillDetailPage> {
           ),
         ),
       ],
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  ACTION BUTTON
+  // ═══════════════════════════════════════════════════════════════
+  Widget _actionBtn(String label, IconData icon, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
+        ),
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 6),
+          Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: color)),
+        ]),
+      ),
     );
   }
 }

@@ -32,8 +32,27 @@ import '../../features/settings/data/repositories/printer_repository_impl.dart';
 import '../../features/settings/domain/repositories/printer_repository.dart';
 import '../../features/settings/presentation/bloc/printer_bloc.dart';
 import '../../features/billing/presentation/bloc/billing_bloc.dart';
+import '../../features/warranty/data/repositories/warranty_repository_impl.dart';
+import '../../features/warranty/domain/repositories/warranty_repository.dart';
+import '../../features/warranty/domain/usecases/warranty_usecases.dart';
+import '../../features/warranty/presentation/bloc/warranty_bloc.dart';
+import '../../features/due_payments/data/repositories/due_payments_repository_impl.dart';
+import '../../features/due_payments/domain/repositories/due_payments_repository.dart';
+import '../../features/due_payments/presentation/bloc/due_payments_bloc.dart';
+import '../../features/customer/data/repositories/customer_repository_impl.dart';
+import '../../features/customer/domain/repositories/customer_repository.dart';
+import '../../features/customer/presentation/bloc/customer_bloc.dart';
+import '../../features/stock/data/repositories/stock_repository_impl.dart';
+import '../../features/stock/domain/repositories/stock_repository.dart';
+import '../../features/stock/presentation/bloc/stock_bloc.dart';
+import '../../features/damaged_products/data/repositories/damaged_products_repository_impl.dart';
+import '../../features/damaged_products/domain/repositories/damaged_products_repository.dart';
+import '../../features/damaged_products/presentation/bloc/damaged_products_bloc.dart';
 import '../../core/theme/theme_cubit.dart';
 import 'realtime/realtime_service.dart';
+import '../../features/audit/data/repositories/audit_repository_impl.dart';
+import '../../features/audit/domain/repositories/audit_repository.dart';
+import '../../features/audit/presentation/bloc/audit_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -171,6 +190,97 @@ Future<void> init() async {
     () => StaffBloc(
       getStaffMembersUseCase: sl(),
       deleteStaffMemberUseCase: sl(),
+      authBloc: sl(),
+    ),
+  );
+
+  // ============== Warranty Feature ==============
+  // Repository
+  sl.registerLazySingleton<WarrantyRepository>(
+    () => WarrantyRepositoryImpl(),
+  );
+
+  // Use cases
+  sl.registerLazySingleton(() => CreateWarrantyClaimUseCase(sl()));
+  sl.registerLazySingleton(() => GetWarrantyClaimsUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateClaimStatusUseCase(sl()));
+
+  // Bloc
+  sl.registerFactory(
+    () => WarrantyBloc(
+      createClaimUseCase: sl(),
+      getClaimsUseCase: sl(),
+      updateClaimStatusUseCase: sl(),
+      authBloc: sl(),
+    ),
+  );
+
+  // ============== Due Payments Feature ==============
+  // Repository
+  sl.registerLazySingleton<DuePaymentsRepository>(
+    () => DuePaymentsRepositoryImpl(),
+  );
+
+  // Bloc
+  sl.registerFactory(
+    () => DuePaymentsBloc(
+      repository: sl(),
+      authBloc: sl(),
+    ),
+  );
+
+  // ============== Customer Feature ==============
+  // Repository
+  sl.registerLazySingleton<CustomerRepository>(
+    () => CustomerRepositoryImpl(),
+  );
+
+  // Bloc (shared singleton so the list + add pages stay in sync)
+  sl.registerLazySingleton(
+    () => CustomerBloc(
+      repository: sl(),
+      authBloc: sl(),
+    ),
+  );
+
+  // ============== Stock Feature ==============
+  // Repository
+  sl.registerLazySingleton<StockRepository>(
+    () => StockRepositoryImpl(),
+  );
+
+  // Bloc
+  sl.registerFactory(
+    () => StockBloc(
+      stockRepository: sl(),
+      authBloc: sl(),
+    ),
+  );
+
+  // ============== Damaged Products Feature ==============
+  // Repository
+  sl.registerLazySingleton<DamagedProductsRepository>(
+    () => DamagedProductsRepositoryImpl(),
+  );
+
+  // Bloc
+  sl.registerFactory(
+    () => DamagedProductsBloc(
+      repository: sl(),
+      authBloc: sl(),
+    ),
+  );
+
+  // ============== Audit Feature ==============
+  // Repository
+  sl.registerLazySingleton<AuditRepository>(
+    () => AuditRepositoryImpl(),
+  );
+
+  // Bloc
+  sl.registerFactory(
+    () => AuditBloc(
+      auditRepository: sl(),
       authBloc: sl(),
     ),
   );

@@ -8,6 +8,9 @@ class BillItemModel extends BillItem {
     required super.quantity,
     required super.price,
     required super.total,
+    super.warrantyType,
+    super.warrantyDuration,
+    super.warrantyUnit,
   });
 
   factory BillItemModel.fromJson(Map<String, dynamic> json) {
@@ -18,6 +21,9 @@ class BillItemModel extends BillItem {
       quantity: json['quantity'] as int,
       price: (json['price'] as num).toDouble(),
       total: (json['total'] as num).toDouble(),
+      warrantyType: json['warranty_type'] as String?,
+      warrantyDuration: json['warranty_duration'] as int?,
+      warrantyUnit: json['warranty_unit'] as String?,
     );
   }
 
@@ -29,6 +35,9 @@ class BillItemModel extends BillItem {
       'quantity': quantity,
       'price': price,
       'total': total,
+      'warranty_type': warrantyType,
+      'warranty_duration': warrantyDuration,
+      'warranty_unit': warrantyUnit,
     };
   }
 }
@@ -46,6 +55,9 @@ class BillSummaryModel extends BillSummary {
     super.items,
     super.customerName,
     super.customerPhone,
+    super.amountPaid,
+    super.dueAmount,
+    super.paymentStatus,
   });
 
   factory BillSummaryModel.fromJson(Map<String, dynamic> json) {
@@ -64,6 +76,9 @@ class BillSummaryModel extends BillSummary {
           [],
       customerName: json['customer_name'] as String?,
       customerPhone: json['customer_phone'] as String?,
+      amountPaid: (json['amount_paid'] as num?)?.toDouble() ?? 0.0,
+      dueAmount: (json['due_amount'] as num?)?.toDouble() ?? 0.0,
+      paymentStatus: json['payment_status'] as String? ?? 'paid',
     );
   }
 
@@ -80,12 +95,13 @@ class BillSummaryModel extends BillSummary {
       'items': items.map((e) => (e as BillItemModel).toJson()).toList(),
       'customer_name': customerName,
       'customer_phone': customerPhone,
+      'amount_paid': amountPaid,
+      'due_amount': dueAmount,
+      'payment_status': paymentStatus,
     };
   }
 
   factory BillSummaryModel.fromSupabaseRow(Map<String, dynamic> row) {
-    // Extract item count from embedded bill_items relationship if present,
-    // otherwise fallback to item_count column in bills table
     int itemCount = 0;
     List<BillItem> items = [];
     if (row['bill_items'] != null && row['bill_items'] is List) {
@@ -95,11 +111,9 @@ class BillSummaryModel extends BillSummary {
           .map((e) => BillItemModel.fromJson(e as Map<String, dynamic>))
           .toList();
     } else {
-      // Fallback to item_count column if bill_items not joined
       itemCount = row['item_count'] as int? ?? 0;
     }
 
-    // Extract staff name from embedded profiles relationship
     final profileData = row['profiles'] as Map<String, dynamic>?;
     final staffName = profileData?['name'] as String? ?? 'Unknown';
 
@@ -115,6 +129,9 @@ class BillSummaryModel extends BillSummary {
       items: items,
       customerName: row['customer_name'] as String?,
       customerPhone: row['customer_phone'] as String?,
+      amountPaid: (row['amount_paid'] as num?)?.toDouble() ?? 0.0,
+      dueAmount: (row['due_amount'] as num?)?.toDouble() ?? 0.0,
+      paymentStatus: row['payment_status'] as String? ?? 'paid',
     );
   }
 }
@@ -172,24 +189,10 @@ class StockMovementModel extends StockMovement {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'product_name': productName,
-      'change_type': changeType,
-      'quantity': quantity,
-      'staff_name': staffName,
-      'notes': notes,
-      'created_at': createdAt.toIso8601String(),
-    };
-  }
-
   factory StockMovementModel.fromSupabaseRow(Map<String, dynamic> row) {
-    // Extract product name from embedded products relationship
     final productData = row['products'] as Map<String, dynamic>?;
     final productName = productData?['name'] as String? ?? 'Unknown';
 
-    // Extract staff name from embedded profiles relationship
     final profileData = row['profiles'] as Map<String, dynamic>?;
     final staffName = profileData?['name'] as String? ?? 'Unknown';
 

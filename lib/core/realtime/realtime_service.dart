@@ -71,9 +71,12 @@ class RealtimeService {
       table: 'products',
       callback: (PostgresChangePayload change) {
         // Filter by shop_id if provided — skip events from other shops.
+        // For DELETE events newRecord is empty, so read shop_id from the
+        // old record instead.
         if (shopId != null) {
-          final newRecord = change.newRecord;
-          final recordShopId = newRecord['shop_id'] as String?;
+          final isDelete = change.eventType == PostgresChangeEvent.delete;
+          final recordShopId = (isDelete ? change.oldRecord : change.newRecord)[
+              'shop_id'] as String?;
           if (recordShopId == null || recordShopId != shopId) {
             return;
           }

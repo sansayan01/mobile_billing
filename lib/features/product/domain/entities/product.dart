@@ -14,6 +14,15 @@ class Product extends Equatable {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
+  // Warranty fields
+  final String warrantyType; // 'none', 'warranty', 'guarantee'
+  final int? warrantyDuration;
+  final String? warrantyUnit; // 'days', 'months', 'years'
+
+  // New fields
+  final int minStockLevel; // Reorder point (default: 5)
+  final String unit; // 'pcs', 'box', 'pack' etc.
+
   const Product({
     required this.id,
     required this.name,
@@ -27,7 +36,22 @@ class Product extends Equatable {
     this.qrData,
     this.createdAt,
     this.updatedAt,
+    this.warrantyType = 'none',
+    this.warrantyDuration,
+    this.warrantyUnit,
+    this.minStockLevel = 5,
+    this.unit = 'pcs',
   });
+
+  bool get hasWarranty =>
+      warrantyType != 'none' && warrantyDuration != null && warrantyUnit != null;
+
+  String get warrantyLabel {
+    if (!hasWarranty) return '';
+    return '$warrantyType: $warrantyDuration $warrantyUnit';
+  }
+
+  bool get isLowStock => stock <= minStockLevel;
 
   Product copyWith({
     String? id,
@@ -42,6 +66,13 @@ class Product extends Equatable {
     String? qrData,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? warrantyType,
+    int? warrantyDuration,
+    String? warrantyUnit,
+    bool clearWarrantyDuration = false,
+    bool clearWarrantyUnit = false,
+    int? minStockLevel,
+    String? unit,
   }) {
     return Product(
       id: id ?? this.id,
@@ -56,6 +87,14 @@ class Product extends Equatable {
       qrData: qrData ?? this.qrData,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      warrantyType: warrantyType ?? this.warrantyType,
+      warrantyDuration: clearWarrantyDuration
+          ? null
+          : (warrantyDuration ?? this.warrantyDuration),
+      warrantyUnit:
+          clearWarrantyUnit ? null : (warrantyUnit ?? this.warrantyUnit),
+      minStockLevel: minStockLevel ?? this.minStockLevel,
+      unit: unit ?? this.unit,
     );
   }
 
@@ -73,5 +112,10 @@ class Product extends Equatable {
         qrData,
         createdAt,
         updatedAt,
+        warrantyType,
+        warrantyDuration,
+        warrantyUnit,
+        minStockLevel,
+        unit,
       ];
 }

@@ -56,9 +56,17 @@ class CategoryRepositoryImpl implements CategoryRepository {
         'id': category.id,
         'name': category.name,
         'description': category.description,
+        'icon_code_point': category.iconCodePoint,
+        'color_value': category.colorValue,
       };
       if (resolvedShopId != null) payload['shop_id'] = resolvedShopId;
       await _supabase.from('categories').insert(payload);
+
+      // Audit log
+      await _logAudit('category.created', 'category', category.id, category.name, 'Category "${category.name}" created', null, {
+        'name': category.name,
+        'description': category.description,
+      }, resolvedShopId);
 
       return const Right(null);
     } catch (e) {
@@ -75,9 +83,24 @@ class CategoryRepositoryImpl implements CategoryRepository {
         'id': category.id,
         'name': category.name,
         'description': category.description,
+        'icon_code_point': category.iconCodePoint,
+        'color_value': category.colorValue,
       };
       if (resolvedShopId != null) payload['shop_id'] = resolvedShopId;
+      // Fetch old category name for audit
+      String? oldName;
+      try {
+        final old = await _supabase.from('categories').select('name, description').eq('id', category.id).maybeSingle();
+        oldName = old?['name'] as String?;
+      } catch (_) {}
+
       await _supabase.from('categories').upsert(payload);
+
+      // Audit log
+      await _logAudit('category.edited', 'category', category.id, category.name, 'Category "${category.name}" updated',
+        oldName != null ? {'name': oldName} : null,
+        {'name': category.name, 'description': category.description},
+        resolvedShopId);
 
       return const Right(null);
     } catch (e) {
@@ -90,15 +113,48 @@ class CategoryRepositoryImpl implements CategoryRepository {
       {String? shopId}) async {
     try {
       final resolvedShopId = await _resolveShopId(shopId);
+      // Get name before delete for audit
+      String? deletedName;
+      try {
+        final c = await _supabase.from('categories').select('name').eq('id', id).maybeSingle();
+        deletedName = c?['name'] as String?;
+      } catch (_) {}
+
       await _supabase
           .from('categories')
           .delete()
           .eq('id', id)
           .eq('shop_id', resolvedShopId!);
 
+      // Audit log
+      await _logAudit('category.deleted', 'category', id, deletedName, 'Category "${deletedName ?? id}" deleted', null, null, resolvedShopId);
+
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure('Failed to delete category: $e'));
     }
+  }
+
+  // Helper: log audit action
+  Future<void> _logAudit(String action, String entityType, String? entityId, String? entityName, String description, Map<String, dynamic>? oldValue, Map<String, dynamic>? newValue, String? shopId) async {
+    try {
+      final userId = SupabaseConfig.client.auth.currentUser?.id;
+      String? staffName;
+      if (userId != null) {
+        final profile = await SupabaseConfig.client.from('profiles').select('name').eq('id', userId).maybeSingle();
+        staffName = profile?['name'] as String?;
+      }
+      await SupabaseConfig.client.from('audit_logs').insert({
+        'action': action,
+        'entity_type': entityType,
+        'entity_id': entityId,
+        'entity_name': entityName,
+        'description': description,
+        'old_value': oldValue,
+        'new_value': newValue,
+        'staff_name': staffName,
+        'shop_id': shopId,
+      });
+    } catch (_) {}
   }
 }

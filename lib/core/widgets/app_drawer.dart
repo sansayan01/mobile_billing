@@ -76,6 +76,48 @@ class AppDrawer extends StatelessWidget {
                     context.go('/reports');
                   },
                 ),
+                const _SectionHeader('Warranty'),
+                _DrawerItem(
+                  icon: Icons.verified_outlined,
+                  label: 'Warranty Claims',
+                  route: '/warranty',
+                  currentRoute: currentRoute,
+                  onTap: () {
+                    context.pop();
+                    context.go('/warranty');
+                  },
+                ),
+                const _SectionHeader('Payments'),
+                _DrawerItem(
+                  icon: Icons.payments_outlined,
+                  label: 'Due Payments',
+                  route: '/due-payments',
+                  currentRoute: currentRoute,
+                  onTap: () {
+                    context.pop();
+                    context.go('/due-payments');
+                  },
+                ),
+                _DrawerItem(
+                  icon: Icons.broken_image_rounded,
+                  label: 'Damaged Products',
+                  route: '/damaged-products',
+                  currentRoute: currentRoute,
+                  onTap: () {
+                    context.pop();
+                    context.go('/damaged-products');
+                  },
+                ),
+                _DrawerItem(
+                  icon: Icons.people_outline,
+                  label: 'Customers',
+                  route: '/customers',
+                  currentRoute: currentRoute,
+                  onTap: () {
+                    context.pop();
+                    context.go('/customers');
+                  },
+                ),
                 const _SectionHeader('Settings'),
                 _DrawerItem(
                   icon: Icons.store_rounded,

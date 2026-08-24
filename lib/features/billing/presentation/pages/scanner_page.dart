@@ -4,6 +4,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vibration/vibration.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../../../core/utils/beep_helper.dart';
 
 class ScannerPage extends StatefulWidget {
   const ScannerPage({super.key});
@@ -58,9 +59,12 @@ class _ScannerPageState extends State<ScannerPage> {
     for (final barcode in barcodes) {
       if (barcode.rawValue != null) {
         _isScanned = true;
-        SystemSound.play(SystemSoundType.click);
+        // Play beep sound
+        BeepHelper.playBeep();
+        // Strong vibration feedback
+        HapticFeedback.heavyImpact();
         if (await Vibration.hasVibrator() == true) {
-          Vibration.vibrate(duration: 300, amplitude: 255);
+          Vibration.vibrate(duration: 200, amplitude: 255);
         }
 
         if (mounted) {

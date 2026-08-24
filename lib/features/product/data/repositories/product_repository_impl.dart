@@ -29,6 +29,11 @@ class ProductRepositoryImpl implements ProductRepository {
       updatedAt: data['updated_at'] != null
           ? DateTime.parse(data['updated_at'] as String)
           : null,
+      warrantyType: data['warranty_type'] as String? ?? 'none',
+      warrantyDuration: data['warranty_duration'] as int?,
+      warrantyUnit: data['warranty_unit'] as String?,
+      minStockLevel: data['min_stock_level'] as int? ?? 5,
+      unit: data['unit'] as String? ?? 'pcs',
     );
   }
 
@@ -169,11 +174,28 @@ class ProductRepositoryImpl implements ProductRepository {
         'image_url': model.imageUrl,
         'qr_data': model.qrData,
         'shop_id': effectiveShopId,
+        'warranty_type': model.warrantyType,
+        'warranty_duration': model.warrantyDuration,
+        'warranty_unit': model.warrantyUnit,
+        'min_stock_level': model.minStockLevel,
+        'unit': model.unit,
       });
 
       // Cache in Hive
       final box = HiveDatabase.productBox;
       await box.put(model.id, model);
+
+      // Audit log
+      await _logAudit('product.created', 'product', model.id, model.name, 'Product "${model.name}" added', null, {
+        'name': model.name,
+        'price': model.price,
+        'stock': model.stock,
+        'barcode': model.barcode,
+        'category_id': model.categoryId,
+        'location': model.location,
+        'unit': model.unit,
+        'min_stock_level': model.minStockLevel,
+      }, effectiveShopId);
 
       return const Right(null);
     } catch (e) {
@@ -202,11 +224,47 @@ class ProductRepositoryImpl implements ProductRepository {
         'qr_data': model.qrData,
         'shop_id': effectiveShopId,
         'updated_at': DateTime.now().toIso8601String(),
+        'warranty_type': model.warrantyType,
+        'warranty_duration': model.warrantyDuration,
+        'warranty_unit': model.warrantyUnit,
+        'min_stock_level': model.minStockLevel,
+        'unit': model.unit,
       });
 
-      // Update in Hive
+      // Fetch old product from Hive for audit comparison
       final box = HiveDatabase.productBox;
+      final oldModel = box.get(model.id);
+
+      // Build old/new values for audit
+      Map<String, dynamic>? oldValue;
+      if (oldModel != null) {
+        oldValue = {
+          'name': oldModel.name,
+          'price': oldModel.price,
+          'stock': oldModel.stock,
+          'barcode': oldModel.barcode,
+          'category_id': oldModel.categoryId,
+          'location': oldModel.location,
+          'unit': oldModel.unit,
+          'min_stock_level': oldModel.minStockLevel,
+        };
+      }
+      final newValue = {
+        'name': model.name,
+        'price': model.price,
+        'stock': model.stock,
+        'barcode': model.barcode,
+        'category_id': model.categoryId,
+        'location': model.location,
+        'unit': model.unit,
+        'min_stock_level': model.minStockLevel,
+      };
+
+      // Update in Hive
       await box.put(model.id, model);
+
+      // Audit log
+      await _logAudit('product.edited', 'product', model.id, model.name, 'Product "${model.name}" updated', oldValue, newValue, effectiveShopId);
 
       return const Right(null);
     } catch (e) {
@@ -221,9 +279,7 @@ class ProductRepositoryImpl implements ProductRepository {
   }) async {
     try {
       final effectiveShopId = await _resolveShopId(shopId);
-      var query = _supabase
-          .from('products')
-          .select('id, name, stock');
+      var query = _supabase.from('products').select('id, name, stock');
       if (effectiveShopId != null) {
         query = query.eq('shop_id', effectiveShopId);
       }
@@ -252,6 +308,12 @@ class ProductRepositoryImpl implements ProductRepository {
       await _supabase.from('bill_items').delete().eq('product_id', id);
 
       final effectiveShopId = await _resolveShopId(shopId);
+      // Get product name before delete for audit
+      String? deletedName;
+      try {
+        final p = await _supabase.from('products').select('name').eq('id', id).maybeSingle();
+        deletedName = p?['name'] as String?;
+      } catch (_) {}
       var query = _supabase.from('products').delete().eq('id', id);
       if (effectiveShopId != null) {
         query = query.eq('shop_id', effectiveShopId);
@@ -262,9 +324,35 @@ class ProductRepositoryImpl implements ProductRepository {
       final box = HiveDatabase.productBox;
       await box.delete(id);
 
+      // Audit log
+      await _logAudit('product.deleted', 'product', id, deletedName, 'Product "${deletedName ?? id}" deleted', null, null, effectiveShopId);
+
       return const Right(null);
     } catch (e) {
       return Left(CacheFailure('Failed to delete product: $e'));
     }
+  }
+
+  // Helper: log audit action
+  Future<void> _logAudit(String action, String entityType, String? entityId, String? entityName, String description, Map<String, dynamic>? oldValue, Map<String, dynamic>? newValue, String? shopId) async {
+    try {
+      final userId = _supabase.auth.currentUser?.id;
+      String? staffName;
+      if (userId != null) {
+        final profile = await _supabase.from('profiles').select('name').eq('id', userId).maybeSingle();
+        staffName = profile?['name'] as String?;
+      }
+      await _supabase.from('audit_logs').insert({
+        'action': action,
+        'entity_type': entityType,
+        'entity_id': entityId,
+        'entity_name': entityName,
+        'description': description,
+        'old_value': oldValue,
+        'new_value': newValue,
+        'staff_name': staffName,
+        'shop_id': shopId,
+      });
+    } catch (_) {}
   }
 }

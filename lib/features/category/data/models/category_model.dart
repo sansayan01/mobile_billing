@@ -6,6 +6,8 @@ class CategoryModel extends Category {
     required super.name,
     super.description,
     super.createdAt,
+    super.iconCodePoint,
+    super.colorValue,
   });
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +18,8 @@ class CategoryModel extends Category {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : null,
+      iconCodePoint: json['icon_code_point'] as int? ?? 0xe559,
+      colorValue: json['color_value'] as int? ?? 0xFF6750A4,
     );
   }
 
@@ -25,6 +29,8 @@ class CategoryModel extends Category {
       'name': name,
       'description': description,
       'created_at': createdAt?.toIso8601String(),
+      'icon_code_point': iconCodePoint,
+      'color_value': colorValue,
     };
   }
 
@@ -34,6 +40,8 @@ class CategoryModel extends Category {
       name: category.name,
       description: category.description,
       createdAt: category.createdAt,
+      iconCodePoint: category.iconCodePoint,
+      colorValue: category.colorValue,
     );
   }
 
@@ -43,6 +51,8 @@ class CategoryModel extends Category {
       name: name,
       description: description,
       createdAt: createdAt,
+      iconCodePoint: iconCodePoint,
+      colorValue: colorValue,
     );
   }
 }

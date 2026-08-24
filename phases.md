@@ -114,5 +114,32 @@
 - [ ] Device verify: owner add/delete staff; staff can't see Staff section
 - [ ] NOTE: delete removes `profiles` row only; `auth.users` may stay orphaned (client-side needs service role)
 
+## Phase 7 — Damaged Products Management ✅
+- [x] Domain layer: `DamagedProduct` entity + `DamagedProductsRepository` interface
+- [x] Data layer: `DamagedProductsRepositoryImpl` — queries `stock_adjustments` where `reason=damage`, joined with products for name/barcode/price
+- [x] BLoC layer: `DamagedProductsBloc` — LoadDamagedProducts, SearchDamagedProducts, FilterDamagedProductsByDate, MarkProductAsDamaged
+- [x] Presentation: `DamagedProductsPage` — summary card (total loss ₹ + count), search bar, date range filter, list with product info + loss amount
+- [x] `MarkDamagedDialog` — quantity selector, 6 damage types (Broken/Defective/Expired/Water Damage/Scratched/Other), optional notes
+- [x] Product detail page: 'Mark as Damaged' button in Stock Adjustment section (disabled when stock=0)
+- [x] Product list: 'Mark as Damaged' in long-press menu (only when stock>0)
+- [x] DI: `DamagedProductsRepository` + `DamagedProductsBloc` registered in service_locator.dart
+- [x] Route: `/damaged-products` in app_routes.dart with BlocProvider
+- [x] Drawer: 'Damaged Products' menu item under Payments section
+- [x] No new DB migration — reuses existing `stock_adjustments` table with `reason=damage`
+- [x] Auto stock decrease on damage + audit log entry
+- [x] `flutter analyze`: 0 errors, 0 warnings
+
+## Phase 8 — Customer CMS (Minimal) 📋 (PLANNED)
+- [ ] **Goal:** unify customer identity (name+phone only) across bills/warranties/dues.
+- [ ] Supabase `customers` table migration (id, shop_id, name, phone unique per shop, created_at) + RLS
+- [ ] Domain: `Customer` entity + repository interface
+- [ ] Data: `CustomerModel` + `CustomerRepositoryImpl` (Supabase, shop_id scoped)
+- [ ] Bloc: LoadCustomers, SearchCustomers, AddCustomer
+- [ ] UI: Customer List (search by name/phone), Add Customer (validate+unique phone), Customer Detail (history)
+- [ ] DI + go_router `/customers` route
+- [ ] Light link: billing checkout customer select-by-phone
+- [ ] Full plan: `customer_cms_plan.md`
+- [ ] Device verify: add → list → search → detail
+
 ## Known Issues / TODO
 - [ ] **Kotlin Gradle Plugin warning** — `app_settings, device_info_plus, mobile_scanner, print_bluetooth_thermal, share_plus` apply KGP; future Flutter build break. `flutter pub upgrade` done (partial), full Built-in Kotlin migration pending rebuild verification.

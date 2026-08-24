@@ -310,6 +310,22 @@ class ReportRepositoryImpl implements ReportRepository {
       final effectiveShopId = await _resolveShopId(shopId);
       final staffId = _supabase.auth.currentUser?.id;
 
+      // 0. Fetch old bill data BEFORE update for audit comparison
+      Map<String, dynamic>? oldValue;
+      try {
+        final oldRow = await _supabase.from('bills').select('customer_name, customer_phone, payment_method, total_amount, grand_total, discount').eq('id', billId).maybeSingle();
+        if (oldRow != null) {
+          oldValue = {
+            'customer_name': oldRow['customer_name'],
+            'customer_phone': oldRow['customer_phone'],
+            'payment_method': oldRow['payment_method'],
+            'total_amount': oldRow['total_amount'],
+            'grand_total': oldRow['grand_total'],
+            'discount': oldRow['discount'],
+          };
+        }
+      } catch (_) {}
+
       // 1. Update bill columns (customer_name, customer_phone, discount, payment_method)
       var query = _supabase
           .from('bills')
@@ -391,7 +407,10 @@ class ReportRepositoryImpl implements ReportRepository {
           if (existing != null) {
             // Check if qty or price changed
             if (existing.quantity != newItem.quantity ||
-                existing.price != newItem.price) {
+                existing.price != newItem.price ||
+                existing.warrantyType != newItem.warrantyType ||
+                existing.warrantyDuration != newItem.warrantyDuration ||
+                existing.warrantyUnit != newItem.warrantyUnit) {
               // Update bill_item row
               await _supabase
                   .from('bill_items')
@@ -399,6 +418,9 @@ class ReportRepositoryImpl implements ReportRepository {
                     'quantity': newItem.quantity,
                     'price': newItem.price,
                     'total': newItem.price * newItem.quantity,
+                    'warranty_type': newItem.warrantyType,
+                    'warranty_duration': newItem.warrantyDuration,
+                    'warranty_unit': newItem.warrantyUnit,
                   })
                   .eq('id', existing.id);
 
@@ -446,6 +468,9 @@ class ReportRepositoryImpl implements ReportRepository {
               'quantity': newItem.quantity,
               'price': newItem.price,
               'total': newItem.price * newItem.quantity,
+              'warranty_type': newItem.warrantyType,
+              'warranty_duration': newItem.warrantyDuration,
+              'warranty_unit': newItem.warrantyUnit,
             });
 
             // Deduct stock — product_id is unique UUID
@@ -521,6 +546,10 @@ class ReportRepositoryImpl implements ReportRepository {
           .toList();
 
       final bill = BillSummaryModel.fromSupabaseRow(updatedRow);
+
+      // Audit log (oldValue fetched at top of function before update)
+      await _logAudit('bill.edited', 'bill', billId, 'Bill #${billId.substring(0, billId.length > 8 ? 8 : billId.length)}', 'Bill updated', oldValue, updates, effectiveShopId);
+
       return Right(bill.copyWith(items: finalItems, itemCount: finalItems.length));
     } catch (e) {
       return Left(ServerFailure('Failed to update bill: $e'));
@@ -593,10 +622,36 @@ class ReportRepositoryImpl implements ReportRepository {
           .delete()
           .eq('id', billId);
 
+      // Audit log
+      await _logAudit('bill.voided', 'bill', billId, 'Bill #${billId.substring(0, billId.length > 8 ? 8 : billId.length)}', 'Bill voided/deleted', null, null, effectiveShopId);
+
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure('Failed to delete bill: $e'));
     }
+  }
+
+  // Helper: log audit action
+  Future<void> _logAudit(String action, String entityType, String? entityId, String? entityName, String description, Map<String, dynamic>? oldValue, Map<String, dynamic>? newValue, String? shopId) async {
+    try {
+      final userId = _supabase.auth.currentUser?.id;
+      String? staffName;
+      if (userId != null) {
+        final profile = await _supabase.from('profiles').select('name').eq('id', userId).maybeSingle();
+        staffName = profile?['name'] as String?;
+      }
+      await _supabase.from('audit_logs').insert({
+        'action': action,
+        'entity_type': entityType,
+        'entity_id': entityId,
+        'entity_name': entityName,
+        'description': description,
+        'old_value': oldValue,
+        'new_value': newValue,
+        'staff_name': staffName,
+        'shop_id': shopId,
+      });
+    } catch (_) {}
   }
 
   @override

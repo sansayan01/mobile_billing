@@ -7,6 +7,9 @@ class BillItem extends Equatable {
   final int quantity;
   final double price;
   final double total;
+  final String? warrantyType;
+  final int? warrantyDuration;
+  final String? warrantyUnit;
 
   const BillItem({
     required this.id,
@@ -15,7 +18,19 @@ class BillItem extends Equatable {
     required this.quantity,
     required this.price,
     required this.total,
+    this.warrantyType,
+    this.warrantyDuration,
+    this.warrantyUnit,
   });
+
+  bool get hasWarranty =>
+      warrantyType != null && warrantyType != 'none' && warrantyDuration != null;
+
+  String get warrantyLabel {
+    if (!hasWarranty) return '';
+    final type = warrantyType == 'guarantee' ? 'Guarantee' : 'Warranty';
+    return '$type: $warrantyDuration $warrantyUnit';
+  }
 
   BillItem copyWith({
     String? id,
@@ -24,6 +39,9 @@ class BillItem extends Equatable {
     int? quantity,
     double? price,
     double? total,
+    String? warrantyType,
+    int? warrantyDuration,
+    String? warrantyUnit,
   }) {
     return BillItem(
       id: id ?? this.id,
@@ -32,12 +50,15 @@ class BillItem extends Equatable {
       quantity: quantity ?? this.quantity,
       price: price ?? this.price,
       total: total ?? this.total,
+      warrantyType: warrantyType ?? this.warrantyType,
+      warrantyDuration: warrantyDuration ?? this.warrantyDuration,
+      warrantyUnit: warrantyUnit ?? this.warrantyUnit,
     );
   }
 
   @override
   List<Object?> get props =>
-      [id, productId, productName, quantity, price, total];
+      [id, productId, productName, quantity, price, total, warrantyType, warrantyDuration, warrantyUnit];
 }
 
 class BillSummary extends Equatable {
@@ -52,6 +73,9 @@ class BillSummary extends Equatable {
   final List<BillItem> items;
   final String? customerName;
   final String? customerPhone;
+  final double amountPaid;
+  final double dueAmount;
+  final String paymentStatus; // 'paid', 'partial', 'due'
 
   const BillSummary({
     required this.id,
@@ -65,7 +89,13 @@ class BillSummary extends Equatable {
     this.items = const [],
     this.customerName,
     this.customerPhone,
+    this.amountPaid = 0.0,
+    this.dueAmount = 0.0,
+    this.paymentStatus = 'paid',
   });
+
+  /// Check if bill has pending due amount
+  bool get hasDue => dueAmount > 0 && paymentStatus != 'paid';
 
   BillSummary copyWith({
     String? id,
@@ -79,6 +109,9 @@ class BillSummary extends Equatable {
     List<BillItem>? items,
     String? customerName,
     String? customerPhone,
+    double? amountPaid,
+    double? dueAmount,
+    String? paymentStatus,
   }) {
     return BillSummary(
       id: id ?? this.id,
@@ -92,6 +125,9 @@ class BillSummary extends Equatable {
       items: items ?? this.items,
       customerName: customerName ?? this.customerName,
       customerPhone: customerPhone ?? this.customerPhone,
+      amountPaid: amountPaid ?? this.amountPaid,
+      dueAmount: dueAmount ?? this.dueAmount,
+      paymentStatus: paymentStatus ?? this.paymentStatus,
     );
   }
 
@@ -108,6 +144,9 @@ class BillSummary extends Equatable {
         items,
         customerName,
         customerPhone,
+        amountPaid,
+        dueAmount,
+        paymentStatus,
       ];
 }
 
@@ -143,8 +182,7 @@ class DailySales extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [date, totalSales, billCount, averageBill, totalDiscount];
+  List<Object?> get props => [date, totalSales, billCount, averageBill, totalDiscount];
 }
 
 class StockMovement extends Equatable {

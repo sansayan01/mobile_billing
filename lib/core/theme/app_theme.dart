@@ -149,6 +149,10 @@ class AppTheme {
               textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
     );
   }
 

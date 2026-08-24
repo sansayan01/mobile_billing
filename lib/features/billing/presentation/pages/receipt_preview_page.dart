@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:billing_app/features/billing/domain/entities/cart_item.dart';
 import 'package:billing_app/core/utils/printer_helper.dart';
 import 'package:billing_app/core/data/hive_database.dart';
@@ -25,6 +26,8 @@ class ReceiptPreviewPage extends StatefulWidget {
   final String? customerPhone;
   final String paymentMethod;
   final String billId;
+  final double? amountPaid;
+  final double? dueAmount;
 
   const ReceiptPreviewPage({
     super.key,
@@ -41,7 +44,11 @@ class ReceiptPreviewPage extends StatefulWidget {
     this.customerPhone,
     this.paymentMethod = 'UPI',
     this.billId = '',
+    this.amountPaid,
+    this.dueAmount,
   });
+
+  bool get hasDue => dueAmount != null && dueAmount! > 0;
 
   @override
   State<ReceiptPreviewPage> createState() => _ReceiptPreviewPageState();
@@ -91,6 +98,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                 'qty': item.quantity,
                 'price': item.unitPrice,
                 'total': item.total,
+                'warranty': item.product.hasWarranty ? item.product.warrantyLabel : null,
               })
           .toList();
 
@@ -105,6 +113,9 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
         customerName: widget.customerName,
         customerPhone: widget.customerPhone,
         billId: widget.billId,
+        paymentMethod: widget.paymentMethod,
+        amountPaid: widget.amountPaid,
+        dueAmount: widget.dueAmount,
       );
 
       if (mounted) {
@@ -265,41 +276,80 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                     child: Divider(height: 24, thickness: 1),
                   ),
 
-                  // Bill ID
+                  // Bill info (left) + scannable QR (right) — side by side
                   if (widget.billId.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4, left: 24, right: 24, bottom: 4),
-                      child: Text('Bill ID: ${widget.billId}', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant, fontStyle: FontStyle.italic)),
-                    ),
-
-                  // Customer info
-                  if (widget.customerName != null && widget.customerName!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 2),
+                    Container(
+                      margin: const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 4),
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                      ),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('Customer:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
-                          const SizedBox(width: 8),
-                          Expanded(child: Text(widget.customerName!, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant))),
+                          // Left column: bill id + customer info
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Bill ID: ${widget.billId}',
+                                  style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant, fontStyle: FontStyle.italic),
+                                ),
+                                const SizedBox(height: 6),
+                                if (widget.customerName != null && widget.customerName!.isNotEmpty)
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Customer:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
+                                      const SizedBox(width: 6),
+                                      Expanded(child: Text(widget.customerName!, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant))),
+                                    ],
+                                  ),
+                                if (widget.customerPhone != null && widget.customerPhone!.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Phone:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
+                                      const SizedBox(width: 6),
+                                      Expanded(child: Text(widget.customerPhone!, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant))),
+                                    ],
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          // Right column: QR encoding the unique bill id
+                          Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                                ),
+                                child: SizedBox(
+                                  width: 78,
+                                  height: 78,
+                                  child: PrettyQrView.data(
+                                    data: widget.billId,
+                                    errorCorrectLevel: QrErrorCorrectLevel.M,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text('Scan bill', style: TextStyle(fontSize: 9, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                            ],
+                          ),
                         ],
                       ),
                     ),
-                  if (widget.customerPhone != null && widget.customerPhone!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 2),
-                      child: Row(
-                        children: [
-                          Text('Phone:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
-                          const SizedBox(width: 8),
-                          Expanded(child: Text(widget.customerPhone!, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant))),
-                        ],
-                      ),
-                    ),
-
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: Divider(height: 24, thickness: 1),
-                  ),
 
                   // Items table header
                   Padding(
@@ -317,32 +367,50 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
 
                   // Items
                   ...widget.cartItems.map((item) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Text(
-                              item.product.name,
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface),
-                              overflow: TextOverflow.ellipsis,
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  item.product.name,
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Text('${item.quantity}x', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text('₹${_formatPrice(item.unitPrice)}', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text('₹${_formatPrice(item.total)}', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (item.hasWarranty)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 4),
+                            child: Row(
+                              children: [
+                                Icon(Icons.verified_outlined, size: 12, color: Theme.of(context).colorScheme.primary),
+                                const SizedBox(width: 4),
+                                Text(
+                                  item.warrantyLabel,
+                                  style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w500),
+                                ),
+                              ],
                             ),
                           ),
-                          Expanded(
-                            flex: 1,
-                            child: Text('${item.quantity}x', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Text('₹${_formatPrice(item.unitPrice)}', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Text('₹${_formatPrice(item.total)}', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
-                          ),
-                        ],
-                      ),
+                      ],
                     );
                   }),
 
@@ -400,6 +468,38 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                     child: Column(
                       children: [
                         Text('Payment: ${widget.paymentMethod.toUpperCase()}', style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                        // Due amount display
+                        if (widget.hasDue) ...[
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.orange.shade200),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Paid: ₹${_formatPrice(widget.amountPaid ?? 0)}',
+                                      style: TextStyle(fontSize: 13, color: Colors.green.shade700, fontWeight: FontWeight.w600),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Due: ₹${_formatPrice(widget.dueAmount!)}',
+                                      style: TextStyle(fontSize: 15, color: Colors.orange.shade700, fontWeight: FontWeight.w700),
+                                    ),
+                                  ],
+                                ),
+                                Icon(Icons.access_time, color: Colors.orange.shade600, size: 20),
+                              ],
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: 6),
                         Text('Thank you for your purchase!', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Theme.of(context).primaryColor)),
                         if (widget.footer.isNotEmpty) ...[
