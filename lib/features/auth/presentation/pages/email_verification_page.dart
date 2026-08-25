@@ -74,8 +74,10 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        if (!mounted) return;
+
         if (state is ResendEmailSent || state is ResendEmailError) {
-          if (mounted) setState(() => _isResending = false);
+          setState(() => _isResending = false);
         }
 
         if (state is ResendEmailSent) {

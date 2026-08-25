@@ -73,6 +73,10 @@ class Product extends Equatable {
     bool clearWarrantyUnit = false,
     int? minStockLevel,
     String? unit,
+    bool clearCategoryId = false,
+    bool clearLocation = false,
+    bool clearDescription = false,
+    bool clearImageUrl = false,
   }) {
     return Product(
       id: id ?? this.id,
@@ -80,10 +84,12 @@ class Product extends Equatable {
       barcode: barcode ?? this.barcode,
       price: price ?? this.price,
       stock: stock ?? this.stock,
-      categoryId: categoryId ?? this.categoryId,
-      location: location ?? this.location,
-      description: description ?? this.description,
-      imageUrl: imageUrl ?? this.imageUrl,
+      categoryId:
+          clearCategoryId ? null : (categoryId ?? this.categoryId),
+      location: clearLocation ? null : (location ?? this.location),
+      description:
+          clearDescription ? null : (description ?? this.description),
+      imageUrl: clearImageUrl ? null : (imageUrl ?? this.imageUrl),
       qrData: qrData ?? this.qrData,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

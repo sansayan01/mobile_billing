@@ -19,6 +19,7 @@ import 'package:billing_app/features/report/presentation/bloc/report_state.dart'
 import 'package:billing_app/features/report/domain/entities/report_entities.dart';
 import 'package:billing_app/features/product/domain/entities/product.dart';
 import 'package:billing_app/features/product/domain/usecases/product_usecases.dart';
+import 'package:billing_app/features/shop/presentation/bloc/shop_bloc.dart';
 import 'package:billing_app/features/due_payments/domain/repositories/due_payments_repository.dart';
 import 'package:flutter/services.dart';
 
@@ -48,6 +49,19 @@ class _BillDetailPageState extends State<BillDetailPage> {
     if (_isPrinting) return;
     setState(() => _isPrinting = true);
 
+    // Real shop details from ShopBloc (fallback to blanks if not loaded).
+    String shopName = '';
+    String address1 = '';
+    String address2 = '';
+    String phone = '';
+    final shopState = context.read<ShopBloc>().state;
+    if (shopState is ShopLoaded) {
+      shopName = shopState.shop.name;
+      address1 = shopState.shop.addressLine1;
+      address2 = shopState.shop.addressLine2;
+      phone = shopState.shop.phoneNumber;
+    }
+
     try {
       final printerHelper = PrinterHelper();
 
@@ -75,10 +89,10 @@ class _BillDetailPageState extends State<BillDetailPage> {
           .toList();
 
       await printerHelper.printReceipt(
-        shopName: '',
-        address1: '',
-        address2: '',
-        phone: '',
+        shopName: shopName,
+        address1: address1,
+        address2: address2,
+        phone: phone,
         items: items,
         total: bill.grandTotal,
         footer: '',
@@ -88,7 +102,8 @@ class _BillDetailPageState extends State<BillDetailPage> {
 
       _showSnack('Printed successfully', isError: false);
     } catch (e) {
-      _showSnack('Print failed: $e', isError: true);
+      _showSnack('Print failed. Check printer connection and try again.',
+          isError: true);
     } finally {
       if (mounted) {
         setState(() => _isPrinting = false);
@@ -117,11 +132,15 @@ class _BillDetailPageState extends State<BillDetailPage> {
 
     return BlocListener<ReportBloc, ReportState>(
       listenWhen: (previous, current) =>
-          previous.message != current.message && current.message != null,
+          (!previous.billDeleted && current.billDeleted) ||
+          (previous.message != current.message && current.message != null),
       listener: (context, state) {
-        _showSnack(state.message!, isError: state.status == ReportStatus.error);
-        if (state.message == 'Bill deleted successfully') {
+        if (state.billDeleted) {
           Navigator.of(context).pop();
+          return;
+        }
+        if (state.message != null) {
+          _showSnack(state.message!, isError: state.status == ReportStatus.error);
         }
       },
       child: Scaffold(
@@ -442,7 +461,11 @@ class _BillDetailPageState extends State<BillDetailPage> {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: _actionBtn('Void', Icons.cancel_outlined, AppColors.warningText(theme.brightness), () => _showVoidDialog(context)),
+                    child: Tooltip(
+                      message: 'Coming soon',
+                      child: _actionBtn('Void', Icons.cancel_outlined,
+                          AppColors.warningText(theme.brightness), null),
+                    ),
                   ),
                 ]),
                 const SizedBox(height: 12),
@@ -775,7 +798,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
       );
     } catch (e) {
       if (!context.mounted) return;
-      AppFeedback.error(context, 'Error loading products: $e');
+      AppFeedback.error(context, 'Could not load products. Please try again.');
       return;
     }
 
@@ -1144,42 +1167,8 @@ class _BillDetailPageState extends State<BillDetailPage> {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  //  VOID / CANCEL BILL
+  //  VOID / CANCEL BILL — not implemented yet (button shows 'Coming soon')
   // ═══════════════════════════════════════════════════════════════
-  void _showVoidDialog(BuildContext context) {
-    final reasonController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Row(children: [
-            Container(width: 40, height: 40, decoration: BoxDecoration(color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-                child: Icon(Icons.cancel_outlined, color: Theme.of(context).colorScheme.error, size: 22)),
-            const SizedBox(width: 12),
-            const Expanded(child: Text('Void Bill', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
-          ]),
-          content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('This will mark the bill as voided.', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-            const SizedBox(height: 16),
-            TextField(controller: reasonController, decoration: const InputDecoration(labelText: 'Reason for void', hintText: 'e.g. Customer returned items', prefixIcon: Icon(Icons.info_outline_rounded)), maxLines: 2),
-          ]),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-            ElevatedButton(
-              onPressed: () {
-                // TODO: Implement void bill via ReportBloc
-                Navigator.pop(dialogContext);
-                AppFeedback.info(context, 'Bill voided');
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-              child: const Text('Void Bill'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   // ═══════════════════════════════════════════════════════════════
   //  NOTES / REMARKS
@@ -1479,10 +1468,12 @@ class _BillDetailPageState extends State<BillDetailPage> {
   // ═══════════════════════════════════════════════════════════════
   //  ACTION BUTTON
   // ═══════════════════════════════════════════════════════════════
-  Widget _actionBtn(String label, IconData icon, Color color, VoidCallback onTap) {
+  Widget _actionBtn(String label, IconData icon, Color color, VoidCallback? onTap) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: Opacity(
+        opacity: onTap == null ? 0.45 : 1.0,
+        child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
@@ -1494,6 +1485,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
           const SizedBox(width: 6),
           Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: color)),
         ]),
+        ),
       ),
     );
   }

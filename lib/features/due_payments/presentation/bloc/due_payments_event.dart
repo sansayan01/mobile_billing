@@ -31,3 +31,9 @@ class SearchDuePayments extends DuePaymentsEvent {
   @override
   List<Object> get props => [query ?? ''];
 }
+
+/// Consumed by the page listener after showing a snackbar so stale
+/// successMessage/error never re-trigger feedback (prevents load loops).
+class ClearDueMessages extends DuePaymentsEvent {
+  const ClearDueMessages();
+}

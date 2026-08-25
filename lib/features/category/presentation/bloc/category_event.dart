@@ -53,3 +53,14 @@ class DeleteCategory extends CategoryEvent {
   @override
   List<Object> get props => [id];
 }
+
+/// Multi-select delete — ONE reload + ONE snackbar instead of N of each
+/// (dispatching N DeleteCategory events queued N LoadCategories reloads).
+class DeleteCategoriesBulk extends CategoryEvent {
+  final List<String> ids;
+
+  const DeleteCategoriesBulk(this.ids);
+
+  @override
+  List<Object> get props => [ids];
+}

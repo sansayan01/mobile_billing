@@ -393,7 +393,13 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             child: Center(child: ElevatedButton(
-                              onPressed: () => context.read<ReportBloc>().add(LoadBillHistory(from: _fromDate, to: _toDate, page: state.currentPage + 1)),
+                              onPressed: () => context.read<ReportBloc>().add(LoadBillHistory(
+                                from: _fromDate,
+                                to: _toDate,
+                                page: state.currentPage + 1,
+                                searchQuery: _searchQuery.isEmpty ? null : _searchQuery,
+                                paymentMethod: _paymentMethodFilter,
+                              )),
                               style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                               child: const Text('Load More'),
                             )),

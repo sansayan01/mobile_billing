@@ -36,17 +36,40 @@ class _DailySalesPageState extends State<DailySalesPage> {
     _loadData();
   }
 
+  bool get _isToday {
+    final now = DateTime.now();
+    return _selectedDate.year == now.year &&
+        _selectedDate.month == now.month &&
+        _selectedDate.day == now.day;
+  }
+
   void _loadData() {
     final from = _selectedDate;
     context.read<ReportBloc>().add(LoadDailySales(from));
+    // Range depends on the selected toggle — previously ALWAYS 7 days,
+    // so the "This Month" toggle was purely cosmetic (same week data).
+    final DateTime rangeStart;
+    switch (_timeRange) {
+      case TimeRange.month:
+        rangeStart = DateTime(from.year, from.month, 1); // month-to-date
+      case TimeRange.week:
+      case TimeRange.custom:
+        rangeStart = from.subtract(const Duration(days: 6));
+    }
     context.read<ReportBloc>().add(LoadSalesRange(
-      from: from.subtract(const Duration(days: 6)),
+      from: rangeStart,
       to: from,
     ));
     // Load bills for the selected day (for hourly heatmap, best selling, payment split)
     final dayStart = DateTime(from.year, from.month, from.day);
     final dayEnd = DateTime(from.year, from.month, from.day, 23, 59, 59);
-    context.read<ReportBloc>().add(LoadBillHistory(from: dayStart, to: dayEnd, page: 1));
+    context.read<ReportBloc>().add(LoadBillHistory(
+        from: dayStart,
+        to: dayEnd,
+        page: 1,
+        // Default limit is 20 — stats (payment split, best selling, heatmap)
+        // would silently ignore bills beyond the first 20 of the day.
+        limit: 200));
   }
 
   void _applyTimeRange(TimeRange range) {
@@ -65,6 +88,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
   }
 
   void _goNextDay() {
+    if (_isToday) return; // future dates have no data — don't navigate
     setState(() => _selectedDate = _selectedDate.add(const Duration(days: 1)));
     _loadData();
   }
@@ -81,7 +105,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
     );
-    if (picked != null) {
+    if (picked != null && mounted) {
       setState(() {
         _selectedDate = picked;
         _timeRange = TimeRange.custom;
@@ -173,6 +197,10 @@ class _DailySalesPageState extends State<DailySalesPage> {
 
           final dailySales = state.dailySales;
           final salesRange = state.salesRange;
+          // salesRange query runs AFTER dailySales (sequential bloc events) —
+          // show a loading hint in the header instead of a misleading ₹0.
+          final rangeLoading =
+              state.status == ReportStatus.loading && salesRange.isEmpty;
           final maxSales = salesRange.fold<double>(0, (max, s) => s.totalSales > max ? s.totalSales : max);
           final totalRevenue = salesRange.fold<double>(0, (sum, s) => sum + s.totalSales);
           final totalBills = salesRange.fold<int>(0, (sum, s) => sum + s.billCount);
@@ -180,14 +208,56 @@ class _DailySalesPageState extends State<DailySalesPage> {
           // Get bills for today's detail (hourly heatmap, best selling, payment split)
           final todayBills = state.billHistory;
 
-          return RefreshIndicator(
+          // Partial-failure banner: full-screen error only shows when dailySales
+          // is null — otherwise a failed salesRange/billHistory query was SILENT
+          // (this is exactly how the ₹0 Period Revenue bug stayed invisible).
+          final hasPartialError =
+              state.status == ReportStatus.error && dailySales != null;
+
+          return Column(
+            children: [
+              if (hasPartialError)
+                Container(
+                  margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.error.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: theme.colorScheme.error.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(children: [
+                    Icon(Icons.info_outline_rounded,
+                        size: 18, color: theme.colorScheme.error),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Some stats couldn\'t load: ${state.error ?? "unknown error"}',
+                        style: TextStyle(
+                            fontSize: 12, color: theme.colorScheme.error),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: _loadData,
+                      child: Text('Retry',
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: theme.colorScheme.error)),
+                    ),
+                  ]),
+                ),
+              Expanded(
+                child: RefreshIndicator(
             onRefresh: () async {
               _loadData();
               await Future.delayed(const Duration(milliseconds: 500));
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+              // Bottom padding clears the floating nav + gesture bar (~120px on
+              // gesture devices) so the last list item never hides behind it
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 144),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -196,7 +266,8 @@ class _DailySalesPageState extends State<DailySalesPage> {
                   const SizedBox(height: 16),
 
                   // Summary Header
-                  _buildSummaryHeader(totalRevenue, totalBills, dailySales, theme),
+                  _buildSummaryHeader(totalRevenue, totalBills, dailySales, theme,
+                      rangeLoading: rangeLoading),
                   const SizedBox(height: 16),
 
                   // Time Range Toggle
@@ -230,6 +301,9 @@ class _DailySalesPageState extends State<DailySalesPage> {
                 ],
               ),
             ),
+              ),
+            ),
+          ],
           );
         },
       ),
@@ -240,9 +314,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
   //  DATE NAVIGATION
   // ═══════════════════════════════════════════════════════════════
   Widget _buildDateNav(ThemeData t) {
-    final isToday = _selectedDate.day == DateTime.now().day &&
-        _selectedDate.month == DateTime.now().month &&
-        _selectedDate.year == DateTime.now().year;
+    final isToday = _isToday;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -264,7 +336,11 @@ class _DailySalesPageState extends State<DailySalesPage> {
             ]),
           ),
         ),
-        IconButton(onPressed: _goNextDay, icon: const Icon(Icons.chevron_right_rounded, size: 22)),
+        // Disabled on today — no point navigating into the future
+        IconButton(
+          onPressed: isToday ? null : _goNextDay,
+          icon: const Icon(Icons.chevron_right_rounded, size: 22),
+        ),
         if (!isToday)
           TextButton(
             onPressed: _goToday,
@@ -280,7 +356,8 @@ class _DailySalesPageState extends State<DailySalesPage> {
   // ═══════════════════════════════════════════════════════════════
   //  SUMMARY HEADER
   // ═══════════════════════════════════════════════════════════════
-  Widget _buildSummaryHeader(double totalRevenue, int totalBills, DailySales? daily, ThemeData t) {
+  Widget _buildSummaryHeader(double totalRevenue, int totalBills, DailySales? daily, ThemeData t,
+      {bool rangeLoading = false}) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -303,7 +380,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
               ),
               const SizedBox(width: 12),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(_fc(totalRevenue),
+                Text(rangeLoading ? '…' : _fc(totalRevenue),
                     style: AppMoneyText.sized(22, FontWeight.w800, AppColors.onAccent)),
                 Text('Period Revenue', style: TextStyle(color: AppColors.onAccent.withValues(alpha: 0.75), fontSize: 12)),
               ]),
@@ -329,7 +406,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
               ),
               const SizedBox(width: 12),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('$totalBills',
+                Text(rangeLoading ? '…' : '$totalBills',
                     style: const TextStyle(color: AppColors.onAccent, fontSize: 22, fontWeight: FontWeight.w800, height: 1.1)),
                 Text('Total Bills', style: TextStyle(color: AppColors.onAccent.withValues(alpha: 0.75), fontSize: 12)),
               ]),
@@ -503,7 +580,8 @@ class _DailySalesPageState extends State<DailySalesPage> {
         const SizedBox(width: 12),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('vs Yesterday', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: t.colorScheme.onSurfaceVariant)),
+            // Accurate label when viewing a past date (not literally yesterday)
+            Text('vs ${DateFormat('d MMM').format(yesterday)}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: t.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 2),
             Text.rich(
               TextSpan(
@@ -545,12 +623,16 @@ class _DailySalesPageState extends State<DailySalesPage> {
     final cashCount = bills.where((b) => b.paymentMethod.toLowerCase() == 'cash').length;
     final upiCount = bills.where((b) => b.paymentMethod.toLowerCase() == 'upi').length;
     final cardCount = bills.where((b) => b.paymentMethod.toLowerCase() == 'card').length;
-    final total = cashCount + upiCount + cardCount;
+    // Unknown methods (anything besides cash/upi/card) — previously these bills
+    // were silently dropped from the donut AND the totals.
+    final otherCount = bills.length - cashCount - upiCount - cardCount;
+    final total = bills.length;
     if (total == 0) return const SizedBox.shrink();
 
     final cashPercent = (cashCount / total * 100).round();
     final upiPercent = (upiCount / total * 100).round();
-    final cardPercent = 100 - cashPercent - upiPercent;
+    final cardPercent = (cardCount / total * 100).round();
+    final otherPercent = 100 - cashPercent - upiPercent - cardPercent;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -577,8 +659,8 @@ class _DailySalesPageState extends State<DailySalesPage> {
                 height: 80,
                 child: CustomPaint(
                   painter: _DonutPainter(
-                    values: [cashCount.toDouble(), upiCount.toDouble(), cardCount.toDouble()],
-                    colors: [AppColors.success, AppColors.info, AppColors.warning],
+                    values: [cashCount.toDouble(), upiCount.toDouble(), cardCount.toDouble(), otherCount.toDouble()],
+                    colors: [AppColors.success, AppColors.info, AppColors.warning, Theme.of(context).colorScheme.onSurfaceVariant],
                     strokeWidth: 14,
                   ),
                 ),
@@ -591,6 +673,10 @@ class _DailySalesPageState extends State<DailySalesPage> {
                   _splitLegend('UPI', '$upiCount ($upiPercent%)', AppColors.info),
                   const SizedBox(height: 4),
                   _splitLegend('Card', '$cardCount ($cardPercent%)', AppColors.warning),
+                  if (otherCount > 0) ...[
+                    const SizedBox(height: 4),
+                    _splitLegend('Other', '$otherCount ($otherPercent%)', Theme.of(context).colorScheme.onSurfaceVariant),
+                  ],
                 ]),
               ),
             ]),
@@ -817,16 +903,32 @@ class _DailySalesPageState extends State<DailySalesPage> {
         height: 220,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
-          children: salesRange.map((sale) {
+          children: salesRange.asMap().entries.map((entry) {
+            final i = entry.key;
+            final sale = entry.value;
             final barHeight = maxSales > 0 ? ((sale.totalSales / maxSales) * 160).clamp(4.0, 160.0) : 4.0;
-            final isToday = sale.date.day == _selectedDate.day && sale.date.month == _selectedDate.month;
+            final isToday = sale.date.year == _selectedDate.year &&
+                sale.date.month == _selectedDate.month &&
+                sale.date.day == _selectedDate.day;
+            // Month view = up to 31 bars in the same width — showing a ₹ value
+            // over EVERY bar overflows. Show values only for today + top bar,
+            // and day-of-month numbers every 3rd bar.
+            final isMonthView = _timeRange == TimeRange.month;
+            final showValue = !isMonthView || isToday || sale.totalSales == maxSales;
+            final showDayLabel = !isMonthView || i % 3 == 0 || isToday || i == salesRange.length - 1;
 
             return Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-                  Text(_fc(sale.totalSales),
-                      style: AppMoneyText.sized(9, FontWeight.w500, t.colorScheme.onSurfaceVariant)),
+                  SizedBox(
+                    height: 12,
+                    child: showValue
+                        ? Text(_fc(sale.totalSales),
+                            overflow: TextOverflow.clip,
+                            style: AppMoneyText.sized(9, FontWeight.w500, t.colorScheme.onSurfaceVariant))
+                        : null,
+                  ),
                   const SizedBox(height: 4),
                   TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0.0, end: barHeight),
@@ -844,11 +946,17 @@ class _DailySalesPageState extends State<DailySalesPage> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  Text(_dayAbbr(sale.date),
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
-                          color: isToday ? AppColors.accentText(t.brightness) : t.colorScheme.onSurfaceVariant)),
+                  SizedBox(
+                    height: 14,
+                    child: showDayLabel
+                        ? Text(isMonthView ? '${sale.date.day}' : _dayAbbr(sale.date),
+                            overflow: TextOverflow.clip,
+                            style: TextStyle(
+                                fontSize: isMonthView ? 9 : 11,
+                                fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
+                                color: isToday ? AppColors.accentText(t.brightness) : t.colorScheme.onSurfaceVariant))
+                        : null,
+                  ),
                 ]),
               ),
             );

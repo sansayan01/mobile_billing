@@ -54,6 +54,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         from: event.from ?? DateTime(2020, 1, 1),
         to: event.to ?? DateTime.now(),
         page: event.page,
+        limit: event.limit,
         shopId: _currentShopId,
         searchQuery: event.searchQuery,
         paymentMethod: event.paymentMethod,
@@ -69,14 +70,14 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
             status: ReportStatus.loaded,
             billHistory: bills,
             currentPage: event.page,
-            hasMorePages: bills.length >= 20,
+            hasMorePages: bills.length >= event.limit,
           ));
         } else {
           emit(state.copyWith(
             status: ReportStatus.loaded,
             billHistory: [...state.billHistory, ...bills],
             currentPage: event.page,
-            hasMorePages: bills.length >= 20,
+            hasMorePages: bills.length >= event.limit,
           ));
         }
       },
@@ -212,6 +213,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         emit(state.copyWith(
             status: ReportStatus.loaded,
             message: 'Bill deleted successfully',
+            billDeleted: true,
             billDetail: null));
         add(ResetReport());
       },

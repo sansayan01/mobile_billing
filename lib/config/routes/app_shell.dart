@@ -23,9 +23,16 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get current route location from GoRouter
-    final routerState = GoRouterState.of(context);
-    final currentRoute = routerState.matchedLocation;
+    // Get current route location from GoRouter.
+    // NOTE: GoRouterState.of(context).matchedLocation can be stale inside a
+    // ShellRoute builder when the sub-route was opened via context.push()
+    // (imperative match) — e.g. checkout kept showing the bottom nav.
+    // routerDelegate.currentConfiguration always reflects the REAL location.
+    final currentRoute = GoRouter.of(context)
+        .routerDelegate
+        .currentConfiguration
+        .uri
+        .path;
 
     final isFullScreen =
         _fullScreenRoutes.any((r) => currentRoute.startsWith(r));

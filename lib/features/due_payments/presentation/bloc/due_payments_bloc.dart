@@ -19,6 +19,7 @@ class DuePaymentsBloc extends Bloc<DuePaymentsEvent, DuePaymentsState> {
     on<LoadDuePayments>(_onLoadDuePayments);
     on<CollectPayment>(_onCollectPayment);
     on<SearchDuePayments>(_onSearchDuePayments);
+    on<ClearDueMessages>(_onClearDueMessages);
   }
 
   String? get _currentShopId {
@@ -33,7 +34,15 @@ class DuePaymentsBloc extends Bloc<DuePaymentsEvent, DuePaymentsState> {
     LoadDuePayments event,
     Emitter<DuePaymentsState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    // Clear stale feedback on every load-start: copyWith keeps old values when
+    // plain null is passed, so the explicit clear flags are required. Without
+    // this the page listener re-fires on the preserved successMessage and
+    // dispatches another load -> infinite loop.
+    emit(state.copyWith(
+      isLoading: true,
+      clearError: true,
+      clearSuccessMessage: true,
+    ));
 
     final result = await repository.getDuePayments(shopId: _currentShopId);
     
@@ -87,7 +96,12 @@ class DuePaymentsBloc extends Bloc<DuePaymentsEvent, DuePaymentsState> {
     SearchDuePayments event,
     Emitter<DuePaymentsState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, error: null, searchQuery: event.query));
+    emit(state.copyWith(
+      isLoading: true,
+      searchQuery: event.query,
+      clearError: true,
+      clearSuccessMessage: true,
+    ));
 
     final result = await repository.getDuePayments(
       shopId: _currentShopId,
@@ -110,5 +124,12 @@ class DuePaymentsBloc extends Bloc<DuePaymentsEvent, DuePaymentsState> {
         ));
       },
     );
+  }
+
+  void _onClearDueMessages(
+    ClearDueMessages event,
+    Emitter<DuePaymentsState> emit,
+  ) {
+    emit(state.copyWith(clearError: true, clearSuccessMessage: true));
   }
 }

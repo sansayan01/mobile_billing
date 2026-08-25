@@ -37,15 +37,18 @@ class StockRepositoryImpl implements StockRepository {
     try {
       final effectiveShopId = await _resolveShopId(shopId);
 
-      // Get current stock
+      // Get current stock (shop-scoped)
       var productQuery =
           _supabase.from('products').select('stock').eq('id', productId);
+      if (effectiveShopId != null) {
+        productQuery = productQuery.eq('shop_id', effectiveShopId);
+      }
       final productData = await productQuery.maybeSingle();
       if (productData == null) {
         return const Left(ServerFailure('Product not found'));
       }
 
-      final currentStock = productData['stock'] as int;
+      final currentStock = (productData['stock'] as num?)?.toInt() ?? 0;
       final newStock = currentStock + quantityChange;
 
       // Prevent negative stock
@@ -53,10 +56,14 @@ class StockRepositoryImpl implements StockRepository {
         return const Left(ServerFailure('Stock cannot go below zero'));
       }
 
-      // Update product stock
-      await _supabase
+      // Update product stock (shop-scoped)
+      var updateQuery = _supabase
           .from('products')
           .update({'stock': newStock}).eq('id', productId);
+      if (effectiveShopId != null) {
+        updateQuery = updateQuery.eq('shop_id', effectiveShopId);
+      }
+      await updateQuery;
 
       // Log the adjustment
       await _supabase.from('stock_adjustments').insert({
@@ -67,7 +74,7 @@ class StockRepositoryImpl implements StockRepository {
         'quantity_changed': quantityChange,
         'reason': reason.name,
         'note': note,
-        'created_at': DateTime.now().toIso8601String(),
+        'created_at': DateTime.now().toUtc().toIso8601String(),
         'created_by': _supabase.auth.currentUser?.id,
         'shop_id': effectiveShopId,
       });
@@ -106,12 +113,16 @@ class StockRepositoryImpl implements StockRepository {
     String? shopId,
   }) async {
     try {
-      final response = await _supabase
+      final effectiveShopId = await _resolveShopId(shopId);
+      var query = _supabase
           .from('stock_adjustments')
           .select()
-          .eq('product_id', productId)
-          .order('created_at', ascending: false)
-          .limit(50);
+          .eq('product_id', productId);
+      if (effectiveShopId != null) {
+        query = query.eq('shop_id', effectiveShopId);
+      }
+      final response =
+          await query.order('created_at', ascending: false).limit(50);
 
       final adjustments = (response as List<dynamic>)
           .map((e) => _fromMap(e as Map<String, dynamic>))
@@ -149,9 +160,9 @@ class StockRepositoryImpl implements StockRepository {
     return StockAdjustment(
       id: data['id'] as String,
       productId: data['product_id'] as String,
-      previousStock: data['previous_stock'] as int,
-      newStock: data['new_stock'] as int,
-      quantityChanged: data['quantity_changed'] as int,
+      previousStock: (data['previous_stock'] as num?)?.toInt() ?? 0,
+      newStock: (data['new_stock'] as num?)?.toInt() ?? 0,
+      quantityChanged: (data['quantity_changed'] as num?)?.toInt() ?? 0,
       reason: StockAdjustmentReason.values.firstWhere(
         (e) => e.name == data['reason'],
         orElse: () => StockAdjustmentReason.adjustment,

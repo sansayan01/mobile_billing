@@ -9,21 +9,10 @@ abstract class DuePaymentsRepository {
     String? searchQuery,
   });
 
-  /// Get total pending due amount across all bills
-  Future<Either<Failure, double>> getTotalPendingDue({
-    String? shopId,
-  });
-
   /// Collect partial payment for a bill
   Future<Either<Failure, void>> collectPayment({
     required String billId,
     required double amount,
-    String? shopId,
-  });
-
-  /// Get bill detail for due payment
-  Future<Either<Failure, DuePayment>> getBillForDuePayment({
-    required String billId,
     String? shopId,
   });
 }

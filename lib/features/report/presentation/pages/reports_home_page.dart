@@ -11,21 +11,42 @@ import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_state.dart';
 
-class ReportsHomePage extends StatelessWidget {
+class ReportsHomePage extends StatefulWidget {
   const ReportsHomePage({super.key});
+
+  @override
+  State<ReportsHomePage> createState() => _ReportsHomePageState();
+}
+
+class _ReportsHomePageState extends State<ReportsHomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Ensure month sales range + low stock are loaded fresh — don't rely
+    // on whatever billHistory happens to be left over from navigation.
+    final now = DateTime.now();
+    context.read<ReportBloc>()
+      ..add(LoadSalesRange(from: DateTime(now.year, now.month, 1), to: now))
+      ..add(const LoadLowStockProducts(5));
+  }
 
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final monthStart = DateTime(now.year, now.month, 1);
+    final nextMonthStart = DateTime(now.year, now.month + 1, 1);
 
     return BlocBuilder<ReportBloc, ReportState>(
       builder: (context, state) {
         final bills = state.billHistory;
         final monthBills =
             bills.where((b) => b.createdAt.isAfter(monthStart)).toList();
-        final monthRevenue =
-            monthBills.fold(0.0, (s, b) => s + b.grandTotal);
+        // Revenue from salesRange (daily aggregates) — independent of the
+        // billHistory page-size cap and of navigation history.
+        final monthRevenue = state.salesRange
+            .where((d) =>
+                !d.date.isBefore(monthStart) && d.date.isBefore(nextMonthStart))
+            .fold(0.0, (s, d) => s + d.totalSales);
         final lowStockCount = state.lowStockProducts.length;
 
         final nf = NumberFormat.currency(symbol: '₹', decimalDigits: 0);

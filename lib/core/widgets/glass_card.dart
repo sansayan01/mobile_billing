@@ -1,6 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+
 /// Reusable glassmorphism card — frosted glass effect with backdrop blur.
 ///
 /// Automatically adapts [tint], border, and shadow colours to the current
@@ -36,8 +38,7 @@ class GlassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final effectiveTint = tint ??
-        (isDark ? const Color(0xFF1A1A2E) : Colors.white);
+    final effectiveTint = tint ?? (isDark ? AppColors.darkSurface : Colors.white);
     final effectiveBorderColor = isDark
         ? Colors.white.withValues(alpha: 0.08)
         : Colors.white.withValues(alpha: borderOpacity);

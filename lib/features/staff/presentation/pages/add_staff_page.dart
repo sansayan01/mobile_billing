@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/input_label.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -52,6 +53,9 @@ class _AddStaffPageState extends State<AddStaffPage> {
             name: _nameController.text.trim(),
             role: 'staff',
             shopId: ownerShopId,
+            phone: _phoneController.text.trim().isEmpty
+                ? null
+                : _phoneController.text.trim(),
           ),
         );
   }
@@ -63,22 +67,36 @@ class _AddStaffPageState extends State<AddStaffPage> {
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        if (!mounted) return;
         setState(() {
           _isLoading = state is AuthLoading;
         });
 
-        // Owner staff create kar raha hai — khud logged in rehta hai.
-        // Success = EmailVerificationPending ya phir wapas Authenticated (owner).
-        if (_submitted &&
-            (state is EmailVerificationPending || state is Authenticated)) {
+        if (!_submitted) return;
+
+        // Staff signup success par AuthBloc session sign-out karke
+        // Unauthenticated(kStaffAccountCreatedMessage) emit karta hai —
+        // owner ki purani session hijack nahi hoti. Router redirect khud
+        // login screen par le jaayega; hum sirf message dikhate hain.
+        if (state is Unauthenticated &&
+            state.message == kStaffAccountCreatedMessage) {
+          _submitted = false;
+          AppFeedback.success(context, state.message!);
+          context.go('/login');
+        } else if (state is EmailVerificationPending ||
+            state is Authenticated) {
+          // Fallback: confirmation-off projects mein signUp direct session
+          // de sakta hai — phir bhi owner ko wapas bhejo.
+          _submitted = false;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Staff account created. Verification email sent.'),
+              content: const Text('Staff account created.'),
               backgroundColor: theme.colorScheme.primaryContainer,
             ),
           );
           context.pop();
         } else if (state is AuthError) {
+          _submitted = false;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),

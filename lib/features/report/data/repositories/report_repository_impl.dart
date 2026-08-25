@@ -54,12 +54,12 @@ class ReportRepositoryImpl implements ReportRepository {
       }
 
       if (from != null) {
-        query = query.gte('created_at', from.toIso8601String());
+        query = query.gte('created_at', from.toUtc().toIso8601String());
       }
       if (to != null) {
         final endOfDay =
             DateTime(to.year, to.month, to.day, 23, 59, 59, 999);
-        query = query.lte('created_at', endOfDay.toIso8601String());
+        query = query.lte('created_at', endOfDay.toUtc().toIso8601String());
       }
 
       // Server-side filter: payment method only (product search needs client-side)
@@ -72,42 +72,50 @@ class ReportRepositoryImpl implements ReportRepository {
           ? searchQuery.trim().toLowerCase()
           : null;
 
-      // For product search, fetch a larger batch and filter client-side
-      final fetchLimit = searchTerm != null ? 100 : 20;
-      final start = (page - 1) * limit;
-      final end = start + fetchLimit - 1;
-
-      final response = await query.range(start, end).order('created_at', ascending: false);
-
-      var bills = (response as List<dynamic>)
-          .map(
-              (e) => BillSummaryModel.fromSupabaseRow(e as Map<String, dynamic>))
-          .toList();
-
-      // Client-side filtering for customer name, bill ID, and product names
       if (searchTerm != null) {
+        // Search mode: filter first, then slice. Fetch a large batch from
+        // the start of the range (no offset) so client-side filtering never
+        // skips/duplicates rows across pages.
+        const maxFetch = 500;
+        final response = await query.range(0, maxFetch - 1)
+            .order('created_at', ascending: false);
+
+        var bills = (response as List<dynamic>)
+            .map((e) => BillSummaryModel.fromSupabaseRow(
+                e as Map<String, dynamic>))
+            .toList();
+
+        // Client-side filtering for customer name, bill ID, and product names
         bills = bills.where((bill) {
-          // Match customer name
           if (bill.customerName?.toLowerCase().contains(searchTerm) == true) {
             return true;
           }
-          // Match bill ID (full or partial)
           if (bill.id.toLowerCase().contains(searchTerm)) {
             return true;
           }
-          // Match product names in bill items
           if (bill.items.any((item) =>
               item.productName.toLowerCase().contains(searchTerm))) {
             return true;
           }
           return false;
         }).toList();
+
+        // Paginate the filtered results
+        final start = (page - 1) * limit;
+        if (start >= bills.length) return Right(<BillSummary>[]);
+        return Right(bills.skip(start).take(limit).toList());
       }
 
-      // Paginate the filtered results
-      final paginatedBills = bills.take(limit).toList();
+      // Non-search mode: plain server-side pagination
+      final start = (page - 1) * limit;
+      final response = await query.range(start, start + limit - 1)
+          .order('created_at', ascending: false);
 
-      return Right(paginatedBills);
+      final bills = (response as List<dynamic>)
+          .map((e) => BillSummaryModel.fromSupabaseRow(e as Map<String, dynamic>))
+          .toList();
+
+      return Right(bills);
     } catch (e) {
       return Left(ServerFailure('Failed to fetch bill history: $e'));
     }
@@ -165,11 +173,14 @@ class ReportRepositoryImpl implements ReportRepository {
       final startOfDay = DateTime(date.year, date.month, date.day);
       final endOfDay = startOfDay.add(const Duration(days: 1));
 
+      // toUtc() is CRITICAL: a bare local ISO string ("...T00:00:00.000") is
+      // interpreted as UTC by Postgres, shifting the whole "day" window by
+      // the IST offset (+5:30) — early-morning bills land on the wrong day.
       var query = _supabase
           .from('bills')
           .select('grand_total, discount')
-          .gte('created_at', startOfDay.toIso8601String())
-          .lt('created_at', endOfDay.toIso8601String()) as dynamic;
+          .gte('created_at', startOfDay.toUtc().toIso8601String())
+          .lt('created_at', endOfDay.toUtc().toIso8601String()) as dynamic;
 
       if (effectiveShopId != null) {
         query = query.eq('shop_id', effectiveShopId);
@@ -215,18 +226,22 @@ class ReportRepositoryImpl implements ReportRepository {
       final endDate =
           DateTime(to.year, to.month, to.day).add(const Duration(days: 1));
 
+      // toUtc() — see getDailySales comment (IST window-shift bug)
+      // NOTE: filters (eq) MUST come BEFORE transforms (order). `.order()`
+      // returns a transform builder with no .eq() — calling eq after it
+      // threw at runtime (hidden by `as dynamic`), the catch swallowed it,
+      // and salesRange silently returned EMPTY (₹0 Period Revenue bug).
       var query = _supabase
           .from('bills')
           .select('grand_total, discount, created_at')
-          .gte('created_at', startDate.toIso8601String())
-          .lt('created_at', endDate.toIso8601String())
-          .order('created_at', ascending: true) as dynamic;
+          .gte('created_at', startDate.toUtc().toIso8601String())
+          .lt('created_at', endDate.toUtc().toIso8601String()) as dynamic;
 
       if (effectiveShopId != null) {
         query = query.eq('shop_id', effectiveShopId);
       }
 
-      final response = await query;
+      final response = await query.order('created_at', ascending: true);
 
       final rows = response as List<dynamic>;
 
@@ -234,7 +249,10 @@ class ReportRepositoryImpl implements ReportRepository {
       final Map<DateTime, List<Map<String, dynamic>>> grouped = {};
       for (final row in rows) {
         final r = row as Map<String, dynamic>;
-        final billDate = DateTime.parse(r['created_at'] as String);
+        // Supabase returns UTC timestamps — toLocal() so bills group under the
+        // shop's LOCAL calendar day (else 00:00–05:30 IST bills bucket to the
+        // previous day and the chart/header totals look wrong).
+        final billDate = DateTime.parse(r['created_at'] as String).toLocal();
         final dayKey =
             DateTime(billDate.year, billDate.month, billDate.day);
         grouped.putIfAbsent(dayKey, () => []).add(r);
@@ -359,7 +377,7 @@ class ReportRepositoryImpl implements ReportRepository {
           newByProductId[item.productId] = item;
         }
 
-        final now = DateTime.now().toIso8601String();
+        final now = DateTime.now().toUtc().toIso8601String();
 
         // a) Removed items — restore stock
         for (final existing in existingItems) {
@@ -510,12 +528,41 @@ class ReportRepositoryImpl implements ReportRepository {
         final discount = (updates['discount'] as num?)?.toDouble() ?? 0.0;
         final grandTotal = totalAmount - discount;
 
+        // Recalculate amount_paid / due_amount / payment_status
+        // (same paid/partial/due logic as collectPayment).
+        double amountPaid = grandTotal;
+        try {
+          final paidRow = await _supabase
+              .from('bills')
+              .select('amount_paid')
+              .eq('id', billId)
+              .maybeSingle();
+          if (paidRow != null && paidRow['amount_paid'] != null) {
+            amountPaid = (paidRow['amount_paid'] as num).toDouble();
+          }
+        } catch (_) {}
+
+        final dueAmount = (grandTotal - amountPaid) > 0
+            ? (grandTotal - amountPaid)
+            : 0.0;
+        String paymentStatus;
+        if (dueAmount <= 0) {
+          paymentStatus = 'paid';
+        } else if (amountPaid > 0) {
+          paymentStatus = 'partial';
+        } else {
+          paymentStatus = 'due';
+        }
+
         await _supabase
             .from('bills')
             .update({
               'total_amount': totalAmount,
               'grand_total': grandTotal,
               'item_count': items.length,
+              'amount_paid': amountPaid,
+              'due_amount': dueAmount,
+              'payment_status': paymentStatus,
             })
             .eq('id', billId);
       }
@@ -564,7 +611,7 @@ class ReportRepositoryImpl implements ReportRepository {
     try {
       final effectiveShopId = await _resolveShopId(shopId);
       final staffId = _supabase.auth.currentUser?.id;
-      final now = DateTime.now().toIso8601String();
+      final now = DateTime.now().toUtc().toIso8601String();
 
       // 1. Fetch bill items BEFORE deleting (to restore stock)
       // bill_id is a UUID and unique, so no shop_id filter needed here.
@@ -675,12 +722,12 @@ class ReportRepositoryImpl implements ReportRepository {
         query = query.eq('product_id', productId);
       }
       if (from != null) {
-        query = query.gte('created_at', from.toIso8601String());
+        query = query.gte('created_at', from.toUtc().toIso8601String());
       }
       if (to != null) {
         final endOfDay =
             DateTime(to.year, to.month, to.day, 23, 59, 59, 999);
-        query = query.lte('created_at', endOfDay.toIso8601String());
+        query = query.lte('created_at', endOfDay.toUtc().toIso8601String());
       }
       if (changeType != null) {
         query = query.eq('change_type', changeType);

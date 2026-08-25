@@ -8,5 +8,5 @@ abstract class PrinterRepository {
   String? getSavedPrinterName();
   Future<void> savePrinterData(String mac, String name);
   Future<void> clearPrinterData();
-  Future<void> testPrint(String shopName);
+  Future<bool> testPrint(String shopName);
 }

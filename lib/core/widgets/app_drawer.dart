@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../navigation/navigation_cubit.dart';
+import '../theme/app_colors.dart';
 
 class AppDrawer extends StatelessWidget {
   final String currentRoute;
@@ -340,11 +341,11 @@ class _ProfileHeader extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: AppColors.onAccent,
                             ),
                           )
                         : const Icon(Icons.receipt_long_rounded,
-                            size: 28, color: Colors.white),
+                            size: 28, color: AppColors.onAccent),
                   ),
                   if (role != null) ...[
                     const Spacer(),
@@ -360,7 +361,7 @@ class _ProfileHeader extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          color: AppColors.onAccent,
                         ),
                       ),
                     ),
@@ -375,7 +376,7 @@ class _ProfileHeader extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: AppColors.onAccent,
                 ),
               ),
               const SizedBox(height: 4),
@@ -385,7 +386,7 @@ class _ProfileHeader extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 13,
-                  color: Colors.white.withValues(alpha: 0.8),
+                  color: AppColors.onAccent.withValues(alpha: 0.8),
                 ),
               ),
             ],

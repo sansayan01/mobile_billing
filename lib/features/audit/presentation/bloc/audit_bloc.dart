@@ -14,19 +14,12 @@ class AuditBloc extends Bloc<AuditEvent, AuditState> {
       : super(const AuditState()) {
     on<LoadAuditLogs>(_onLoadAuditLogs);
     on<LoadMoreAuditLogs>(_onLoadMoreAuditLogs);
-    on<LoadEntityAuditLogs>(_onLoadEntityAuditLogs);
-    on<LogAuditAction>(_onLogAuditAction);
     on<ResetAuditLogs>(_onReset);
   }
 
   String? get _shopId {
     final s = authBloc.state;
     return s is Authenticated ? s.user.shopId : null;
-  }
-
-  String? get _staffName {
-    final s = authBloc.state;
-    return s is Authenticated ? s.user.name : null;
   }
 
 
@@ -86,35 +79,6 @@ class AuditBloc extends Bloc<AuditEvent, AuditState> {
         currentPage: nextPage,
         hasMore: logs.length >= _pageSize,
       )),
-    );
-  }
-
-  Future<void> _onLoadEntityAuditLogs(LoadEntityAuditLogs event, Emitter<AuditState> emit) async {
-    emit(state.copyWith(status: AuditStatus.loading));
-
-    final result = await auditRepository.getEntityAuditLogs(
-      entityType: event.entityType,
-      entityId: event.entityId,
-      shopId: _shopId,
-    );
-
-    result.fold(
-      (failure) => emit(state.copyWith(status: AuditStatus.error, error: failure.message)),
-      (logs) => emit(state.copyWith(status: AuditStatus.loaded, entityLogs: logs)),
-    );
-  }
-
-  Future<void> _onLogAuditAction(LogAuditAction event, Emitter<AuditState> emit) async {
-    await auditRepository.logAction(
-      action: event.action,
-      entityType: event.entityType,
-      entityId: event.entityId,
-      entityName: event.entityName,
-      description: event.description,
-      oldValue: event.oldValue,
-      newValue: event.newValue,
-      staffName: _staffName,
-      shopId: event.shopId ?? _shopId,
     );
   }
 

@@ -32,13 +32,23 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
     super.dispose();
   }
 
-  void _shareQr() {
-    Share.share(
-      'Product: ${widget.product.name}\n'
-      'Barcode: ${widget.product.barcode}\n'
-      'Price: ₹${widget.product.price.toStringAsFixed(2)}\n'
-      'QR Data: ${_qrDataController.text}',
-    );
+  Future<void> _shareQr() async {
+    try {
+      await Share.share(
+        'Product: ${widget.product.name}\n'
+        'Barcode: ${widget.product.barcode}\n'
+        'Price: ₹${widget.product.price.toStringAsFixed(2)}\n'
+        'QR Data: ${_qrDataController.text}',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Could not open share options. Please try again.'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
   }
 
   Future<void> _saveQrImage() async {
@@ -78,6 +88,13 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                     height: 120,
                     width: 120,
                     fit: BoxFit.cover,
+                    loadingBuilder: (context, child, progress) =>
+                        progress == null
+                            ? child
+                            : Container(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest),
                     errorBuilder: (context, error, stackTrace) => Container(
                       height: 120,
                       width: 120,
@@ -176,7 +193,7 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                       label: const Text('Share'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.infoText(Theme.of(context).brightness),
-                        foregroundColor: Colors.white,
+                        foregroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.onAccent : Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

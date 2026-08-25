@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'app_colors.dart';
+
 /// Pre-computed IBM Plex Sans text styles — computed once at load time,
 /// not on every widget rebuild. Use these instead of calling
 /// GoogleFonts.ibmPlexSans() inline inside build() methods.
@@ -12,7 +14,7 @@ class AppTextStyles {
   static const TextStyle sectionTitle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w800,
-    color: Color(0xFF1A1A2E),
+    color: AppColors.lightTextPrimary,
     letterSpacing: -0.2,
   );
 
@@ -20,19 +22,19 @@ class AppTextStyles {
   static const TextStyle greetingSubtitle = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w500,
-    color: Color(0xFF9E9EA7),
+    color: AppColors.lightTextTertiary,
     letterSpacing: 0.3,
   );
   static const TextStyle greetingName = TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.w800,
-    color: Color(0xFF1A1A2E),
+    color: AppColors.lightTextPrimary,
     height: 1.15,
   );
   static const TextStyle greetingDate = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w500,
-    color: Color(0xFFB0B0BA),
+    color: AppColors.lightTextTertiary,
   );
 
   // ── Stat cards (PremiumStatCard) ────────────────────────────────────
@@ -53,7 +55,7 @@ class AppTextStyles {
   static const TextStyle tileLabel = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w700,
-    color: Color(0xFF1A1A2E),
+    color: AppColors.lightTextPrimary,
     letterSpacing: 0.1,
   );
 
@@ -66,57 +68,57 @@ class AppTextStyles {
   static const TextStyle actionCardSubtitle = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w500,
-    color: Color(0xFF757580),
+    color: AppColors.lightTextSecondary,
   );
 
   // ── Recent transactions ─────────────────────────────────────────────
   static const TextStyle txnTitle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
-    color: Color(0xFF1A1A2E),
+    color: AppColors.lightTextPrimary,
   );
   static const TextStyle txnStaffName = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: Color(0xFF1A1A2E),
+    color: AppColors.lightTextPrimary,
   );
   static const TextStyle txnMeta = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w400,
-    color: Color(0xFF8E8E9A),
+    color: AppColors.lightTextSecondary,
   );
   static const TextStyle txnAmount = TextStyle(
     fontSize: 15,
     fontWeight: FontWeight.w700,
-    color: Color(0xFF1A1A2E),
+    color: AppColors.lightTextPrimary,
     fontFeatures: [FontFeature.tabularFigures()],
   );
   static const TextStyle txnSeeAll = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w500,
-    color: Color(0xFF55700A),
+    color: AppColors.accentTextOnLight,
   );
   static const TextStyle txnEmptyTitle = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w500,
-    color: Color(0xFF8E8E9A),
+    color: AppColors.lightTextSecondary,
   );
   static const TextStyle txnEmptySubtitle = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    color: Color(0xFFB0B0BA),
+    color: AppColors.lightTextTertiary,
   );
 
   // ── Sales trend card ────────────────────────────────────────────────
   static const TextStyle trendTitle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w700,
-    color: Color(0xFF1A1A2E),
+    color: AppColors.lightTextPrimary,
   );
   static const TextStyle trendChipLabel = TextStyle(
     fontSize: 11,
     fontWeight: FontWeight.w500,
-    color: Color(0xFF9E9EA7),
+    color: AppColors.lightTextTertiary,
   );
   static const TextStyle trendChipValue = TextStyle(
     fontSize: 14,
@@ -126,14 +128,14 @@ class AppTextStyles {
   static const TextStyle trendPlaceholder = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w500,
-    color: Color(0xFFB0B0BA),
+    color: AppColors.lightTextTertiary,
   );
 
   // ── Low stock banner ────────────────────────────────────────────────
   static const TextStyle lowStockText = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: Color(0xFFB00020),
+    color: AppColors.errorLight,
   );
 
   // ── Inventory health ────────────────────────────────────────────────
@@ -175,18 +177,16 @@ class AdaptiveTextStyles {
 
   bool get _isDark => _brightness == Brightness.dark;
 
-  Color get _onSurface => _isDark ? Colors.white : const Color(0xFF1A1A2E);
+  Color get _onSurface => AppColors.textPrimary(_brightness);
   Color get _onSurfaceVariant =>
-      _isDark ? const Color(0xFFB0B0C0) : const Color(0xFF9E9EA7);
+      _isDark ? AppColors.darkTextSecondary : AppColors.lightTextTertiary;
   Color get _onSurfaceDisabled =>
-      _isDark ? const Color(0xFF888898) : const Color(0xFFB0B0BA);
+      _isDark ? AppColors.darkTextDisabled : AppColors.lightTextDisabled;
   Color get _onSurfaceMeta =>
-      _isDark ? const Color(0xFF808090) : const Color(0xFF8E8E9A);
+      _isDark ? AppColors.darkTextTertiary : AppColors.lightTextSecondary;
   Color get _onSurfaceMuted =>
-      _isDark ? const Color(0xFF707080) : const Color(0xFF757580);
-  Color get _primary => _isDark
-      ? const Color(0xFFC8F031) // v3 accent lime (dark bg)
-      : const Color(0xFF55700A); // v3 accent-as-text (light bg)
+      _isDark ? AppColors.darkTextTertiary : AppColors.lightTextSecondary;
+  Color get _primary => AppColors.accentText(_brightness);
 
   TextStyle get sectionTitle =>
       AppTextStyles.sectionTitle.copyWith(color: _onSurface);

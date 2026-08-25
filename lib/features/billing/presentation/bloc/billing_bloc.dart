@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:billing_app/core/supabase/supabase_client.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
@@ -48,40 +47,9 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     on<UpdateItemWarrantyEvent>(_onUpdateItemWarranty);
     on<_ProductStockUpdatedEvent>(_onProductStockUpdated);
 
-    _subscription = SupabaseConfig.client
-        .channel('products_changes')
-        .onPostgresChanges(
-          event: PostgresChangeEvent.all,
-          schema: 'public',
-          table: 'products',
-          callback: _handleProductChange,
-        )
-        .subscribe();
-  }
-
-  // Realtime subscription handle
-  RealtimeChannel? _subscription;
-
-  bool _isProductInCart(String productId) =>
-      state.cartItems.any((item) => item.product.id == productId);
-
-  void _handleProductChange(PostgresChangePayload payload) {
-    final record = payload.newRecord;
-    final productId = record['id']?.toString();
-    final stock = record['stock'];
-    if (productId == null || stock == null) return;
-
-    // Only update if product is in current cart
-    if (_isProductInCart(productId)) {
-      final newStock = (stock as num).toInt();
-      add(_ProductStockUpdatedEvent(productId, newStock));
-    }
-  }
-
-  @override
-  Future<void> close() {
-    _subscription?.unsubscribe();
-    return super.close();
+    // NOTE: No separate realtime channel here. ProductBloc already owns the
+    // 'products' realtime subscription and reloads on every change — a second
+    // channel just produced duplicate events.
   }
 
   Future<void> _onScanBarcode(
@@ -102,7 +70,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
 
   void _onAddProductToCart(
       AddProductToCartEvent event, Emitter<BillingState> emit) {
-    final cleanState = state.copyWith(error: null);
+    final cleanState = state.copyWith(clearError: true);
 
     final existingIndex = cleanState.cartItems
         .indexWhere((item) => item.product.id == event.product.id);
@@ -111,11 +79,11 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       final backendItems = List<CartItem>.from(cleanState.cartItems);
       backendItems[existingIndex] =
           existingItem.copyWith(quantity: existingItem.quantity + 1);
-      emit(cleanState.copyWith(cartItems: backendItems, error: null));
+      emit(cleanState.copyWith(cartItems: backendItems, clearError: true));
     } else {
       final newItem = CartItem(product: event.product);
       emit(cleanState.copyWith(
-          cartItems: [...cleanState.cartItems, newItem], error: null));
+          cartItems: [...cleanState.cartItems, newItem], clearError: true));
     }
   }
 
@@ -124,7 +92,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     final updatedList = state.cartItems
         .where((item) => item.product.id != event.productId)
         .toList();
-    emit(state.copyWith(cartItems: updatedList));
+    emit(state.copyWith(cartItems: updatedList, clearError: true));
   }
 
   void _onUpdateQuantity(
@@ -139,7 +107,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     if (index >= 0) {
       final items = List<CartItem>.from(state.cartItems);
       items[index] = items[index].copyWith(quantity: event.quantity);
-      emit(state.copyWith(cartItems: items));
+      emit(state.copyWith(cartItems: items, clearError: true));
     }
   }
 
@@ -154,7 +122,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       } else {
         items[index] = items[index].copyWith(customPrice: event.customPrice);
       }
-      emit(state.copyWith(cartItems: items));
+      emit(state.copyWith(cartItems: items, clearError: true));
     }
   }
 
@@ -228,7 +196,9 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       UpdateDiscountEvent event, Emitter<BillingState> emit) {
     emit(state.copyWith(
       discount: event.discount,
+      clearDiscount: event.discount == null,
       discountIsPercentage: event.isPercentage,
+      clearError: true,
     ));
   }
 
@@ -236,6 +206,8 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       UpdateGrandTotalOverrideEvent event, Emitter<BillingState> emit) {
     emit(state.copyWith(
       grandTotalOverride: event.grandTotal,
+      clearGrandTotalOverride: event.grandTotal == null,
+      clearError: true,
     ));
   }
 
@@ -243,6 +215,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       SetDiscountTypeEvent event, Emitter<BillingState> emit) {
     emit(state.copyWith(
       discountIsPercentage: event.isPercentage,
+      clearError: true,
     ));
   }
 
@@ -317,10 +290,18 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
     try {
       final staffId = supabaseUser.id;
       final billId = const Uuid().v4();
-      final now = DateTime.now().toIso8601String();
+      // toUtc() — tz-less local strings are stored as-is by Postgres (UTC),
+      // shifting IST timestamps +5:30. Always write UTC instants.
+      final now = DateTime.now().toUtc().toIso8601String();
       final baseTotal =
           state.cartItems.fold<double>(0, (sum, item) => sum + item.total);
       final calculatedTotal = state.totalAmount;
+
+      // % discount ko absolute amount me convert karo — DB 'discount' column
+      // absolute value expect karta hai (same base as totalAmount getter math).
+      final discountAmount = state.discountIsPercentage
+          ? baseTotal * ((state.discount ?? 0) / 100)
+          : state.discount;
 
       // Calculate payment status and due amount
       final amountPaid = state.amountPaid ?? calculatedTotal; // Default: full payment
@@ -387,7 +368,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
         'shop_id': shopId,
         'staff_id': staffId,
         'total_amount': baseTotal,
-        'discount': state.discount,
+        'discount': discountAmount,
         'grand_total': calculatedTotal,
         'item_count': state.cartItems.length,
         'payment_method': state.paymentMethod,
@@ -481,7 +462,11 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
         });
       } catch (_) {}
 
-      emit(state.copyWith(isSubmitting: false, submitSuccess: true, lastBillId: billId));
+      emit(state.copyWith(
+          isSubmitting: false,
+          submitSuccess: true,
+          lastBillId: billId,
+          clearError: true));
     } catch (e) {
       emit(state.copyWith(
         isSubmitting: false,
@@ -528,7 +513,10 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       UpdateCustomerInfoEvent event, Emitter<BillingState> emit) {
     emit(state.copyWith(
       customerName: event.customerName,
+      clearCustomerName: event.customerName == null,
       customerPhone: event.customerPhone,
+      clearCustomerPhone: event.customerPhone == null,
+      clearError: true,
     ));
   }
 
@@ -542,6 +530,7 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
       selectedCustomer: customer,
       customerName: customer.name,
       customerPhone: customer.phone,
+      clearError: true,
     ));
   }
 
@@ -597,11 +586,15 @@ class BillingBloc extends Bloc<BillingEvent, BillingState> {
 
   void _onUpdatePaymentMethod(
       UpdatePaymentMethodEvent event, Emitter<BillingState> emit) {
-    emit(state.copyWith(paymentMethod: event.paymentMethod));
+    emit(state.copyWith(paymentMethod: event.paymentMethod, clearError: true));
   }
 
   void _onUpdateAmountPaid(
       UpdateAmountPaidEvent event, Emitter<BillingState> emit) {
-    emit(state.copyWith(amountPaid: event.amountPaid));
+    emit(state.copyWith(
+      amountPaid: event.amountPaid,
+      clearAmountPaid: event.amountPaid == null,
+      clearError: true,
+    ));
   }
 }

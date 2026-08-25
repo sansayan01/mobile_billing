@@ -12,10 +12,15 @@ class AppValidators {
     if (value == null || value.trim().isEmpty) {
       return 'Please enter a price';
     }
-    if (double.tryParse(value) == null) {
+    final parsed = double.tryParse(value);
+    if (parsed == null) {
       return 'Please enter a valid number';
     }
-    if (double.parse(value) < 0) {
+    // Reject NaN / Infinity — double.parse accepts them
+    if (!parsed.isFinite) {
+      return 'Please enter a valid number';
+    }
+    if (parsed < 0) {
       return 'Price cannot be negative';
     }
     return null;

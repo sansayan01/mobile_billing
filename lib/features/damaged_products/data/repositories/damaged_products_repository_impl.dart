@@ -47,12 +47,13 @@ class DamagedProductsRepositoryImpl implements DamagedProductsRepository {
       }
 
       if (startDate != null) {
-        query = query.gte('created_at', startDate.toIso8601String());
+        // toUtc() — bare local ISO strings are read as UTC by Postgres (IST shift)
+        query = query.gte('created_at', startDate.toUtc().toIso8601String());
       }
       if (endDate != null) {
         // Add 1 day to include the full end date
         final endDateTime = endDate.add(const Duration(days: 1));
-        query = query.lt('created_at', endDateTime.toIso8601String());
+        query = query.lt('created_at', endDateTime.toUtc().toIso8601String());
       }
 
       // Search is done client-side since we need to search through joined product data
@@ -60,20 +61,45 @@ class DamagedProductsRepositoryImpl implements DamagedProductsRepository {
       final response = await query.order('created_at', ascending: false);
 
       final rows = (response as List<dynamic>);
+
+      // Resolve ALL staff names in ONE query (avoids N+1: one profiles lookup
+      // per row used to fire here).
+      final staffIds = rows
+          .map((row) => row['created_by'] as String?)
+          .whereType<String>()
+          .toSet()
+          .toList();
+      final staffNames = <String, String>{};
+      if (staffIds.isNotEmpty) {
+        try {
+          final profileRows = await _supabase
+              .from('profiles')
+              .select('id, name')
+              .inFilter('id', staffIds);
+          for (final p in profileRows as List<dynamic>) {
+            staffNames[p['id'] as String] =
+                (p['name'] as String?) ?? (p['id'] as String);
+          }
+        } catch (_) {
+          // Name resolution is best-effort; fall back to the raw id below.
+        }
+      }
+
       var damagedProducts = await Future.wait(rows.map((row) async {
         final productData = row['products'] as Map<String, dynamic>?;
         final productName = productData?['name'] as String? ?? 'Unknown';
         final productBarcode = productData?['barcode'] as String?;
         final productImage = productData?['image_url'] as String?;
         final productPrice = (productData?['price'] as num?)?.toDouble() ?? 0.0;
-        final quantityChanged = (row['quantity_changed'] as int?) ?? 0;
+        final quantityChanged = (row['quantity_changed'] as num?)?.toInt() ?? 0;
 
         // The `note` column stores "type|notes" (see DamagedProduct.encodeNote).
         final (decodedType, decodedNotes) =
             DamagedProduct.decodeNote(row['note'] as String?);
 
         final reportedByName = row['created_by'] != null
-            ? await _resolveStaffName(row['created_by'] as String)
+            ? staffNames[row['created_by'] as String] ??
+                (row['created_by'] as String)
             : null;
 
         return DamagedProduct(
@@ -84,8 +110,8 @@ class DamagedProductsRepositoryImpl implements DamagedProductsRepository {
           productImage: productImage,
           productPrice: productPrice,
           quantityDamaged: quantityChanged.abs(),
-          previousStock: (row['previous_stock'] as int?) ?? 0,
-          newStock: (row['new_stock'] as int?) ?? 0,
+          previousStock: (row['previous_stock'] as num?)?.toInt() ?? 0,
+          newStock: (row['new_stock'] as num?)?.toInt() ?? 0,
           damageType: decodedType,
           notes: decodedNotes,
           damageDate: DateTime.parse(row['created_at'] as String),
@@ -106,54 +132,6 @@ class DamagedProductsRepositoryImpl implements DamagedProductsRepository {
       return Right(damagedProducts);
     } catch (e) {
       return Left(ServerFailure('Failed to fetch damaged products: $e'));
-    }
-  }
-
-  @override
-  Future<Either<Failure, double>> getTotalDamageLoss({
-    String? shopId,
-    DateTime? startDate,
-    DateTime? endDate,
-  }) async {
-    try {
-      final result = await getDamagedProducts(
-        shopId: shopId,
-        startDate: startDate,
-        endDate: endDate,
-      );
-      return result.fold(
-        (failure) => Left(failure),
-        (damagedProducts) {
-          final totalLoss = damagedProducts.fold<double>(
-            0,
-            (sum, dp) => sum + dp.estimatedLoss,
-          );
-          return Right(totalLoss);
-        },
-      );
-    } catch (e) {
-      return Left(ServerFailure('Failed to calculate total loss: $e'));
-    }
-  }
-
-  @override
-  Future<Either<Failure, int>> getDamagedProductsCount({
-    String? shopId,
-    DateTime? startDate,
-    DateTime? endDate,
-  }) async {
-    try {
-      final result = await getDamagedProducts(
-        shopId: shopId,
-        startDate: startDate,
-        endDate: endDate,
-      );
-      return result.fold(
-        (failure) => Left(failure),
-        (damagedProducts) => Right(damagedProducts.length),
-      );
-    } catch (e) {
-      return Left(ServerFailure('Failed to count damaged products: $e'));
     }
   }
 
@@ -179,7 +157,9 @@ class DamagedProductsRepositoryImpl implements DamagedProductsRepository {
         return const Left(ServerFailure('Product not found'));
       }
 
-      final currentStock = productData['stock'] as int;
+      // Defensive cast: Postgres may return numerics as num/double, a blind
+      // `as int` crashes on those.
+      final currentStock = (productData['stock'] as num?)?.toInt() ?? 0;
       final newStock = currentStock - quantity;
 
       if (newStock < 0) {
@@ -204,7 +184,7 @@ class DamagedProductsRepositoryImpl implements DamagedProductsRepository {
         'quantity_changed': -quantity,
         'reason': 'damage',
         'note': note,
-        'created_at': DateTime.now().toIso8601String(),
+        'created_at': DateTime.now().toUtc().toIso8601String(),
         'created_by': _supabase.auth.currentUser?.id,
         'shop_id': effectiveShopId,
       });
@@ -241,20 +221,6 @@ class DamagedProductsRepositoryImpl implements DamagedProductsRepository {
     }
   }
 
-  /// Resolve a staff/user id to a display name (falls back to the id).
-  Future<String?> _resolveStaffName(String userId) async {
-    try {
-      final profile = await _supabase
-          .from('profiles')
-          .select('name')
-          .eq('id', userId)
-          .maybeSingle();
-      return (profile?['name'] as String?) ?? userId;
-    } catch (_) {
-      return userId;
-    }
-  }
-
   @override
   Future<Either<Failure, void>> undoDamage({
     required String adjustmentId,
@@ -276,7 +242,7 @@ class DamagedProductsRepositoryImpl implements DamagedProductsRepository {
         return const Left(ServerFailure('Product not found'));
       }
 
-      final currentStock = productData['stock'] as int;
+      final currentStock = (productData['stock'] as num?)?.toInt() ?? 0;
       final newStock = currentStock + quantityRestored;
 
       // Restore product stock

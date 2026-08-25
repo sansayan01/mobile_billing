@@ -57,6 +57,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        if (!mounted) return;
         setState(() {
           _isLoading = state is AuthLoading;
         });

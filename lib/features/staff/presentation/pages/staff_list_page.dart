@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_skeleton.dart';
 import '../../../../features/auth/domain/entities/user.dart';
+import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../../../features/auth/presentation/bloc/auth_state.dart';
 import '../bloc/staff_bloc.dart';
 
 class StaffListPage extends StatefulWidget {
@@ -48,6 +52,10 @@ class _StaffListPageState extends State<StaffListPage> {
     final theme = Theme.of(context);
     final b = theme.brightness;
 
+    // Owner-only Add Staff FAB — staff role ko add karne ka access nahi.
+    final authState = context.read<AuthBloc>().state;
+    final isOwner = authState is Authenticated && authState.user.role == 'owner';
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -56,6 +64,13 @@ class _StaffListPageState extends State<StaffListPage> {
         leading: const AdaptiveAppBarLeading(),
         title: const Text('Staff'),
       ),
+      floatingActionButton: isOwner
+          ? FloatingActionButton.extended(
+              onPressed: () => context.push('/staff/add'),
+              icon: const Icon(Icons.person_add_rounded),
+              label: const Text('Add Staff'),
+            )
+          : null,
       body: Column(
         children: [
           // Search Bar
@@ -316,6 +331,17 @@ class _StaffListPageState extends State<StaffListPage> {
   }
 
   void _confirmDelete(BuildContext context, User user) {
+    // Self-guard: owner apna khud ka account delete nahi kar sakta,
+    // warna session/logged-in state corrupt ho jaayega.
+    final authState = context.read<AuthBloc>().state;
+    final currentEmail =
+        authState is Authenticated ? authState.user.email.toLowerCase() : '';
+    if (currentEmail.isNotEmpty &&
+        user.email.toLowerCase() == currentEmail) {
+      AppFeedback.error(context, 'You cannot delete your own account');
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (innerContext) {

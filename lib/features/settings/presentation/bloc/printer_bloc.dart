@@ -40,7 +40,16 @@ class PrinterBloc extends Bloc<PrinterEvent, PrinterState> {
       }
 
       bool connected = false;
-      for (var device in devices) {
+      // Auto-connect heuristic: only auto-pair devices that look like
+      // printers (name contains printer/pos/thermal). Anything else waits
+      // for manual selection from the device list.
+      final candidates = devices.where((d) {
+        final n = d.name.toLowerCase();
+        return n.contains('printer') ||
+            n.contains('pos') ||
+            n.contains('thermal');
+      }).toList();
+      for (var device in candidates) {
         final success = await repository.connect(device.macAdress);
         if (success) {
           await repository.savePrinterData(device.macAdress, device.name);
@@ -57,11 +66,20 @@ class PrinterBloc extends Bloc<PrinterEvent, PrinterState> {
       }
 
       if (!connected) {
-        emit(state.copyWith(
-          status: PrinterStatus.scanFailure,
-          errorMessage: 'Could not connect to any paired device.',
-          devices: devices,
-        ));
+        if (candidates.isEmpty) {
+          // No printer-looking device — show the list, wait for manual pick.
+          emit(state.copyWith(
+            status: PrinterStatus.scanSuccess,
+            devices: devices,
+            clearError: true,
+          ));
+        } else {
+          emit(state.copyWith(
+            status: PrinterStatus.scanFailure,
+            errorMessage: 'Could not connect to any paired printer.',
+            devices: devices,
+          ));
+        }
       }
     } catch (e) {
       emit(state.copyWith(
@@ -119,8 +137,22 @@ class PrinterBloc extends Bloc<PrinterEvent, PrinterState> {
 
   Future<void> _onTestPrint(
       TestPrintEvent event, Emitter<PrinterState> emit) async {
-    emit(state.copyWith(status: PrinterStatus.testPrinting));
-    await repository.testPrint(event.shopName);
-    emit(state.copyWith(status: PrinterStatus.scanSuccess));
+    emit(state.copyWith(status: PrinterStatus.testPrinting, clearError: true));
+    try {
+      final ok = await repository.testPrint(event.shopName);
+      if (!ok) {
+        emit(state.copyWith(
+          status: PrinterStatus.connectionFailure,
+          errorMessage: 'Printer not connected or test print failed',
+        ));
+        return;
+      }
+      emit(state.copyWith(status: PrinterStatus.scanSuccess));
+    } catch (e) {
+      emit(state.copyWith(
+        status: PrinterStatus.connectionFailure,
+        errorMessage: e.toString(),
+      ));
+    }
   }
 }

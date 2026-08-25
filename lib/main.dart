@@ -37,8 +37,24 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  // Router sirf EK baar banao — build() mein createRouter() call karne se har
+  // rebuild par naya GoRouter + navigator key banega → navigation state loss.
+  // Same singleton AuthBloc instance pass hota hai jo BlocProvider bhi use karta hai.
+  late final AppRouter _appRouter = createRouter(di.sl<AuthBloc>());
+
+  @override
+  void dispose() {
+    _appRouter.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +93,7 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeMode,
-            routerConfig: createRouter(di.sl<AuthBloc>()),
+            routerConfig: _appRouter.router,
             debugShowCheckedModeBanner: false,
           );
         },

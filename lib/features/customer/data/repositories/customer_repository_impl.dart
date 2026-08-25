@@ -42,8 +42,15 @@ class CustomerRepositoryImpl implements CustomerRepository {
       }
 
       if (searchQuery != null && searchQuery.trim().isNotEmpty) {
-        final q = searchQuery.trim();
-        query = query.or('name.ilike.%$q%,phone.ilike.%$q%');
+        // Sanitize PostgREST .or() delimiters — a raw comma/percent in the
+        // query breaks the filter syntax and crashes the request.
+        final sanitized = searchQuery
+            .trim()
+            .toLowerCase()
+            .replaceAll(RegExp(r'[,()%*]'), '');
+        if (sanitized.isNotEmpty) {
+          query = query.or('name.ilike.%$sanitized%,phone.ilike.%$sanitized%');
+        }
       }
 
       final response = await query.order('created_at', ascending: false);
@@ -118,6 +125,9 @@ class CustomerRepositoryImpl implements CustomerRepository {
 
       return Right(CustomerModel.fromJson(response).toEntity());
     } on PostgrestException catch (e) {
+      // 23505 = unique_violation. This branch only triggers because the
+      // customers table has a unique index on (shop_id, phone); without that
+      // index duplicates would insert silently instead of erroring here.
       if (e.code == '23505') {
         return const Left(ServerFailure('Customer with this phone already exists'));
       }

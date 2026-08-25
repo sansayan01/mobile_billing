@@ -7,7 +7,6 @@ class ProductState extends Equatable {
   final List<Product> products;
   final List<Product> filteredProducts;
   final String? selectedCategoryId;
-  final String? qrCodeData;
   final String? message;
 
   const ProductState({
@@ -15,7 +14,6 @@ class ProductState extends Equatable {
     this.products = const [],
     this.filteredProducts = const [],
     this.selectedCategoryId,
-    this.qrCodeData,
     this.message,
   });
 
@@ -25,7 +23,6 @@ class ProductState extends Equatable {
     List<Product>? filteredProducts,
     String? selectedCategoryId,
     bool clearSelectedCategory = false,
-    String? qrCodeData,
     String? message,
   }) {
     return ProductState(
@@ -33,7 +30,6 @@ class ProductState extends Equatable {
       products: products ?? this.products,
       filteredProducts: filteredProducts ?? this.filteredProducts,
       selectedCategoryId: clearSelectedCategory ? null : (selectedCategoryId ?? this.selectedCategoryId),
-      qrCodeData: qrCodeData ?? this.qrCodeData,
       message: message,
     );
   }
@@ -44,7 +40,6 @@ class ProductState extends Equatable {
         products,
         filteredProducts,
         selectedCategoryId,
-        qrCodeData,
         message,
       ];
 }

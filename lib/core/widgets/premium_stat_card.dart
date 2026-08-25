@@ -42,8 +42,8 @@ class PremiumStatCard extends StatelessWidget {
         boxShadow: [
           // soft colored glow
           BoxShadow(
-            color: color.withValues(alpha: 0.28),
-            blurRadius: 24,
+            color: color.withValues(alpha: 0.12),
+            blurRadius: 12,
             spreadRadius: -2,
             offset: const Offset(0, 8),
           ),

@@ -15,6 +15,7 @@ class ReportState extends Equatable {
   final int currentPage;
   final bool hasMorePages;
   final String? message;
+  final bool billDeleted;
 
   const ReportState({
     this.status = ReportStatus.initial,
@@ -28,6 +29,7 @@ class ReportState extends Equatable {
     this.currentPage = 1,
     this.hasMorePages = true,
     this.message,
+    this.billDeleted = false,
   });
 
   ReportState copyWith({
@@ -44,6 +46,7 @@ class ReportState extends Equatable {
     bool? hasMorePages,
     String? message,
     bool clearMessage = false,
+    bool? billDeleted,
   }) {
     return ReportState(
       status: status ?? this.status,
@@ -57,6 +60,7 @@ class ReportState extends Equatable {
       currentPage: currentPage ?? this.currentPage,
       hasMorePages: hasMorePages ?? this.hasMorePages,
       message: clearMessage ? null : (message ?? this.message),
+      billDeleted: billDeleted ?? this.billDeleted,
     );
   }
 
@@ -73,5 +77,6 @@ class ReportState extends Equatable {
         currentPage,
         hasMorePages,
         message,
+        billDeleted,
       ];
 }

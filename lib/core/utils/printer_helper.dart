@@ -100,35 +100,18 @@ class PrinterHelper {
     }
   }
 
-  Future<void> printText(String text) async {
-    if (!_isConnected) return;
+  Future<bool> printText(String text) async {
+    try {
+      if (!_isConnected) return false;
 
-    // Simple text printing
-    // We can use bytes for advanced formatting
-    // But plugin supports basic text or bytes
+      // Verify the socket is still alive before writing
+      final bool connectionStatus = await PrintBluetoothThermal.connectionStatus;
+      if (!connectionStatus) return false;
 
-    // Checking battery or connection status
-    final bool connectionStatus = await PrintBluetoothThermal.connectionStatus;
-    if (connectionStatus) {
-      // Plugin allows sending bytes. We need ESC/POS commands for text.
-      // However, the plugin might have helper.
-      // Looking at doc, `writeBytes` or `writeString`?
-      // The plugin `print_bluetooth_thermal` mainly exposes `writeBytes`.
-      // We need a generator. `esc_pos_utils` is common but not requested.
-      // But wait, `print_bluetooth_thermal` example often uses `capability_profile` and `generator`.
-      // I don't have `esc_pos_utils` or similar in my pubspec.
-      // The user requested `print_bluetooth_thermal`.
-      // Let's assume we can send raw string bytes or use a simple helper.
-      // Actually without `esc_pos_utils`, formatting is hard.
-      // I will try to use `esc_pos_utils_plus` or similar if I can add it, but user gave specific packages.
-      // Wait, user allowed "use required plugins".
-      // "suggest barcode scanner ... and use required plugins".
-      // So I can add `esc_pos_utils_plus`.
-
-      // For now, I'll assume simple text printing by converting string to bytes.
-      // ASCII bytes.
-      List<int> bytes = text.codeUnits;
-      await PrintBluetoothThermal.writeBytes(bytes);
+      await PrintBluetoothThermal.writeBytes(_textToBytes(text));
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -279,8 +262,33 @@ class PrinterHelper {
     await PrintBluetoothThermal.writeBytes(bytes);
   }
 
+  /// ASCII-safe ESC/POS text encoding.
+  ///
+  /// Cheap thermal printers render multi-byte UTF-8 as mojibake (₹ becomes
+  /// garbage, Devanagari is unreadable), so map known symbols first and then
+  /// drop every non-ASCII codepoint instead of sending broken bytes.
+  // TODO: Proper Unicode support needs an ESC/POS codepage switch
+  // (FS & + UTF-8-capable codepage) or rendering the receipt to an image.
   List<int> _textToBytes(String text) {
-    // Should verify encoding, but Latin-1 usually works for basic printers
-    return List.from(text.codeUnits);
+    const symbolMap = {
+      '₹': 'Rs.',
+      '€': 'EUR',
+      '£': 'GBP',
+      '\u2013': '-', // en dash
+      '\u2014': '-', // em dash
+      '\u2018': "'",
+      '\u2019': "'",
+      '\u201C': '"',
+      '\u201D': '"',
+    };
+    var mapped = text;
+    symbolMap.forEach((symbol, replacement) {
+      mapped = mapped.replaceAll(symbol, replacement);
+    });
+    // Strip anything still outside ASCII (Devanagari etc.) — printer would
+    // print mojibake for these anyway.
+    final ascii =
+        String.fromCharCodes(mapped.runes.where((r) => r >= 32 && r < 128));
+    return List.from(ascii.codeUnits);
   }
 }

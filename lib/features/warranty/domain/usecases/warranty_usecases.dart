@@ -11,8 +11,9 @@ class CreateWarrantyClaimUseCase {
   Future<Either<Failure, WarrantyClaim>> call(
     WarrantyClaim claim, {
     String? shopId,
+    String? customerId,
   }) {
-    return repository.createClaim(claim, shopId: shopId);
+    return repository.createClaim(claim, shopId: shopId, customerId: customerId);
   }
 }
 

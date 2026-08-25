@@ -77,6 +77,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           width: 160,
                           height: 160,
                           fit: BoxFit.cover,
+                          loadingBuilder: (context, child, progress) =>
+                              progress == null
+                                  ? child
+                                  : Container(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainerHighest),
                           errorBuilder: (_, __, ___) => _placeholder(),
                         )
                       : _placeholder(),
@@ -352,8 +359,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     showDialog(
       context: context,
-      builder: (ctx) {
-        return StatefulBuilder(
+      builder: (ctx) {        return StatefulBuilder(
           builder: (ctx, setDialogState) {
             return AlertDialog(
               shape: RoundedRectangleBorder(
@@ -549,7 +555,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     backgroundColor: isIncrease
                         ? AppColors.successText(Theme.of(context).brightness)
                         : Theme.of(context).colorScheme.error,
-                    foregroundColor: Colors.white,
+                    foregroundColor:
+                        isIncrease && Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.onAccent
+                            : Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -561,7 +570,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           },
         );
       },
-    );
+      // Dialog-local controllers ko dialog close hote hi free karo.
+    ).then((_) {
+      quantityController.dispose();
+      noteController.dispose();
+    });
   }
 
   void _showMarkDamagedDialog(BuildContext context, Product product) {

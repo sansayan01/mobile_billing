@@ -53,6 +53,7 @@ class WarrantyRepositoryImpl implements WarrantyRepository {
   Future<Either<Failure, WarrantyClaim>> createClaim(
     WarrantyClaim claim, {
     String? shopId,
+    String? customerId,
   }) async {
     try {
       final effectiveShopId = await _resolveShopId(shopId);
@@ -84,8 +85,14 @@ class WarrantyRepositoryImpl implements WarrantyRepository {
         'claimed_by_staff_id': staffId,
         'staff_name': staffName,
         'shop_id': effectiveShopId,
-        'created_at': claim.createdAt.toIso8601String(),
+        'created_at': claim.createdAt.toUtc().toIso8601String(),
       };
+      // Only include customer_id when actually provided — sending an explicit
+      // null is harmless, but this keeps the insert payload identical to
+      // before when no caller can supply a customer id yet.
+      if (customerId != null && customerId.isNotEmpty) {
+        data['customer_id'] = customerId;
+      }
 
       await _supabase.from('warranty_claims').insert(data);
 
@@ -132,7 +139,7 @@ class WarrantyRepositoryImpl implements WarrantyRepository {
           .from('warranty_claims')
           .update({
             'claim_status': status,
-            'updated_at': DateTime.now().toIso8601String(),
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
           })
           .eq('id', claimId);
 

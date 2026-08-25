@@ -31,10 +31,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }) : super(const ProductState()) {
     on<LoadProducts>(_onLoadProducts);
     on<AddProduct>(_onAddProduct);
+    on<AddProductsBulk>(_onAddProductsBulk);
     on<UpdateProduct>(_onUpdateProduct);
     on<DeleteProduct>(_onDeleteProduct);
     on<FilterByCategory>(_onFilterByCategory);
-    on<GenerateQrCode>(_onGenerateQrCode);
     on<InitRealtime>(_onInitRealtime);
     on<ProductsRealtimeUpdated>(_onProductsRealtimeUpdated);
   }
@@ -46,8 +46,36 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     return s is Authenticated ? s.user.shopId : null;
   }
 
+  /// Shop id the realtime channel is currently subscribed with. Used to
+  /// (re)subscribe once auth completes — InitRealtime can fire before
+  /// CheckAuthStatus resolves, leaving shopId null.
+  String? _subscribedShopId;
+
+  void _ensureRealtimeSubscribed() {
+    final shopId = _currentShopId;
+    if (shopId == null || shopId == _subscribedShopId) return;
+    try {
+      realtimeService.subscribeToProducts(
+        (payload) {
+          final eventType = payload['event_type'] as String;
+          add(ProductsRealtimeUpdated(
+            changeType: eventType,
+            payload: payload,
+          ));
+        },
+        shopId: shopId,
+      );
+      _subscribedShopId = shopId;
+    } catch (_) {
+      // Realtime init failed — app continues without live updates
+    }
+  }
+
   Future<void> _onLoadProducts(
       LoadProducts event, Emitter<ProductState> emit) async {
+    // Auth may have completed after InitRealtime fired — (re)bind now that
+    // the shop id is known.
+    _ensureRealtimeSubscribed();
     emit(state.copyWith(status: ProductStatus.loading));
     final result = await getProductsUseCase(NoParams(), shopId: _currentShopId);
     result.fold(
@@ -75,6 +103,24 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         add(LoadProducts());
       },
     );
+  }
+
+  Future<void> _onAddProductsBulk(
+      AddProductsBulk event, Emitter<ProductState> emit) async {
+    emit(state.copyWith(status: ProductStatus.loading));
+    var failures = 0;
+    for (final product in event.products) {
+      final result =
+          await addProductUseCase(product, shopId: _currentShopId);
+      result.fold((_) => failures++, (_) {});
+    }
+    if (failures > 0) {
+      emit(state.copyWith(
+          status: ProductStatus.error,
+          message: '$failures product(s) failed to import'));
+    }
+    // Single reload after the whole batch — no per-item reload storm.
+    add(LoadProducts());
   }
 
   Future<void> _onUpdateProduct(
@@ -129,30 +175,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     }
   }
 
-  void _onGenerateQrCode(
-      GenerateQrCode event, Emitter<ProductState> emit) {
-    // Generate QR data combining product info
-    final qrData =
-        '${event.product.name}|${event.product.barcode}|₹${event.product.price.toStringAsFixed(2)}';
-    emit(state.copyWith(qrCodeData: qrData));
-  }
-
-  void _onInitRealtime(
+  Future<void> _onInitRealtime(
       InitRealtime event, Emitter<ProductState> emit) {
-    try {
-      realtimeService.subscribeToProducts(
-        (payload) {
-          final eventType = payload['event_type'] as String;
-          add(ProductsRealtimeUpdated(
-            changeType: eventType,
-            payload: payload,
-          ));
-        },
-        shopId: _currentShopId,
-      );
-    } catch (_) {
-      // Realtime init failed — app continues without live updates
-    }
+    _ensureRealtimeSubscribed();
+    return Future.value();
   }
 
   Future<void> _onProductsRealtimeUpdated(
@@ -190,7 +216,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   @override
   Future<void> close() {
     _realtimeDebounce?.cancel();
-    realtimeService.dispose();
+    // RealtimeService is a shared singleton — only drop OUR subscription,
+    // never dispose the whole service (other blocs may still use it).
+    realtimeService.unsubscribe('products');
     return super.close();
   }
 }

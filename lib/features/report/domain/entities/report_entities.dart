@@ -71,6 +71,7 @@ class BillSummary extends Equatable {
   final String paymentMethod;
   final DateTime createdAt;
   final List<BillItem> items;
+  final String? customerId;
   final String? customerName;
   final String? customerPhone;
   final double amountPaid;
@@ -87,6 +88,7 @@ class BillSummary extends Equatable {
     this.paymentMethod = 'Unknown',
     required this.createdAt,
     this.items = const [],
+    this.customerId,
     this.customerName,
     this.customerPhone,
     this.amountPaid = 0.0,
@@ -107,6 +109,7 @@ class BillSummary extends Equatable {
     String? paymentMethod,
     DateTime? createdAt,
     List<BillItem>? items,
+    String? customerId,
     String? customerName,
     String? customerPhone,
     double? amountPaid,
@@ -123,6 +126,7 @@ class BillSummary extends Equatable {
       paymentMethod: paymentMethod ?? this.paymentMethod,
       createdAt: createdAt ?? this.createdAt,
       items: items ?? this.items,
+      customerId: customerId ?? this.customerId,
       customerName: customerName ?? this.customerName,
       customerPhone: customerPhone ?? this.customerPhone,
       amountPaid: amountPaid ?? this.amountPaid,
@@ -142,6 +146,7 @@ class BillSummary extends Equatable {
         paymentMethod,
         createdAt,
         items,
+        customerId,
         customerName,
         customerPhone,
         amountPaid,

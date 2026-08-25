@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../supabase/supabase_client.dart';
 
 class RealtimeService {
   final Map<String, RealtimeChannel> _channels = {};
+  final Map<String, Timer> _retryTimers = {};
   bool _isConnected = false;
+  bool _disposed = false;
 
   bool get isConnected => _isConnected;
 
@@ -69,15 +72,29 @@ class RealtimeService {
       event: PostgresChangeEvent.all,
       schema: 'public',
       table: 'products',
-      callback: (PostgresChangePayload change) {
-        // Filter by shop_id if provided — skip events from other shops.
-        // For DELETE events newRecord is empty, so read shop_id from the
-        // old record instead.
+      // Server-side filter — server only sends rows for this shop.
+      filter: shopId != null
+          ? PostgresChangeFilter(
+              type: PostgresChangeFilterType.eq,
+              column: 'shop_id',
+              value: shopId,
+            )
+          : null,
+      callback: (PostgresChangePayload change) async {
+        // Client-side filter as a safety net. For DELETE events newRecord is
+        // empty, so read shop_id from the old record instead; when the old
+        // record has no shop_id (DELETE payloads often carry only the id),
+        // fetch the row by id to verify its shop before forwarding.
         if (shopId != null) {
           final isDelete = change.eventType == PostgresChangeEvent.delete;
           final recordShopId = (isDelete ? change.oldRecord : change.newRecord)[
               'shop_id'] as String?;
-          if (recordShopId == null || recordShopId != shopId) {
+          if (recordShopId != null && recordShopId != shopId) {
+            return;
+          }
+          if (recordShopId == null &&
+              !await _verifyDeleteShop(
+                  change.oldRecord['id'] as String?, shopId)) {
             return;
           }
         }
@@ -95,14 +112,46 @@ class RealtimeService {
       } else if (status == RealtimeSubscribeStatus.channelError ||
           status == RealtimeSubscribeStatus.timedOut) {
         _isConnected = false;
+        _scheduleRetry('products', () => subscribeToProducts(onUpsert, shopId: shopId));
       }
     });
 
     _channels['products'] = channel;
   }
 
+  /// Shop verification for DELETE events whose payload lacks shop_id.
+  /// Returns true when the event should still be forwarded: the row cannot
+  /// be verified (already deleted / lookup failed) or it matches [shopId].
+  Future<bool> _verifyDeleteShop(String? id, String shopId) async {
+    if (id == null) return false;
+    try {
+      final row = await SupabaseConfig.client
+          .from('products')
+          .select('shop_id')
+          .eq('id', id)
+          .maybeSingle();
+      if (row == null) return true; // row already gone — removal is a no-op
+      return row['shop_id'] == shopId;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  /// Re-subscribe after a short delay when the channel errors or times out.
+  void _scheduleRetry(String key, void Function() resubscribe) {
+    if (_disposed) return;
+    _retryTimers[key]?.cancel();
+    _retryTimers[key] = Timer(const Duration(seconds: 5), () {
+      _retryTimers.remove(key);
+      if (!_disposed) {
+        resubscribe();
+      }
+    });
+  }
+
   /// Unsubscribe from a specific table.
   void unsubscribe(String table) {
+    _retryTimers.remove(table)?.cancel();
     final channel = _channels.remove(table);
     if (channel != null) {
       SupabaseConfig.client.removeChannel(channel);
@@ -114,6 +163,11 @@ class RealtimeService {
 
   /// Clean up all active subscriptions.
   void dispose() {
+    _disposed = true;
+    for (final timer in _retryTimers.values) {
+      timer.cancel();
+    }
+    _retryTimers.clear();
     for (final channel in _channels.values) {
       SupabaseConfig.client.removeChannel(channel);
     }

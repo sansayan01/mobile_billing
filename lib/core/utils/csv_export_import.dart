@@ -49,8 +49,10 @@ class CsvExportImport {
     final csv = const ListToCsvConverter().convert(rows);
 
     final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/products_export.csv');
-    await file.writeAsString(csv);
+    final stamp = DateFormat('yyyy-MM-dd_HHmm').format(DateTime.now());
+    final file = File('${dir.path}/products_export_$stamp.csv');
+    // UTF-8 BOM so Excel detects encoding correctly
+    await file.writeAsString('\uFEFF$csv');
 
     // Share the file
     await Share.shareXFiles([XFile(file.path)], text: 'Products Export');
@@ -92,8 +94,10 @@ class CsvExportImport {
     final csv = const ListToCsvConverter().convert(rows);
 
     final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/damaged_products_export.csv');
-    await file.writeAsString(csv);
+    final stamp = DateFormat('yyyy-MM-dd_HHmm').format(DateTime.now());
+    final file = File('${dir.path}/damaged_products_export_$stamp.csv');
+    // UTF-8 BOM for Excel compatibility
+    await file.writeAsString('\uFEFF$csv');
 
     await Share.shareXFiles(
       [XFile(file.path)],
@@ -113,7 +117,11 @@ class CsvExportImport {
     }
 
     final file = File(result.files.first.path!);
-    final csvString = await file.readAsString();
+    var csvString = await file.readAsString();
+    // Strip UTF-8 BOM if present, else header becomes '\uFEFFName'
+    if (csvString.startsWith('\uFEFF')) {
+      csvString = csvString.substring(1);
+    }
 
     final rows = const CsvToListConverter().convert(csvString);
 

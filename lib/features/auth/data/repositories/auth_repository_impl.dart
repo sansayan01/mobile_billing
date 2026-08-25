@@ -81,6 +81,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String? shopName,
     String? emailRedirectTo,
     String? shopId,
+    String? phone,
   }) async {
     try {
       final response = await SupabaseConfig.client.auth.signUp(
@@ -90,6 +91,7 @@ class AuthRepositoryImpl implements AuthRepository {
         data: {
           'name': name,
           'shop_name': shopName ?? '$name ki Shop',
+          if (phone != null && phone.trim().isNotEmpty) 'phone': phone.trim(),
         },
       );
 
@@ -106,6 +108,7 @@ class AuthRepositoryImpl implements AuthRepository {
           userId: supabaseUser.id,
           role: 'staff',
           shopId: shopId,
+          phone: phone,
         );
       }
 
@@ -128,11 +131,17 @@ class AuthRepositoryImpl implements AuthRepository {
     required String userId,
     required String role,
     String? shopId,
+    String? phone,
   }) async {
     try {
       final existing = await _fetchProfile(userId);
       final updates = <String, dynamic>{'role': role};
       if (shopId != null) updates['shop_id'] = shopId;
+      // Best-effort phone update — RLS owner-row-only ho sakta hai, isliye
+      // fail hone par silently ignore (trigger/metadata path fallback).
+      if (phone != null && phone.trim().isNotEmpty) {
+        updates['phone'] = phone.trim();
+      }
       if (existing == null) {
         await _createProfile(
           id: userId,
@@ -149,123 +158,6 @@ class AuthRepositoryImpl implements AuthRepository {
       }
     } catch (_) {
       // ignore — trigger will handle it
-    }
-  }
-
-  /// Creates a shop for an owner profile that doesn't have one yet.
-  /// Used for Google OAuth signups where the DB trigger didn't fire.
-  Future<void> _ensureShopForOwner(String userId) async {
-    try {
-      final displayName =
-          SupabaseConfig.client.auth.currentUser?.email?.split('@').first ??
-              'Shop';
-      final result = await SupabaseConfig.client
-          .from('shops')
-          .insert({'owner_id': userId, 'name': '$displayName\'s Shop'})
-          .select('id')
-          .maybeSingle();
-      if (result is Map<String, dynamic>) {
-        final newShopId = result['id'] as String;
-        await SupabaseConfig.client
-            .from('profiles')
-            .update({'shop_id': newShopId})
-            .eq('id', userId);
-      }
-    } catch (_) {
-      // Best-effort; trigger or manual setup may handle it
-    }
-  }
-
-  @override
-  Future<Either<Failure, User>> loginWithGoogle() async {
-    try {
-      // On mobile, this opens the system browser for Google OAuth.
-      // The user authenticates there, and Supabase redirects back to the app
-      // via the deep-link URL 'io.supabase.flutter://callback'.
-      //
-      // REQUIRED SETUP for the redirect to work:
-      //
-      // Android — In android/app/src/main/AndroidManifest.xml, add an intent-filter:
-      //   <intent-filter>
-      //     <action android:name="android.intent.action.VIEW" />
-      //     <category android:name="android.intent.category.DEFAULT" />
-      //     <category android:name="android.intent.category.BROWSABLE" />
-      //     <data android:scheme="io.supabase.flutter" android:host="callback" />
-      //   </intent-filter>
-      //
-      // iOS — In ios/Runner/Info.plist, add:
-      //   <key>CFBundleURLTypes</key>
-      //   <array>
-      //     <dict>
-      //       <key>CFBundleURLSchemes</key>
-      //       <array>
-      //         <string>io.supabase.flutter</string>
-      //       </array>
-      //     </dict>
-      //   </array>
-      //
-      // Also set the redirect URL in your Supabase Dashboard:
-      //   Authentication → URL Configuration → Redirect URLs
-      //   Add: io.supabase.flutter://callback
-
-      await SupabaseConfig.client.auth.signInWithOAuth(
-        OAuthProvider.google,
-        redirectTo: 'io.supabase.flutter://callback',
-      );
-
-      // After the browser flow completes, Supabase returns to the app
-      // and the session becomes available. We wait briefly for the
-      // auth state to update with the new session.
-      //
-      // A more robust approach is to listen on authStateChanges, but for
-      // simplicity we poll currentUser after a short delay.
-      await Future.delayed(const Duration(seconds: 1));
-
-      final supabaseUser = SupabaseConfig.client.auth.currentUser;
-      if (supabaseUser == null) {
-        return Left(
-            const ServerFailure('Google login failed. No user returned.'));
-      }
-
-      final profile = await _fetchProfile(supabaseUser.id);
-
-      // If no profile exists yet (first-time Google login), create one.
-      if (profile == null) {
-        final displayName =
-            supabaseUser.userMetadata?['full_name'] as String? ??
-                supabaseUser.email?.split('@').first ??
-                'User';
-        try {
-          await _createProfile(
-            id: supabaseUser.id,
-            email: supabaseUser.email ?? '',
-            name: displayName,
-          );
-        } catch (_) {
-          // Ignore if profile already exists
-        }
-      }
-
-      // Ensure the profile has a shop — the DB trigger only fires on INSERT,
-      // so for Google OAuth the shop may not exist. Create it if missing.
-      final finalProfile = await _fetchProfile(supabaseUser.id);
-      if (finalProfile != null &&
-          finalProfile['shop_id'] == null &&
-          finalProfile['role'] == 'owner') {
-        try {
-          await _ensureShopForOwner(supabaseUser.id);
-        } catch (_) {
-          // Best-effort; user can still use the app
-        }
-      }
-
-      final updatedProfile = await _fetchProfile(supabaseUser.id);
-      final user =
-          UserModel.fromSupabaseAuth(supabaseUser, updatedProfile);
-      return Right(user);
-    } catch (e) {
-      return Left(
-          ServerFailure('Google login failed: ${_extractErrorMessage(e)}'));
     }
   }
 
@@ -326,7 +218,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final updates = <String, dynamic>{
         'name': name,
-        'updated_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
       };
       if (role != null) {
         updates['role'] = role;
@@ -367,11 +259,48 @@ class AuthRepositoryImpl implements AuthRepository {
   /// Supabase (AuthException, PostgrestException, or generic Exception).
   String _extractErrorMessage(Object error) {
     if (error is AuthException) {
-      return error.message;
+      return _friendlyMessage(error.message);
     }
     if (error is PostgrestException) {
-      return error.message;
+      return _friendlyMessage(error.message);
     }
-    return error.toString();
+    // SocketException / ClientException / parsing errors etc — never leak raw.
+    return 'Something went wrong. Please try again.';
+  }
+
+  /// Maps known server messages to friendly copy; anything unknown, empty,
+  /// or overly technical falls back to a generic line.
+  String _friendlyMessage(String message) {
+    final lower = message.toLowerCase();
+    if (lower.contains('invalid login credentials')) {
+      return 'Incorrect email or password.';
+    }
+    if (lower.contains('email not confirmed')) {
+      return 'Please confirm your email before logging in.';
+    }
+    if (lower.contains('already registered') ||
+        lower.contains('already exists')) {
+      return 'An account with this email already exists.';
+    }
+    if (lower.contains('password should be at least') ||
+        lower.contains('requires a valid password')) {
+      return 'Password must be at least 6 characters.';
+    }
+    if (lower.contains('rate limit') || lower.contains('too many requests')) {
+      return 'Too many attempts. Please wait a moment and try again.';
+    }
+    if (lower.contains('duplicate key')) {
+      return 'This entry already exists.';
+    }
+    if (lower.contains('row-level security')) {
+      return 'You do not have permission to do this.';
+    }
+    final clean = message.trim();
+    if (clean.isEmpty ||
+        lower.contains('exception') ||
+        lower.contains('failed host lookup')) {
+      return 'Something went wrong. Please try again.';
+    }
+    return clean;
   }
 }

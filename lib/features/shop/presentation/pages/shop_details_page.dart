@@ -25,6 +25,7 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
   late TextEditingController _phoneController;
   late TextEditingController _upiController;
   late TextEditingController _footerController;
+  Shop? _lastSyncedShop;
 
   @override
   void initState() {
@@ -41,14 +42,28 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
   }
 
   void _updateControllers(Shop shop) {
-    // Always sync controllers with shop data — handles both initial load
-    // and reload after save. The BlocConsumer will call this on ShopLoaded.
-    _nameController.text = shop.name;
-    _address1Controller.text = shop.addressLine1;
-    _address2Controller.text = shop.addressLine2;
-    _phoneController.text = shop.phoneNumber;
-    _upiController.text = shop.upiId;
-    _footerController.text = shop.footerText;
+    // Sync controllers only when the stored value actually changed — first
+    // load fills everything; later reloads never clobber in-progress edits.
+    final prev = _lastSyncedShop;
+    if (prev == null || prev.name != shop.name) {
+      _nameController.text = shop.name;
+    }
+    if (prev == null || prev.addressLine1 != shop.addressLine1) {
+      _address1Controller.text = shop.addressLine1;
+    }
+    if (prev == null || prev.addressLine2 != shop.addressLine2) {
+      _address2Controller.text = shop.addressLine2;
+    }
+    if (prev == null || prev.phoneNumber != shop.phoneNumber) {
+      _phoneController.text = shop.phoneNumber;
+    }
+    if (prev == null || prev.upiId != shop.upiId) {
+      _upiController.text = shop.upiId;
+    }
+    if (prev == null || prev.footerText != shop.footerText) {
+      _footerController.text = shop.footerText;
+    }
+    _lastSyncedShop = shop;
   }
 
   @override

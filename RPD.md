@@ -63,7 +63,9 @@ Flutter-based **billing + inventory management** app for a phone shop (phones, h
   - [x] Top Products Bar Chart — top 5 products by quantity sold, revenue-colored bars
   - [x] Monthly Sales Trend — 30-day line chart with interactive tooltips
   - [x] Staff Performance — owner-only leaderboard with rank badges + progress bars
-  - [x] Quick Actions repositioned: below Today's Sales, above Weekly Trend
+  - [x] Quick Actions repositioned: below Today's Sales
+  - [x] "This Week" weekly trend section REMOVED (redundant — hero sparkline + 30-day trend same data)
+  - [x] **First-run empty state**: no bills yet (status loaded + empty history) → onboarding card ("Chalo shuru karein" + Create First Bill → /scan) replaces bill analytics; Inventory Health still visible
   - [x] Analytics data auto-refreshes on pull-to-refresh
 
 ### 9. Due Payments Management (NEW)

@@ -208,6 +208,9 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
+        if (snapshot.hasError) {
+          return _emptyState(context, 'Could not load bills. Please try again later.');
+        }
         final bills = snapshot.data ?? [];
         if (bills.isEmpty) {
           return _emptyState(context, 'No records yet');
@@ -248,6 +251,9 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
+        if (snapshot.hasError) {
+          return _emptyState(context, 'Could not load due balance.');
+        }
         final total = snapshot.data ?? 0.0;
         if (total <= 0) {
           return _emptyState(context, 'No records yet');
@@ -286,6 +292,10 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return _emptyState(
+              context, 'Could not load warranty claims. Please try again later.');
         }
         final claims = snapshot.data ?? [];
         if (claims.isEmpty) {

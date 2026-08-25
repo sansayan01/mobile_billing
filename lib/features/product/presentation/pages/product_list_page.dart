@@ -87,6 +87,7 @@ class _ProductListPageState extends State<ProductListPage> {
 
   void _scanQR(List<Product> products) async {
     final barcode = await context.push<String>('/scan/scanner');
+    if (!mounted) return;
     if (barcode != null && barcode.isNotEmpty) {
       final matchedProduct =
           products.where((p) => p.barcode == barcode).firstOrNull;
@@ -398,13 +399,17 @@ class _ProductListPageState extends State<ProductListPage> {
   }
 
   void _quickStock(Product product) {
-    final controller = TextEditingController(text: '${product.stock}');
-    showModalBottomSheet(
+    final controller = TextEditingController(text: '${product.stock}');    showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (sheetContext) => Padding(
-        padding:
-            EdgeInsets.only(bottom: MediaQuery.of(sheetContext).viewInsets.bottom),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(sheetContext).viewInsets.bottom +
+              // Clear the floating bottom-nav (AppShell) so the sheet
+              // doesn't clash with it.
+              MediaQuery.of(sheetContext).viewPadding.bottom +
+              84,
+        ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
           child: Column(
@@ -469,7 +474,7 @@ class _ProductListPageState extends State<ProductListPage> {
           ),
         ),
       ),
-    );
+    ).whenComplete(() => controller.dispose());
   }
 
   void _addToCart(Product product) {
@@ -574,6 +579,7 @@ class _ProductListPageState extends State<ProductListPage> {
     if (selected.isEmpty) return;
 
     await CsvExportImport.exportProducts(selected);
+    if (!mounted) return;
     setState(() {
       _selectionMode = false;
       _selectedIds.clear();
@@ -609,9 +615,9 @@ class _ProductListPageState extends State<ProductListPage> {
       return;
     }
 
-    for (final p in products) {
-      bloc.add(AddProduct(p));
-    }
+    // Single bulk event — ProductBloc reloads ONCE after the whole batch,
+    // instead of a LoadProducts storm per row.
+    bloc.add(AddProductsBulk(products));
     messenger.showSnackBar(
       SnackBar(
         content: Text('${products.length} products imported!',
@@ -808,11 +814,15 @@ class _ProductListPageState extends State<ProductListPage> {
             (sum, item) => sum + item.quantity,
           );
           final total = billing.totalAmount;
-          return Container(
-            // Lift above the floating bottom-nav FAB so the cart bar stays
-            // fully visible/tappable (extendBody means nav floats over content)
-            margin: const EdgeInsets.fromLTRB(12, 0, 12, 96),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          return SafeArea(
+            top: false,
+            // extendBody injects the floating nav's height as bottom padding —
+            // SafeArea consumes it so the cart bar sits exactly ABOVE the nav
+            // on any device (fixed 74px margin used to overlap on gesture-bar
+            // phones where nav is taller).
+            child: Container(
+            margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [
@@ -831,13 +841,11 @@ class _ProductListPageState extends State<ProductListPage> {
                 ),
               ],
             ),
-            child: SafeArea(
-              top: false,
-              child: Row(
+            child: Row(
                 children: [
                   const Icon(Icons.shopping_cart_rounded,
-                      color: AppColors.onAccent, size: 22),
-                  const SizedBox(width: 10),
+                      color: AppColors.onAccent, size: 18),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -848,14 +856,14 @@ class _ProductListPageState extends State<ProductListPage> {
                           style: const TextStyle(
                             color: AppColors.onAccent,
                             fontWeight: FontWeight.w600,
-                            fontSize: 13,
+                            fontSize: 11.5,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 1),
                         Text(
                           '₹${total.toStringAsFixed(2)}',
                           style: AppMoneyText.sized(
-                            16,
+                            14,
                             FontWeight.w700,
                             AppColors.onAccent,
                           ),
@@ -869,21 +877,22 @@ class _ProductListPageState extends State<ProductListPage> {
                       backgroundColor: AppColors.onAccent,
                       foregroundColor: AppColors.accent,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 18, vertical: 10),
+                          horizontal: 14, vertical: 7),
                     ),
                     child: const Text(
                       'View Cart',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                   ),
                 ],
               ),
             ),
           );
-        },
+          },
       ),
     );
   }
@@ -1617,6 +1626,13 @@ class _ClassicListView extends StatelessWidget {
             ? Image.network(
                 product.imageUrl!,
                 fit: BoxFit.cover,
+                loadingBuilder: (context, child, progress) =>
+                    progress == null
+                        ? child
+                        : Container(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest),
                 errorBuilder: (_, __, ___) =>
                     _placeholderIcon(context, product),
               )

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +20,8 @@ class DuePaymentsPage extends StatefulWidget {
 
 class _DuePaymentsPageState extends State<DuePaymentsPage> {
   final TextEditingController _searchController = TextEditingController();
-  
+  Timer? _searchDebounce;
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +30,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -36,7 +40,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
     if (fixed.endsWith('.00')) {
       return fixed.substring(0, fixed.length - 3);
     }
-    return fixed.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\\.$'), '');
+    return fixed.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
   }
 
   void _showCollectPaymentDialog(DuePayment duePayment) {
@@ -44,7 +48,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
     final amountController = TextEditingController(
       text: _formatPrice(duePayment.dueAmount),
     );
-    
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -183,7 +187,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
           ),
         ],
       ),
-    );
+    ).whenComplete(() => amountController.dispose());
   }
 
   @override
@@ -204,11 +208,14 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
         listener: (context, state) {
           if (state.successMessage != null) {
             AppFeedback.success(context, state.successMessage!);
-            context.read<DuePaymentsBloc>().add(const LoadDuePayments());
           }
           if (state.error != null) {
             AppFeedback.error(context, state.error!);
-            context.read<DuePaymentsBloc>().add(const LoadDuePayments());
+          }
+          // Consume the message so it can't re-fire on the next state change.
+          // The bloc already reloads the list after a successful collect.
+          if (state.successMessage != null || state.error != null) {
+            context.read<DuePaymentsBloc>().add(const ClearDueMessages());
           }
         },
         builder: (context, state) {
@@ -306,7 +313,14 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                   ),
                   onChanged: (value) {
                     setState(() {});
-                    context.read<DuePaymentsBloc>().add(SearchDuePayments(value.isEmpty ? null : value));
+                    // 400ms debounce: one query per pause, not per keystroke.
+                    _searchDebounce?.cancel();
+                    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+                      if (!mounted) return;
+                      context
+                          .read<DuePaymentsBloc>()
+                          .add(SearchDuePayments(value.isEmpty ? null : value));
+                    });
                   },
                 ),
               ),
@@ -412,7 +426,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                 ),
                 const Spacer(),
                 Text(
-                  'Bill #${duePayment.billId.substring(0, 8)}',
+                  'Bill #${duePayment.billId.length >= 8 ? duePayment.billId.substring(0, 8) : duePayment.billId}',
                   style: TextStyle(
                     fontSize: 12,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,

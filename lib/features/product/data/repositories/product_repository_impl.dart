@@ -14,10 +14,11 @@ class ProductRepositoryImpl implements ProductRepository {
   ProductModel _fromMap(Map<String, dynamic> data) {
     return ProductModel(
       id: data['id'] as String,
-      name: data['name'] as String,
-      barcode: data['barcode'] as String,
+      name: data['name'] as String? ?? '',
+      // Defensive — legacy rows may have null barcode.
+      barcode: data['barcode'] as String? ?? '',
       price: (data['price'] as num).toDouble(),
-      stock: data['stock'] as int? ?? 0,
+      stock: (data['stock'] as num?)?.toInt() ?? 0,
       categoryId: data['category_id'] as String?,
       location: data['location'] as String?,
       description: data['description'] as String?,
@@ -30,9 +31,9 @@ class ProductRepositoryImpl implements ProductRepository {
           ? DateTime.parse(data['updated_at'] as String)
           : null,
       warrantyType: data['warranty_type'] as String? ?? 'none',
-      warrantyDuration: data['warranty_duration'] as int?,
+      warrantyDuration: (data['warranty_duration'] as num?)?.toInt(),
       warrantyUnit: data['warranty_unit'] as String?,
-      minStockLevel: data['min_stock_level'] as int? ?? 5,
+      minStockLevel: (data['min_stock_level'] as num?)?.toInt() ?? 5,
       unit: data['unit'] as String? ?? 'pcs',
     );
   }
@@ -211,8 +212,9 @@ class ProductRepositoryImpl implements ProductRepository {
     try {
       final effectiveShopId = await _resolveShopId(shopId);
       final model = ProductModel.fromEntity(product);
-      await _supabase.from('products').upsert({
-        'id': model.id,
+      // .update() (not upsert) — product must already exist; avoids clobbering
+      // rows on id collision and respects RLS shop scoping.
+      var updateQuery = _supabase.from('products').update({
         'name': model.name,
         'barcode': model.barcode,
         'price': model.price,
@@ -222,14 +224,17 @@ class ProductRepositoryImpl implements ProductRepository {
         'description': model.description,
         'image_url': model.imageUrl,
         'qr_data': model.qrData,
-        'shop_id': effectiveShopId,
-        'updated_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
         'warranty_type': model.warrantyType,
         'warranty_duration': model.warrantyDuration,
         'warranty_unit': model.warrantyUnit,
         'min_stock_level': model.minStockLevel,
         'unit': model.unit,
-      });
+      }).eq('id', model.id);
+      if (effectiveShopId != null) {
+        updateQuery = updateQuery.eq('shop_id', effectiveShopId);
+      }
+      await updateQuery;
 
       // Fetch old product from Hive for audit comparison
       final box = HiveDatabase.productBox;
@@ -288,7 +293,8 @@ class ProductRepositoryImpl implements ProductRepository {
       final stockMap = <String, int>{};
       for (final row in response as List<dynamic>) {
         final data = row as Map<String, dynamic>;
-        stockMap[data['id'] as String] = data['stock'] as int;
+        stockMap[data['id'] as String] =
+            (data['stock'] as num?)?.toInt() ?? 0;
       }
 
       return Right(stockMap);

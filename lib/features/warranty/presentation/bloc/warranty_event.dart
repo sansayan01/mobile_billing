@@ -19,6 +19,7 @@ class CreateWarrantyClaim extends WarrantyEvent {
   final String productName;
   final String? customerName;
   final String? customerPhone;
+  final String? customerId;
   final String claimReason;
   final String claimType;
   final int? warrantyDuration;
@@ -30,6 +31,7 @@ class CreateWarrantyClaim extends WarrantyEvent {
     required this.productName,
     this.customerName,
     this.customerPhone,
+    this.customerId,
     required this.claimReason,
     this.claimType = 'warranty',
     this.warrantyDuration,
@@ -51,4 +53,10 @@ class UpdateWarrantyClaimStatus extends WarrantyEvent {
 
   @override
   List<Object> get props => [claimId, status];
+}
+
+/// Resets one-shot flags (submitSuccess / updateSuccess / error) after the UI
+/// has consumed them, so stale state never re-triggers dialogs or snackbars.
+class ClearWarrantyFeedback extends WarrantyEvent {
+  const ClearWarrantyFeedback();
 }

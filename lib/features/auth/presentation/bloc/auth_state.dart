@@ -34,6 +34,11 @@ class Unauthenticated extends AuthState {
   List<Object?> get props => [message];
 }
 
+/// Staff signup ke baad emit hone wala standard message — add_staff_page isi
+/// se success detect karta hai (session sign-out ho chuka hota hai).
+const String kStaffAccountCreatedMessage =
+    'Staff account created. Please login again.';
+
 class AuthError extends AuthState {
   final String message;
 

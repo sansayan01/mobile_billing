@@ -24,6 +24,7 @@ class WarrantyBloc extends Bloc<WarrantyEvent, WarrantyState> {
     on<LoadWarrantyClaims>(_onLoadClaims);
     on<CreateWarrantyClaim>(_onCreateClaim);
     on<UpdateWarrantyClaimStatus>(_onUpdateStatus);
+    on<ClearWarrantyFeedback>(_onClearFeedback);
   }
 
   String? get _shopId {
@@ -73,7 +74,11 @@ class WarrantyBloc extends Bloc<WarrantyEvent, WarrantyState> {
       createdAt: DateTime.now(),
     );
 
-    final result = await createClaimUseCase.call(claim, shopId: _shopId);
+    final result = await createClaimUseCase.call(
+      claim,
+      shopId: _shopId,
+      customerId: event.customerId,
+    );
     result.fold(
       (failure) => emit(state.copyWith(
         isSubmitting: false,
@@ -113,5 +118,16 @@ class WarrantyBloc extends Bloc<WarrantyEvent, WarrantyState> {
         ));
       },
     );
+  }
+
+  void _onClearFeedback(
+    ClearWarrantyFeedback event,
+    Emitter<WarrantyState> emit,
+  ) {
+    emit(state.copyWith(
+      clearError: true,
+      submitSuccess: false,
+      updateSuccess: false,
+    ));
   }
 }

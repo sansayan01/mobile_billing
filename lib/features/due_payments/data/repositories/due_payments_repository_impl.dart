@@ -43,10 +43,19 @@ class DuePaymentsRepositoryImpl implements DuePaymentsRepository {
         query = query.eq('shop_id', effectiveShopId);
       }
 
-      // Add search filter for customer name or bill ID
+      // Add search filter for customer name or phone. NOTE: do NOT include
+      // id.ilike here — PostgREST .or() breaks on UUID hyphens/format and any
+      // unescaped comma/percent in the term crashes the whole query.
       if (searchQuery != null && searchQuery.trim().isNotEmpty) {
-        final term = searchQuery.trim().toLowerCase();
-        query = query.or('customer_name.ilike.%$term%,id.ilike.%$term%');
+        final sanitized = searchQuery
+            .trim()
+            .toLowerCase()
+            .replaceAll(RegExp(r'[,()%*]'), '');
+        if (sanitized.isNotEmpty) {
+          query = query.or(
+            'customer_name.ilike.%$sanitized%,customer_phone.ilike.%$sanitized%',
+          );
+        }
       }
 
       final response = await query.order('created_at', ascending: false);
@@ -71,35 +80,6 @@ class DuePaymentsRepositoryImpl implements DuePaymentsRepository {
       return Right(duePayments);
     } catch (e) {
       return Left(ServerFailure('Failed to fetch due payments: $e'));
-    }
-  }
-
-  @override
-  Future<Either<Failure, double>> getTotalPendingDue({
-    String? shopId,
-  }) async {
-    try {
-      final effectiveShopId = await _resolveShopId(shopId);
-      var query = _supabase
-          .from('bills')
-          .select('due_amount')
-          .inFilter('payment_status', ['partial', 'due'])
-          .gt('due_amount', 0);
-
-      if (effectiveShopId != null) {
-        query = query.eq('shop_id', effectiveShopId);
-      }
-
-      final response = await query;
-
-      double totalDue = 0.0;
-      for (final row in response as List<dynamic>) {
-        totalDue += (row['due_amount'] as num?)?.toDouble() ?? 0.0;
-      }
-
-      return Right(totalDue);
-    } catch (e) {
-      return Left(ServerFailure('Failed to fetch total due: $e'));
     }
   }
 
@@ -149,6 +129,11 @@ class DuePaymentsRepositoryImpl implements DuePaymentsRepository {
       }
 
       // 4. Update bill
+      // NOTE (accepted race): fetch -> compute -> update is not atomic. Two
+      // concurrent collects on the same bill could read the same amount_paid
+      // and one write would be lost. PostgREST has no server-side increment,
+      // so a safe fix needs an RPC/transaction — intentionally out of scope
+      // for this minimal fix.
       var updateQuery = _supabase
           .from('bills')
           .update({
@@ -166,48 +151,6 @@ class DuePaymentsRepositoryImpl implements DuePaymentsRepository {
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure('Failed to collect payment: $e'));
-    }
-  }
-
-  @override
-  Future<Either<Failure, DuePayment>> getBillForDuePayment({
-    required String billId,
-    String? shopId,
-  }) async {
-    try {
-      final effectiveShopId = await _resolveShopId(shopId);
-      var query = _supabase
-          .from('bills')
-          .select('*, profiles(name)')
-          .eq('id', billId);
-
-      if (effectiveShopId != null) {
-        query = query.eq('shop_id', effectiveShopId);
-      }
-
-      final row = await query.maybeSingle();
-      if (row == null) {
-        return const Left(ServerFailure('Bill not found'));
-      }
-
-      final profileData = row['profiles'] as Map<String, dynamic>?;
-      final staffName = profileData?['name'] as String? ?? 'Unknown';
-
-      final duePayment = DuePayment(
-        billId: row['id'] as String,
-        customerName: row['customer_name'] as String?,
-        customerPhone: row['customer_phone'] as String?,
-        grandTotal: (row['grand_total'] as num?)?.toDouble() ?? 0.0,
-        amountPaid: (row['amount_paid'] as num?)?.toDouble() ?? 0.0,
-        dueAmount: (row['due_amount'] as num?)?.toDouble() ?? 0.0,
-        paymentMethod: row['payment_method'] as String? ?? 'Unknown',
-        staffName: staffName,
-        billDate: DateTime.parse(row['created_at'] as String),
-      );
-
-      return Right(duePayment);
-    } catch (e) {
-      return Left(ServerFailure('Failed to fetch bill: $e'));
     }
   }
 }

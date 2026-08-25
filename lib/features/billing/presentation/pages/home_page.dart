@@ -367,23 +367,27 @@ class _HomePageState extends State<HomePage> {
     List<Product> allProducts = [];
     List<Product> filteredProducts = [];
     bool isLoading = true;
+    void Function(void Function())? dialogSetState;
 
     fetchProducts() async {
-      final shopId = (context.read<AuthBloc>().state as Authenticated?)?.user.shopId;
-      if (shopId == null) return;
-      try {
-        final result = await GetProductsUseCase(di.sl<ProductRepository>())(NoParams(), shopId: shopId);
-        result.fold(
-          (failure) {},
-          (products) {
-            allProducts = products;
-            filteredProducts = products;
-            isLoading = false;
-          },
-        );
-      } catch (e) {
-        isLoading = false;
+      final authState = context.read<AuthBloc>().state;
+      final shopId = authState is Authenticated ? authState.user.shopId : null;
+      if (shopId != null) {
+        try {
+          final result = await GetProductsUseCase(di.sl<ProductRepository>())(NoParams(), shopId: shopId);
+          result.fold(
+            (failure) {},
+            (products) {
+              allProducts = products;
+              filteredProducts = products;
+            },
+          );
+        } catch (e) {
+          // keep defaults — list will show as empty
+        }
       }
+      isLoading = false;
+      dialogSetState?.call(() {});
     }
 
     fetchProducts();
@@ -393,6 +397,7 @@ class _HomePageState extends State<HomePage> {
       builder: (ctx) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
+            dialogSetState = setDialogState;
             return AlertDialog(
               title: Row(
                 children: [
@@ -524,7 +529,7 @@ class _HomePageState extends State<HomePage> {
           },
         );
       },
-    );
+    ).then((_) => searchController.dispose());
   }
 
   Widget _buildBottomPanel() {
@@ -691,7 +696,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '₹${item.product.price.toStringAsFixed(2)}',
+                  '₹${item.unitPrice.toStringAsFixed(2)}',
                   style: AppMoneyText.sized(
                     14,
                     FontWeight.w600,

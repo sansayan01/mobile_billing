@@ -11,20 +11,6 @@ abstract class DamagedProductsRepository {
     DateTime? endDate,
   });
 
-  /// Get total estimated loss from damaged products
-  Future<Either<Failure, double>> getTotalDamageLoss({
-    String? shopId,
-    DateTime? startDate,
-    DateTime? endDate,
-  });
-
-  /// Get total count of damaged products
-  Future<Either<Failure, int>> getDamagedProductsCount({
-    String? shopId,
-    DateTime? startDate,
-    DateTime? endDate,
-  });
-
   /// Mark a product as damaged (decreases stock + logs adjustment)
   Future<Either<Failure, void>> markAsDamaged({
     required String productId,

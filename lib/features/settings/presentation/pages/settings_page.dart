@@ -24,6 +24,8 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  PrinterStatus _lastPrinterStatus = PrinterStatus.initial;
+
   @override
   void initState() {
     super.initState();
@@ -244,7 +246,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   AppFeedback.error(context, state.errorMessage!);
                 } else if (state.status == PrinterStatus.connected) {
                   AppFeedback.success(context, 'Connected to printer');
+                } else if (state.status == PrinterStatus.scanSuccess &&
+                    _lastPrinterStatus == PrinterStatus.testPrinting) {
+                  AppFeedback.success(context, 'Test print sent');
                 }
+                _lastPrinterStatus = state.status;
               },
               builder: (context, state) {
                 return _buildListGroup(
@@ -315,6 +321,61 @@ class _SettingsPageState extends State<SettingsPage> {
                         ],
                       ),
                     ),
+                    _buildListItem(
+                      theme: theme,
+                      icon: Icons.bluetooth_searching_rounded,
+                      title: 'Scan Devices',
+                      subtitle: 'Pick a paired Bluetooth printer to connect',
+                      onTap: () => _showScanSheet(context, theme),
+                    ),
+                    _buildListItem(
+                      theme: theme,
+                      icon: Icons.print_rounded,
+                      title: 'Test Print',
+                      subtitle: state.connectedMac != null
+                          ? 'Print a sample line to verify output'
+                          : 'Connect a printer first',
+                      onTap: state.connectedMac != null &&
+                              state.status != PrinterStatus.testPrinting
+                          ? () {
+                              HapticFeedback.selectionClick();
+                              final shopState = context.read<ShopBloc>().state;
+                              final shopName = shopState is ShopLoaded &&
+                                      shopState.shop.name.isNotEmpty
+                                  ? shopState.shop.name
+                                  : 'My Shop';
+                              context
+                                  .read<PrinterBloc>()
+                                  .add(TestPrintEvent(shopName));
+                            }
+                          : null,
+                      trailingWidget:
+                          state.status == PrinterStatus.testPrinting
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2))
+                              : null,
+                      trailingIcon:
+                          state.status == PrinterStatus.testPrinting
+                              ? null
+                              : Icons.chevron_right,
+                    ),
+                    if (state.connectedMac != null)
+                      _buildListItem(
+                        theme: theme,
+                        icon: Icons.link_off_rounded,
+                        title: 'Disconnect',
+                        subtitle: 'Unpair the current printer',
+                        iconColor: theme.colorScheme.error,
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          context
+                              .read<PrinterBloc>()
+                              .add(DisconnectPrinterEvent());
+                        },
+                      ),
                   ],
                 );
               },
@@ -324,7 +385,7 @@ class _SettingsPageState extends State<SettingsPage> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               child: Text(
-                "To connect a new device, tap on the Settings gear to pair in phone's Bluetooth settings, then return and hit Refresh.",
+                "Tap Scan Devices to pick from already-paired Bluetooth printers. To pair a new one, use the Settings gear, pair it in phone's Bluetooth settings, then come back and scan.",
                 style: TextStyle(
                     fontSize: 11,
                     fontStyle: FontStyle.italic,
@@ -335,6 +396,110 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 96),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showScanSheet(BuildContext context, ThemeData theme) {
+    final printerBloc = context.read<PrinterBloc>();
+    printerBloc.add(ScanPrintersEvent());
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.surface(theme.brightness),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) => BlocBuilder<PrinterBloc, PrinterState>(
+        bloc: printerBloc,
+        builder: (context, state) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text('Paired Devices',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              color:
+                                  AppColors.textPrimary(theme.brightness))),
+                      const Spacer(),
+                      if (state.status == PrinterStatus.scanning)
+                        const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2))
+                      else
+                        IconButton(
+                          icon: const Icon(Icons.refresh, size: 20),
+                          onPressed: () =>
+                              printerBloc.add(ScanPrintersEvent()),
+                          color: AppColors.accentText(theme.brightness),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  if (state.status == PrinterStatus.scanning &&
+                      state.devices.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (state.devices.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Text(
+                        'No paired devices found. Pair your printer in Bluetooth settings first.',
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.textSecondary(theme.brightness)),
+                      ),
+                    )
+                  else
+                    Flexible(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: state.devices.length,
+                        itemBuilder: (context, i) {
+                          final device = state.devices[i];
+                          final isCurrent =
+                              device.macAdress == state.connectedMac;
+                          return ListTile(
+                            leading: Icon(Icons.print_rounded,
+                                color:
+                                    AppColors.accentText(theme.brightness)),
+                            title: Text(device.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis),
+                            subtitle: Text(device.macAdress,
+                                style: const TextStyle(fontSize: 11)),
+                            trailing: isCurrent
+                                ? Text('CONNECTED',
+                                    style: TextStyle(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.successText(
+                                            theme.brightness)))
+                                : null,
+                            onTap: () {
+                              Navigator.pop(sheetContext);
+                              HapticFeedback.selectionClick();
+                              printerBloc.add(ConnectPrinterEvent(
+                                  mac: device.macAdress, name: device.name));
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -6,7 +6,6 @@ enum AuditStatus { initial, loading, loaded, error }
 class AuditState extends Equatable {
   final AuditStatus status;
   final List<AuditLog> logs;
-  final List<AuditLog> entityLogs;
   final String? error;
   final int currentPage;
   final bool hasMore;
@@ -20,7 +19,6 @@ class AuditState extends Equatable {
   const AuditState({
     this.status = AuditStatus.initial,
     this.logs = const [],
-    this.entityLogs = const [],
     this.error,
     this.currentPage = 0,
     this.hasMore = true,
@@ -35,7 +33,6 @@ class AuditState extends Equatable {
   AuditState copyWith({
     AuditStatus? status,
     List<AuditLog>? logs,
-    List<AuditLog>? entityLogs,
     String? error,
     bool clearError = false,
     int? currentPage,
@@ -50,7 +47,6 @@ class AuditState extends Equatable {
     return AuditState(
       status: status ?? this.status,
       logs: logs ?? this.logs,
-      entityLogs: entityLogs ?? this.entityLogs,
       error: clearError ? null : (error ?? this.error),
       currentPage: currentPage ?? this.currentPage,
       hasMore: hasMore ?? this.hasMore,
@@ -65,7 +61,7 @@ class AuditState extends Equatable {
 
   @override
   List<Object?> get props => [
-        status, logs, entityLogs, error, currentPage, hasMore,
+        status, logs, error, currentPage, hasMore,
         lastFilterAction, lastFilterEntity, lastFilterStaff,
         lastFilterFrom, lastFilterTo, lastFilterSearch,
       ];

@@ -409,11 +409,15 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
                       ),
                     ),
                     const SizedBox(height: 4),
+                    // Disable while another mark/undo is in flight to
+                    // prevent double-tap race conditions.
                     IconButton(
                       icon: const Icon(Icons.restore_from_trash_outlined, size: 18),
                       color: AppColors.textTertiary(theme.brightness),
                       tooltip: 'Reverse damage',
-                      onPressed: () => _confirmUndo(context, damaged),
+                      onPressed: state.isMarking
+                          ? null
+                          : () => _confirmUndo(context, damaged),
                     ),
                   ],
                 ),
@@ -434,6 +438,11 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
           width: 40,
           height: 40,
           fit: BoxFit.cover,
+          loadingBuilder: (context, child, progress) => progress == null
+              ? child
+              : Container(
+                  color:
+                      Theme.of(context).colorScheme.surfaceContainerHighest),
           errorBuilder: (_, __, ___) => _buildImagePlaceholder(context, damaged),
         ),
       );
@@ -519,6 +528,8 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
     );
 
     if (confirmed == true && mounted) {
+      // Re-check: an undo may have started while the dialog was open.
+      if (bloc.state.isMarking) return;
       bloc.add(
         UndoDamagedProduct(
           adjustmentId: damaged.id,

@@ -16,6 +16,14 @@ class AddProduct extends ProductEvent {
   List<Object> get props => [product];
 }
 
+/// Bulk insert (e.g. CSV import) — reloads products once after the batch.
+class AddProductsBulk extends ProductEvent {
+  final List<Product> products;
+  const AddProductsBulk(this.products);
+  @override
+  List<Object> get props => [products];
+}
+
 class UpdateProduct extends ProductEvent {
   final Product product;
   const UpdateProduct(this.product);
@@ -35,13 +43,6 @@ class FilterByCategory extends ProductEvent {
   const FilterByCategory(this.categoryId);
   @override
   List<Object> get props => [categoryId ?? ''];
-}
-
-class GenerateQrCode extends ProductEvent {
-  final Product product;
-  const GenerateQrCode(this.product);
-  @override
-  List<Object> get props => [product];
 }
 
 class InitRealtime extends ProductEvent {}

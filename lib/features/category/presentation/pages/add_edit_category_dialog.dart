@@ -7,7 +7,9 @@ import '../../domain/entities/category.dart';
 import '../../../../core/utils/app_validators.dart';
 
 // Predefined category icons for phone shop
-const List<IconData> _categoryIcons = [
+// PUBLIC so pages can resolve stored codePoints to CONST IconData instances
+// (required for release builds — icon tree-shaking rejects dynamic IconData).
+const List<IconData> categoryIcons = [
   Icons.headphones_rounded,        // Headphones
   Icons.phone_iphone_rounded,      // Phones
   Icons.cable_rounded,             // Chargers/Cables
@@ -76,7 +78,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
     _nameController = TextEditingController(text: widget.category?.name ?? '');
     _descriptionController =
         TextEditingController(text: widget.category?.description ?? '');
-    _selectedIconCodePoint = widget.category?.iconCodePoint ?? _categoryIcons[21].codePoint;
+    _selectedIconCodePoint = widget.category?.iconCodePoint ?? categoryIcons[21].codePoint;
     _selectedColor = Color(widget.category?.colorValue ?? _categoryColors[0].toARGB32());
   }
 
@@ -172,7 +174,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
               Wrap(
                 spacing: 6,
                 runSpacing: 6,
-                children: _categoryIcons.map((icon) {
+                children: categoryIcons.map((icon) {
                   final isSelected = _selectedIconCodePoint == icon.codePoint;
                   return GestureDetector(
                     onTap: () => setState(() => _selectedIconCodePoint = icon.codePoint),
@@ -230,8 +232,11 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
-                        // ignore: non_const_argument_for_const_parameter
-                        IconData(_selectedIconCodePoint, fontFamily: 'MaterialIcons'),
+                        // Const lookup (tree-shake safe) — same helper logic
+                        categoryIcons.firstWhere(
+                          (i) => i.codePoint == _selectedIconCodePoint,
+                          orElse: () => categoryIcons[21],
+                        ),
                         color: _selectedColor,
                         size: 22,
                       ),

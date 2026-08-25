@@ -35,7 +35,13 @@ class DamagedProductsBloc extends Bloc<DamagedProductsEvent, DamagedProductsStat
     LoadDamagedProducts event,
     Emitter<DamagedProductsState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    // Clear stale feedback on every load-start so the page listener never
+    // repeats an old successMessage/error after reloads.
+    emit(state.copyWith(
+      isLoading: true,
+      clearError: true,
+      clearSuccessMessage: true,
+    ));
 
     final result = await repository.getDamagedProducts(
       shopId: _currentShopId,

@@ -122,7 +122,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
       }
     } catch (e) {
       if (mounted) {
-        AppFeedback.error(context, 'Print failed: $e');
+        AppFeedback.error(context, 'Print failed. Check printer connection.');
       }
     }
   }
@@ -133,8 +133,15 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
 
     final size = MediaQuery.of(context).size;
 
+    final boundaryContext = _receiptKey.currentContext;
+    if (boundaryContext == null) {
+      AppFeedback.error(context, 'Receipt not ready. Please try again.');
+      return;
+    }
+
     try {
-      final boundary = _receiptKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      final boundary =
+          boundaryContext.findRenderObject() as RenderRepaintBoundary;
       final image = await boundary.toImage(pixelRatio: 3.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       final pngBytes = byteData!.buffer.asUint8List();
@@ -182,10 +189,14 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
       }
     } catch (e) {
       if (mounted) {
-        AppFeedback.error(context, 'Failed to share: $e');
+        AppFeedback.error(context, 'Failed to share receipt');
       }
     } finally {
-      setState(() => _isSharing = false);
+      if (mounted) {
+        setState(() => _isSharing = false);
+      } else {
+        _isSharing = false;
+      }
     }
   }
 
@@ -500,9 +511,11 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
-        child: Column(
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+          child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
@@ -565,6 +578,7 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

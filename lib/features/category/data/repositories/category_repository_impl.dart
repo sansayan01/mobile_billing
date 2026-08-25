@@ -120,11 +120,16 @@ class CategoryRepositoryImpl implements CategoryRepository {
         deletedName = c?['name'] as String?;
       } catch (_) {}
 
+      // Guard instead of `resolvedShopId!` — a null here used to crash with a
+      // cryptic "Null check operator" error swallowed into a generic failure.
+      if (resolvedShopId == null) {
+        return Left(ServerFailure('Shop not found — please log in again'));
+      }
       await _supabase
           .from('categories')
           .delete()
           .eq('id', id)
-          .eq('shop_id', resolvedShopId!);
+          .eq('shop_id', resolvedShopId);
 
       // Audit log
       await _logAudit('category.deleted', 'category', id, deletedName, 'Category "${deletedName ?? id}" deleted', null, null, resolvedShopId);

@@ -261,7 +261,8 @@ negative=error, gridlines = divider, tooltips = modal surface. Metric cards: mon
 - Low-stock alert: glass error banner (tappable → /reports/low-stock)
 - Today's Sales: 4 `PremiumStatCard` glass cards in 2×2 grid
 - Quick Actions: 1 `DashboardActionCard` glass ("New Bill") + 3-col `QuickActionTile` glass grid (6-7 tiles)
-- Weekly Trend: `SalesTrendCard` glass card (7-day CustomPainter bezier chart from billHistory)
+- Weekly Trend: REMOVED (v3.4 — redundant with hero sparkline + Monthly Trend)
+- First-Run Card (no bills yet): surface(b) r24 card, receipt icon chip (accentSubtle bg), 'Chalo shuru karein' w700, lime 'Create First Bill' button → /scan; replaces bill analytics sections only
 - Payment Methods: `PaymentDonutChart` glass card (pie chart from billHistory aggregation)
 - Top Products: `TopProductsBarChart` glass card (bar chart from billHistory items aggregation)
 - Monthly Trend: `MonthlyTrendCard` glass card (30-day FL line chart from salesRange)

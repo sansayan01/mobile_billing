@@ -12,8 +12,8 @@ abstract class AuthRepository {
     String? shopName,
     String? emailRedirectTo,
     String? shopId,
+    String? phone,
   });
-  Future<Either<Failure, User>> loginWithGoogle();
   Future<Either<Failure, void>> logout();
   Future<Either<Failure, User?>> getCurrentUser();
   Future<Either<Failure, User>> updateProfile(String name, String? role);

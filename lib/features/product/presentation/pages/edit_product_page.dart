@@ -15,6 +15,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_validators.dart';
 import '../../../../core/utils/image_compress.dart';
 import '../../../../core/utils/image_upload_service.dart';
+import '../../../../core/widgets/app_feedback.dart';
 
 class EditProductPage extends StatefulWidget {
   final Product product;
@@ -28,6 +29,7 @@ class _EditProductPageState extends State<EditProductPage> {
   final _formKey = GlobalKey<FormState>();
   final _imagePicker = ImagePicker();
   late final TextEditingController _barcodeController;
+  late final TextEditingController _categoryNameController;
   late String _name;
   late double _price;
   late int _stock;
@@ -48,6 +50,7 @@ class _EditProductPageState extends State<EditProductPage> {
     super.initState();
     _name = widget.product.name;
     _barcodeController = TextEditingController(text: widget.product.barcode);
+    _categoryNameController = TextEditingController();
     _price = widget.product.price;
     _stock = widget.product.stock;
     _minStockLevel = widget.product.minStockLevel;
@@ -64,6 +67,7 @@ class _EditProductPageState extends State<EditProductPage> {
   @override
   void dispose() {
     _barcodeController.dispose();
+    _categoryNameController.dispose();
     super.dispose();
   }
 
@@ -75,6 +79,7 @@ class _EditProductPageState extends State<EditProductPage> {
         maxHeight: 1200,
         imageQuality: 100,
       );
+      if (!mounted) return;
 
       if (pickedFile != null) {
         setState(() {
@@ -84,6 +89,7 @@ class _EditProductPageState extends State<EditProductPage> {
 
         final compressedPath = await ImageCompress.compressImage(pickedFile.path);
         final compressedSize = await ImageCompress.getCompressedSizeKB(compressedPath);
+        if (!mounted) return;
 
         setState(() {
           _imageFile = File(compressedPath);
@@ -101,11 +107,12 @@ class _EditProductPageState extends State<EditProductPage> {
         }
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isUploading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to pick image: $e'),
+            content: const Text('Failed to pick image. Please try again.'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -119,23 +126,38 @@ class _EditProductPageState extends State<EditProductPage> {
 
       // Upload compressed image to Supabase Storage if new image picked
       String? uploadedImageUrl = _imageUrl.isNotEmpty ? _imageUrl : null;
+      final fallbackImageUrl = uploadedImageUrl;
       if (_imageFile != null) {
         uploadedImageUrl = await ImageUploadService.uploadProductImage(
           _imageFile!, widget.product.id,
         );
+        if (!mounted) return;
+        if (uploadedImageUrl == null || uploadedImageUrl.isEmpty) {
+          // Upload failed — inform but DON'T block the save; keep previous URL.
+          AppFeedback.error(context,
+              'Image upload failed — saving product without new image');
+          uploadedImageUrl = fallbackImageUrl;
+        }
       }
 
       if (!mounted) return;
 
+      final newBarcode = _barcodeController.text.trim();
       final updatedProduct = widget.product.copyWith(
         name: _name,
-        barcode: _barcodeController.text.trim(),
+        barcode: newBarcode,
+        // Barcode change => QR data bhi sync rakho
+        qrData: newBarcode,
         price: _price,
         stock: _stock,
         categoryId: _categoryId,
-        location: _location.isNotEmpty ? _location : null,
-        description: _description.isNotEmpty ? _description : null,
+        clearCategoryId: _categoryId == null,
+        location: _location,
+        clearLocation: _location.isEmpty,
+        description: _description,
+        clearDescription: _description.isEmpty,
         imageUrl: uploadedImageUrl,
+        clearImageUrl: uploadedImageUrl == null || uploadedImageUrl.isEmpty,
         updatedAt: DateTime.now(),
         warrantyType: _warrantyType,
         warrantyDuration: _warrantyDuration,
@@ -193,6 +215,14 @@ class _EditProductPageState extends State<EditProductPage> {
                                     child: Image.network(
                                       widget.product.imageUrl!,
                                       fit: BoxFit.cover,
+                                      loadingBuilder:
+                                          (context, child, progress) =>
+                                              progress == null
+                                                  ? child
+                                                  : Container(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .surfaceContainerHighest),
                                       errorBuilder: (_, __, ___) => Icon(
                                         Icons.inventory_2_outlined,
                                         color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -286,14 +316,26 @@ class _EditProductPageState extends State<EditProductPage> {
                   BlocBuilder<CategoryBloc, CategoryState>(
                     builder: (context, state) {
                       final cats = state.categories;
+                      // firstOrNull — deleted category pe crash nahi hoga.
                       final selectedName = _categoryId == null
                           ? null
-                          : cats.firstWhere((c) => c.id == _categoryId).name;
+                          : cats
+                              .where((c) => c.id == _categoryId)
+                              .firstOrNull
+                              ?.name;
+                      final display = selectedName ?? '';
+                      if (_categoryNameController.text != display) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          _categoryNameController.text = display;
+                          _categoryNameController.selection =
+                              TextSelection.fromPosition(
+                                  TextPosition(offset: display.length));
+                        });
+                      }
                       return TextFormField(
                         readOnly: true,
-                        controller: TextEditingController(text: selectedName ?? '')
-                          ..selection = TextSelection.fromPosition(
-                              TextPosition(offset: (selectedName ?? '').length)),
+                        controller: _categoryNameController,
                         decoration: const InputDecoration(
                           hintText: 'Select category',
                           prefixIcon: Icon(Icons.category_outlined),
@@ -509,8 +551,7 @@ class _EditProductPageState extends State<EditProductPage> {
       BuildContext context, List<Category> categories) async {
     final searchController = TextEditingController();
     const kSheetRadius = Radius.circular(20);
-    final selected = await showModalBottomSheet<String>(
-      context: context,
+    final selected = await showModalBottomSheet<String>(      context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
@@ -637,7 +678,7 @@ class _EditProductPageState extends State<EditProductPage> {
           },
         );
       },
-    );
+    ).whenComplete(() => searchController.dispose());
 
     if (selected != null && mounted) {
       setState(() => _categoryId = selected);

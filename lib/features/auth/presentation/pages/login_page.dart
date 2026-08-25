@@ -47,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        if (!mounted) return;
         setState(() {
           _isLoading = state is AuthLoading;
         });

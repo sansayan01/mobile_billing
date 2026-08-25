@@ -75,7 +75,10 @@ class _ProductCoverflowViewState extends State<ProductCoverflowView> {
 
   @override
   Widget build(BuildContext context) {
-    final safeIndex = _currentIndex.clamp(0, widget.products.length - 1);
+    // Empty list pe clamp(0, -1) ArgumentError throw karta — guard karo.
+    final safeIndex = widget.products.isEmpty
+        ? 0
+        : _currentIndex.clamp(0, widget.products.length - 1);
 
     return Column(
       children: [
@@ -423,6 +426,13 @@ class _CoverCard extends StatelessWidget {
                       child: Image.network(
                         product.imageUrl!,
                         fit: BoxFit.cover,
+                        loadingBuilder: (context, child, progress) =>
+                            progress == null
+                                ? child
+                                : Container(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerHighest),
                         errorBuilder: (_, __, ___) =>
                             _placeholder(context),
                       ),

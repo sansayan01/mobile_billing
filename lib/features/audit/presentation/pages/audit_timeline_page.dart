@@ -48,12 +48,18 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
 
   // ── Data ──
   void _loadLogs() {
+    // Sanitize search input — commas break CSV export and '%' can act as a
+    // wildcard/pattern char in backend filters.
+    final rawQuery = _searchController.text
+        .replaceAll(',', ' ')
+        .replaceAll('%', ' ')
+        .trim();
     context.read<AuditBloc>().add(LoadAuditLogs(
       entityType: _filterEntityType,
       action: _filterAction,
       from: _filterFrom,
       to: _filterTo,
-      searchQuery: _searchController.text.isEmpty ? null : _searchController.text,
+      searchQuery: rawQuery.isEmpty ? null : rawQuery,
     ));
   }
 
@@ -169,7 +175,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
       backgroundColor: t.colorScheme.surface,
       body: RefreshIndicator(
         onRefresh: _onRefresh,
-        color: AppColors.accent,
+        color: AppColors.accentText(t.brightness),
         child: CustomScrollView(
           slivers: [
             // ── SliverAppBar ──
@@ -240,7 +246,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const CircularProgressIndicator(color: AppColors.accent),
+                          CircularProgressIndicator(color: AppColors.accentText(t.brightness)),
                           const SizedBox(height: 16),
                           Text('Loading activities...', style: TextStyle(color: t.colorScheme.onSurfaceVariant)),
                         ],
@@ -1626,42 +1632,50 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
   }
 
   // ══════════════════════════════════════════════════
-  // EXPORT — respects current filters
+  // EXPORT — respects current filters (loaded logs only)
   // ══════════════════════════════════════════════════
   Future<void> _exportCsv() async {
     final logs = context.read<AuditBloc>().state.logs;
     if (logs.isEmpty) {
       if (mounted) {
-        AppFeedback.info(context, 'No logs to export');
+        AppFeedback.info(context, 'No loaded logs to export');
       }
       return;
     }
 
-    final rows = <List<dynamic>>[
-      ['Date', 'Time', 'Action', 'Entity', 'Name', 'Description', 'Staff', 'Old Value', 'New Value']
-    ];
-    for (final log in logs) {
-      rows.add([
-        DateFormat('yyyy-MM-dd').format(log.createdAt),
-        DateFormat('HH:mm').format(log.createdAt),
-        log.actionLabel,
-        log.entityType,
-        log.entityName ?? '',
-        log.description,
-        log.staffName ?? '',
-        log.oldValue?.toString() ?? '',
-        log.newValue?.toString() ?? '',
-      ]);
-    }
+    try {
+      final rows = <List<dynamic>>[
+        ['Date', 'Time', 'Action', 'Entity', 'Name', 'Description', 'Staff', 'Old Value', 'New Value']
+      ];
+      for (final log in logs) {
+        rows.add([
+          DateFormat('yyyy-MM-dd').format(log.createdAt),
+          DateFormat('HH:mm').format(log.createdAt),
+          log.actionLabel,
+          log.entityType,
+          log.entityName ?? '',
+          log.description,
+          log.staffName ?? '',
+          log.oldValue?.toString() ?? '',
+          log.newValue?.toString() ?? '',
+        ]);
+      }
 
-    final csv = const ListToCsvConverter().convert(rows);
-    final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/audit_logs.csv');
-    await file.writeAsString(csv);
+      final csv = const ListToCsvConverter().convert(rows);
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/audit_logs.csv');
+      await file.writeAsString(csv);
 
-    if (mounted) {
+      if (!mounted) return;
       final filterDesc = _hasActiveFilters ? ' (filtered)' : '';
-      await Share.shareXFiles([XFile(file.path)], text: 'Audit Logs$filterDesc — ${logs.length} entries');
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: 'Audit Logs$filterDesc — ${logs.length} loaded entries',
+      );
+    } catch (e) {
+      if (mounted) {
+        AppFeedback.error(context, 'CSV export failed: $e');
+      }
     }
   }
 }

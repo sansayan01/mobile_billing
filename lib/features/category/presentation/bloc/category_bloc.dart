@@ -29,6 +29,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     on<AddCategory>(_onAddCategory);
     on<UpdateCategory>(_onUpdateCategory);
     on<DeleteCategory>(_onDeleteCategory);
+    on<DeleteCategoriesBulk>(_onDeleteCategoriesBulk);
   }
 
   String? get _currentShopId {
@@ -112,5 +113,32 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         add(LoadCategories());
       },
     );
+  }
+
+  Future<void> _onDeleteCategoriesBulk(
+      DeleteCategoriesBulk event, Emitter<CategoryState> emit) async {
+    emit(state.copyWith(status: CategoryStatus.loading));
+    var deleted = 0;
+    var lastError = '';
+    for (final id in event.ids) {
+      final result = await deleteCategoryUseCase(id, shopId: _currentShopId);
+      result.fold(
+        (failure) => lastError = failure.message,
+        (_) => deleted++,
+      );
+    }
+    if (deleted > 0) {
+      emit(state.copyWith(
+        status: CategoryStatus.success,
+        message: lastError.isEmpty
+            ? '$deleted ${deleted == 1 ? "category" : "categories"} deleted'
+            : '$deleted deleted, some failed: $lastError',
+      ));
+      add(LoadCategories());
+    } else {
+      emit(state.copyWith(
+          status: CategoryStatus.error,
+          message: lastError.isEmpty ? 'Delete failed' : lastError));
+    }
   }
 }

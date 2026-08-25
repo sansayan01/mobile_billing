@@ -112,7 +112,10 @@ class BeepHelper {
     return data.buffer.asUint8List();
   }
 
+  /// Intentionally a NO-OP: [BeepHelper] is an app-lifetime singleton.
+  /// Disposing the static player used to make every later [playBeep]
+  /// fail silently. The OS reclaims the player on app exit anyway.
   static void dispose() {
-    _player.dispose();
+    // Do not dispose _player — it must stay usable after this call.
   }
 }

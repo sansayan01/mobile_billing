@@ -60,15 +60,31 @@ class _AuthNotifier extends ChangeNotifier {
   }
 }
 
-GoRouter createRouter(AuthBloc authBloc) {
+/// Router + uske refreshListenable ka holder — MyApp State.dispose() se
+/// dono cleanly dispose ho sakein (GoRouter apne refreshListenable ko
+/// khud dispose nahi karta, sirf listener remove karta hai).
+class AppRouter {
+  final GoRouter router;
+  final ChangeNotifier refreshListenable;
+  const AppRouter({required this.router, required this.refreshListenable});
+
+  void dispose() {
+    router.dispose();
+    refreshListenable.dispose();
+  }
+}
+
+AppRouter createRouter(AuthBloc authBloc) {
   final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'root');
 
-  return GoRouter(
+  final refreshListenable = _AuthNotifier(authBloc);
+
+  final router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     debugLogDiagnostics: false,
-    refreshListenable: _AuthNotifier(authBloc),
+    refreshListenable: refreshListenable,
     redirect: (context, state) {
       final authState = context.read<AuthBloc>().state;
 
@@ -320,4 +336,6 @@ GoRouter createRouter(AuthBloc authBloc) {
       ),
     ],
   );
+
+  return AppRouter(router: router, refreshListenable: refreshListenable);
 }

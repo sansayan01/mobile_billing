@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +19,7 @@ class CustomerListPage extends StatefulWidget {
 
 class _CustomerListPageState extends State<CustomerListPage> {
   final TextEditingController _searchController = TextEditingController();
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -28,6 +31,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -53,6 +57,12 @@ class _CustomerListPageState extends State<CustomerListPage> {
                 size: 20),
             onPressed: () => context.go('/'),
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: AppColors.accent,
+          foregroundColor: AppColors.onAccent,
+          onPressed: () => context.push('/customers/add'),
+          child: const Icon(Icons.person_add_rounded),
         ),
         body: Column(
           children: [
@@ -83,7 +93,12 @@ class _CustomerListPageState extends State<CustomerListPage> {
                 ),
                 onChanged: (value) {
                   setState(() {});
-                  sl<CustomerBloc>().add(SearchCustomers(value));
+                  // 400ms debounce: one query per pause, not per keystroke.
+                  _searchDebounce?.cancel();
+                  _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+                    if (!mounted) return;
+                    sl<CustomerBloc>().add(SearchCustomers(value));
+                  });
                 },
               ),
             ),

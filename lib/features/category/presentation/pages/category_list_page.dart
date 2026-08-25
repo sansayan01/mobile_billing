@@ -3,11 +3,14 @@ import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/service_locator.dart' as di;
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_skeleton.dart';
 import '../bloc/category_bloc.dart';
 import '../../domain/entities/category.dart';
+import '../../domain/usecases/category_usecases.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../product/domain/entities/product.dart';
 import 'add_edit_category_dialog.dart';
 import '../../../product/presentation/bloc/product_bloc.dart';
 
@@ -54,26 +57,33 @@ class _CategoryListPageState extends State<CategoryListPage>
     return s;
   }
 
-  int _count(Category c) {
+  int _count(Category c, List<Product> products) {
     try {
-      return context.read<ProductBloc>().state.products.where((p) => p.categoryId == c.id).length;
+      return products.where((p) => p.categoryId == c.id).length;
     } catch (_) {
       return 0;
     }
   }
 
-  int get _totalProducts {
-    try {
-      return context.read<ProductBloc>().state.products.length;
-    } catch (_) {
-      return 0;
+  int _totalProducts(List<Product> products) {
+    return products.length;
+  }
+
+  /// Resolve a stored codePoint to a CONST IconData from the shared registry.
+  /// Dynamic `IconData(codePoint)` breaks release builds (icon tree-shaking).
+  IconData _categoryIcon(int codePoint) {
+    for (final icon in categoryIcons) {
+      if (icon.codePoint == codePoint) return icon;
     }
+    return Icons.category_rounded; // const fallback
   }
 
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context);
     final cats = context.watch<CategoryBloc>().state.categories;
+    // Watch ProductBloc too — product counts stay reactive.
+    final products = context.watch<ProductBloc>().state.products;
 
     return Scaffold(
       backgroundColor: t.scaffoldBackgroundColor,
@@ -172,10 +182,10 @@ class _CategoryListPageState extends State<CategoryListPage>
           ),
 
           // ─── Stats Card ───
-          SliverToBoxAdapter(child: _buildStatsCard(t, cats)),
+          SliverToBoxAdapter(child: _buildStatsCard(t, cats, products)),
 
           // ─── Recently Used ───
-          SliverToBoxAdapter(child: _buildRecentlyUsed(t, cats)),
+          SliverToBoxAdapter(child: _buildRecentlyUsed(t, cats, products)),
 
           // ─── Section Title ───
           SliverToBoxAdapter(
@@ -207,6 +217,11 @@ class _CategoryListPageState extends State<CategoryListPage>
               if (state.status == CategoryStatus.success && state.message != null) {
                 AppFeedback.success(context, state.message!);
               }
+              // Silent-failure fix: delete/add errors previously showed NOTHING
+              // (e.g. FK-restricted deletes) — user thought it worked.
+              if (state.status == CategoryStatus.error && state.message != null) {
+                AppFeedback.error(context, state.message!);
+              }
             },
             builder: (context, state) {
               if (state.status == CategoryStatus.loading && state.categories.isEmpty) {
@@ -227,13 +242,14 @@ class _CategoryListPageState extends State<CategoryListPage>
               }
 
               return SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+                // 144 clears the floating nav + gesture bar on all devices
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 144),
                 sliver: SliverList.separated(
                   itemCount: sorted.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final cat = sorted[index];
-                    final count = _count(cat);
+                    final count = _count(cat, products);
                     final selected = _selectedIds.contains(cat.id);
 
                     return TweenAnimationBuilder<double>(
@@ -251,9 +267,24 @@ class _CategoryListPageState extends State<CategoryListPage>
                         direction: _isSelectionMode ? DismissDirection.none : DismissDirection.endToStart,
                         confirmDismiss: (_) async {
                           HapticFeedback.heavyImpact();
-                          return await _confirmSwipeDelete(cat);
+                          final confirmed = await _confirmSwipeDelete(cat);
+                          if (confirmed != true) return false;
+                          // Await the actual delete — dismiss ONLY on success,
+                          // warna failed delete ke baad bhi row gayab ho jati.
+                          final result =
+                              await di.sl<DeleteCategoryUseCase>()(cat.id);
+                          if (!mounted) return false;
+                          if (result.isRight()) {
+                            this.context
+                                .read<CategoryBloc>()
+                                .add(LoadCategories());
+                            return true;
+                          }
+                          AppFeedback.error(
+                              this.context, 'Failed to delete "${cat.name}"');
+                          return false;
                         },
-                        onDismissed: (_) => context.read<CategoryBloc>().add(DeleteCategory(cat.id)),
+                        onDismissed: (_) {},
                         background: _swipeBackground(t),
                         child: _categoryCard(cat, count, selected, t),
                       ),
@@ -271,7 +302,7 @@ class _CategoryListPageState extends State<CategoryListPage>
   // ═══════════════════════════════════════════════════════════════
   //  STATS CARD
   // ═══════════════════════════════════════════════════════════════
-  Widget _buildStatsCard(ThemeData t, List<Category> cats) {
+  Widget _buildStatsCard(ThemeData t, List<Category> cats, List<Product> products) {
     return AnimatedBuilder(
       animation: _headerAnimController,
       builder: (context, _) {
@@ -286,18 +317,19 @@ class _CategoryListPageState extends State<CategoryListPage>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.accent.withValues(alpha: 0.4),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+                  // Toned down — heavy glow competed with the list content
+                  color: AppColors.accent.withValues(alpha: 0.25),
+                  blurRadius: 14,
+                  offset: const Offset(0, 5),
                 ),
               ],
             ),
             child: Row(
               children: [
-                _statBlock((_totalProducts * anim.value).toInt(), 'Products', Icons.inventory_2_rounded),
+                _statBlock((_totalProducts(products) * anim.value).toInt(), 'Products', Icons.inventory_2_rounded),
                 Container(
                   width: 1, height: 48,
                   margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -346,10 +378,10 @@ class _CategoryListPageState extends State<CategoryListPage>
   // ═══════════════════════════════════════════════════════════════
   //  RECENTLY USED
   // ═══════════════════════════════════════════════════════════════
-  Widget _buildRecentlyUsed(ThemeData t, List<Category> cats) {
+  Widget _buildRecentlyUsed(ThemeData t, List<Category> cats, List<Product> products) {
     if (cats.isEmpty) return const SizedBox.shrink();
-    final top = List<Category>.from(cats)..sort((a, b) => _count(b).compareTo(_count(a)));
-    final items = top.where((c) => _count(c) > 0).take(5).toList();
+    final top = List<Category>.from(cats)..sort((a, b) => _count(b, products).compareTo(_count(a, products)));
+    final items = top.where((c) => _count(c, products) > 0).take(5).toList();
     if (items.isEmpty) return const SizedBox.shrink();
 
     return Column(
@@ -373,8 +405,10 @@ class _CategoryListPageState extends State<CategoryListPage>
             ],
           ),
         ),
+        // 48px: easeOutBack overshoots ~1.1x — 42px box clipped the chips
+        // top/bottom during the entrance animation.
         SizedBox(
-          height: 42,
+          height: 48,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -382,13 +416,15 @@ class _CategoryListPageState extends State<CategoryListPage>
             separatorBuilder: (_, __) => const SizedBox(width: 10),
             itemBuilder: (context, i) {
               final cat = items[i];
-              final count = _count(cat);
+              final count = _count(cat, products);
               final color = Color(cat.colorValue);
               return TweenAnimationBuilder<double>(
                 tween: Tween(begin: 0.0, end: 1.0),
                 duration: Duration(milliseconds: 400 + i * 100),
                 curve: Curves.easeOutBack,
-                builder: (_, val, child) => Transform.scale(scale: val, child: child),
+                // Center the scaling chip so overshoot expands symmetrically
+                builder: (_, val, child) =>
+                    Transform.scale(scale: val, alignment: Alignment.center, child: child),
                 child: GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
@@ -406,7 +442,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         // ignore: non_const_argument_for_const_parameter
-                        Icon(IconData(cat.iconCodePoint, fontFamily: 'MaterialIcons'), size: 15, color: color),
+                        Icon(_categoryIcon(cat.iconCodePoint), size: 15, color: color),
                         const SizedBox(width: 6),
                         Text(cat.name, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: color)),
                         const SizedBox(width: 6),
@@ -432,147 +468,171 @@ class _CategoryListPageState extends State<CategoryListPage>
   // ═══════════════════════════════════════════════════════════════
   Widget _categoryCard(Category cat, int count, bool selected, ThemeData t) {
     final color = Color(cat.colorValue);
-    // ignore: non_const_argument_for_const_parameter
-    final icon = IconData(cat.iconCodePoint, fontFamily: 'MaterialIcons');
+    final icon = _categoryIcon(cat.iconCodePoint);
 
-    return GestureDetector(
-      onLongPress: () {
-        HapticFeedback.mediumImpact();
-        if (!_isSelectionMode) {
-          setState(() {
-            _isSelectionMode = true;
-            _selectedIds.add(cat.id);
-          });
-        }
-      },
-      onTap: () {
-        HapticFeedback.lightImpact();
-        if (_isSelectionMode) {
-          setState(() {
-            if (_selectedIds.contains(cat.id)) {
-              _selectedIds.remove(cat.id);
-              if (_selectedIds.isEmpty) _isSelectionMode = false;
-            } else {
+    // REDESIGN (ui-ux-pro-max): tap = primary action (open Products filtered
+    // by this category — previously tap was dead outside selection mode).
+    // InkWell gives proper press ripple; secondary actions moved into one
+    // overflow menu instead of two always-visible icon buttons.
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () {
+          HapticFeedback.lightImpact();
+          if (_isSelectionMode) {
+            setState(() {
+              if (_selectedIds.contains(cat.id)) {
+                _selectedIds.remove(cat.id);
+                if (_selectedIds.isEmpty) _isSelectionMode = false;
+              } else {
+                _selectedIds.add(cat.id);
+              }
+            });
+            return;
+          }
+          context.read<ProductBloc>().add(FilterByCategory(cat.id));
+          context.go('/products');
+        },
+        onLongPress: () {
+          HapticFeedback.mediumImpact();
+          if (!_isSelectionMode) {
+            setState(() {
+              _isSelectionMode = true;
               _selectedIds.add(cat.id);
-            }
-          });
-        }
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeInOut,
-        decoration: BoxDecoration(
-          color: selected ? color.withValues(alpha: 0.04) : t.colorScheme.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? color.withValues(alpha: 0.4) : t.colorScheme.outlineVariant.withValues(alpha: 0.4),
-            width: selected ? 1.5 : 1,
-          ),
-          boxShadow: [
-            BoxShadow(
+            });
+          }
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOut,
+          decoration: BoxDecoration(
+            color: selected ? color.withValues(alpha: 0.06) : t.colorScheme.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
               color: selected
-                  ? color.withValues(alpha: 0.12)
-                  : t.colorScheme.shadow.withValues(alpha: 0.04),
-              blurRadius: selected ? 16 : 8,
-              offset: const Offset(0, 4),
+                  ? color.withValues(alpha: 0.5)
+                  : t.colorScheme.outlineVariant.withValues(alpha: 0.35),
+              width: selected ? 1.5 : 1,
             ),
-          ],
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            if (_isSelectionMode) ...[
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: Icon(
-                  selected ? Icons.check_circle_rounded : Icons.circle_outlined,
-                  key: ValueKey(selected),
-                  color: selected ? color : t.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                  size: 24,
+          ),
+          padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
+          child: Row(
+            children: [
+              if (_isSelectionMode) ...[
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 160),
+                  child: Icon(
+                    selected ? Icons.check_circle_rounded : Icons.circle_outlined,
+                    key: ValueKey(selected),
+                    color: selected
+                        ? color
+                        : t.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                    size: 24,
+                  ),
                 ),
+                const SizedBox(width: 12),
+              ],
+
+              // Icon — flat tinted square (no gradient/glow: cleaner hierarchy)
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(icon, color: color, size: 24),
               ),
               const SizedBox(width: 14),
-            ],
 
-            // Icon
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.1)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 2))],
-              ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(width: 16),
-
-            // Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(cat.name,
-                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16, letterSpacing: -0.2)),
-                  if (cat.description != null && cat.description!.isNotEmpty) ...[
-                    const SizedBox(height: 3),
-                    Text(cat.description!,
+              // Info — name + single meta row (count pill + description)
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(cat.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 13, color: t.colorScheme.onSurfaceVariant)),
-                  ],
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            letterSpacing: -0.2)),
+                    const SizedBox(height: 5),
+                    Row(
                       children: [
-                        Icon(Icons.inventory_2_outlined, size: 13, color: color),
-                        const SizedBox(width: 5),
-                        Text('$count ${count == 1 ? "product" : "products"}',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: color)),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: color.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                              '$count ${count == 1 ? "product" : "products"}',
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: color)),
+                        ),
+                        if (cat.description != null &&
+                            cat.description!.isNotEmpty) ...[
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(cat.description!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: t.colorScheme.onSurfaceVariant)),
+                          ),
+                        ],
                       ],
                     ),
+                  ],
+                ),
+              ),
+
+              // Overflow menu — one secondary entry point (44px target)
+              if (!_isSelectionMode)
+                SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert_rounded,
+                        color: t.colorScheme.onSurfaceVariant, size: 22),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                    onSelected: (value) {
+                      if (value == 'edit') _openAddEditDialog(category: cat);
+                      if (value == 'delete') _confirmDelete(cat);
+                    },
+                    itemBuilder: (_) => [
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Row(children: [
+                          Icon(Icons.edit_rounded,
+                              size: 18, color: t.colorScheme.onSurfaceVariant),
+                          const SizedBox(width: 12),
+                          const Text('Edit'),
+                        ]),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(children: [
+                          Icon(Icons.delete_outline_rounded,
+                              size: 18, color: t.colorScheme.error),
+                          const SizedBox(width: 12),
+                          Text('Delete',
+                              style: TextStyle(color: t.colorScheme.error)),
+                        ]),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-
-            // Actions
-            if (!_isSelectionMode)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _iconBtn(Icons.edit_rounded, color, () => _openAddEditDialog(category: cat)),
-                  const SizedBox(width: 8),
-                  _iconBtn(Icons.delete_outline_rounded, t.colorScheme.error, () => _confirmDelete(cat)),
-                ],
-              ),
-          ],
+                ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _iconBtn(IconData icon, Color color, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Icon(icon, color: color, size: 20),
       ),
     );
   }
@@ -605,51 +665,61 @@ class _CategoryListPageState extends State<CategoryListPage>
   //  EMPTY STATES
   // ═══════════════════════════════════════════════════════════════
   Widget _buildEmptyState(ThemeData t) {
+    // Simplified: ONE subtle fade+rise (was 3 nested tweens — excessive motion)
     return Center(
       child: TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0.6, end: 1.0),
-        duration: const Duration(milliseconds: 800),
-        curve: Curves.easeOutBack,
-        builder: (_, val, child) => Transform.scale(scale: val, child: child),
+        tween: Tween(begin: 0.0, end: 1.0),
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeOutCubic,
+        builder: (_, val, child) => Opacity(
+          opacity: val,
+          child: Transform.translate(
+            offset: Offset(0, 16 * (1 - val)),
+            child: child,
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(40),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0.0, end: 1.0),
-                duration: const Duration(milliseconds: 1200),
-                curve: Curves.elasticOut,
-                builder: (_, val, child) => Transform.scale(scale: val, child: child),
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.accent.withValues(alpha: 0.12), AppColors.accent.withValues(alpha: 0.04)],
-                    ),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(Icons.category_rounded, size: 56, color: AppColors.accentText(t.brightness)),
+              Container(
+                width: 96,
+                height: 96,
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
                 ),
+                child: Icon(Icons.category_rounded,
+                    size: 44, color: AppColors.accentText(t.brightness)),
               ),
-              const SizedBox(height: 32),
-              Text('No Categories Yet', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: t.colorScheme.onSurface)),
-              const SizedBox(height: 10),
+              const SizedBox(height: 24),
+              Text('No Categories Yet',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: t.colorScheme.onSurface)),
+              const SizedBox(height: 8),
               Text('Create categories to organize\nyour products better',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 15, color: t.colorScheme.onSurfaceVariant, height: 1.5)),
-              const SizedBox(height: 32),
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: t.colorScheme.onSurfaceVariant,
+                      height: 1.5)),
+              const SizedBox(height: 28),
               ElevatedButton.icon(
                 onPressed: () => _openAddEditDialog(),
                 icon: const Icon(Icons.add_rounded, size: 20),
-                label: const Text('Create First Category', style: TextStyle(fontWeight: FontWeight.w600)),
+                label: const Text('Create First Category',
+                    style: TextStyle(fontWeight: FontWeight.w600)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.accent,
                   foregroundColor: AppColors.onAccent,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
                 ),
               ),
             ],
@@ -678,10 +748,10 @@ class _CategoryListPageState extends State<CategoryListPage>
   // ═══════════════════════════════════════════════════════════════
   void _confirmDelete(Category cat) {
     final t = Theme.of(context);
-    final count = _count(cat);
+    // read (not watch) — ye method build ke bahar chalta hai.
+    final count = _count(cat, context.read<ProductBloc>().state.products);
     final color = Color(cat.colorValue);
-    // ignore: non_const_argument_for_const_parameter
-    final icon = IconData(cat.iconCodePoint, fontFamily: 'MaterialIcons');
+    final icon = _categoryIcon(cat.iconCodePoint);
 
     showDialog(
       context: context,
@@ -771,7 +841,7 @@ class _CategoryListPageState extends State<CategoryListPage>
   }
 
   Future<bool?> _confirmSwipeDelete(Category cat) async {
-    final count = _count(cat);
+    final count = _count(cat, context.read<ProductBloc>().state.products);
     return showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -810,10 +880,8 @@ class _CategoryListPageState extends State<CategoryListPage>
     );
 
     if (confirmed == true && mounted) {
-      final bloc = context.read<CategoryBloc>();
-      for (final id in _selectedIds) {
-        bloc.add(DeleteCategory(id));
-      }
+      // ONE bulk event — N separate events meant N reloads + N snackbars
+      context.read<CategoryBloc>().add(DeleteCategoriesBulk(_selectedIds.toList()));
       setState(() {
         _isSelectionMode = false;
         _selectedIds.clear();

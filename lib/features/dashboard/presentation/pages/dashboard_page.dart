@@ -6,7 +6,6 @@ import 'package:billing_app/core/theme/text_styles.dart';
 import 'package:billing_app/core/widgets/dashboard_action_card.dart';
 import 'package:billing_app/core/widgets/inventory_health_card.dart';
 import 'package:billing_app/core/widgets/recent_transactions_card.dart';
-import 'package:billing_app/core/widgets/sales_trend_card.dart';
 import 'package:billing_app/core/widgets/payment_donut_chart.dart';
 import 'package:billing_app/core/widgets/top_products_bar_chart.dart';
 import 'package:billing_app/core/widgets/monthly_trend_card.dart';
@@ -28,8 +27,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 /// App home — a liquid glass dashboard with greeting, today's sales,
-/// weekly trends, recent transactions, inventory health, quick actions
-/// and a low-stock alert.
+/// recent transactions, inventory health, quick actions and a low-stock
+/// alert. First run (no bills yet) shows an onboarding card in place of
+/// bill-derived analytics.
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
@@ -55,7 +55,7 @@ class _DashboardViewState extends State<_DashboardView> {
     context.read<ReportBloc>()
       ..add(LoadDailySales(now))
       ..add(const LoadLowStockProducts(DashboardPage._lowStockThreshold))
-      ..add(LoadBillHistory(from: weekAgo, to: now, page: 1))
+      ..add(LoadBillHistory(from: weekAgo, to: now, page: 1, limit: 200))
       ..add(LoadSalesRange(from: DateTime(now.year, now.month, 1), to: now));
   }
 
@@ -67,6 +67,7 @@ class _DashboardViewState extends State<_DashboardView> {
 
   @override
   Widget build(BuildContext context) {
+    final sections = _buildSections(context);
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, dynamic result) {
@@ -76,170 +77,184 @@ class _DashboardViewState extends State<_DashboardView> {
         SystemNavigator.pop();
       },
       child: Scaffold(
-      body: Container(
-        // ignore: prefer_const_constructors
-        decoration: BoxDecoration(
-          gradient: AppTheme.gradientFor(context),
-        ),
-        child: SafeArea(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              _loadDashboardData();
-              await Future<void>.delayed(const Duration(milliseconds: 600));
-            },
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                // ── AppBar ──
-                SliverAppBar(
-                  floating: true,
-                  snap: true,
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  leading: const AdaptiveAppBarLeading(),
-                  title: Text(
-                    'Dashboard',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.w700,
+        body: Container(
+          // ignore: prefer_const_constructors
+          decoration: BoxDecoration(
+            gradient: AppTheme.gradientFor(context),
+          ),
+          child: SafeArea(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                _loadDashboardData();
+                await Future<void>.delayed(const Duration(milliseconds: 600));
+              },
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  // ── AppBar ──
+                  SliverAppBar(
+                    floating: true,
+                    snap: true,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    leading: const AdaptiveAppBarLeading(),
+                    title: Text(
+                      'Dashboard',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    actions: [
+                      IconButton(
+                        onPressed: () => _showProductSearch(context),
+                        icon: Icon(
+                          Icons.search_rounded,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        tooltip: 'Search products',
+                      ),
+                    ],
+                  ),
+
+                  // ── Content ──
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 96),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        // Lazy build — each section mounts only when scrolled
+                        // near; RepaintBoundary isolates glass card repaints.
+                        (context, index) => RepaintBoundary(
+                          child: sections[index],
+                        ),
+                        childCount: sections.length,
+                      ),
                     ),
                   ),
-                  actions: [
-                    IconButton(
-                      onPressed: () => _showProductSearch(context),
-                      icon: Icon(
-                        Icons.search_rounded,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                      tooltip: 'Search products',
-                    ),
-                  ],
-                ),
-
-                // ── Content ──
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 96),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      // Wrap entire scrollable content in RepaintBoundary
-                      // so glassmorphism cards don't repaint the whole list
-                      RepaintBoundary(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                      // Compact greeting header
-                      StaggeredFade(
-                        index: 0,
-                        child: BlocBuilder<AuthBloc, AuthState>(
-                          buildWhen: (previous, current) {
-                            if (previous is! Authenticated || current is! Authenticated) return true;
-                            return previous.user.name != current.user.name;
-                          },
-                          builder: (context, state) {
-                            final name = state is Authenticated ? state.user.name : '';
-                            return _CompactHeader(userName: name);
-                          },
-                        ),
-                      ),
-                      SizedBox(height: AppSpacing.lg),
-
-                      // Low stock banner
-                      const StaggeredFade(
-                        index: 1,
-                        child: _LowStockBanner(),
-                      ),
-                      SizedBox(height: AppSpacing.lg),
-
-                      // ── Hero: Today's Sales ──
-                      const StaggeredFade(
-                        index: 2,
-                        child: PressScale(child: _HeroSalesCard()),
-                      ),
-                      SizedBox(height: AppSpacing.lg),
-
-                      // ── Primary action ──
-                      const StaggeredFade(
-                        index: 3,
-                        child: PressScale(child: _NewBillButton()),
-                      ),
-                      SizedBox(height: AppSpacing.xl),
-
-                      // ── Quick Actions ──
-                      StaggeredFade(index: 4, child: _sectionTitle('Quick Actions')),
-                      SizedBox(height: AppSpacing.md),
-                      StaggeredFade(
-                        index: 5,
-                        child: BlocBuilder<AuthBloc, AuthState>(
-                          buildWhen: (previous, current) {
-                            if (previous is! Authenticated || current is! Authenticated) return true;
-                            return previous.user.role != current.user.role;
-                          },
-                          builder: (context, state) => _buildQuickTiles(context, state),
-                        ),
-                      ),
-                      SizedBox(height: AppSpacing.xl),
-
-                      // ── Weekly Trend ──
-                      StaggeredFade(index: 6, child: _sectionTitle('This Week')),
-                      SizedBox(height: AppSpacing.md),
-                      const StaggeredFade(index: 7, child: _WeeklyTrend()),
-                      SizedBox(height: AppSpacing.xl),
-
-                      // ── Recent Transactions ──
-                      const StaggeredFade(
-                        index: 8,
-                        child: _RecentTransactions(),
-                      ),
-                      SizedBox(height: AppSpacing.xl),
-
-                      // ── Payment Methods Donut ──
-                      const StaggeredFade(
-                        index: 9,
-                        child: _PaymentMethodsSection(),
-                      ),
-                      SizedBox(height: AppSpacing.xl),
-
-                      // ── Top Products Bar Chart ──
-                      const StaggeredFade(
-                        index: 10,
-                        child: _TopProductsSection(),
-                      ),
-                      SizedBox(height: AppSpacing.xl),
-
-                      // ── Monthly / 30-Day Trend ──
-                      const StaggeredFade(
-                        index: 11,
-                        child: _MonthlyTrendSection(),
-                      ),
-                      SizedBox(height: AppSpacing.xl),
-
-                      // ── Inventory Health ──
-                      const StaggeredFade(
-                        index: 12,
-                        child: _InventoryHealth(),
-                      ),
-                      SizedBox(height: AppSpacing.xl),
-
-                      // ── Staff Performance ──
-                      const StaggeredFade(
-                        index: 13,
-                        child: _StaffPerformanceSection(),
-                      ),
-                      SizedBox(height: AppSpacing.lg),
-                    ], // Column children
-                  ), // Column
-                ), // RepaintBoundary
-              ], // SliverList delegate
-            ),
-          ), // SliverPadding
-        ),
-      ], // slivers
-    ), // CustomScrollView
-  ), // RefreshIndicator
-), // SafeArea
-), // Container
-), // Scaffold
+                ], // slivers
+              ), // CustomScrollView
+            ), // RefreshIndicator
+          ), // SafeArea
+        ), // Container
+      ), // Scaffold
     ); // PopScope
+  }
+
+  /// Top-level dashboard sections, built per frame but mounted lazily by
+  /// the [SliverChildBuilderDelegate] above.
+  List<Widget> _buildSections(BuildContext context) {
+    return [
+      // Compact greeting header
+      StaggeredFade(
+        index: 0,
+        child: BlocBuilder<AuthBloc, AuthState>(
+          buildWhen: (previous, current) {
+            if (previous is! Authenticated || current is! Authenticated) return true;
+            return previous.user.name != current.user.name;
+          },
+          builder: (context, state) {
+            final name = state is Authenticated ? state.user.name : '';
+            return _CompactHeader(userName: name);
+          },
+        ),
+      ),
+      SizedBox(height: AppSpacing.lg),
+
+      // Low stock banner
+      const StaggeredFade(
+        index: 1,
+        child: _LowStockBanner(),
+      ),
+      SizedBox(height: AppSpacing.lg),
+
+      // ── Hero: Today's Sales ──
+      const StaggeredFade(
+        index: 2,
+        child: PressScale(child: _HeroSalesCard()),
+      ),
+      SizedBox(height: AppSpacing.lg),
+
+      // ── Primary action ──
+      const StaggeredFade(
+        index: 3,
+        child: PressScale(child: _NewBillButton()),
+      ),
+      SizedBox(height: AppSpacing.xl),
+
+      // ── Quick Actions ──
+      StaggeredFade(index: 4, child: _sectionTitle('Quick Actions')),
+      SizedBox(height: AppSpacing.md),
+      StaggeredFade(
+        index: 5,
+        child: BlocBuilder<AuthBloc, AuthState>(
+          buildWhen: (previous, current) {
+            if (previous is! Authenticated || current is! Authenticated) return true;
+            return previous.user.role != current.user.role;
+          },
+          builder: (context, state) => _buildQuickTiles(context, state),
+        ),
+      ),
+      SizedBox(height: AppSpacing.xl),
+
+      // ── Insights: first-run onboarding OR bill analytics ──
+      _buildInsightsSection(),
+    ];
+  }
+
+  /// Bill-derived analytics (Recent Transactions, Payment Donut, Top
+  /// Products, Monthly Trend, Staff Performance). Until the very first bill
+  /// exists (loaded + empty history) they're replaced by a first-run
+  /// onboarding card. Inventory Health always renders — products are
+  /// independent of bills.
+  Widget _buildInsightsSection() {
+    return BlocBuilder<ReportBloc, ReportState>(
+      buildWhen: (previous, current) =>
+          previous.status != current.status ||
+          previous.billHistory != current.billHistory,
+      builder: (context, state) {
+        final showEmpty = state.status == ReportStatus.loaded &&
+            state.billHistory.isEmpty;
+        if (showEmpty) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              StaggeredFade(index: 6, child: _FirstRunCard()),
+              SizedBox(height: AppSpacing.xl),
+              StaggeredFade(index: 7, child: _InventoryHealth()),
+              SizedBox(height: AppSpacing.lg),
+            ],
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            // ── Recent Transactions ──
+            StaggeredFade(index: 6, child: _RecentTransactions()),
+            SizedBox(height: AppSpacing.xl),
+
+            // ── Payment Methods Donut ──
+            StaggeredFade(index: 7, child: _PaymentMethodsSection()),
+            SizedBox(height: AppSpacing.xl),
+
+            // ── Top Products Bar Chart ──
+            StaggeredFade(index: 8, child: _TopProductsSection()),
+            SizedBox(height: AppSpacing.xl),
+
+            // ── Monthly / 30-Day Trend ──
+            StaggeredFade(index: 9, child: _MonthlyTrendSection()),
+            SizedBox(height: AppSpacing.xl),
+
+            // ── Inventory Health ──
+            StaggeredFade(index: 10, child: _InventoryHealth()),
+            SizedBox(height: AppSpacing.xl),
+
+            // ── Staff Performance ──
+            StaggeredFade(index: 11, child: _StaffPerformanceSection()),
+            SizedBox(height: AppSpacing.lg),
+          ],
+        );
+      },
+    );
   }
 
   void _showProductSearch(BuildContext context) {
@@ -394,8 +409,8 @@ class _HeroSalesCard extends StatelessWidget {
     decimalDigits: 0,
   );
 
-  /// 7-day totals (oldest → today) from billHistory — same single-pass
-  /// grouping as _WeeklyTrend. Powers the hero sparkline + delta pill.
+  /// 7-day totals (oldest → today) from billHistory — single-pass
+  /// day grouping. Powers the hero sparkline + delta pill.
   static List<double> _weekValues(List<dynamic> bills) {
     final now = DateTime.now();
     final Map<int, double> dayTotals = {};
@@ -746,42 +761,88 @@ class _NewBillButton extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// Weekly Trend — 7-day sales trend from billHistory
+// First-run onboarding card — replaces the bill-derived analytics sections
+// until the shop's first bill exists. Inventory Health still renders.
 // ═══════════════════════════════════════════════════════════════════════
 
-class _WeeklyTrend extends StatelessWidget {
-  const _WeeklyTrend();
+class _FirstRunCard extends StatelessWidget {
+  const _FirstRunCard();
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ReportBloc, ReportState>(
-      buildWhen: (a, b) => a.billHistory != b.billHistory,
-      builder: (context, state) {
-        final now = DateTime.now();
-        final values = <double>[];
-        final labels = <String>[];
-
-        // Single-pass pre-grouping instead of O(n×7) nested loop
-        final Map<int, double> dayTotals = {};
-        for (int i = 6; i >= 0; i--) {
-          dayTotals[i] = 0.0;
-        }
-        for (final bill in state.billHistory) {
-          final diff = DateTime(now.year, now.month, now.day)
-              .difference(DateTime(bill.createdAt.year, bill.createdAt.month, bill.createdAt.day))
-              .inDays;
-          if (diff >= 0 && diff <= 6) {
-            dayTotals[6 - diff] = (dayTotals[6 - diff] ?? 0) + bill.grandTotal;
-          }
-        }
-        for (int i = 6; i >= 0; i--) {
-          final day = DateTime(now.year, now.month, now.day - i);
-          values.add(dayTotals[i] ?? 0);
-          labels.add(DateFormat('EEE').format(day));
-        }
-
-        return SalesTrendCard(values: values, labels: labels);
-      },
+    final b = Theme.of(context).brightness;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surface(b),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.border(b)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.accentSubtle,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(
+              Icons.receipt_long_rounded,
+              size: 26,
+              color: AppColors.accentText(b),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Chalo shuru karein',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary(b),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Apna pehla bill banakar sales tracking start karo',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              height: 1.4,
+              color: AppColors.textTertiary(b),
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                context.go('/scan');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.accent,
+                foregroundColor: AppColors.onAccent,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              icon: const Icon(Icons.qr_code_scanner_rounded, size: 20),
+              label: const Text(
+                'Create First Bill',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.1,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

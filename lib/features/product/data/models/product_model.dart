@@ -122,10 +122,11 @@ class ProductModel extends Product {
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     return ProductModel(
       id: json['id'] as String,
-      name: json['name'] as String,
-      barcode: json['barcode'] as String,
+      name: json['name'] as String? ?? '',
+      // Defensive — legacy rows may have null barcode.
+      barcode: json['barcode'] as String? ?? '',
       price: (json['price'] as num).toDouble(),
-      stock: json['stock'] as int? ?? 0,
+      stock: (json['stock'] as num?)?.toInt() ?? 0,
       categoryId: json['category_id'] as String?,
       location: json['location'] as String?,
       description: json['description'] as String?,
@@ -138,9 +139,9 @@ class ProductModel extends Product {
           ? DateTime.parse(json['updated_at'] as String)
           : null,
       warrantyType: json['warranty_type'] as String? ?? 'none',
-      warrantyDuration: json['warranty_duration'] as int?,
+      warrantyDuration: (json['warranty_duration'] as num?)?.toInt(),
       warrantyUnit: json['warranty_unit'] as String?,
-      minStockLevel: json['min_stock_level'] as int? ?? 5,
+      minStockLevel: (json['min_stock_level'] as num?)?.toInt() ?? 5,
       unit: json['unit'] as String? ?? 'pcs',
     );
   }

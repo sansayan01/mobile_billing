@@ -53,6 +53,7 @@ class BillSummaryModel extends BillSummary {
     super.paymentMethod,
     required super.createdAt,
     super.items,
+    super.customerId,
     super.customerName,
     super.customerPhone,
     super.amountPaid,
@@ -69,13 +70,14 @@ class BillSummaryModel extends BillSummary {
       discount: (json['discount'] as num?)?.toDouble() ?? 0.0,
       grandTotal: (json['grand_total'] as num?)?.toDouble() ?? 0.0,
       paymentMethod: json['payment_method'] as String? ?? 'Unknown',
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
       items: (json['items'] as List<dynamic>?)
               ?.map((e) => BillItemModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       customerName: json['customer_name'] as String?,
       customerPhone: json['customer_phone'] as String?,
+      customerId: json['customer_id'] as String?,
       amountPaid: (json['amount_paid'] as num?)?.toDouble() ?? 0.0,
       dueAmount: (json['due_amount'] as num?)?.toDouble() ?? 0.0,
       paymentStatus: json['payment_status'] as String? ?? 'paid',
@@ -95,6 +97,7 @@ class BillSummaryModel extends BillSummary {
       'items': items.map((e) => (e as BillItemModel).toJson()).toList(),
       'customer_name': customerName,
       'customer_phone': customerPhone,
+      'customer_id': customerId,
       'amount_paid': amountPaid,
       'due_amount': dueAmount,
       'payment_status': paymentStatus,
@@ -125,10 +128,11 @@ class BillSummaryModel extends BillSummary {
       discount: (row['discount'] as num?)?.toDouble() ?? 0.0,
       grandTotal: (row['grand_total'] as num?)?.toDouble() ?? 0.0,
       paymentMethod: row['payment_method'] as String? ?? 'Unknown',
-      createdAt: DateTime.parse(row['created_at'] as String),
+      createdAt: DateTime.parse(row['created_at'] as String).toLocal(),
       items: items,
       customerName: row['customer_name'] as String?,
       customerPhone: row['customer_phone'] as String?,
+      customerId: row['customer_id'] as String?,
       amountPaid: (row['amount_paid'] as num?)?.toDouble() ?? 0.0,
       dueAmount: (row['due_amount'] as num?)?.toDouble() ?? 0.0,
       paymentStatus: row['payment_status'] as String? ?? 'paid',
@@ -185,7 +189,7 @@ class StockMovementModel extends StockMovement {
       quantity: json['quantity'] as int,
       staffName: json['staff_name'] as String,
       notes: json['notes'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
     );
   }
 
@@ -203,7 +207,7 @@ class StockMovementModel extends StockMovement {
       quantity: row['quantity'] as int,
       staffName: staffName,
       notes: row['notes'] as String?,
-      createdAt: DateTime.parse(row['created_at'] as String),
+      createdAt: DateTime.parse(row['created_at'] as String).toLocal(),
     );
   }
 }

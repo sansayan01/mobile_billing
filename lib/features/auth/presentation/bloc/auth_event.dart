@@ -27,6 +27,7 @@ class SignUpRequested extends AuthEvent {
   final String role; // 'owner' (default) | 'staff' | 'super_admin' (manual only)
   final String? shopName; // owner signup ke liye shop ka naam
   final String? shopId; // owner staff create kare toh apni shop_id pass kare
+  final String? phone; // staff ke liye optional contact number
 
   const SignUpRequested({
     required this.email,
@@ -35,14 +36,12 @@ class SignUpRequested extends AuthEvent {
     this.role = 'owner',
     this.shopName,
     this.shopId,
+    this.phone,
   });
 
   @override
-  List<Object?> get props => [email, password, name, role, shopName, shopId];
-}
-
-class GoogleLoginRequested extends AuthEvent {
-  const GoogleLoginRequested();
+  List<Object?> get props =>
+      [email, password, name, role, shopName, shopId, phone];
 }
 
 class LogoutRequested extends AuthEvent {

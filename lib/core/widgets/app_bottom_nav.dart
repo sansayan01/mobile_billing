@@ -113,7 +113,7 @@ class AppBottomNav extends StatelessWidget {
                       child: const Icon(
                         Icons.add_rounded,
                         size: 28,
-                        color: Colors.white,
+                        color: AppColors.onAccent,
                       ),
                     ),
                   ),

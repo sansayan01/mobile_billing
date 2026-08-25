@@ -82,8 +82,9 @@ class AuditRepositoryImpl implements AuditRepository {
       if (entityType != null) query = query.eq('entity_type', entityType);
       if (action != null) query = query.eq('action', action);
       if (performedBy != null) query = query.eq('performed_by', performedBy);
-      if (from != null) query = query.gte('created_at', from.toIso8601String());
-      if (to != null) query = query.lte('created_at', to.toIso8601String());
+      // toUtc() — bare local ISO strings are read as UTC by Postgres (IST shift)
+      if (from != null) query = query.gte('created_at', from.toUtc().toIso8601String());
+      if (to != null) query = query.lte('created_at', to.toUtc().toIso8601String());
       if (searchQuery != null && searchQuery.isNotEmpty) {
         query = query.or(
           'description.ilike.%$searchQuery%,entity_name.ilike.%$searchQuery%,staff_name.ilike.%$searchQuery%',

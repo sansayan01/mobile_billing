@@ -80,7 +80,7 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
         child: child!,
       ),
     );
-    if (picked != null) setState(() => _fromDate = picked);
+    if (picked != null && mounted) setState(() => _fromDate = picked);
   }
 
   Future<void> _pickToDate() async {
@@ -96,7 +96,7 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
         child: child!,
       ),
     );
-    if (picked != null) setState(() => _toDate = picked);
+    if (picked != null && mounted) setState(() => _toDate = picked);
   }
 
   Color _changeColor(String type, ThemeData t) {

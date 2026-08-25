@@ -22,6 +22,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
   String _selectedStatus = '';
   String _selectedType = '';
   bool _isFetchingBill = false;
+  bool _claimDialogOpen = false;
 
   @override
   void initState() {
@@ -135,7 +136,17 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
           ),
         ],
       ),
-      body: Stack(
+      body: BlocListener<WarrantyBloc, WarrantyState>(
+        // Page-level feedback for load/update errors. Claim-submit errors are
+        // handled inside the claim dialog (it stays open for retry), so skip
+        // them here to avoid double snackbars.
+        listener: (context, state) {
+          if (state.error != null && !_claimDialogOpen && mounted) {
+            AppFeedback.error(context, state.error!);
+            context.read<WarrantyBloc>().add(const ClearWarrantyFeedback());
+          }
+        },
+        child: Stack(
         children: [
           Column(
             children: [
@@ -187,7 +198,10 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                   );
                 }
 
-                if (state.error != null) {
+                // Full-screen error only when there is nothing to show yet
+                // (first load). Later failures (submit/update) surface as
+                // snackbars/dialogs instead of wiping the list.
+                if (state.error != null && state.claims.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -269,6 +283,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
           ],
         ),
       ],
+    ),
     ),
     ),
     );
@@ -507,7 +522,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                               label: const Text('Approve'),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.successText(theme.brightness),
-                                foregroundColor: Colors.white,
+                                foregroundColor: theme.brightness == Brightness.dark ? AppColors.onAccent : Colors.white,
                                 padding: const EdgeInsets.symmetric(vertical: 12),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
@@ -548,7 +563,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                           label: const Text('Mark Resolved'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.infoText(theme.brightness),
-                            foregroundColor: Colors.white,
+                            foregroundColor: theme.brightness == Brightness.dark ? AppColors.onAccent : Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           ),
@@ -604,6 +619,15 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
     }
     String claimType = selectedItem.warrantyType ?? 'warranty';
     final reasonController = TextEditingController();
+    // Capture the bloc BEFORE showDialog: dialog routes don't inherit
+    // providers from this page's subtree.
+    final warrantyBloc = context.read<WarrantyBloc>();
+    bool isSubmitting = false;
+    // Sanitize any stale one-shot flags so an old submitSuccess can never
+    // insta-pop this dialog, and mark it open (page listener skips errors
+    // while the dialog owns feedback).
+    warrantyBloc.add(const ClearWarrantyFeedback());
+    _claimDialogOpen = true;
 
     showDialog(
       context: context,
@@ -613,7 +637,28 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
             final endDate = _warrantyEndDate(selectedItem, bill.createdAt);
             final isExpired = endDate != null && endDate.isBefore(DateTime.now());
 
-            return AlertDialog(
+            return BlocListener<WarrantyBloc, WarrantyState>(
+              bloc: warrantyBloc,
+              listener: (bCtx, state) {
+                if (state.isSubmitting != isSubmitting) {
+                  setDialogState(() => isSubmitting = state.isSubmitting);
+                }
+                if (state.submitSuccess && isSubmitting == false) {
+                  _claimDialogOpen = false;
+                  Navigator.of(ctx).pop(); // close only AFTER success state
+                  if (mounted) {
+                    AppFeedback.success(
+                      context,
+                      'Warranty claim submitted successfully',
+                    );
+                  }
+                  warrantyBloc.add(const ClearWarrantyFeedback());
+                } else if (state.error != null && !state.isSubmitting) {
+                  AppFeedback.error(ctx, state.error!);
+                  warrantyBloc.add(const ClearWarrantyFeedback());
+                }
+              },
+              child: AlertDialog(
               title: const Row(
                 children: [
                   Icon(Icons.qr_code_2_rounded, size: 20),
@@ -728,36 +773,47 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    if (reasonController.text.trim().isEmpty) {
-                      _showErrorSnack('Please enter a claim reason');
-                      return;
-                    }
-                    context.read<WarrantyBloc>().add(CreateWarrantyClaim(
-                          billId: bill.id,
-                          productId: selectedItem.productId,
-                          productName: selectedItem.productName,
-                          customerName: bill.customerName,
-                          customerPhone: bill.customerPhone,
-                          claimReason: reasonController.text.trim(),
-                          claimType: claimType,
-                          warrantyDuration: selectedItem.warrantyDuration,
-                          warrantyUnit: selectedItem.warrantyUnit,
-                        ));
-                    Navigator.pop(ctx);
-                    AppFeedback.success(
-                      context,
-                      'Warranty claim submitted successfully',
-                    );
-                  },
-                  child: const Text('Submit'),
+                  // NOTE: pop + success snackbar are NOT done here anymore.
+                  // They happen in the BlocListener above, only AFTER the
+                  // bloc reports submitSuccess (premature-success fix).
+                  onPressed: isSubmitting
+                      ? null
+                      : () {
+                          if (reasonController.text.trim().isEmpty) {
+                            _showErrorSnack('Please enter a claim reason');
+                            return;
+                          }
+                          warrantyBloc.add(CreateWarrantyClaim(
+                                billId: bill.id,
+                                productId: selectedItem.productId,
+                                productName: selectedItem.productName,
+                                customerId: bill.customerId,
+                                customerName: bill.customerName,
+                                customerPhone: bill.customerPhone,
+                                claimReason: reasonController.text.trim(),
+                                claimType: claimType,
+                                warrantyDuration: selectedItem.warrantyDuration,
+                                warrantyUnit: selectedItem.warrantyUnit,
+                              ));
+                        },
+                  child: isSubmitting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Submit'),
                 ),
               ],
+              ),
             );
           },
         );
       },
-    );
+    ).whenComplete(() {
+      _claimDialogOpen = false;
+      reasonController.dispose();
+    });
   }
 
 }

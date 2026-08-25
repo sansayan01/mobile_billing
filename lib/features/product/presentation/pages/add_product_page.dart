@@ -16,6 +16,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_validators.dart';
 import '../../../../core/utils/image_compress.dart';
 import '../../../../core/utils/image_upload_service.dart';
+import '../../../../core/widgets/app_feedback.dart';
 
 class AddProductPage extends StatefulWidget {
   const AddProductPage({super.key});
@@ -53,6 +54,7 @@ class _AddProductPageState extends State<AddProductPage> {
 
   void _scanBarcode() async {
     final result = await context.push<String>('/scan/scanner');
+    if (!mounted) return;
     if (result != null && result.isNotEmpty) {
       _barcodeController.text = result;
       _checkDuplicate(result);
@@ -193,8 +195,7 @@ class _AddProductPageState extends State<AddProductPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        return StatefulBuilder(
+      builder: (ctx) {        return StatefulBuilder(
           builder: (ctx, setModalState) {
             final queryLocal = searchController.text;
             final filtered = queryLocal.isEmpty
@@ -307,9 +308,9 @@ class _AddProductPageState extends State<AddProductPage> {
                                     ],
                                   ),
                                 ),
-                              );
-                            },
-                          ),
+              );
+            },
+          ),
                   ),
                 ],
               ),
@@ -317,7 +318,7 @@ class _AddProductPageState extends State<AddProductPage> {
           },
         );
       },
-    );
+    ).whenComplete(() => searchController.dispose());
 
     if (mounted) {
       setState(() {
@@ -337,6 +338,7 @@ class _AddProductPageState extends State<AddProductPage> {
         maxHeight: 1200,
         imageQuality: 100, // Original quality, we'll compress later
       );
+      if (!mounted) return;
 
       if (pickedFile != null) {
         setState(() {
@@ -347,6 +349,7 @@ class _AddProductPageState extends State<AddProductPage> {
         // Compress the image
         final compressedPath = await ImageCompress.compressImage(pickedFile.path);
         final compressedSize = await ImageCompress.getCompressedSizeKB(compressedPath);
+        if (!mounted) return;
 
         setState(() {
           _imageFile = File(compressedPath);
@@ -364,11 +367,12 @@ class _AddProductPageState extends State<AddProductPage> {
         }
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isUploading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to pick image: $e'),
+            content: const Text('Failed to pick image. Please try again.'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -399,8 +403,16 @@ class _AddProductPageState extends State<AddProductPage> {
 
       // Upload image to Supabase Storage if picked
       String? uploadedImageUrl = _imageUrl.isNotEmpty ? _imageUrl : null;
+      final fallbackImageUrl = uploadedImageUrl;
       if (_imageFile != null) {
         uploadedImageUrl = await ImageUploadService.uploadProductImage(_imageFile!, productId);
+        if (!mounted) return;
+        if (uploadedImageUrl == null || uploadedImageUrl.isEmpty) {
+          // Upload failed — inform but DON'T block the save; keep previous URL.
+          AppFeedback.error(context,
+              'Image upload failed — saving product without new image');
+          uploadedImageUrl = fallbackImageUrl;
+        }
       }
 
       if (!mounted) return;
@@ -555,7 +567,8 @@ class _AddProductPageState extends State<AddProductPage> {
                           ),
                           validator:
                               AppValidators.required('Please enter a barcode'),
-                          onChanged: (val) => _checkDuplicate(val),
+                          // Duplicate check only on scan/submit — not every
+                          // keystroke (dialog spam on typing).
                         ),
                       ),
                       const SizedBox(width: 12),

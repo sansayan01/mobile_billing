@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../../shop/presentation/bloc/shop_bloc.dart';
 import '../../../product/domain/entities/product.dart';
@@ -84,7 +83,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 context.read<BillingBloc>().add(ClearCartEvent());
 
                 // Navigate to receipt preview
-                final billId = state.lastBillId ?? const Uuid().v4();
+                final billId = state.lastBillId;
                 final shopState = context.read<ShopBloc>().state;
                 if (shopState is ShopLoaded) {
                   final paid = state.amountPaid ?? state.totalAmount;
@@ -106,6 +105,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     'amountPaid': paid,
                     'dueAmount': due > 0 ? due : null,
                   });
+                } else {
+                  // Shop/profile not loaded — bill is saved, just confirm.
+                  AppFeedback.info(context, 'Bill saved');
                 }
               }
               if (state.error != null) {
@@ -496,13 +498,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                         HapticFeedback.lightImpact();
                                                         context.read<BillingBloc>().add(UpdateQuantityEvent(item.product.id, item.quantity - 1));
                                                       },
-                                                      child: Container(
-                                                        width: 26, height: 26,
-                                                        decoration: BoxDecoration(
-                                                          color: Theme.of(context).colorScheme.primaryContainer,
-                                                          borderRadius: BorderRadius.circular(6),
+                                                      child: SizedBox(
+                                                        width: 44, height: 44,
+                                                        child: Center(
+                                                          child: Container(
+                                                            width: 26, height: 26,
+                                                            decoration: BoxDecoration(
+                                                              color: Theme.of(context).colorScheme.primaryContainer,
+                                                              borderRadius: BorderRadius.circular(8),
+                                                            ),
+                                                            child: Icon(Icons.remove, size: 14, color: Theme.of(context).colorScheme.primary),
+                                                          ),
                                                         ),
-                                                        child: Icon(Icons.remove, size: 14, color: Theme.of(context).colorScheme.primary),
                                                       ),
                                                     ),
                                                     Padding(
@@ -514,13 +521,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                         HapticFeedback.lightImpact();
                                                         context.read<BillingBloc>().add(UpdateQuantityEvent(item.product.id, item.quantity + 1));
                                                       },
-                                                      child: Container(
-                                                        width: 26, height: 26,
-                                                        decoration: BoxDecoration(
-                                                          color: Theme.of(context).colorScheme.primaryContainer,
-                                                          borderRadius: BorderRadius.circular(6),
+                                                      child: SizedBox(
+                                                        width: 44, height: 44,
+                                                        child: Center(
+                                                          child: Container(
+                                                            width: 26, height: 26,
+                                                            decoration: BoxDecoration(
+                                                              color: Theme.of(context).colorScheme.primaryContainer,
+                                                              borderRadius: BorderRadius.circular(8),
+                                                            ),
+                                                            child: Icon(Icons.add, size: 14, color: Theme.of(context).colorScheme.primary),
+                                                          ),
                                                         ),
-                                                        child: Icon(Icons.add, size: 14, color: Theme.of(context).colorScheme.primary),
                                                       ),
                                                     ),
                                                   ],
@@ -529,14 +541,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                 // Price (editable)
                                                 InkWell(
                                                   onTap: () => _showEditPriceDialog(context, item),
-                                                  borderRadius: BorderRadius.circular(6),
+                                                  borderRadius: BorderRadius.circular(8),
                                                   child: Container(
                                                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                                     decoration: BoxDecoration(
                                                       color: item.customPrice != null
                                                           ? Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.5)
                                                           : Colors.transparent,
-                                                      borderRadius: BorderRadius.circular(6),
+                                                      borderRadius: BorderRadius.circular(8),
                                                     ),
                                                     child: Row(
                                                       mainAxisSize: MainAxisSize.min,
@@ -641,7 +653,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                                                 decoration: BoxDecoration(
                                                   color: billingState.discountIsPercentage ? Theme.of(context).colorScheme.primaryContainer : Theme.of(context).colorScheme.surfaceContainerHighest,
-                                                  borderRadius: BorderRadius.circular(6),
+                                                  borderRadius: BorderRadius.circular(8),
                                                 ),
                                                 child: Text(
                                                   billingState.discountIsPercentage ? '%' : '₹',
@@ -709,7 +721,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                                                 decoration: BoxDecoration(
                                                   color: Theme.of(context).colorScheme.primaryContainer,
-                                                  borderRadius: BorderRadius.circular(6),
+                                                  borderRadius: BorderRadius.circular(8),
                                                 ),
                                                 child: Text('Full', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.primary)),
                                               ),
@@ -722,7 +734,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 120), // padding for bottom fixed bar
+                            const SizedBox(height: 170), // padding for bottom fixed bar (+ SafeArea nav/inset clearance)
 
                             // Show warning when UPI is selected but no UPI ID configured
                             if (billingState.paymentMethod == 'upi' && upiId.isEmpty)
@@ -749,8 +761,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                     ),
 
-                    // Bottom Bar
-                    Container(
+                    // Bottom Bar — SafeArea(top:false) lifts it ABOVE whatever sits
+                    // at the screen bottom: floating nav height (extendBody injects it
+                    // as bottom padding when nav is visible) or just the gesture-bar
+                    // inset when nav is hidden (fullscreen route). Fixes nav overlap.
+                    SafeArea(
+                      top: false,
+                      child: Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
@@ -901,7 +918,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           ),
                           // Save Bill Button (full width)
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                            padding: const EdgeInsets.fromLTRB(
+                              16,
+                              0,
+                              16,
+                              16,
+                            ),
                             child: SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
@@ -942,6 +964,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             ),
                           ),
                         ],
+                      ),
                       ),
                     ),
                   ],
@@ -1026,7 +1049,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
     bool isLoading = true;
 
     fetchProducts() async {
-      final shopId = (context.read<AuthBloc>().state as Authenticated?)?.user.shopId;
+      final authState = context.read<AuthBloc>().state;
+      final shopId = authState is Authenticated ? authState.user.shopId : null;
       if (shopId == null) return;
       try {
         final result = await GetProductsUseCase(di.sl<ProductRepository>())(NoParams(), shopId: shopId);
@@ -1211,7 +1235,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           },
         );
       },
-    );
+    ).then((_) => searchController.dispose());
   }
 
   void _showEditPriceDialog(BuildContext context, CartItem item) {
@@ -1320,7 +1344,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           ),
         ],
       ),
-    );
+    ).then((_) => controller.dispose());
   }
 
   void _showWarrantyDialog(BuildContext context, CartItem item) {
@@ -1451,7 +1475,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           );
         },
       ),
-    );
+    ).then((_) => durationController.dispose());
   }
 
   /// Opens a searchable bottom-sheet listing saved customers.
@@ -1604,6 +1628,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       _customerNameController.text = picked.name;
       _customerPhoneController.text = picked.phone;
     }
+    searchCtl.dispose();
   }
 
   Widget _warrantyTypeChip(BuildContext ctx, String label, String value, String selected, Function(String) onTap) {

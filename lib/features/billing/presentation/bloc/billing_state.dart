@@ -78,7 +78,9 @@ class BillingState extends Equatable {
     bool clearStockErrors = false,
     bool? isValidatingStock,
     String? customerName,
+    bool clearCustomerName = false,
     String? customerPhone,
+    bool clearCustomerPhone = false,
     Customer? selectedCustomer,
     String? paymentMethod,
     String? lastBillId,
@@ -100,8 +102,10 @@ class BillingState extends Equatable {
       submitSuccess: submitSuccess ?? this.submitSuccess,
       stockErrors: clearStockErrors ? null : (stockErrors ?? this.stockErrors),
       isValidatingStock: isValidatingStock ?? this.isValidatingStock,
-      customerName: customerName ?? this.customerName,
-      customerPhone: customerPhone ?? this.customerPhone,
+      customerName:
+          clearCustomerName ? null : (customerName ?? this.customerName),
+      customerPhone:
+          clearCustomerPhone ? null : (customerPhone ?? this.customerPhone),
       selectedCustomer: selectedCustomer ?? this.selectedCustomer,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       lastBillId: lastBillId ?? this.lastBillId,
