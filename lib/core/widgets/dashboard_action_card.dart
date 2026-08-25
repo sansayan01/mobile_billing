@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
+import 'package:billing_app/core/theme/app_dimensions.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
-/// Big prominent action card (e.g. "New Bill").
-/// Liquid-glass / glassmorphism effect — frosted white background over whatever
-/// gradient sits behind it, with the [color] used for accent glow, icon tint,
-/// and a subtle coloured border.
+/// Big prominent action card (e.g. "New Bill") — v3 flat surface,
+/// hairline border, colored icon chip. No glassmorphism.
 class DashboardActionCard extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -25,17 +24,19 @@ class DashboardActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    const darkSurface = AppTheme.darkSurface;
+    final b = Theme.of(context).brightness;
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 1200),
-      curve: Curves.easeOutCubic,
+      duration: AppDurations.normal,
+      curve: AppDurations.ease,
       builder: (context, value, child) {
-        return Transform.scale(
-          scale: 0.98 + (0.02 * value),
-          child: child,
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, 8 * (1 - value)),
+            child: child,
+          ),
         );
       },
       child: Material(
@@ -45,50 +46,28 @@ class DashboardActionCard extends StatelessWidget {
             HapticFeedback.lightImpact();
             onTap();
           },
-          borderRadius: BorderRadius.circular(20),
-          splashColor: color.withValues(alpha: 0.18),
-          highlightColor: color.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+          splashColor: color.withValues(alpha: 0.12),
+          highlightColor: color.withValues(alpha: 0.05),
           child: Container(
-            padding: const EdgeInsets.all(22),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              // Frosted glass background
-              color: isDark
-                  ? darkSurface.withValues(alpha: 0.70)
-                  : Theme.of(context).colorScheme.surface.withValues(alpha: 0.50),
-              borderRadius: BorderRadius.circular(20),
-              // Subtle coloured border
-              border: Border.all(
-                color: color.withValues(alpha: 0.28),
-                width: 1,
-              ),
-              // Coloured glow shadow
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.18),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: isDark
-                      ? darkSurface.withValues(alpha: 0.50)
-                      : Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
+              color: AppColors.surface(b),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
+              border: Border.all(color: AppColors.border(b), width: 1),
             ),
             child: Row(
               children: [
-                // Coloured icon chip
+                // Colored icon chip
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
+                    color: color.withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(icon, size: 28, color: color),
+                  child: Icon(icon, size: 26, color: color),
                 ),
-                const SizedBox(width: 18),
+                const SizedBox(width: 16),
                 // Title + subtitle
                 Expanded(
                   child: Column(
@@ -96,30 +75,25 @@ class DashboardActionCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: AppTextStyles.of(context).actionCardTitle.copyWith(color: color),
+                        style: AppTextStyles.of(context)
+                            .actionCardTitle
+                            .copyWith(color: AppColors.textPrimary(b)),
                       ),
                       if (subtitle != null) ...[
                         const SizedBox(height: 3),
                         Text(
                           subtitle!,
-                          style: AppTextStyles.of(context).actionCardSubtitle,
+                          style: AppTextStyles.of(context).actionCardSubtitle
+                              .copyWith(color: AppColors.textTertiary(b)),
                         ),
                       ],
                     ],
                   ),
                 ),
-                // Arrow button
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.arrow_forward_rounded,
-                    color: color,
-                    size: 20,
-                  ),
+                Icon(
+                  Icons.arrow_forward_rounded,
+                  color: AppColors.textTertiary(b),
+                  size: 20,
                 ),
               ],
             ),
@@ -130,14 +104,16 @@ class DashboardActionCard extends StatelessWidget {
   }
 }
 
-/// Compact square tile for the 3-column quick-actions grid — icon on top,
-/// short label below. Liquid-glass frosted surface, coloured icon chip,
-/// subtle border, animated scale entry, splash feedback.
+/// Compact square tile for the quick-actions grid — icon on top,
+/// short label below. v3 flat surface + hairline border, colored icon chip.
+/// Entrance: fade+slide with per-tile stagger (no overshoot on
+/// informational UI — ui-ux-pro-max guidance), wrapped in RepaintBoundary.
 class QuickActionTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
   final VoidCallback onTap;
+  final Duration staggerDelay;
 
   const QuickActionTile({
     super.key,
@@ -145,90 +121,78 @@ class QuickActionTile extends StatelessWidget {
     required this.label,
     required this.color,
     required this.onTap,
+    this.staggerDelay = Duration.zero,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    const darkSurface = AppTheme.darkSurface;
+    final b = Theme.of(context).brightness;
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeOutBack,
-      builder: (context, value, child) {
-        return Transform.scale(
-          scale: 0.85 + (0.15 * value),
-          child: child,
-        );
-      },
-      child: Material(
+    return RepaintBoundary(
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0.0, end: 1.0),
+        duration: AppDurations.normal + staggerDelay,
+        curve: Interval(
+          staggerDelay.inMilliseconds /
+              (AppDurations.normal.inMilliseconds + staggerDelay.inMilliseconds),
+          1.0,
+          curve: AppDurations.ease,
+        ),
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value,
+            child: Transform.translate(
+              offset: Offset(0, 12 * (1 - value)),
+              child: child,
+            ),
+          );
+        },
+        child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
             HapticFeedback.lightImpact();
             onTap();
           },
-          borderRadius: BorderRadius.circular(20),
-          splashColor: color.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(18),
+          splashColor: color.withValues(alpha: 0.12),
           child: Container(
             padding:
-                const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
+                const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
             decoration: BoxDecoration(
-              // Frosted glass background
-              color: isDark
-                  ? darkSurface.withValues(alpha: 0.70)
-                  : Theme.of(context).colorScheme.surface.withValues(alpha: 0.45),
-              borderRadius: BorderRadius.circular(20),
-              // Subtle white border
-              border: Border.all(
-                color: isDark
-                    ? darkSurface.withValues(alpha: 0.50)
-                    : Theme.of(context).colorScheme.surface.withValues(alpha: 0.50),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: isDark
-                      ? darkSurface.withValues(alpha: 0.35)
-                      : Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-                BoxShadow(
-                  color: isDark
-                      ? darkSurface.withValues(alpha: 0.25)
-                      : Colors.black.withValues(alpha: 0.02),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
-              ],
+              color: AppColors.surface(b),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.border(b), width: 1),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Coloured icon chip
+                // Colored icon chip
                 Container(
-                  padding: const EdgeInsets.all(13),
+                  padding: const EdgeInsets.all(9),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(14),
+                    color: color.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(11),
                   ),
-                  child: Icon(icon, size: 26, color: color),
+                  child: Icon(icon, size: 20, color: color),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 7),
                 // Label
                 Text(
                   label,
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.of(context).tileLabel,
+                  style: AppTextStyles.of(context)
+                      .tileLabel
+                      .copyWith(
+                          color: AppColors.textSecondary(b), fontSize: 10.5),
                 ),
               ],
             ),
           ),
         ),
+      ),
       ),
     );
   }

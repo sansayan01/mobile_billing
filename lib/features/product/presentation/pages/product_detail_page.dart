@@ -1,5 +1,6 @@
 import 'package:billing_app/features/product/domain/entities/product.dart';
 import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter/services.dart';
@@ -47,8 +48,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           IconButton(
             onPressed: () => context.push('/products/edit/${product.id}',
                 extra: product),
-            icon: const Icon(Icons.edit_rounded,
-                color: AppTheme.primaryColor, size: 22),
+            icon: Icon(Icons.edit_rounded,
+                color: AppColors.accentText(Theme.of(context).brightness), size: 22),
             tooltip: 'Edit',
           ),
         ],
@@ -58,7 +59,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           16,
           16,
           16,
-          16 + MediaQuery.of(context).padding.bottom,
+          96 + MediaQuery.of(context).padding.bottom,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,7 +104,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.purple.withValues(alpha: 0.1),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -111,7 +112,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Colors.purple[700],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -126,7 +127,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               leftLabel: 'Price',
               leftValue: '₹${product.price.toStringAsFixed(2)}',
               leftIcon: Icons.currency_rupee_rounded,
-              leftValueColor: AppTheme.primaryColor,
+              leftValueColor: AppColors.accentText(Theme.of(context).brightness),
               rightLabel: 'Stock',
               rightValue: '${product.stock} ${product.unit}',
               rightIcon: Icons.inventory_2_rounded,
@@ -140,7 +141,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               leftLabel: 'Min Stock Level',
               leftValue: '${product.minStockLevel}',
               leftIcon: Icons.warning_amber_outlined,
-              leftValueColor: product.isLowStock ? Colors.orange[700] : null,
+              leftValueColor: product.isLowStock ? AppColors.warningText(Theme.of(context).brightness) : null,
               rightLabel: 'Stock Status',
               rightValue: product.isLowStock ? 'LOW STOCK' : 'IN STOCK',
               rightIcon: product.isLowStock
@@ -180,8 +181,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           icon: const Icon(Icons.add_circle_outline, size: 20),
                           label: const Text('Add Stock'),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.green[700],
-                            side: BorderSide(color: Colors.green[700]!),
+                            foregroundColor: AppColors.successText(Theme.of(context).brightness),
+                            side: BorderSide(color: AppColors.successText(Theme.of(context).brightness)),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -197,8 +198,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           icon: const Icon(Icons.remove_circle_outline, size: 20),
                           label: const Text('Remove Stock'),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.red[700],
-                            side: BorderSide(color: Colors.red[700]!),
+                            foregroundColor: Theme.of(context).colorScheme.error,
+                            side: BorderSide(color: Theme.of(context).colorScheme.error),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -286,7 +287,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               const SizedBox(height: 14),
               _detailRow(context, 'Warranty', product.warrantyLabel,
                   icon: Icons.verified_outlined,
-                  valueColor: Colors.blue[700]),
+                  valueColor: AppColors.infoText(Theme.of(context).brightness)),
             ],
             if (product.qrData != null &&
                 product.qrData!.isNotEmpty) ...[
@@ -304,7 +305,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     context,
                     label: 'Generate QR',
                     icon: Icons.qr_code_2_rounded,
-                    color: Colors.purple,
+                    color: AppColors.infoText(Theme.of(context).brightness),
                     onTap: () => context.push(
                         '/products/qr/${product.id}',
                         extra: product),
@@ -316,7 +317,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     context,
                     label: 'Edit Product',
                     icon: Icons.edit_rounded,
-                    color: AppTheme.primaryColor,
+                    color: AppColors.accentText(Theme.of(context).brightness),
                     onTap: () => context.push(
                         '/products/edit/${product.id}',
                         extra: product),
@@ -364,7 +365,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: (isIncrease ? Colors.green : Colors.red)
+                      color: (isIncrease
+                              ? AppColors.successText(Theme.of(context).brightness)
+                              : Theme.of(context).colorScheme.error)
                           .withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -372,7 +375,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       isIncrease
                           ? Icons.add_circle_outline
                           : Icons.remove_circle_outline,
-                      color: isIncrease ? Colors.green[700] : Colors.red[700],
+                      color: isIncrease
+                          ? AppColors.successText(Theme.of(context).brightness)
+                          : Theme.of(context).colorScheme.error,
                       size: 22,
                     ),
                   ),
@@ -432,7 +437,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         isIncrease
                             ? Icons.add_circle_outline
                             : Icons.remove_circle_outline,
-                        color: isIncrease ? Colors.green : Colors.red,
+                        color: isIncrease
+                            ? AppColors.successText(Theme.of(context).brightness)
+                            : Theme.of(context).colorScheme.error,
                       ),
                     ),
                   ),
@@ -486,9 +493,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     final qty = int.tryParse(quantityController.text) ?? 0;
                     if (qty <= 0) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please enter a valid quantity'),
-                          backgroundColor: Colors.orange,
+                        SnackBar(
+                          content: const Text('Please enter a valid quantity'),
+                          backgroundColor: AppColors.warning,
                         ),
                       );
                       return;
@@ -499,9 +506,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
                     if (newStock < 0) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Stock cannot go below zero'),
-                          backgroundColor: Colors.red,
+                        SnackBar(
+                          content: const Text('Stock cannot go below zero'),
+                          backgroundColor: Theme.of(context).colorScheme.error,
                         ),
                       );
                       return;
@@ -531,15 +538,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       SnackBar(
                         content: Text(
                           isIncrease ? 'Added $qty to stock' : 'Removed $qty from stock',
+                          style: const TextStyle(color: AppColors.onAccent, fontWeight: FontWeight.w600),
                         ),
-                        backgroundColor: Colors.green,
+                        backgroundColor: AppColors.success,
                         duration: const Duration(seconds: 1),
                       ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isIncrease ? Colors.green[700] : Colors.red[700],
+                    backgroundColor: isIncrease
+                        ? AppColors.successText(Theme.of(context).brightness)
+                        : Theme.of(context).colorScheme.error,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -652,11 +661,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.08),
+              color: AppColors.accentSubtle,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.description_outlined,
-                size: 18, color: AppTheme.primaryColor),
+            child: Icon(Icons.description_outlined,
+                size: 18, color: AppColors.accentText(Theme.of(context).brightness)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -682,8 +691,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             ClipboardData(text: description));
                         // Visual feedback only — copied to clipboard
                       },
-                      icon: const Icon(Icons.copy_rounded,
-                          size: 16, color: AppTheme.primaryColor),
+                      icon: Icon(Icons.copy_rounded,
+                          size: 16, color: AppColors.accentText(Theme.of(context).brightness)),
                       tooltip: 'Copy description',
                       constraints: const BoxConstraints(),
                       padding: EdgeInsets.zero,
@@ -726,11 +735,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withValues(alpha: 0.08),
+                color: AppColors.accentSubtle,
                 borderRadius: BorderRadius.circular(10),
               ),
               child:
-                  Icon(icon, size: 18, color: AppTheme.primaryColor),
+                  Icon(icon, size: 18, color: AppColors.accentText(Theme.of(context).brightness)),
             ),
             const SizedBox(width: 12),
           ],
@@ -749,19 +758,19 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: badge
-                        ? (inStock
-                            ? Colors.green[700]
-                            : Theme.of(context).colorScheme.error)
-                        : (valueColor ??
-                            Theme.of(context).colorScheme.onSurface),
-                  ),
-                ),
+                 Text(
+                   value,
+                   style: TextStyle(
+                     fontSize: 15,
+                     fontWeight: FontWeight.w600,
+                     color: badge
+                         ? (inStock
+                             ? AppColors.successText(Theme.of(context).brightness)
+                             : Theme.of(context).colorScheme.error)
+                         : (valueColor ??
+                             Theme.of(context).colorScheme.onSurface),
+                   ),
+                 ),
               ],
             ),
           ),
@@ -830,10 +839,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.08),
+                  color: AppColors.accentSubtle,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, size: 16, color: AppTheme.primaryColor),
+                child: Icon(icon, size: 16, color: AppColors.accentText(Theme.of(context).brightness)),
               ),
               const SizedBox(width: 10),
             ],
@@ -860,7 +869,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       fontWeight: FontWeight.w600,
                       color: badge
                           ? (inStock
-                              ? Colors.green[700]
+                              ? AppColors.successText(Theme.of(context).brightness)
                               : Theme.of(context).colorScheme.error)
                           : (valueColor ??
                               Theme.of(context).colorScheme.onSurface),

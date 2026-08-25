@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/entities/shop.dart';
 import '../bloc/shop_bloc.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_validators.dart';
 
 class ShopDetailsPage extends StatefulWidget {
@@ -113,69 +113,85 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('General Information',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                          color: AppTheme.primaryColor.withValues(alpha: 0.8),
-                        )),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      'These details will appear on your digital and printed receipts.',
-                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    ),
-                    const SizedBox(height: 24),
-                    const InputLabel(text: 'Shop Name'),
-                    _buildTextField(
-                      controller: _nameController,
-                      hint: 'e.g. QuickMart Superstore',
-                      validator: AppValidators.required('Required'),
-                    ),
-                    const SizedBox(height: 15),
-                    const InputLabel(text: 'Address Line 1'),
-                    _buildTextField(
-                      controller: _address1Controller,
-                      hint: 'Samrajpet, Mecheri',
-                      validator: AppValidators.required('Required'),
-                    ),
-                    const SizedBox(height: 15),
-                    const InputLabel(text: 'Address Line 2 (Optional)'),
-                    _buildTextField(
-                      controller: _address2Controller,
-                      hint: 'Salem - 636453',
-                    ),
-                    const SizedBox(height: 15),
-                    const InputLabel(text: 'Phone Number'),
-                    _buildTextField(
-                      controller: _phoneController,
-                      hint: '+91 7010674588',
-                      keyboardType: TextInputType.phone,
-                      validator: AppValidators.required('Required'),
-                    ),
-                    const SizedBox(height: 15),
-                    const InputLabel(text: 'UPI ID'),
-                    _buildTextField(
-                      controller: _upiController,
-                      hint: 'e.g. yourname@oksbi',
-                    ),
-                    const SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    _sectionCard(
+                      context: context,
+                      icon: Icons.storefront_rounded,
+                      title: 'Shop Info',
+                      subtitle:
+                          'These details will appear on your digital and printed receipts.',
                       children: [
-                        const InputLabel(text: 'Receipt Footer Text'),
-                        Text('Max 150 chars',
-                            style: TextStyle(
-                                fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                        const InputLabel(text: 'Shop Name'),
+                        _buildTextField(
+                          controller: _nameController,
+                          hint: 'e.g. QuickMart Superstore',
+                          validator: AppValidators.required('Required'),
+                        ),
+                        const SizedBox(height: 16),
+                        const InputLabel(text: 'Address Line 1'),
+                        _buildTextField(
+                          controller: _address1Controller,
+                          hint: 'Samrajpet, Mecheri',
+                          validator: AppValidators.required('Required'),
+                        ),
+                        const SizedBox(height: 16),
+                        const InputLabel(text: 'Address Line 2 (Optional)'),
+                        _buildTextField(
+                          controller: _address2Controller,
+                          hint: 'Salem - 636453',
+                        ),
+                        const SizedBox(height: 16),
+                        const InputLabel(text: 'Phone Number'),
+                        _buildTextField(
+                          controller: _phoneController,
+                          hint: '+91 7010674588',
+                          keyboardType: TextInputType.phone,
+                          validator: AppValidators.required('Required'),
+                        ),
                       ],
                     ),
-                    _buildTextField(
-                      controller: _footerController,
-                      hint: 'Thank you, Visit again!!!',
-                      maxLines: 2,
-                      maxLength: 60,
+                    const SizedBox(height: 16),
+                    _sectionCard(
+                      context: context,
+                      icon: Icons.qr_code_2_rounded,
+                      title: 'UPI & Payment',
+                      children: [
+                        const InputLabel(text: 'UPI ID'),
+                        _buildTextField(
+                          controller: _upiController,
+                          hint: 'e.g. yourname@oksbi',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _sectionCard(
+                      context: context,
+                      icon: Icons.receipt_long_rounded,
+                      title: 'Receipt Footer',
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const InputLabel(text: 'Footer Text'),
+                            Text('Max 150 chars',
+                                style: TextStyle(
+                                    fontSize: 11,
+                                    color: AppColors.textTertiary(
+                                        Theme.of(context).brightness))),
+                          ],
+                        ),
+                        _buildTextField(
+                          controller: _footerController,
+                          hint: 'Thank you, Visit again!!!',
+                          maxLines: 2,
+                          maxLength: 60,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    PrimaryButton(
+                      onPressed: _saveShop,
+                      icon: Icons.save_outlined,
+                      label: 'Save Details',
                     ),
                   ],
                 ),
@@ -183,14 +199,67 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
             );
           },
         ),
-        bottomNavigationBar: SafeArea(
-          top: false,
-          child: PrimaryButton(
-            onPressed: _saveShop,
-            icon: Icons.save,
-            label: 'Save Details',
+      );
+  }
+
+  Widget _sectionCard({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    required List<Widget> children,
+  }) {
+    final b = Theme.of(context).brightness;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.surface(b),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border(b)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: AppColors.accentSubtle,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 17, color: AppColors.accentText(b)),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.2,
+                  color: AppColors.textPrimary(b),
+                ),
+              ),
+            ],
           ),
-        ));
+          if (subtitle != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 12,
+                height: 1.35,
+                color: AppColors.textTertiary(b),
+              ),
+            ),
+          ],
+          const SizedBox(height: 16),
+          ...children,
+        ],
+      ),
+    );
   }
 
   Widget _buildTextField({

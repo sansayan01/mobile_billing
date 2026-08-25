@@ -8,7 +8,8 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../billing/presentation/bloc/billing_bloc.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../domain/entities/cart_item.dart';
 import '../../../../features/product/domain/entities/product.dart';
@@ -168,18 +169,23 @@ class _HomePageState extends State<HomePage> {
           BlocBuilder<BillingBloc, BillingState>(builder: (context, state) {
         return SafeArea(
           top: false,
-          child: PrimaryButton(
-            onPressed: state.cartItems.isEmpty
-                ? null
-                : () async {
-                    setState(() => _isCheckingOut = true);
-                    _scannerController.stop();
-                    await context.push('/scan/checkout');
-                    if (mounted && _isCameraOn) _scannerController.start();
-                    if (mounted) setState(() => _isCheckingOut = false);
-                  },
-            icon: Icons.payment,
-            label: 'Review Order',
+          child: Padding(
+            // Reserve clearance above the floating bottom-nav FAB so the
+            // Review Order button stays fully tappable (not covered by nav).
+            padding: const EdgeInsets.only(bottom: 88),
+            child: PrimaryButton(
+              onPressed: state.cartItems.isEmpty
+                  ? null
+                  : () async {
+                      setState(() => _isCheckingOut = true);
+                      _scannerController.stop();
+                      await context.push('/scan/checkout');
+                      if (mounted && _isCameraOn) _scannerController.start();
+                      if (mounted) setState(() => _isCheckingOut = false);
+                    },
+              icon: Icons.payment,
+              label: 'Review Order',
+            ),
           ),
         );
       }),
@@ -256,7 +262,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildCameraOffState() {
     return Container(
-      color: const Color(0xFF1E293B), // slate-800
+      color: AppColors.darkBg,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -264,18 +270,18 @@ class _HomePageState extends State<HomePage> {
             width: 64,
             height: 64,
             decoration: const BoxDecoration(
-              color: Color(0xFF334155), // slate-700
+              color: AppColors.darkSurfaceElevated,
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
             child:
-                const Icon(Icons.videocam_off, color: Colors.white, size: 32),
+                const Icon(Icons.videocam_off, color: AppColors.darkTextSecondary, size: 32),
           ),
           const SizedBox(height: 16),
           const Text(
             'Camera is turned off',
             style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                color: AppColors.darkTextPrimary, fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 8),
           const Padding(
@@ -283,14 +289,14 @@ class _HomePageState extends State<HomePage> {
             child: Text(
               'Turn on your camera to start scanning barcodes and items automatically.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70, fontSize: 12),
+              style: TextStyle(color: AppColors.darkTextSecondary, fontSize: 12),
             ),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.accent,
+              foregroundColor: AppColors.onAccent,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -336,19 +342,19 @@ class _HomePageState extends State<HomePage> {
           border: Border(
             top: (alignment == Alignment.topLeft ||
                     alignment == Alignment.topRight)
-                ? const BorderSide(color: Colors.greenAccent, width: 4)
+                ? const BorderSide(color: AppColors.accent, width: 4)
                 : BorderSide.none,
             bottom: (alignment == Alignment.bottomLeft ||
                     alignment == Alignment.bottomRight)
-                ? const BorderSide(color: Colors.greenAccent, width: 4)
+                ? const BorderSide(color: AppColors.accent, width: 4)
                 : BorderSide.none,
             left: (alignment == Alignment.topLeft ||
                     alignment == Alignment.bottomLeft)
-                ? const BorderSide(color: Colors.greenAccent, width: 4)
+                ? const BorderSide(color: AppColors.accent, width: 4)
                 : BorderSide.none,
             right: (alignment == Alignment.topRight ||
                     alignment == Alignment.bottomRight)
-                ? const BorderSide(color: Colors.greenAccent, width: 4)
+                ? const BorderSide(color: AppColors.accent, width: 4)
                 : BorderSide.none,
           ),
         ),
@@ -480,19 +486,23 @@ class _HomePageState extends State<HomePage> {
                                                   ],
                                                 ),
                                               ),
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.end,
-                                                children: [
-                                                  Text(
-                                                    'Stock: ${product.stock}',
-                                                    style: TextStyle(fontSize: 12, color: product.stock > 0 ? Theme.of(context).colorScheme.onSurfaceVariant : Theme.of(context).colorScheme.error),
-                                                  ),
-                                                  Text(
-                                                    '₹${product.price.toStringAsFixed(2)}',
-                                                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Theme.of(context).primaryColor),
-                                                  ),
-                                                ],
-                                              ),
+                                               Column(
+                                                 crossAxisAlignment: CrossAxisAlignment.end,
+                                                 children: [
+                                                   Text(
+                                                     'Stock: ${product.stock}',
+                                                     style: TextStyle(fontSize: 12, color: product.stock > 0 ? Theme.of(context).colorScheme.onSurfaceVariant : Theme.of(context).colorScheme.error),
+                                                   ),
+                                                   Text(
+                                                     '₹${product.price.toStringAsFixed(2)}',
+                                                     style: AppMoneyText.sized(
+                                                       14,
+                                                       FontWeight.w700,
+                                                       AppColors.accentText(Theme.of(context).brightness),
+                                                     ),
+                                                   ),
+                                                 ],
+                                               ),
                                             ],
                                           ),
                                         ),
@@ -543,6 +553,7 @@ class _HomePageState extends State<HomePage> {
           // Header
           BlocBuilder<BillingBloc, BillingState>(
             builder: (context, state) {
+              final b = Theme.of(context).brightness;
               final totalItems =
                   state.cartItems.fold<int>(0, (sum, i) => sum + i.quantity);
               return Padding(
@@ -573,10 +584,11 @@ class _HomePageState extends State<HomePage> {
                                 letterSpacing: 1.2)),
                         Text(
                           '₹${state.totalAmount.toStringAsFixed(2)}',
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                              color: Theme.of(context).primaryColor),
+                          style: AppMoneyText.sized(
+                            20,
+                            FontWeight.w700,
+                            AppColors.accentText(b),
+                          ),
                         ),
                       ],
                     ),
@@ -652,14 +664,12 @@ class _HomePageState extends State<HomePage> {
     BuildContext context,
     CartItem item,
   ) {
+    final b = Theme.of(context).brightness;
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
-        boxShadow: [
-          BoxShadow(color: Theme.of(context).shadowColor, blurRadius: 4, offset: const Offset(0, 2))
-        ],
+        color: AppColors.surface(b),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border(b)),
       ),
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -672,18 +682,21 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Text(
                   item.product.name,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w600, fontSize: 14),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: AppColors.textPrimary(b)),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '₹${item.product.price.toStringAsFixed(2)}',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  style: AppMoneyText.sized(
+                    14,
+                    FontWeight.w600,
+                    AppColors.textTertiary(b),
+                  ),
                 ),
               ],
             ),

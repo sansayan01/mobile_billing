@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
@@ -18,6 +19,7 @@ class PaymentDonutChart extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final onSurface = theme.colorScheme.onSurface;
+    final b = theme.brightness;
     final entries = paymentTotals.entries.toList();
 
     if (entries.isEmpty) {
@@ -35,7 +37,7 @@ class PaymentDonutChart extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Payment Methods', style: AppTextStyles.of(context).trendTitle),
-              Text(_fmt(total), style: AppTextStyles.of(context).trendChipValue.copyWith(color: AppTheme.primaryColor)),
+              Text(_fmt(total), style: AppTextStyles.of(context).trendChipValue.copyWith(color: AppColors.accentText(b))),
             ],
           ),
           const SizedBox(height: 20),
@@ -55,9 +57,9 @@ class PaymentDonutChart extends StatelessWidget {
                         return PieChartSectionData(
                           value: entry.value,
                           title: '${(pct * 100).toInt()}%',
-                          titleStyle: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: _darkText(_methodColor(entry.key))),
+                          titleStyle: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: _darkText(_methodColor(entry.key, b))),
                           radius: 60,
-                          color: _methodColor(entry.key),
+                          color: _methodColor(entry.key, b),
                         );
                       }).toList(),
                     ),
@@ -75,7 +77,7 @@ class PaymentDonutChart extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       child: Row(
                         children: [
-                          Container(width: 10, height: 10, decoration: BoxDecoration(color: _methodColor(entry.key), borderRadius: BorderRadius.circular(3))),
+                          Container(width: 10, height: 10, decoration: BoxDecoration(color: _methodColor(entry.key, b), borderRadius: BorderRadius.circular(3))),
                           const SizedBox(width: 8),
                           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                             Text(entry.key.toUpperCase(), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: onSurface)),
@@ -107,19 +109,18 @@ class PaymentDonutChart extends StatelessWidget {
     );
   }
 
-  static Color _methodColor(String method) {
+  static Color _methodColor(String method, Brightness b) {
     final key = method.trim().toLowerCase();
-    if (key.contains('upi')) return const Color(0xFF4CAF50);
-    if (key.contains('cash')) return const Color(0xFFFF9800);
-    if (key.contains('card')) return const Color(0xFF2196F3);
-    if (key.contains('credit')) return const Color(0xFF9C27B0);
-    if (key.contains('bank')) return const Color(0xFF00BCD4);
-    return const Color(0xFF6C63FF);
+    if (key.contains('upi')) return AppColors.info;
+    if (key.contains('cash')) return AppColors.success;
+    if (key.contains('card')) return AppColors.warning;
+    if (key.contains('credit')) return AppColors.accentText(b);
+    if (key.contains('bank')) return AppColors.error(b);
+    return AppColors.textTertiary(b);
   }
 
   static Color _darkText(Color color) {
-    if (color == const Color(0xFFFF9800) || color == const Color(0xFFFFEB3B)) return Colors.black87;
-    return Colors.white;
+    return color.computeLuminance() > 0.55 ? Colors.black87 : Colors.white;
   }
 
   static String _fmt(double value) {
@@ -139,7 +140,7 @@ class _EmptyState extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(children: [
-        Icon(icon, size: 36, color: AppTheme.primaryColor),
+        Icon(icon, size: 36, color: AppColors.accentText(Theme.of(context).brightness)),
         const SizedBox(height: 12),
         Text(text, style: const TextStyle(fontSize: 14)),
       ]),

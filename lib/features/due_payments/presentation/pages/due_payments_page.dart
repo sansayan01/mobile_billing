@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:billing_app/features/due_payments/presentation/bloc/due_payments_bloc.dart';
 import 'package:billing_app/features/due_payments/domain/entities/due_payment.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
+import 'package:billing_app/core/theme/app_typography.dart';
 import 'package:billing_app/core/widgets/app_feedback.dart';
 import 'package:billing_app/core/widgets/app_skeleton.dart';
 
@@ -38,6 +40,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
   }
 
   void _showCollectPaymentDialog(DuePayment duePayment) {
+    final b = Theme.of(context).brightness;
     final amountController = TextEditingController(
       text: _formatPrice(duePayment.dueAmount),
     );
@@ -47,7 +50,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
       builder: (ctx) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.payments, color: Theme.of(context).primaryColor, size: 24),
+            Icon(Icons.payments, color: AppColors.accentText(b), size: 24),
             const SizedBox(width: 8),
             const Expanded(
               child: Text('Collect Payment', style: TextStyle(fontSize: 18)),
@@ -102,25 +105,25 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.orange.shade50,
+                color: AppColors.warning.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange.shade200),
+                border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
               ),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Bill Total', style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
-                      Text('₹${_formatPrice(duePayment.grandTotal)}', style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
+                      Text('Bill Total', style: TextStyle(fontSize: 13, color: AppColors.warningText(b))),
+                      Text('₹${_formatPrice(duePayment.grandTotal)}', style: AppMoneyText.sized(13, FontWeight.w400, AppColors.warningText(b))),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Already Paid', style: TextStyle(fontSize: 13, color: Colors.green.shade700)),
-                      Text('₹${_formatPrice(duePayment.amountPaid)}', style: TextStyle(fontSize: 13, color: Colors.green.shade700)),
+                      Text('Already Paid', style: TextStyle(fontSize: 13, color: AppColors.successText(b))),
+                      Text('₹${_formatPrice(duePayment.amountPaid)}', style: AppMoneyText.sized(13, FontWeight.w400, AppColors.successText(b))),
                     ],
                   ),
                   const Divider(),
@@ -128,14 +131,14 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Due Amount', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                      Text('₹${_formatPrice(duePayment.dueAmount)}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.orange)),
+                      Text('₹${_formatPrice(duePayment.dueAmount)}', style: AppMoneyText.sized(17, FontWeight.w700, AppColors.warningText(b))),
                     ],
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Amount input
             TextField(
               controller: amountController,
@@ -174,8 +177,8 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
             icon: const Icon(Icons.check_circle, size: 18),
             label: const Text('Collect'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.surface,
+              backgroundColor: AppColors.accent,
+              foregroundColor: AppColors.onAccent,
             ),
           ),
         ],
@@ -193,7 +196,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).primaryColor),
+          icon: Icon(Icons.arrow_back_ios, color: AppColors.accentText(Theme.of(context).brightness)),
           onPressed: () => context.go('/'),
         ),
       ),
@@ -216,18 +219,11 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.orange.shade400,
-                      Colors.orange.shade600,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: AppColors.warning,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.orange.shade200,
+                      color: AppColors.warning.withValues(alpha: 0.25),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -238,10 +234,10 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: AppColors.onAccent.withValues(alpha: 0.10),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.account_balance_wallet, color: Colors.white, size: 28),
+                      child: const Icon(Icons.account_balance_wallet, color: AppColors.onAccent, size: 28),
                     ),
                     const SizedBox(width: 16),
                     Column(
@@ -251,16 +247,16 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                           'Total Pending Due',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.white.withValues(alpha: 0.9),
+                            color: AppColors.onAccent.withValues(alpha: 0.85),
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           '₹${_formatPrice(state.totalPendingDue)}',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                          style: AppMoneyText.sized(
+                            24,
+                            FontWeight.bold,
+                            AppColors.onAccent,
                           ),
                         ),
                       ],
@@ -269,7 +265,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: AppColors.onAccent.withValues(alpha: 0.10),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -277,7 +273,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: AppColors.onAccent,
                         ),
                       ),
                     ),
@@ -327,7 +323,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.check_circle_outline, size: 64, color: Colors.green.shade300),
+                                Icon(Icons.check_circle_outline, size: 64, color: AppColors.successText(Theme.of(context).brightness)),
                                 const SizedBox(height: 16),
                                 Text(
                                   'No pending dues!',
@@ -349,7 +345,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                             ),
                           )
                         : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
                             itemCount: state.duePayments.length,
                             itemBuilder: (context, index) {
                               final duePayment = state.duePayments[index];
@@ -365,6 +361,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
   }
 
   Widget _buildDuePaymentCard(DuePayment duePayment) {
+    final b = Theme.of(context).brightness;
     final dateFormat = DateFormat('dd MMM yyyy');
     final billDate = dateFormat.format(duePayment.billDate);
     
@@ -393,7 +390,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.orange.shade50,
+                    color: AppColors.warning.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -401,7 +398,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: Colors.orange.shade700,
+                      color: AppColors.warningText(b),
                     ),
                   ),
                 ),
@@ -473,15 +470,15 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Bill Total', style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                      Text('₹${_formatPrice(duePayment.grandTotal)}', style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                      Text('₹${_formatPrice(duePayment.grandTotal)}', style: AppMoneyText.sized(13, FontWeight.w400, Theme.of(context).colorScheme.onSurfaceVariant)),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Paid', style: TextStyle(fontSize: 13, color: Colors.green.shade600)),
-                      Text('₹${_formatPrice(duePayment.amountPaid)}', style: TextStyle(fontSize: 13, color: Colors.green.shade600)),
+                      Text('Paid', style: TextStyle(fontSize: 13, color: AppColors.successText(b))),
+                      Text('₹${_formatPrice(duePayment.amountPaid)}', style: AppMoneyText.sized(13, FontWeight.w400, AppColors.successText(b))),
                     ],
                   ),
                   const Divider(),
@@ -489,7 +486,7 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Due', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                      Text('₹${_formatPrice(duePayment.dueAmount)}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.orange)),
+                      Text('₹${_formatPrice(duePayment.dueAmount)}', style: AppMoneyText.sized(17, FontWeight.w700, AppColors.warningText(b))),
                     ],
                   ),
                 ],
@@ -505,8 +502,8 @@ class _DuePaymentsPageState extends State<DuePaymentsPage> {
                 icon: const Icon(Icons.payment, size: 18),
                 label: const Text('Collect Payment'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.surface,
+                  backgroundColor: AppColors.accent,
+                  foregroundColor: AppColors.onAccent,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),

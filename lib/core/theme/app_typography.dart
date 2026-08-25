@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTypography {
   AppTypography._();
@@ -103,5 +104,47 @@ class AppTypography {
         labelLarge: labelLarge,
         labelMedium: labelMedium,
         labelSmall: labelSmall,
+      );
+}
+
+/// v3 "Midnight Lime" — money/numeric styles in IBM Plex Mono.
+/// Use for ₹ amounts, balances, big metrics. Tabular by default.
+/// Pre-computed (static final) — never call GoogleFonts inside build().
+class AppMoneyText {
+  AppMoneyText._();
+
+  /// Hero balance (32 w700) — dashboard total, receipt grand total.
+  static final TextStyle balance = GoogleFonts.ibmPlexMono(
+    fontSize: 32,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.5,
+    height: 1.1,
+    fontFeatures: const [FontFeature.tabularFigures()],
+  );
+
+  /// Card-level metric (22 w700) — stat card values.
+  static final TextStyle metric = GoogleFonts.ibmPlexMono(
+    fontSize: 22,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.3,
+    height: 1.15,
+    fontFeatures: const [FontFeature.tabularFigures()],
+  );
+
+  /// Row-level amount (16 w600) — list rows, line items.
+  static final TextStyle row = GoogleFonts.ibmPlexMono(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    height: 1.2,
+    fontFeatures: const [FontFeature.tabularFigures()],
+  );
+
+  static TextStyle sized(double size, FontWeight weight, Color color) =>
+      GoogleFonts.ibmPlexMono(
+        fontSize: size,
+        fontWeight: weight,
+        color: color,
+        letterSpacing: size >= 22 ? -0.3 : 0,
+        fontFeatures: const [FontFeature.tabularFigures()],
       );
 }

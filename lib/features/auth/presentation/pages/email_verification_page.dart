@@ -7,6 +7,7 @@ import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:billing_app/core/widgets/app_back_button.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 
 /// Email verification pending screen.
 ///
@@ -69,6 +70,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final b = theme.brightness;
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
@@ -106,123 +108,169 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Illustration / icon
-                  Icon(
-                    Icons.mark_email_unread_outlined,
-                    size: 96,
-                    color: theme.colorScheme.primary,
-                  ),
-                  const SizedBox(height: 24),
-
-                  Text(
-                    'Verify your email',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 440),
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: 1),
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, t, child) => Opacity(
+                    opacity: t,
+                    child: Transform.translate(
+                      offset: Offset(0, 12 * (1 - t)),
+                      child: child,
                     ),
                   ),
-                  const SizedBox(height: 12),
-
-                  Text(
-                    'We sent a verification link to',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyLarge
-                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    widget.email,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.primary,
+                  child: Container(
+                    padding: const EdgeInsets.all(28),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface(b),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: AppColors.border(b)),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Open the link in the same device to confirm your account.',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium
-                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                  ),
-                  const SizedBox(height: 36),
-
-                  // Continue / refresh button
-                  SizedBox(
-                    height: 52,
-                    child: ElevatedButton.icon(
-                      onPressed: _isChecking ? null : _onContinue,
-                      icon: _isChecking
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: theme.colorScheme.onPrimary,
-                                strokeWidth: 2.5,
-                              ),
-                            )
-                          : const Icon(Icons.check_circle_outline),
-                      label: const Text(
-                        "I've verified — Continue",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Resend button
-                  SizedBox(
-                    height: 52,
-                    child: OutlinedButton.icon(
-                      onPressed: _isResending ? null : _onResend,
-                      icon: _isResending
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                              ),
-                            )
-                          : const Icon(Icons.refresh_outlined),
-                      label: const Text('Resend verification email'),
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-
-                  // Back to login
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Already verified? ',
-                        style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          // Logout karke clean state bana do aur login par jao.
-                          context.read<AuthBloc>().add(const LogoutRequested());
-                          context.go('/login');
-                        },
-                        child: Text(
-                          'Back to Login',
-                          style: TextStyle(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Mail icon chip — accentSubtle + accentText
+                        Center(
+                          child: Container(
+                            width: 64,
+                            height: 64,
+                            decoration: BoxDecoration(
+                              color: AppColors.accentSubtle,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Icon(
+                              Icons.mark_email_unread_outlined,
+                              size: 30,
+                              color: AppColors.accentText(b),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 20),
+
+                        Text(
+                          'Verify your email',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textPrimary(b),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
+                        Text(
+                          'We sent a verification link to',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary(b),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.email,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary(b),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Open the link in the same device to confirm your account.',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textTertiary(b),
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+
+                        // Continue / refresh — lime CTA (themed)
+                        SizedBox(
+                          height: 52,
+                          child: ElevatedButton.icon(
+                            onPressed: _isChecking ? null : _onContinue,
+                            icon: _isChecking
+                                ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      color: theme.colorScheme.onPrimary,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : const Icon(Icons.check_circle_outline),
+                            label: Text(
+                              "I've verified — Continue",
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Resend — secondary: surface fill + hairline border
+                        SizedBox(
+                          height: 52,
+                          child: OutlinedButton.icon(
+                            onPressed: _isResending ? null : _onResend,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.textPrimary(b),
+                              side: BorderSide(color: AppColors.border(b)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              textStyle: theme.textTheme.labelLarge,
+                            ),
+                            icon: _isResending
+                                ? const SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : const Icon(Icons.refresh_outlined),
+                            label: const Text('Resend verification email'),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Back to login
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Already verified? ',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: AppColors.textTertiary(b),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                // Logout karke clean state bana do aur login par jao.
+                                context
+                                    .read<AuthBloc>()
+                                    .add(const LogoutRequested());
+                                context.go('/login');
+                              },
+                              child: Text(
+                                'Back to Login',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.accentText(b),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 24),
-                ],
+                ),
               ),
             ),
           ),

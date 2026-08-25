@@ -94,7 +94,7 @@ class AppTextStyles {
   static const TextStyle txnSeeAll = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w500,
-    color: Color(0xFF6C63FF),
+    color: Color(0xFF55700A),
   );
   static const TextStyle txnEmptyTitle = TextStyle(
     fontSize: 14,
@@ -184,7 +184,9 @@ class AdaptiveTextStyles {
       _isDark ? const Color(0xFF808090) : const Color(0xFF8E8E9A);
   Color get _onSurfaceMuted =>
       _isDark ? const Color(0xFF707080) : const Color(0xFF757580);
-  Color get _primary => const Color(0xFF6C63FF);
+  Color get _primary => _isDark
+      ? const Color(0xFFC8F031) // v3 accent lime (dark bg)
+      : const Color(0xFF55700A); // v3 accent-as-text (light bg)
 
   TextStyle get sectionTitle =>
       AppTextStyles.sectionTitle.copyWith(color: _onSurface);

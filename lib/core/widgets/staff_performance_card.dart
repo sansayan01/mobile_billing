@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
 class StaffPerformanceCard extends StatelessWidget {
@@ -13,20 +13,22 @@ class StaffPerformanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final onSurface = theme.colorScheme.onSurface;
 
     if (staff.isEmpty) {
       return _buildGlassContainer(
         context: context,
-        isDark: isDark,
-        child: const Padding(
-          padding: EdgeInsets.all(24),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              Icon(Icons.people_rounded, size: 36, color: AppTheme.primaryColor),
-              SizedBox(height: 12),
-              Text('No staff data yet', style: TextStyle(fontSize: 14)),
+              Icon(
+                Icons.people_rounded,
+                size: 36,
+                color: AppColors.accentText(theme.brightness),
+              ),
+              const SizedBox(height: 12),
+              const Text('No staff data yet', style: TextStyle(fontSize: 14)),
             ],
           ),
         ),
@@ -37,7 +39,6 @@ class StaffPerformanceCard extends StatelessWidget {
 
     return _buildGlassContainer(
       context: context,
-      isDark: isDark,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -51,15 +52,15 @@ class StaffPerformanceCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.12),
+                    color: AppColors.accentSubtle,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
+                  child: Text(
                     'This Week',
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: AppTheme.primaryColor,
+                      color: AppColors.accentText(theme.brightness),
                     ),
                   ),
                 ),
@@ -91,8 +92,8 @@ class StaffPerformanceCard extends StatelessWidget {
                         height: 28,
                         decoration: BoxDecoration(
                           color: isTop
-                              ? const Color(0xFFFFD700).withValues(alpha: 0.15)
-                              : AppTheme.primaryColor.withValues(alpha: 0.08),
+                              ? AppColors.warning.withValues(alpha: 0.15)
+                              : AppColors.accentSubtle,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
@@ -102,8 +103,8 @@ class StaffPerformanceCard extends StatelessWidget {
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: isTop
-                                  ? const Color(0xFFFFB300)
-                                  : AppTheme.primaryColor,
+                                  ? AppColors.warning
+                                  : AppColors.accentText(theme.brightness),
                             ),
                           ),
                         ),
@@ -154,7 +155,9 @@ class StaffPerformanceCard extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
-                                    color: isTop ? const Color(0xFFFFB300) : onSurface,
+                                    color: isTop
+                                        ? AppColors.warning
+                                        : onSurface,
                                     fontFeatures: const [FontFeature.tabularFigures()],
                                   ),
                                 ),
@@ -231,26 +234,18 @@ class StaffPerformanceCard extends StatelessWidget {
 
   Widget _buildGlassContainer({
     required BuildContext context,
-    required bool isDark,
     required Widget child,
   }) {
+    final b = Theme.of(context).brightness;
     return Container(
       decoration: BoxDecoration(
-        color: isDark
-            ? AppTheme.darkSurface.withValues(alpha: 0.70)
-            : Colors.white.withValues(alpha: 0.55),
+        color: AppColors.surface(b),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark
-              ? AppTheme.darkSurface.withValues(alpha: 0.50)
-              : Colors.white.withValues(alpha: 0.35),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.border(b)),
         boxShadow: [
           BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.25)
-                : Colors.black.withValues(alpha: 0.06),
+            color: Colors.black
+                .withValues(alpha: b == Brightness.dark ? 0.25 : 0.06),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -277,7 +272,7 @@ class StaffPerformanceCard extends StatelessWidget {
   // Rotating avatar colors for distinct staff members
   static Color _avatarColor(int index) {
     const colors = [
-      Color(0xFF6C63FF),
+      Color(0xFFC8F031),
       Color(0xFF4CAF50),
       Color(0xFFFF9800),
       Color(0xFF2196F3),

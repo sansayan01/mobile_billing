@@ -9,7 +9,8 @@ import 'package:billing_app/core/widgets/app_feedback.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
+import 'package:billing_app/core/theme/app_typography.dart';
 import 'package:billing_app/features/report/domain/entities/report_entities.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
@@ -125,7 +126,13 @@ class _DailySalesPageState extends State<DailySalesPage> {
               final sales = context.read<ReportBloc>().state.salesRange;
               if (sales.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('No data to export'), backgroundColor: Colors.orange),
+                  const SnackBar(
+                    content: Text('No data to export',
+                        style: TextStyle(
+                            color: AppColors.onAccent,
+                            fontWeight: FontWeight.w600)),
+                    backgroundColor: AppColors.warning,
+                  ),
                 );
               } else {
                 _exportData(sales);
@@ -178,10 +185,9 @@ class _DailySalesPageState extends State<DailySalesPage> {
               _loadData();
               await Future.delayed(const Duration(milliseconds: 500));
             },
-            color: AppTheme.primaryColor,
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -262,7 +268,10 @@ class _DailySalesPageState extends State<DailySalesPage> {
         if (!isToday)
           TextButton(
             onPressed: _goToday,
-            child: const Text('Today', style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.w600)),
+            child: Text('Today',
+                style: TextStyle(
+                    color: AppColors.accentText(t.brightness),
+                    fontWeight: FontWeight.w600)),
           ),
       ]),
     );
@@ -275,13 +284,13 @@ class _DailySalesPageState extends State<DailySalesPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppTheme.primaryColor, AppTheme.primaryColor.withValues(alpha: 0.75)],
+        gradient: const LinearGradient(
+          colors: [AppColors.accent, AppColors.accentDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: AppTheme.primaryColor.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 6))],
+        boxShadow: [BoxShadow(color: AppColors.accent.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 6))],
       ),
       child: Column(children: [
         Row(children: [
@@ -289,14 +298,14 @@ class _DailySalesPageState extends State<DailySalesPage> {
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-                child: const Icon(Icons.currency_rupee_rounded, color: Colors.white, size: 20),
+                decoration: BoxDecoration(color: AppColors.onAccent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.currency_rupee_rounded, color: AppColors.onAccent, size: 20),
               ),
               const SizedBox(width: 12),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(_fc(totalRevenue),
-                    style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800, height: 1.1)),
-                Text('Period Revenue', style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12)),
+                    style: AppMoneyText.sized(22, FontWeight.w800, AppColors.onAccent)),
+                Text('Period Revenue', style: TextStyle(color: AppColors.onAccent.withValues(alpha: 0.75), fontSize: 12)),
               ]),
             ]),
           ),
@@ -305,9 +314,9 @@ class _DailySalesPageState extends State<DailySalesPage> {
             height: 44,
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
-                Colors.white.withValues(alpha: 0.1),
-                Colors.white.withValues(alpha: 0.5),
-                Colors.white.withValues(alpha: 0.1),
+                AppColors.onAccent.withValues(alpha: 0.1),
+                AppColors.onAccent.withValues(alpha: 0.5),
+                AppColors.onAccent.withValues(alpha: 0.1),
               ]),
             ),
           ),
@@ -315,14 +324,14 @@ class _DailySalesPageState extends State<DailySalesPage> {
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-                child: const Icon(Icons.receipt_long_rounded, color: Colors.white, size: 20),
+                decoration: BoxDecoration(color: AppColors.onAccent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.receipt_long_rounded, color: AppColors.onAccent, size: 20),
               ),
               const SizedBox(width: 12),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text('$totalBills',
-                    style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800, height: 1.1)),
-                Text('Total Bills', style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12)),
+                    style: const TextStyle(color: AppColors.onAccent, fontSize: 22, fontWeight: FontWeight.w800, height: 1.1)),
+                Text('Total Bills', style: TextStyle(color: AppColors.onAccent.withValues(alpha: 0.75), fontSize: 12)),
               ]),
             ]),
           ),
@@ -330,20 +339,25 @@ class _DailySalesPageState extends State<DailySalesPage> {
         if (daily != null) ...[
           const SizedBox(height: 14),
           Row(children: [
-            _miniStat('Today Sales', _fc(daily.totalSales)),
+            _miniStat('Today Sales', _fc(daily.totalSales), money: true),
             _miniStat('Bills', '${daily.billCount}'),
-            _miniStat('Avg Bill', _fc(daily.averageBill)),
+            _miniStat('Avg Bill', _fc(daily.averageBill), money: true),
           ]),
         ],
       ]),
     );
   }
 
-  Widget _miniStat(String label, String value) {
+  Widget _miniStat(String label, String value, {bool money = false}) {
     return Expanded(
       child: Column(children: [
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
-        Text(label, style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 10)),
+        Text(
+          value,
+          style: money
+              ? AppMoneyText.sized(14, FontWeight.w700, AppColors.onAccent)
+              : const TextStyle(color: AppColors.onAccent, fontSize: 14, fontWeight: FontWeight.w700),
+        ),
+        Text(label, style: TextStyle(color: AppColors.onAccent.withValues(alpha: 0.7), fontSize: 10)),
       ]),
     );
   }
@@ -377,7 +391,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? AppTheme.primaryColor : Colors.transparent,
+            color: isSelected ? AppColors.accent : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
@@ -385,7 +399,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurfaceVariant)),
+                    color: isSelected ? AppColors.onAccent : Theme.of(context).colorScheme.onSurfaceVariant)),
           ),
         ),
       ),
@@ -398,20 +412,20 @@ class _DailySalesPageState extends State<DailySalesPage> {
   Widget _buildStatCards(DailySales ds, ThemeData t) {
     return Column(children: [
       Row(children: [
-        Expanded(child: _statCard('Total Sales', _fc(ds.totalSales), Colors.green, Icons.trending_up_rounded)),
+        Expanded(child: _statCard('Total Sales', _fc(ds.totalSales), AppColors.successText(t.brightness), Icons.trending_up_rounded, money: true)),
         const SizedBox(width: 12),
-        Expanded(child: _statCard('Bill Count', _fn(ds.billCount), Colors.blue, Icons.receipt_long_rounded)),
+        Expanded(child: _statCard('Bill Count', _fn(ds.billCount), AppColors.infoText(t.brightness), Icons.receipt_long_rounded)),
       ]),
       const SizedBox(height: 12),
       Row(children: [
-        Expanded(child: _statCard('Average Bill', _fc(ds.averageBill), Colors.orange, Icons.analytics_rounded)),
+        Expanded(child: _statCard('Average Bill', _fc(ds.averageBill), AppColors.warningText(t.brightness), Icons.analytics_rounded, money: true)),
         const SizedBox(width: 12),
-        Expanded(child: _statCard('Total Discount', _fc(ds.totalDiscount), Colors.red, Icons.discount_rounded)),
+        Expanded(child: _statCard('Total Discount', _fc(ds.totalDiscount), t.colorScheme.error, Icons.discount_rounded, money: true)),
       ]),
     ]);
   }
 
-  Widget _statCard(String label, String value, Color color, IconData icon) {
+  Widget _statCard(String label, String value, Color color, IconData icon, {bool money = false}) {
     final t = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
@@ -431,7 +445,12 @@ class _DailySalesPageState extends State<DailySalesPage> {
           Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: t.colorScheme.onSurfaceVariant)),
         ]),
         const SizedBox(height: 12),
-        Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: color)),
+        Text(
+          value,
+          style: money
+              ? AppMoneyText.sized(22, FontWeight.w800, color)
+              : TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: color),
+        ),
       ]),
     );
   }
@@ -458,24 +477,26 @@ class _DailySalesPageState extends State<DailySalesPage> {
 
     final change = ((today.totalSales - yesterdaySales.totalSales) / yesterdaySales.totalSales * 100);
     final isUp = change >= 0;
+    final upColor = AppColors.successText(t.brightness);
+    final downColor = t.colorScheme.error;
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: t.colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: isUp ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2)),
+        border: Border.all(color: isUp ? upColor.withValues(alpha: 0.2) : downColor.withValues(alpha: 0.2)),
       ),
       child: Row(children: [
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: (isUp ? Colors.green : Colors.red).withValues(alpha: 0.1),
+            color: (isUp ? upColor : downColor).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
             isUp ? Icons.trending_up_rounded : Icons.trending_down_rounded,
-            color: isUp ? Colors.green : Colors.red,
+            color: isUp ? upColor : downColor,
             size: 20,
           ),
         ),
@@ -484,16 +505,22 @@ class _DailySalesPageState extends State<DailySalesPage> {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('vs Yesterday', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: t.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 2),
-            Text(
-              '${_fc(today.totalSales)} vs ${_fc(yesterdaySales.totalSales)}',
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+            Text.rich(
+              TextSpan(
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: t.colorScheme.onSurface),
+                children: [
+                  TextSpan(text: _fc(today.totalSales), style: AppMoneyText.sized(14, FontWeight.w700, t.colorScheme.onSurface)),
+                  const TextSpan(text: ' vs '),
+                  TextSpan(text: _fc(yesterdaySales.totalSales), style: AppMoneyText.sized(14, FontWeight.w700, t.colorScheme.onSurface)),
+                ],
+              ),
             ),
           ]),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: (isUp ? Colors.green : Colors.red).withValues(alpha: 0.1),
+            color: (isUp ? upColor : downColor).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
@@ -501,7 +528,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: isUp ? Colors.green[700] : Colors.red[700],
+              color: isUp ? upColor : downColor,
             ),
           ),
         ),
@@ -536,7 +563,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            const Icon(Icons.pie_chart_rounded, size: 16, color: AppTheme.primaryColor),
+            Icon(Icons.pie_chart_rounded, size: 16, color: AppColors.accentText(t.brightness)),
             const SizedBox(width: 8),
             Text('Payment Split', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: t.colorScheme.onSurfaceVariant)),
           ]),
@@ -551,7 +578,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
                 child: CustomPaint(
                   painter: _DonutPainter(
                     values: [cashCount.toDouble(), upiCount.toDouble(), cardCount.toDouble()],
-                    colors: [Colors.green, Colors.purple, Colors.blue],
+                    colors: [AppColors.success, AppColors.info, AppColors.warning],
                     strokeWidth: 14,
                   ),
                 ),
@@ -559,11 +586,11 @@ class _DailySalesPageState extends State<DailySalesPage> {
               const SizedBox(width: 16),
               Expanded(
                 child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  _splitLegend('Cash', '$cashCount ($cashPercent%)', Colors.green),
+                  _splitLegend('Cash', '$cashCount ($cashPercent%)', AppColors.success),
                   const SizedBox(height: 4),
-                  _splitLegend('UPI', '$upiCount ($upiPercent%)', Colors.purple),
+                  _splitLegend('UPI', '$upiCount ($upiPercent%)', AppColors.info),
                   const SizedBox(height: 4),
-                  _splitLegend('Card', '$cardCount ($cardPercent%)', Colors.blue),
+                  _splitLegend('Card', '$cardCount ($cardPercent%)', AppColors.warning),
                 ]),
               ),
             ]),
@@ -615,7 +642,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            Icon(Icons.emoji_events_rounded, size: 16, color: Colors.amber[700]),
+            Icon(Icons.emoji_events_rounded, size: 16, color: AppColors.warningText(t.brightness)),
             const SizedBox(width: 8),
             Text('Best Selling Today', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: t.colorScheme.onSurfaceVariant)),
           ]),
@@ -634,7 +661,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
                   width: 24,
                   height: 24,
                   decoration: BoxDecoration(
-                    color: i == 0 ? Colors.amber.withValues(alpha: 0.15) : t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    color: i == 0 ? AppColors.warning.withValues(alpha: 0.15) : t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Center(
@@ -643,7 +670,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
-                        color: i == 0 ? Colors.amber[700] : t.colorScheme.onSurfaceVariant,
+                        color: i == 0 ? AppColors.warningText(t.brightness) : t.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -660,16 +687,16 @@ class _DailySalesPageState extends State<DailySalesPage> {
                         value: percent,
                         minHeight: 4,
                         backgroundColor: t.colorScheme.surfaceContainerHighest,
-                        color: i == 0 ? Colors.amber : AppTheme.primaryColor,
+                        color: i == 0 ? AppColors.warning : AppColors.accent,
                       ),
                     ),
                   ]),
                 ),
                 const SizedBox(width: 10),
                 Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  Text('${item.value} units', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.primaryColor)),
+                  Text('${item.value} units', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.accentText(t.brightness))),
                   Text(_fc(productRevenue[item.key] ?? 0),
-                      style: TextStyle(fontSize: 10, color: t.colorScheme.onSurfaceVariant)),
+                      style: AppMoneyText.sized(10, FontWeight.w400, t.colorScheme.onSurfaceVariant)),
                 ]),
               ]),
             );
@@ -714,7 +741,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            const Icon(Icons.access_time_rounded, size: 16, color: AppTheme.primaryColor),
+            Icon(Icons.access_time_rounded, size: 16, color: AppColors.accentText(t.brightness)),
             const SizedBox(width: 8),
             Text('Sales by Time Block', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: t.colorScheme.onSurfaceVariant)),
           ]),
@@ -739,7 +766,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
                   child: Container(
                     height: 28,
                     decoration: BoxDecoration(
-                      color: Color.lerp(Colors.grey.withValues(alpha: 0.1), AppTheme.primaryColor, intensity),
+                      color: Color.lerp(AppColors.divider(t.brightness), AppColors.accent, intensity),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Align(
@@ -748,10 +775,10 @@ class _DailySalesPageState extends State<DailySalesPage> {
                         padding: const EdgeInsets.only(right: 8),
                         child: Text(
                           _fc(sales),
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: intensity > 0.5 ? Colors.white : t.colorScheme.onSurface,
+                          style: AppMoneyText.sized(
+                            11,
+                            FontWeight.w700,
+                            intensity > 0.5 ? AppColors.onAccent : t.colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -799,7 +826,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
                   Text(_fc(sale.totalSales),
-                      style: TextStyle(fontSize: 9, color: t.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w500)),
+                      style: AppMoneyText.sized(9, FontWeight.w500, t.colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 4),
                   TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0.0, end: barHeight),
@@ -808,10 +835,10 @@ class _DailySalesPageState extends State<DailySalesPage> {
                     builder: (_, val, child) => Container(
                       height: val,
                       decoration: BoxDecoration(
-                        color: isToday ? AppTheme.primaryColor : AppTheme.primaryColor.withValues(alpha: 0.5),
+                        color: isToday ? AppColors.accent : AppColors.accent.withValues(alpha: 0.5),
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
                         boxShadow: isToday
-                            ? [BoxShadow(color: AppTheme.primaryColor.withValues(alpha: 0.3), blurRadius: 6, offset: const Offset(0, 2))]
+                            ? [BoxShadow(color: AppColors.accent.withValues(alpha: 0.3), blurRadius: 6, offset: const Offset(0, 2))]
                             : null,
                       ),
                     ),
@@ -821,7 +848,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
                       style: TextStyle(
                           fontSize: 11,
                           fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
-                          color: isToday ? AppTheme.primaryColor : t.colorScheme.onSurfaceVariant)),
+                          color: isToday ? AppColors.accentText(t.brightness) : t.colorScheme.onSurfaceVariant)),
                 ]),
               ),
             );

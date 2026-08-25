@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_state.dart';
@@ -390,7 +391,7 @@ class _LowStockPageState extends State<LowStockPage> with SingleTickerProviderSt
     final statusColor = isOut
         ? t.colorScheme.error
         : isCritical
-            ? const Color(0xFFFF6B35)
+            ? AppColors.warningText(t.brightness)
             : t.colorScheme.tertiary;
 
     final statusText = isOut ? 'OUT OF STOCK' : isCritical ? 'CRITICAL' : 'LOW STOCK';

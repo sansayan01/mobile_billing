@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
+import 'package:billing_app/core/theme/app_typography.dart';
 import 'package:billing_app/core/widgets/app_feedback.dart';
 import 'package:billing_app/core/widgets/primary_button.dart';
 import 'package:billing_app/core/utils/printer_helper.dart';
@@ -130,11 +131,12 @@ class _BillDetailPageState extends State<BillDetailPage> {
           actions: isOwner
               ? [
                   IconButton(
-                    icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
+                    icon: Icon(Icons.edit,
+                        color: AppColors.accentText(theme.brightness)),
                     onPressed: () => _showEditDialog(context),
                   ),
                   IconButton(
-                    icon: Icon(Icons.delete, color: AppTheme.errorColor),
+                    icon: Icon(Icons.delete, color: theme.colorScheme.error),
                     onPressed: () => _confirmDelete(context),
                   ),
                 ]
@@ -160,7 +162,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
                     Icon(
                       Icons.error_outline,
                       size: 64,
-                      color: AppTheme.errorColor,
+                      color: theme.colorScheme.error,
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -180,7 +182,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
             }
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -247,7 +249,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                                      color: AppColors.accentSubtle,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
@@ -255,7 +257,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
-                                        color: AppTheme.primaryColor,
+                                        color: AppColors.accentText(theme.brightness),
                                       ),
                                     ),
                                   ),
@@ -278,15 +280,15 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                             child: Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                                               decoration: BoxDecoration(
-                                                color: Colors.blue.shade50,
+                                                color: AppColors.info.withValues(alpha: 0.14),
                                                 borderRadius: BorderRadius.circular(4),
-                                                border: Border.all(color: Colors.blue.shade200),
+                                                border: Border.all(color: AppColors.info.withValues(alpha: 0.35)),
                                               ),
                                               child: Text(
                                                 item.warrantyLabel,
                                                 style: TextStyle(
                                                   fontSize: 10,
-                                                  color: Colors.blue.shade700,
+                                                  color: AppColors.infoText(theme.brightness),
                                                 ),
                                               ),
                                             ),
@@ -300,17 +302,18 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                     children: [
                                       Text(
                                         itemPrice,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: theme.colorScheme.onSurfaceVariant,
+                                        style: AppMoneyText.sized(
+                                          12,
+                                          FontWeight.w400,
+                                          theme.colorScheme.onSurfaceVariant,
                                         ),
                                       ),
                                       Text(
                                         itemTotal,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: theme.colorScheme.onSurface,
+                                        style: AppMoneyText.sized(
+                                          14,
+                                          FontWeight.w600,
+                                          theme.colorScheme.onSurface,
                                         ),
                                       ),
                                     ],
@@ -334,16 +337,21 @@ class _BillDetailPageState extends State<BillDetailPage> {
                     _infoRow(
                       'Total Amount',
                       numberFormat.format(bill.totalAmount),
+                      valueStyle: AppMoneyText.sized(
+                        15,
+                        FontWeight.w500,
+                        theme.colorScheme.onSurface,
+                      ),
                     ),
                     if (bill.discount > 0) ...[
                       const SizedBox(height: 12),
                       _infoRow(
                         'Discount',
                         '-${numberFormat.format(bill.discount)}',
-                        valueStyle: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: theme.colorScheme.primary.withValues(alpha: 0.8),
+                        valueStyle: AppMoneyText.sized(
+                          15,
+                          FontWeight.w500,
+                          AppColors.accentText(theme.brightness).withValues(alpha: 0.8),
                         ),
                       ),
                     ],
@@ -352,10 +360,10 @@ class _BillDetailPageState extends State<BillDetailPage> {
                     _infoRow(
                       'Grand Total',
                       numberFormat.format(bill.grandTotal),
-                      valueStyle: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: AppTheme.primaryColor,
+                      valueStyle: AppMoneyText.sized(
+                        18,
+                        FontWeight.bold,
+                        AppColors.accentText(theme.brightness),
                       ),
                     ),
                     // Payment breakdown for due bills
@@ -364,17 +372,17 @@ class _BillDetailPageState extends State<BillDetailPage> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.orange.shade50,
+                          color: AppColors.warning.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.orange.shade200),
+                          border: Border.all(color: AppColors.warning.withValues(alpha: 0.35)),
                         ),
                         child: Column(
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Amount Paid', style: TextStyle(fontSize: 13, color: Colors.green.shade700)),
-                                Text(numberFormat.format(bill.amountPaid), style: TextStyle(fontSize: 13, color: Colors.green.shade700, fontWeight: FontWeight.w600)),
+                                Text('Amount Paid', style: TextStyle(fontSize: 13, color: AppColors.successText(theme.brightness))),
+                                Text(numberFormat.format(bill.amountPaid), style: AppMoneyText.sized(13, FontWeight.w600, AppColors.successText(theme.brightness))),
                               ],
                             ),
                             const SizedBox(height: 6),
@@ -382,7 +390,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text('Due Amount', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                                Text(numberFormat.format(bill.dueAmount), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.orange)),
+                                Text(numberFormat.format(bill.dueAmount), style: AppMoneyText.sized(17, FontWeight.w700, AppColors.warningText(theme.brightness))),
                               ],
                             ),
                           ],
@@ -402,8 +410,8 @@ class _BillDetailPageState extends State<BillDetailPage> {
                       icon: const Icon(Icons.payments, size: 18),
                       label: const Text('Collect Payment'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.success,
+                        foregroundColor: AppColors.onAccent,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -430,11 +438,11 @@ class _BillDetailPageState extends State<BillDetailPage> {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: _actionBtn('Notes', Icons.notes_rounded, AppTheme.primaryColor, () => _showNotesDialog(context, bill)),
+                    child: _actionBtn('Notes', Icons.notes_rounded, AppColors.accentText(theme.brightness), () => _showNotesDialog(context, bill)),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: _actionBtn('Void', Icons.cancel_outlined, Colors.orange, () => _showVoidDialog(context)),
+                    child: _actionBtn('Void', Icons.cancel_outlined, AppColors.warningText(theme.brightness), () => _showVoidDialog(context)),
                   ),
                 ]),
                 const SizedBox(height: 12),
@@ -597,11 +605,23 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
-                                        Text(
-                                          '₹${item.price.toStringAsFixed(0)} each',
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            color: theme.colorScheme.onSurfaceVariant,
+                                        Text.rich(
+                                          TextSpan(
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              color: theme.colorScheme.onSurfaceVariant,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: '₹${item.price.toStringAsFixed(0)}',
+                                                style: AppMoneyText.sized(
+                                                  11,
+                                                  FontWeight.w400,
+                                                  theme.colorScheme.onSurfaceVariant,
+                                                ),
+                                              ),
+                                              const TextSpan(text: ' each'),
+                                            ],
                                           ),
                                         ),
                                       ],
@@ -627,7 +647,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                       size: 20,
                                       color: item.quantity > 1
                                           ? Theme.of(context).colorScheme.onSurfaceVariant
-                                          : AppTheme.errorColor,
+                                          : Theme.of(context).colorScheme.error,
                                     ),
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
@@ -653,7 +673,8 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                     icon: Icon(
                                       Icons.add_circle_outline,
                                       size: 20,
-                                      color: AppTheme.primaryColor,
+                                      color: AppColors.accentText(
+                                          Theme.of(context).brightness),
                                     ),
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
@@ -664,9 +685,10 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                   // Item total
                                   Text(
                                     '₹${(item.price * item.quantity).toStringAsFixed(0)}',
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
+                                    style: AppMoneyText.sized(
+                                      13,
+                                      FontWeight.w600,
+                                      theme.colorScheme.onSurface,
                                     ),
                                   ),
                                 ],
@@ -684,7 +706,8 @@ class _BillDetailPageState extends State<BillDetailPage> {
                       if (discount > 0)
                         _editInfoRow('Discount',
                             '-₹${discount.toStringAsFixed(0)}',
-                            valueColor: Theme.of(context).colorScheme.primary),
+                            valueColor: AppColors.accentText(
+                                Theme.of(context).brightness)),
                       const Divider(),
                       _editInfoRow(
                         'Grand Total',
@@ -808,11 +831,23 @@ class _BillDetailPageState extends State<BillDetailPage> {
                                 color: alreadyAdded ? Theme.of(context).colorScheme.onSurfaceVariant : null,
                               ),
                             ),
-                            subtitle: Text(
-                              '₹${product.price.toStringAsFixed(0)} • Stock: ${product.stock}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: theme.colorScheme.onSurfaceVariant,
+                            subtitle: Text.rich(
+                              TextSpan(
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: '₹${product.price.toStringAsFixed(0)}',
+                                    style: AppMoneyText.sized(
+                                      12,
+                                      FontWeight.w400,
+                                      theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  TextSpan(text: ' • Stock: ${product.stock}'),
+                                ],
                               ),
                             ),
                             trailing: alreadyAdded
@@ -875,10 +910,10 @@ class _BillDetailPageState extends State<BillDetailPage> {
           ),
           Text(
             value,
-            style: TextStyle(
-              fontSize: isBold ? 16 : 14,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
-              color: valueColor,
+            style: AppMoneyText.sized(
+              isBold ? 16 : 14,
+              isBold ? FontWeight.bold : FontWeight.w500,
+              valueColor ?? theme.colorScheme.onSurface,
             ),
           ),
         ],
@@ -897,7 +932,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
         return AlertDialog(
           title: Row(
             children: [
-              Icon(Icons.payments, color: Theme.of(context).primaryColor, size: 24),
+              Icon(Icons.payments, color: AppColors.accentText(Theme.of(context).brightness), size: 24),
               const SizedBox(width: 8),
               const Expanded(child: Text('Collect Payment', style: TextStyle(fontSize: 18))),
             ],
@@ -942,25 +977,25 @@ class _BillDetailPageState extends State<BillDetailPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
+                  color: AppColors.warning.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange.shade200),
+                  border: Border.all(color: AppColors.warning.withValues(alpha: 0.35)),
                 ),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Bill Total', style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
-                        Text('₹${_formatDueAmount(bill.grandTotal)}', style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
+                        Text('Bill Total', style: TextStyle(fontSize: 13, color: AppColors.warningText(Theme.of(context).brightness))),
+                        Text('₹${_formatDueAmount(bill.grandTotal)}', style: AppMoneyText.sized(13, FontWeight.w400, AppColors.warningText(Theme.of(context).brightness))),
                       ],
                     ),
                     const SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Already Paid', style: TextStyle(fontSize: 13, color: Colors.green.shade700)),
-                        Text('₹${_formatDueAmount(bill.amountPaid)}', style: TextStyle(fontSize: 13, color: Colors.green.shade700)),
+                        Text('Already Paid', style: TextStyle(fontSize: 13, color: AppColors.successText(Theme.of(context).brightness))),
+                        Text('₹${_formatDueAmount(bill.amountPaid)}', style: AppMoneyText.sized(13, FontWeight.w400, AppColors.successText(Theme.of(context).brightness))),
                       ],
                     ),
                     const Divider(),
@@ -968,7 +1003,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Due Amount', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                        Text('₹${_formatDueAmount(bill.dueAmount)}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.orange)),
+                        Text('₹${_formatDueAmount(bill.dueAmount)}', style: AppMoneyText.sized(17, FontWeight.w700, AppColors.warningText(Theme.of(context).brightness))),
                       ],
                     ),
                   ],
@@ -1157,8 +1192,8 @@ class _BillDetailPageState extends State<BillDetailPage> {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(children: [
-            Container(width: 40, height: 40, decoration: BoxDecoration(color: AppTheme.primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-                child: Icon(Icons.notes_rounded, color: AppTheme.primaryColor, size: 22)),
+            Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.accentSubtle, borderRadius: BorderRadius.circular(10)),
+                child: Icon(Icons.notes_rounded, color: AppColors.accentText(Theme.of(context).brightness), size: 22)),
             const SizedBox(width: 12),
             const Expanded(child: Text('Add Notes', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
           ]),
@@ -1173,7 +1208,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
                 Navigator.pop(dialogContext);
                 AppFeedback.success(context, 'Notes saved');
               },
-              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent, foregroundColor: AppColors.onAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
               child: const Text('Save'),
             ),
           ],
@@ -1192,15 +1227,15 @@ class _BillDetailPageState extends State<BillDetailPage> {
 
     // Build timeline entries
     final entries = <Map<String, dynamic>>[
-      {'label': 'Bill Created', 'amount': nf.format(bill.grandTotal), 'date': bill.createdAt, 'icon': Icons.receipt_long_rounded, 'color': AppTheme.primaryColor},
+      {'label': 'Bill Created', 'amount': nf.format(bill.grandTotal), 'date': bill.createdAt, 'icon': Icons.receipt_long_rounded, 'color': AppColors.accentText(theme.brightness)},
     ];
 
     if (bill.amountPaid > 0) {
-      entries.add({'label': 'Payment Received', 'amount': nf.format(bill.amountPaid), 'date': bill.createdAt, 'icon': Icons.check_circle_rounded, 'color': Colors.green});
+      entries.add({'label': 'Payment Received', 'amount': nf.format(bill.amountPaid), 'date': bill.createdAt, 'icon': Icons.check_circle_rounded, 'color': AppColors.successText(theme.brightness)});
     }
 
     if (bill.hasDue) {
-      entries.add({'label': 'Due Amount', 'amount': nf.format(bill.dueAmount), 'date': null, 'icon': Icons.warning_amber_rounded, 'color': Colors.orange});
+      entries.add({'label': 'Due Amount', 'amount': nf.format(bill.dueAmount), 'date': null, 'icon': Icons.warning_amber_rounded, 'color': AppColors.warningText(theme.brightness)});
     }
 
     return Container(
@@ -1229,7 +1264,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
               Text(e['label'] as String, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
               const SizedBox(height: 2),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(e['amount'] as String, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: e['color'] as Color)),
+                Text(e['amount'] as String, style: AppMoneyText.sized(13, FontWeight.w700, e['color'] as Color)),
                 if (e['date'] != null) Text(dateFormat.format(e['date'] as DateTime), style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurfaceVariant)),
               ]),
               if (!isLast) const SizedBox(height: 8),
@@ -1266,7 +1301,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
             const Text('Customer History', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 12),
             Row(children: [
-              Icon(Icons.person_rounded, size: 20, color: AppTheme.primaryColor),
+              Icon(Icons.person_rounded, size: 20, color: AppColors.accentText(theme.brightness)),
               const SizedBox(width: 8),
               Text(bill.customerName!, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
             ]),
@@ -1274,7 +1309,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
             Row(children: [
               _customerStat('Total Bills', '${customerBills.length}', Icons.receipt_long_rounded),
               const SizedBox(width: 12),
-              _customerStat('Total Spent', nf.format(totalSpent), Icons.currency_rupee_rounded),
+              _customerStat('Total Spent', nf.format(totalSpent), Icons.currency_rupee_rounded, money: true),
             ]),
           ]),
         );
@@ -1282,19 +1317,24 @@ class _BillDetailPageState extends State<BillDetailPage> {
     );
   }
 
-  Widget _customerStat(String label, String value, IconData icon) {
+  Widget _customerStat(String label, String value, IconData icon, {bool money = false}) {
     final theme = Theme.of(context);
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppTheme.primaryColor.withValues(alpha: 0.06),
+          color: AppColors.accent.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Icon(icon, size: 16, color: AppTheme.primaryColor),
+          Icon(icon, size: 16, color: AppColors.accentText(theme.brightness)),
           const SizedBox(height: 6),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+          Text(
+            value,
+            style: money
+                ? AppMoneyText.sized(16, FontWeight.w700, theme.colorScheme.onSurface)
+                : const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+          ),
           Text(label, style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurfaceVariant)),
         ]),
       ),
@@ -1303,6 +1343,7 @@ class _BillDetailPageState extends State<BillDetailPage> {
 
   Widget _buildPaymentStatusRow(BillSummary bill) {
     final theme = Theme.of(context);
+    final b = theme.brightness;
     Color bgColor;
     Color textColor;
     String label;
@@ -1310,26 +1351,26 @@ class _BillDetailPageState extends State<BillDetailPage> {
 
     switch (bill.paymentStatus) {
       case 'paid':
-        bgColor = Colors.green.shade50;
-        textColor = Colors.green.shade700;
+        bgColor = AppColors.success.withValues(alpha: 0.12);
+        textColor = AppColors.successText(b);
         label = 'Paid';
         icon = Icons.check_circle;
         break;
       case 'partial':
-        bgColor = Colors.orange.shade50;
-        textColor = Colors.orange.shade700;
+        bgColor = AppColors.warning.withValues(alpha: 0.12);
+        textColor = AppColors.warningText(b);
         label = 'Partial';
         icon = Icons.access_time;
         break;
       case 'due':
-        bgColor = Colors.red.shade50;
-        textColor = Colors.red.shade700;
+        bgColor = theme.colorScheme.error.withValues(alpha: 0.12);
+        textColor = theme.colorScheme.error;
         label = 'Due';
         icon = Icons.warning_amber;
         break;
       default:
-        bgColor = Colors.green.shade50;
-        textColor = Colors.green.shade700;
+        bgColor = AppColors.success.withValues(alpha: 0.12);
+        textColor = AppColors.successText(b);
         label = 'Paid';
         icon = Icons.check_circle;
     }

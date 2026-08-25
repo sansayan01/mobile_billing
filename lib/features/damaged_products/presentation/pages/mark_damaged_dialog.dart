@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 
 class MarkDamagedDialog extends StatefulWidget {
   final String productName;
@@ -41,14 +42,25 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final b = theme.brightness;
     final quantity = int.tryParse(_quantityController.text) ?? 0;
 
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Row(
         children: [
-          Icon(Icons.broken_image_rounded,
-              color: theme.colorScheme.error, size: 24),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.error(b).withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.broken_image_rounded,
+              color: AppColors.error(b),
+              size: 20,
+            ),
+          ),
           const SizedBox(width: 10),
           const Expanded(child: Text('Mark as Damaged')),
         ],
@@ -64,7 +76,7 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface,
+                color: AppColors.textPrimary(b),
               ),
             ),
             const SizedBox(height: 4),
@@ -72,7 +84,7 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
               'Available stock: ${widget.currentStock}',
               style: TextStyle(
                 fontSize: 13,
-                color: theme.colorScheme.onSurfaceVariant,
+                color: AppColors.textTertiary(b),
               ),
             ),
             const SizedBox(height: 20),
@@ -83,7 +95,7 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurfaceVariant,
+                color: AppColors.textSecondary(b),
               ),
             ),
             const SizedBox(height: 8),
@@ -116,7 +128,7 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
                     ),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 12),
@@ -141,12 +153,13 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
             ),
             if (quantity > widget.currentStock)
               Padding(
-                padding: const EdgeInsets.only(top: 4),
+                padding: const EdgeInsets.only(top: 6),
                 child: Text(
                   'Cannot exceed available stock',
                   style: TextStyle(
                     fontSize: 12,
-                    color: theme.colorScheme.error,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.error(b),
                   ),
                 ),
               ),
@@ -159,7 +172,7 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurfaceVariant,
+                color: AppColors.textSecondary(b),
               ),
             ),
             const SizedBox(height: 8),
@@ -168,22 +181,30 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
               runSpacing: 8,
               children: _damageTypes.map((type) {
                 final isSelected = _selectedDamageType == type['value'];
+                final chipColor = AppColors.error(b);
                 return ChoiceChip(
                   label: Text(type['label'] as String),
                   avatar: Icon(
                     type['icon'] as IconData,
                     size: 16,
                     color: isSelected
-                        ? theme.colorScheme.onPrimary
-                        : theme.colorScheme.onSurfaceVariant,
+                        ? chipColor
+                        : AppColors.textTertiary(b),
                   ),
                   selected: isSelected,
-                  selectedColor: theme.colorScheme.error,
+                  selectedColor: chipColor.withValues(alpha: 0.12),
+                  backgroundColor: Colors.transparent,
+                  side: BorderSide(
+                    color:
+                        isSelected ? chipColor : AppColors.border(b),
+                  ),
+                  showCheckmark: false,
                   labelStyle: TextStyle(
                     color: isSelected
-                        ? theme.colorScheme.onPrimary
-                        : theme.colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
+                        ? chipColor
+                        : AppColors.textPrimary(b),
+                    fontWeight:
+                        isSelected ? FontWeight.w600 : FontWeight.w500,
                   ),
                   onSelected: (selected) {
                     setState(() {
@@ -203,7 +224,7 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurfaceVariant,
+                color: AppColors.textSecondary(b),
               ),
             ),
             const SizedBox(height: 8),
@@ -213,7 +234,7 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
               decoration: InputDecoration(
                 hintText: 'Describe the damage...',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 contentPadding: const EdgeInsets.all(12),
               ),
@@ -226,7 +247,7 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
           onPressed: () => Navigator.pop(context),
           child: Text(
             'Cancel',
-            style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+            style: TextStyle(color: AppColors.textSecondary(b)),
           ),
         ),
         ElevatedButton.icon(
@@ -245,10 +266,10 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
           icon: const Icon(Icons.broken_image_rounded, size: 18),
           label: const Text('Mark Damaged'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: theme.colorScheme.error,
+            backgroundColor: AppColors.error(b),
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
         ),
@@ -259,17 +280,19 @@ class _MarkDamagedDialogState extends State<MarkDamagedDialog> {
   Widget _buildQuantityButton(
       BuildContext context, IconData icon, VoidCallback onTap) {
     final theme = Theme.of(context);
+    final b = theme.brightness;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(8),
+          color: AppColors.surfaceElevated(b),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppColors.border(b)),
         ),
-        child: Icon(icon, size: 20),
+        child: Icon(icon, size: 20, color: AppColors.textPrimary(b)),
       ),
     );
   }

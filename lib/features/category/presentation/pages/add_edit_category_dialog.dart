@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 
 import '../bloc/category_bloc.dart';
 import '../../domain/entities/category.dart';
@@ -259,8 +260,8 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
         ElevatedButton(
           onPressed: _onSave,
           style: ElevatedButton.styleFrom(
-            backgroundColor: _selectedColor,
-            foregroundColor: Colors.white,
+            backgroundColor: AppColors.accent,
+            foregroundColor: AppColors.onAccent,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
           child: Text(_isEditMode ? 'Update' : 'Save'),

@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/widgets/dashboard_action_card.dart';
 import 'package:billing_app/core/widgets/premium_stat_card.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
@@ -33,7 +33,7 @@ class ReportsHomePage extends StatelessWidget {
         return Scaffold(
           body: Container(
             decoration: BoxDecoration(
-              gradient: AppTheme.gradientFor(context),
+              gradient: AppColors.gradientFor(context),
             ),
             child: SafeArea(
               child: RefreshIndicator(
@@ -49,13 +49,13 @@ class ReportsHomePage extends StatelessWidget {
                   physics: const AlwaysScrollableScrollPhysics(),
                   slivers: [
                     // ── AppBar ──
-                    SliverAppBar(
+                    const SliverAppBar(
                       floating: true,
                       snap: true,
                       backgroundColor: Colors.transparent,
                       elevation: 0,
-                      leading: const AdaptiveAppBarLeading(),
-                      title: const Text('Reports & History',
+                      leading: AdaptiveAppBarLeading(),
+                      title: Text('Reports & History',
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18)),
@@ -69,7 +69,8 @@ class ReportsHomePage extends StatelessWidget {
                         child: PremiumStatCard(
                           label: 'This Month Revenue',
                           value: nf.format(monthRevenue),
-                          color: AppTheme.primaryColor,
+                          color: AppColors.accentText(
+                              Theme.of(context).brightness),
                           icon: Icons.account_balance_wallet_rounded,
                         ),
                       ),
@@ -85,7 +86,8 @@ class ReportsHomePage extends StatelessWidget {
                               child: PremiumStatCard(
                                 label: 'Bills',
                                 value: '${monthBills.length}',
-                                color: Colors.blue,
+                                color: AppColors.infoText(
+                                    Theme.of(context).brightness),
                                 icon: Icons.receipt_long_rounded,
                               ),
                             ),
@@ -94,7 +96,8 @@ class ReportsHomePage extends StatelessWidget {
                               child: PremiumStatCard(
                                 label: 'Low Stock',
                                 value: '$lowStockCount',
-                                color: Colors.orange,
+                                color: AppColors.warningText(
+                                    Theme.of(context).brightness),
                                 icon: Icons.warning_amber_rounded,
                               ),
                             ),
@@ -109,8 +112,10 @@ class ReportsHomePage extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(18, 16, 18, 8),
                         child: Row(
                           children: [
-                            const Icon(Icons.insights_rounded,
-                                size: 16, color: AppTheme.primaryColor),
+                            Icon(Icons.insights_rounded,
+                                size: 16,
+                                color: AppColors.accentText(
+                                    Theme.of(context).brightness)),
                             const SizedBox(width: 6),
                             Text('Explore Reports',
                                 style: TextStyle(
@@ -139,7 +144,8 @@ class ReportsHomePage extends StatelessWidget {
                                 title: 'Bill History',
                                 subtitle:
                                     '${monthBills.length} bills this month',
-                                color: AppTheme.primaryColor,
+                                color: AppColors.accentText(
+                                    Theme.of(context).brightness),
                                 onTap: () =>
                                     context.push('/reports/bills'),
                               );
@@ -148,7 +154,8 @@ class ReportsHomePage extends StatelessWidget {
                                 icon: Icons.trending_up_rounded,
                                 title: 'Daily Sales',
                                 subtitle: 'Track daily revenue',
-                                color: Colors.green,
+                                color: AppColors.successText(
+                                    Theme.of(context).brightness),
                                 onTap: () =>
                                     context.push('/reports/daily-sales'),
                               );
@@ -159,7 +166,8 @@ class ReportsHomePage extends StatelessWidget {
                                 subtitle: lowStockCount > 0
                                     ? '$lowStockCount need reorder'
                                     : 'All well-stocked',
-                                color: Colors.orange,
+                                color: AppColors.warningText(
+                                    Theme.of(context).brightness),
                                 onTap: () =>
                                     context.push('/reports/low-stock'),
                               );
@@ -168,7 +176,8 @@ class ReportsHomePage extends StatelessWidget {
                                 icon: Icons.swap_horiz_rounded,
                                 title: 'Stock Movement',
                                 subtitle: 'Inventory changes',
-                                color: Colors.blue,
+                                color: AppColors.infoText(
+                                    Theme.of(context).brightness),
                                 onTap: () =>
                                     context.push('/reports/stock-movements'),
                               );
@@ -177,11 +186,12 @@ class ReportsHomePage extends StatelessWidget {
                                 icon: Icons.history_rounded,
                                 title: 'Audit Trail',
                                 subtitle: 'Activity timeline',
-                                color: Colors.teal,
+                                color: AppColors.infoText(
+                                    Theme.of(context).brightness),
                                 onTap: () =>
                                     context.push('/reports/audit-trail'),
                               );
-                          }
+                            }
                         },
                       ),
                     ),

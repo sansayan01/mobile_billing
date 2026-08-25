@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
@@ -21,13 +22,13 @@ class TopProductsBarChart extends StatelessWidget {
       return _glass(
         context: context,
         isDark: isDark,
-        child: const Padding(
-          padding: EdgeInsets.all(24),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              Icon(Icons.bar_chart_rounded, size: 36, color: AppTheme.primaryColor),
-              SizedBox(height: 12),
-              Text('No product data yet', style: TextStyle(fontSize: 14)),
+              Icon(Icons.bar_chart_rounded, size: 36, color: AppColors.accentText(theme.brightness)),
+              const SizedBox(height: 12),
+              const Text('No product data yet', style: TextStyle(fontSize: 14)),
             ],
           ),
         ),
@@ -74,15 +75,15 @@ class TopProductsBarChart extends StatelessWidget {
                         return BarTooltipItem(
                           '${p.name}\n',
                           const TextStyle(
-                            color: Colors.white,
+                            color: AppColors.onAccent,
                             fontWeight: FontWeight.w700,
                             fontSize: 12,
                           ),
                           children: [
                             TextSpan(
                               text: '${p.quantity} units · ₹${p.revenue.toStringAsFixed(0)}',
-                              style: const TextStyle(
-                                color: Color(0xFFE0E0FF),
+                              style: TextStyle(
+                                color: AppColors.onAccent.withValues(alpha: 0.75),
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -141,7 +142,7 @@ class TopProductsBarChart extends StatelessWidget {
                     horizontalInterval: maxQty > 0 ? (maxQty / 4).ceilToDouble() : 1,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: onSurface.withValues(alpha: 0.08),
+                        color: AppColors.divider(theme.brightness),
                         strokeWidth: 1,
                       );
                     },
@@ -152,8 +153,8 @@ class TopProductsBarChart extends StatelessWidget {
                     final p = products[index];
                     final ratio = maxRevenue > 0 ? p.revenue / maxRevenue : 0.5;
                     final color = Color.lerp(
-                      AppTheme.primaryColor,
-                      const Color(0xFF4CAF50),
+                      AppColors.accent,
+                      AppColors.success,
                       ratio,
                     )!;
                     return BarChartGroupData(
@@ -188,7 +189,7 @@ class TopProductsBarChart extends StatelessWidget {
                     ),
                     Text(
                       '₹${products.fold<double>(0, (s, p) => s + p.revenue).toStringAsFixed(0)}',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF4CAF50)),
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.successText(theme.brightness)),
                     ),
                   ],
                 ),

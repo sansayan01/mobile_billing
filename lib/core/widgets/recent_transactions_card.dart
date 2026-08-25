@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
 /// Simple data class representing a recent transaction/bill.
@@ -74,21 +74,21 @@ class RecentTransactionsCard extends StatelessWidget {
   }
 
   /// Returns a color associated with the payment method string.
-  static Color _paymentColor(String method) {
+  /// Brightness-aware so badges stay readable in light and dark mode.
+  static Color _paymentColor(String method, Brightness b) {
     final m = method.toLowerCase();
-    if (m == 'upi') return const Color(0xFF4CAF50);
-    if (m == 'cash') return const Color(0xFFFF9800);
-    if (m == 'card') return const Color(0xFF2196F3);
-    if (m == 'credit') return const Color(0xFF9C27B0);
-    return const Color(0xFF78909C);
+    if (m == 'upi') return AppColors.successText(b);
+    if (m == 'cash') return AppColors.warningText(b);
+    if (m == 'card') return AppColors.infoText(b);
+    if (m == 'credit') return AppColors.infoText(b);
+    return AppColors.textTertiary(b);
   }
 
   // ── Build ────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    const darkSurface = AppTheme.darkSurface;
+    final b = Theme.of(context).brightness;
 
     final displayTransactions =
         transactions.length > 5 ? transactions.sublist(0, 5) : transactions;
@@ -98,28 +98,19 @@ class RecentTransactionsCard extends StatelessWidget {
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: isDark
-              ? darkSurface.withValues(alpha: 0.70)
-              : Theme.of(context).colorScheme.surface.withValues(alpha: 0.55),
+          color: AppColors.surface(b),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isDark
-                ? darkSurface.withValues(alpha: 0.50)
-                : Theme.of(context).colorScheme.surface.withValues(alpha: 0.35),
-            width: 1,
-          ),
+          border: Border.all(color: AppColors.border(b)),
           boxShadow: [
             BoxShadow(
-              color: isDark
-                  ? darkSurface.withValues(alpha: 0.45)
-                  : Colors.black.withValues(alpha: 0.06),
+              color: Colors.black
+                  .withValues(alpha: b == Brightness.dark ? 0.25 : 0.06),
               blurRadius: 24,
               offset: const Offset(0, 8),
             ),
             BoxShadow(
-              color: isDark
-                  ? darkSurface.withValues(alpha: 0.25)
-                  : Colors.black.withValues(alpha: 0.03),
+              color: Colors.black
+                  .withValues(alpha: b == Brightness.dark ? 0.15 : 0.03),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -186,7 +177,8 @@ class RecentTransactionsCard extends StatelessWidget {
   // ── Individual transaction row ───────────────────────────────────────
 
   Widget _buildTransactionItem(BuildContext context, RecentTransaction txn) {
-    final badgeColor = _paymentColor(txn.paymentMethod);
+    final badgeColor =
+        _paymentColor(txn.paymentMethod, Theme.of(context).brightness);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),

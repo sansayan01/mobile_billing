@@ -7,7 +7,7 @@ import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_skeleton.dart';
 import '../bloc/category_bloc.dart';
 import '../../domain/entities/category.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_colors.dart';
 import 'add_edit_category_dialog.dart';
 import '../../../product/presentation/bloc/product_bloc.dart';
 
@@ -265,14 +265,6 @@ class _CategoryListPageState extends State<CategoryListPage>
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _openAddEditDialog(),
-        backgroundColor: AppTheme.primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 6,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add_rounded, size: 28),
-      ),
     );
   }
 
@@ -289,15 +281,15 @@ class _CategoryListPageState extends State<CategoryListPage>
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppTheme.primaryColor, AppTheme.primaryColor.withValues(alpha: 0.7)],
+              gradient: const LinearGradient(
+                colors: [AppColors.accent, AppColors.accentDark],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.4),
+                  color: AppColors.accent.withValues(alpha: 0.4),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -311,7 +303,7 @@ class _CategoryListPageState extends State<CategoryListPage>
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.white.withValues(alpha: 0.1), Colors.white.withValues(alpha: 0.5), Colors.white.withValues(alpha: 0.1)],
+                      colors: [AppColors.onAccent.withValues(alpha: 0.1), AppColors.onAccent.withValues(alpha: 0.35), AppColors.onAccent.withValues(alpha: 0.1)],
                     ),
                   ),
                 ),
@@ -332,18 +324,18 @@ class _CategoryListPageState extends State<CategoryListPage>
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
+              color: AppColors.onAccent.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(icon, color: Colors.white, size: 22),
+            child: Icon(icon, color: AppColors.onAccent, size: 22),
           ),
           const SizedBox(width: 14),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('$value', style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w800, height: 1.0)),
+              Text('$value', style: const TextStyle(color: AppColors.onAccent, fontSize: 26, fontWeight: FontWeight.w800, height: 1.0)),
               const SizedBox(height: 2),
-              Text(label, style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12, fontWeight: FontWeight.w500)),
+              Text(label, style: TextStyle(color: AppColors.onAccent.withValues(alpha: 0.75), fontSize: 12, fontWeight: FontWeight.w500)),
             ],
           ),
         ],
@@ -370,10 +362,10 @@ class _CategoryListPageState extends State<CategoryListPage>
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                  color: AppColors.accentSubtle,
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Icon(Icons.local_fire_department_rounded, size: 14, color: AppTheme.primaryColor),
+                child: Icon(Icons.local_fire_department_rounded, size: 14, color: AppColors.accentText(t.brightness)),
               ),
               const SizedBox(width: 8),
               Text('Top Categories',
@@ -634,11 +626,11 @@ class _CategoryListPageState extends State<CategoryListPage>
                   height: 120,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [AppTheme.primaryColor.withValues(alpha: 0.12), AppTheme.primaryColor.withValues(alpha: 0.04)],
+                      colors: [AppColors.accent.withValues(alpha: 0.12), AppColors.accent.withValues(alpha: 0.04)],
                     ),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.category_rounded, size: 56, color: AppTheme.primaryColor),
+                  child: Icon(Icons.category_rounded, size: 56, color: AppColors.accentText(t.brightness)),
                 ),
               ),
               const SizedBox(height: 32),
@@ -653,8 +645,8 @@ class _CategoryListPageState extends State<CategoryListPage>
                 icon: const Icon(Icons.add_rounded, size: 20),
                 label: const Text('Create First Category', style: TextStyle(fontWeight: FontWeight.w600)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.accent,
+                  foregroundColor: AppColors.onAccent,
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
                   elevation: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -735,18 +727,18 @@ class _CategoryListPageState extends State<CategoryListPage>
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.06),
+                  color: AppColors.warning.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.orange.withValues(alpha: 0.15)),
+                  border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.warning_amber_rounded, color: Colors.orange[700], size: 22),
+                    Icon(Icons.warning_amber_rounded, color: AppColors.warningText(t.brightness), size: 22),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         '$count ${count == 1 ? "product" : "products"} will become uncategorized.',
-                        style: TextStyle(fontSize: 13, color: Colors.orange[800], fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 13, color: AppColors.warningText(t.brightness), fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],

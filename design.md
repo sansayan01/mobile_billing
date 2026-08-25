@@ -1,8 +1,100 @@
 # Design
 
-> **⚠ v2 UPDATE (2026-08-24 — Premium UI/UX Redesign):** Neeche ke original sections
-> valid hain, lekin ab inke upar ek formal design system layer hai. Naye kaam ke liye
-> PEHLE ye use karo, purane hardcoded values ko migrate karte jao.
+> **⚠ v3 UPDATE (2026-08-25 — Midnight Lime Design System):** Master prompt + Monex
+> reference image ke basis pe NAYA design system. Ye SOURCE OF TRUTH hai. V2 tokens
+> (spacing/radius/motion) valid hain — colors + surfaces + typography ab v3 ke.
+
+---
+
+## 🎨 DESIGN SYSTEM v3 — "MIDNIGHT LIME" (Source of Truth, LOCKED after Phase 5)
+
+### Phase 1 — Reference Philosophy (Monex analysis, NOT a clone)
+
+1. **Color philosophy** — Near-black midnight (pure black NAHI, blue-tinted dark). Depth =
+   elevation steps (bg → surface → elevated). Lime accent SURGICAL: sirf primary CTA, active
+   state, key metric, positive highlight. Kabhi large fills nahi (hero card gradient excepted).
+2. **Typography philosophy** — Money = hero. Bade confident numerals (mono/tabular), tight
+   tracking. Hierarchy: balance (32+) → section title (16-18) → meta (12-13). IBM Plex Sans
+   (UI) + IBM Plex Mono (numbers) — same family, techy numeric feel.
+3. **Surface philosophy** — Flat-ish dark cards, depth via LIGHTER surface color (not heavy
+   shadows), 1px hairline borders (white @ 6-8%), radius 20-24. Ek hero gradient allowed.
+4. **Component philosophy** — Pill buttons (lime fill + MIDNIGHT text = high contrast),
+   circular icon actions, avatar/icon chips in lists, segmented controls in dark containers.
+5. **Layout philosophy** — Single column, 16-20px margins, bada number upar, actions thumb
+   zone me, floating bottom nav, sections 24-32px apart.
+6. **Motion philosophy** — Fast (150-250ms), easeOutCubic, press-scale 0.97, fade+slide
+   entrance, value crossfade. Kuch bhi bouncy/decorative nahi.
+7. **Interaction philosophy** — Haptics on key actions, instant feedback, swipe actions,
+   pull-to-refresh, thumb-reach first.
+
+### 2.1 COLOR SYSTEM (`lib/core/theme/app_colors.dart`)
+
+**DARK (primary experience):**
+| Token | Value | Use |
+|---|---|---|
+| `bg` | `#0B0F1A` | App background (midnight) |
+| `bgSecondary` | `#0F1522` | Stacked sections |
+| `surface` | `#151C2C` | Cards, sheets |
+| `surfaceElevated` | `#1C2436` | Elevated cards, inputs |
+| `modal` | `#1A2233` | Dialogs, bottom sheets |
+| `nav` | `#101625` | Bottom nav glass |
+| `textPrimary` | `#F5F7FA` | Primary text |
+| `textSecondary` | `#A8B3C5` | Secondary text (65%) |
+| `textTertiary` | `#6B7688` | Tertiary/meta (45%) |
+| `textDisabled` | `#454F60` | Disabled |
+| `textInverse` | `#0B0F1A` | Text on lime |
+| `accent` | `#C8F031` | LIME — CTA, active, key metric |
+| `accentLight` | `#E4FF6A` | Hover/gradient end |
+| `accentDark` | `#9FC414` | Pressed |
+| `accentSubtle` | lime @ 12% | Accent tint bg |
+| `onAccent` | `#0B0F1A` | Text/icon on lime |
+| `success` | `#34D399` | Positive |
+| `warning` | `#FBBF24` | Low stock etc. |
+| `error` | `#F4586F` | Errors, negative trend |
+| `info` | `#5AB8F0` | Info |
+| `border` | white @ 7% | Card hairline |
+| `divider` | white @ 5% | List dividers |
+
+**LIGHT (secondary — toggle feature preserved):**
+`bg #F4F6F4` · `surface #FFFFFF` · `surfaceElevated #FFFFFF+shadow` · `textPrimary #101828` ·
+`textSecondary #5A6472` · `textTertiary #98A2B3` · `border black @ 6%` · accent fills SAME lime
++ midnight text; **accent-as-text on light = `#55700A`** (contrast-safe dark lime).
+
+**Rules:** Accent ≤ 10% of any screen. Money-positive = success, money-due/negative = error.
+Purple `#6C63FF` + teal `#03DAC6` + lavender gradients = DEPRECATED (migrate page-by-page).
+
+### 2.2 TYPOGRAPHY
+- IBM Plex Sans — sab UI text (existing `AppTypography` scale, 13 styles — unchanged)
+- **NEW `AppTypography.money`** — IBM Plex Mono, tabular, for ₹ amounts + big metrics:
+  `money(32/w700)` balance · `money(22/w700)` card value · `money(16/w600)` row amount
+- Big numbers: letterSpacing -0.5, height 1.1. Naye Text = textTheme ya AppTextStyles.
+
+### 2.3 SPACING — v2 tokens UNCHANGED (4-pt grid: 4/8/12/16/24/32/48; screen margin 16)
+### 2.4 RADIUS — v2 + card=20 (xl), sheet top=24, pill=full. Buttons=14.
+### 2.5 ELEVATION — Dark mode: depth via surface color steps, shadows minimal (black @ 20% blur 16).
+Light mode: v2 tinted shadows. Floating nav/panel: blur glass + border.
+### 2.6 COMPONENTS
+- **PrimaryButton**: lime fill, midnight text, radius 14, h52, press-scale 0.97, disabled = 40%
+- **SecondaryButton**: surface fill + border, textPrimary
+- **Tertiary/Ghost**: transparent, accent text
+- **Destructive**: error fill (or error text ghost)
+- **Inputs**: surfaceElevated fill, border hairline, focus = accent 2px, radius 14
+- **Cards**: surface + 1px border + r20; Highlight card = accentSubtle bg + accent border
+- **Chips**: container surfaceElevated; selected = accentSubtle + accent text + accent border
+- **List item**: leading 40px chip (color @ 14% bg + color icon), title + meta, trailing amount (money font)
+- **Nav**: floating dark pill + lime active indicator; + button = lime circle, midnight icon
+- **Sheets/Dialogs**: modal color, top radius 24, drag handle (white @ 20%)
+- **Snackbar/feedback**: AppFeedback unchanged API, colors → v3
+- **States**: pressed=surface+4% lighter, disabled=40% opacity, loading=skeleton (existing), error=error color + retry
+### 2.7 ICONOGRAPHY — Material Rounded, sizes 16/20/24, active=accent, inactive=textSecondary, icon chips = color @ 14% bg r12
+### 2.8 DATA VIZ — Primary series = accent lime, secondary = textTertiary grays, positive=success,
+negative=error, gridlines = divider, tooltips = modal surface. Metric cards: money font values.
+### 2.9 MOTION — v2 UNCHANGED (150/250/400ms, easeOutCubic/spring, fade+3% slide, press 0.97)
+### 2.10 RESPONSIVE — Portrait-first, content max-width none (phone), fluid widths, min touch 48
+### 2.11 MOBILE UX — v2 touch targets + SafeArea(top:false) rule for pinned bottom UI (existing pattern)
+### 2.12 ACCESSIBILITY — Text contrast ≥ 4.5:1 (lime ONLY as fill w/ midnight text on dark, never lime text on light bg — use #55700A), semantics labels on icon buttons (existing), textScale honor
+
+---
 
 ## Design System v2 — Tokens & Components (Source of Truth)
 

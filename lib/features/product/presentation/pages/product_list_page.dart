@@ -11,6 +11,8 @@ import '../../../category/domain/entities/category.dart';
 import '../../../category/presentation/bloc/category_bloc.dart';
 import '../../domain/entities/product.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/utils/csv_export_import.dart';
 import '../../../damaged_products/presentation/pages/mark_damaged_dialog.dart';
 import '../../../damaged_products/presentation/bloc/damaged_products_bloc.dart';
@@ -215,22 +217,22 @@ class _ProductListPageState extends State<ProductListPage> {
                               ),
                               const SizedBox(width: 8),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: product.stock > 0
-                                      ? Colors.green.withValues(alpha: 0.1)
-                                      : Colors.red.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  'Stock: ${product.stock}',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: product.stock > 0 ? Colors.green.shade700 : Colors.red,
-                                  ),
-                                ),
-                              ),
+                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                 decoration: BoxDecoration(
+                                   color: product.stock > 0
+                                       ? AppColors.success.withValues(alpha: 0.12)
+                                       : AppColors.error(Theme.of(context).brightness).withValues(alpha: 0.12),
+                                   borderRadius: BorderRadius.circular(4),
+                                 ),
+                                 child: Text(
+                                   'Stock: ${product.stock}',
+                                   style: TextStyle(
+                                     fontSize: 11,
+                                     fontWeight: FontWeight.w600,
+                                     color: product.stock > 0 ? AppColors.successText(Theme.of(context).brightness) : AppColors.error(Theme.of(context).brightness),
+                                   ),
+                                 ),
+                               ),
                             ],
                           ),
                         ],
@@ -253,8 +255,8 @@ class _ProductListPageState extends State<ProductListPage> {
               ),
               _menuActionTile(
                 icon: Icons.qr_code_2_rounded,
-                iconBg: const Color(0xFFF3E8FF),
-                iconColor: const Color(0xFF9333EA),
+                iconBg: AppColors.accentSubtle,
+                iconColor: AppColors.accentText(Theme.of(context).brightness),
                 label: 'Show QR Code',
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -263,8 +265,8 @@ class _ProductListPageState extends State<ProductListPage> {
               ),
               _menuActionTile(
                 icon: Icons.copy_rounded,
-                iconBg: const Color(0xFFDBEAFE),
-                iconColor: const Color(0xFF2563EB),
+                iconBg: AppColors.info.withValues(alpha: 0.14),
+                iconColor: AppColors.infoText(Theme.of(context).brightness),
                 label: 'Copy barcode',
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -274,8 +276,8 @@ class _ProductListPageState extends State<ProductListPage> {
               if (product.stock > 0)
                 _menuActionTile(
                   icon: Icons.broken_image_rounded,
-                  iconBg: Colors.orange.withValues(alpha: 0.1),
-                  iconColor: Colors.orange.shade700,
+                  iconBg: AppColors.warning.withValues(alpha: 0.14),
+                  iconColor: AppColors.warningText(Theme.of(context).brightness),
                   label: 'Mark as Damaged',
                   onTap: () {
                     Navigator.pop(sheetContext);
@@ -286,8 +288,8 @@ class _ProductListPageState extends State<ProductListPage> {
                 padding: const EdgeInsets.only(top: 4),
                 child: _menuActionTile(
                   icon: Icons.delete_outline_rounded,
-                  iconBg: Colors.red.withValues(alpha: 0.1),
-                  iconColor: Colors.red,
+                  iconBg: AppColors.error(Theme.of(context).brightness).withValues(alpha: 0.12),
+                  iconColor: AppColors.error(Theme.of(context).brightness),
                   label: 'Delete product',
                   isDestructive: true,
                   onTap: () {
@@ -334,23 +336,23 @@ class _ProductListPageState extends State<ProductListPage> {
                   child: Icon(icon, size: 18, color: iconColor),
                 ),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isDestructive ? Colors.red : null,
-                    ),
-                  ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  size: 18,
-                  color: isDestructive
-                      ? Colors.red.withValues(alpha: 0.5)
-                      : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                ),
+                 Expanded(
+                   child: Text(
+                     label,
+                     style: TextStyle(
+                       fontSize: 14,
+                       fontWeight: FontWeight.w600,
+                       color: isDestructive ? AppColors.error(Theme.of(context).brightness) : null,
+                     ),
+                   ),
+                 ),
+                 Icon(
+                   Icons.chevron_right_rounded,
+                   size: 18,
+                   color: isDestructive
+                       ? AppColors.error(Theme.of(context).brightness).withValues(alpha: 0.5)
+                       : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                 ),
               ],
             ),
           ),
@@ -371,7 +373,7 @@ class _ProductListPageState extends State<ProductListPage> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error(Theme.of(context).brightness), foregroundColor: Colors.white),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete'),
           ),
@@ -530,7 +532,7 @@ class _ProductListPageState extends State<ProductListPage> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error(Theme.of(context).brightness), foregroundColor: Colors.white),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete'),
           ),
@@ -578,8 +580,9 @@ class _ProductListPageState extends State<ProductListPage> {
     });
     messenger.showSnackBar(
       SnackBar(
-        content: Text('${selected.length} products exported!'),
-        backgroundColor: Colors.green,
+        content: Text('${selected.length} products exported!',
+            style: const TextStyle(color: AppColors.onAccent, fontWeight: FontWeight.w600)),
+        backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -599,7 +602,7 @@ class _ProductListPageState extends State<ProductListPage> {
       messenger.showSnackBar(
         const SnackBar(
           content: Text('No valid products found in CSV'),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppColors.warning,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -611,8 +614,9 @@ class _ProductListPageState extends State<ProductListPage> {
     }
     messenger.showSnackBar(
       SnackBar(
-        content: Text('${products.length} products imported!'),
-        backgroundColor: Colors.green,
+        content: Text('${products.length} products imported!',
+            style: const TextStyle(color: AppColors.onAccent, fontWeight: FontWeight.w600)),
+        backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -794,7 +798,8 @@ class _ProductListPageState extends State<ProductListPage> {
 
         ],
       ),
-      floatingActionButton: _buildFab(context),
+      // NOTE: page-level FAB removed — AppShell's floating bottom-nav already
+      // provides the add action, so a second FAB would collide with it.
       bottomNavigationBar: BlocBuilder<BillingBloc, BillingState>(
         builder: (context, billing) {
           if (billing.cartItems.isEmpty) return const SizedBox.shrink();
@@ -804,13 +809,15 @@ class _ProductListPageState extends State<ProductListPage> {
           );
           final total = billing.totalAmount;
           return Container(
-            margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+            // Lift above the floating bottom-nav FAB so the cart bar stays
+            // fully visible/tappable (extendBody means nav floats over content)
+            margin: const EdgeInsets.fromLTRB(12, 0, 12, 96),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 colors: [
-                  AppTheme.primaryColor,
-                  AppTheme.primaryColor.withValues(alpha: 0.85),
+                  AppColors.accent,
+                  AppColors.accentDark,
                 ],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
@@ -818,7 +825,7 @@ class _ProductListPageState extends State<ProductListPage> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                  color: AppColors.accent.withValues(alpha: 0.25),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -829,7 +836,7 @@ class _ProductListPageState extends State<ProductListPage> {
               child: Row(
                 children: [
                   const Icon(Icons.shopping_cart_rounded,
-                      color: Colors.white, size: 22),
+                      color: AppColors.onAccent, size: 22),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Column(
@@ -839,7 +846,7 @@ class _ProductListPageState extends State<ProductListPage> {
                         Text(
                           '$itemCount item${itemCount == 1 ? '' : 's'} in cart',
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: AppColors.onAccent,
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                           ),
@@ -847,10 +854,10 @@ class _ProductListPageState extends State<ProductListPage> {
                         const SizedBox(height: 2),
                         Text(
                           '₹${total.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                          style: AppMoneyText.sized(
+                            16,
+                            FontWeight.w700,
+                            AppColors.onAccent,
                           ),
                         ),
                       ],
@@ -859,8 +866,8 @@ class _ProductListPageState extends State<ProductListPage> {
                   ElevatedButton(
                     onPressed: () => context.push('/scan/checkout'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppTheme.primaryColor,
+                      backgroundColor: AppColors.onAccent,
+                      foregroundColor: AppColors.accent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -907,12 +914,12 @@ class _ProductListPageState extends State<ProductListPage> {
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                   decoration: BoxDecoration(
                     color: active
-                        ? const Color(0xFFF59E0B)
+                        ? AppColors.warning
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: active
-                          ? const Color(0xFFF59E0B)
+                          ? AppColors.warning
                           : Theme.of(context).dividerColor,
                     ),
                   ),
@@ -923,8 +930,8 @@ class _ProductListPageState extends State<ProductListPage> {
                         Icons.warning_amber_rounded,
                         size: 15,
                         color: active
-                            ? Colors.white
-                            : const Color(0xFFF59E0B),
+                            ? AppColors.onAccent
+                            : AppColors.warningText(Theme.of(context).brightness),
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -933,7 +940,7 @@ class _ProductListPageState extends State<ProductListPage> {
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: active
-                              ? Colors.white
+                              ? AppColors.onAccent
                               : Theme.of(context)
                                   .colorScheme
                                   .onSurfaceVariant,
@@ -983,7 +990,7 @@ class _ProductListPageState extends State<ProductListPage> {
           ),
           IconButton(
             onPressed: _selectedIds.isEmpty ? null : _bulkDelete,
-            icon: const Icon(Icons.delete_rounded, color: Colors.red),
+            icon: Icon(Icons.delete_rounded, color: Theme.of(context).colorScheme.error),
             tooltip: 'Delete selected',
           ),
         ],
@@ -1015,15 +1022,15 @@ class _ProductListPageState extends State<ProductListPage> {
               turns: Tween<double>(begin: 0.75, end: 1).animate(animation),
               child: FadeTransition(opacity: animation, child: child),
             ),
-            child: Icon(
-              _isCarousel
-                  ? Icons.view_list_rounded
-                  : Icons.view_carousel_rounded,
-              key: ValueKey(_isCarousel),
-              color: _isCarousel
-                  ? Theme.of(context).colorScheme.onSurfaceVariant
-                  : AppTheme.primaryColor,
-            ),
+              child: Icon(
+               _isCarousel
+                   ? Icons.view_list_rounded
+                   : Icons.view_carousel_rounded,
+               key: ValueKey(_isCarousel),
+               color: _isCarousel
+                   ? Theme.of(context).colorScheme.onSurfaceVariant
+                   : AppColors.accentText(Theme.of(context).brightness),
+             ),
           ),
         ),
         IconButton(
@@ -1049,8 +1056,8 @@ class _ProductListPageState extends State<ProductListPage> {
                 child: Row(
                   children: [
                     if (_sortOption == option)
-                      const Icon(Icons.check,
-                          size: 18, color: AppTheme.primaryColor)
+                      Icon(Icons.check,
+                          size: 18, color: AppColors.accentText(Theme.of(context).brightness))
                     else
                       const SizedBox(width: 18),
                     const SizedBox(width: 8),
@@ -1073,16 +1080,18 @@ class _ProductListPageState extends State<ProductListPage> {
                 await CsvExportImport.exportProducts(state.products);
                 messenger.showSnackBar(
                   const SnackBar(
-                    content: Text('Products exported! Check your files.'),
-                    backgroundColor: Colors.green,
+                    content: Text('Products exported! Check your files.',
+                        style: TextStyle(color: AppColors.onAccent, fontWeight: FontWeight.w600)),
+                    backgroundColor: AppColors.success,
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
               } else {
                 messenger.showSnackBar(
                   const SnackBar(
-                    content: Text('No products to export'),
-                    backgroundColor: Colors.orange,
+                    content: Text('No products to export',
+                        style: TextStyle(color: AppColors.onAccent, fontWeight: FontWeight.w600)),
+                    backgroundColor: AppColors.warning,
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
@@ -1132,23 +1141,15 @@ class _ProductListPageState extends State<ProductListPage> {
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(
-                  color:
-                      Theme.of(context).primaryColor.withValues(alpha: 0.25),
+                  color: AppColors.border(Theme.of(context).brightness),
                   width: 1.2,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.12),
-                    blurRadius: 18,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
               ),
               child: Row(
                 children: [
                   const SizedBox(width: 16),
-                  const Icon(Icons.search_rounded,
-                      size: 22, color: AppTheme.primaryColor),
+                  Icon(Icons.search_rounded,
+                      size: 22, color: AppColors.accentText(Theme.of(context).brightness)),
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
@@ -1187,7 +1188,7 @@ class _ProductListPageState extends State<ProductListPage> {
           ),
           const SizedBox(width: 10),
           Material(
-            color: AppTheme.primaryColor,
+            color: AppColors.accent,
             borderRadius: BorderRadius.circular(18),
             child: InkWell(
               borderRadius: BorderRadius.circular(18),
@@ -1198,12 +1199,14 @@ class _ProductListPageState extends State<ProductListPage> {
                 height: 56,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [AppTheme.primaryColor, Color(0xFF8B7FFF)],
+                    colors: [AppColors.accent, AppColors.accentDark],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child:
-                    const Icon(Icons.qr_code_scanner, color: Colors.white),
+                    const Icon(Icons.qr_code_scanner, color: AppColors.onAccent),
               ),
             ),
           ),
@@ -1212,19 +1215,6 @@ class _ProductListPageState extends State<ProductListPage> {
     );
   }
 
-  Widget _buildFab(BuildContext context) {
-    return FloatingActionButton(
-      heroTag: 'add-fab',
-      onPressed: () {
-        HapticFeedback.mediumImpact();
-        context.push('/products/add');
-      },
-      backgroundColor: AppTheme.primaryColor,
-      foregroundColor: Colors.white,
-      shape: const CircleBorder(),
-      child: const Icon(Icons.add, size: 30),
-    );
-  }
 }
 
 // ── Classic list view (default) ───────────────────────────────────────────
@@ -1272,7 +1262,7 @@ class _ClassicListView extends StatelessWidget {
         _buildCategoryChips(context),
         Expanded(
           child: ListView.separated(
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.only(top: 8, bottom: 104),
             itemCount: products.length,
             separatorBuilder: (_, __) => const SizedBox(height: 6),
             itemBuilder: (context, index) {
@@ -1334,21 +1324,21 @@ class _ClassicListView extends StatelessWidget {
             fontSize: 12.5,
             fontWeight: FontWeight.w600,
             color: selected
-                ? Colors.white
+                ? AppColors.onAccent
                 : Theme.of(context).colorScheme.onSurface,
           ),
         ),
         selected: selected,
         onSelected: (_) => onTap(),
-        selectedColor: AppTheme.primaryColor,
-        checkmarkColor: Colors.white,
+        selectedColor: AppColors.accent,
+        checkmarkColor: AppColors.onAccent,
         backgroundColor: Theme.of(context).colorScheme.surface,
         showCheckmark: false,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
           side: BorderSide(
             color: selected
-                ? AppTheme.primaryColor
+                ? AppColors.accent
                 : Theme.of(context).dividerColor,
           ),
         ),
@@ -1361,8 +1351,6 @@ class _ClassicListView extends StatelessWidget {
   /// the active search query (mirrors the dashboard search behaviour).
   Widget _buildDescriptionSnippet(
       BuildContext context, String description, String query) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final lowerDesc = description.toLowerCase();
     final index = lowerDesc.indexOf(query);
     if (index < 0) return const SizedBox.shrink();
@@ -1377,17 +1365,17 @@ class _ClassicListView extends StatelessWidget {
       margin: const EdgeInsets.only(top: 6),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF3A2A00) : const Color(0xFFFEF3C7),
+        color: AppColors.warningText(Theme.of(context).brightness).withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-            color: isDark ? const Color(0xFF5C4000) : const Color(0xFFFDE68A)),
+            color: AppColors.warningText(Theme.of(context).brightness).withValues(alpha: 0.35)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.saved_search_rounded,
               size: 12,
-              color: isDark ? const Color(0xFFFFB800) : const Color(0xFFD97706)),
+              color: AppColors.warningText(Theme.of(context).brightness)),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
@@ -1395,9 +1383,7 @@ class _ClassicListView extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
-                color: isDark
-                    ? const Color(0xFFFFB800)
-                    : const Color(0xFF92400E),
+                color: AppColors.warningText(Theme.of(context).brightness),
               ),
             ),
           ),
@@ -1408,7 +1394,7 @@ class _ClassicListView extends StatelessWidget {
 
   Widget _buildProductTile(
       BuildContext context, Product product, String categoryName, String searchQuery) {
-    final stockColor = _stockColor(product.stock, product.minStockLevel);
+    final stockColor = _stockColor(context, product.stock, product.minStockLevel);
     final outOfStock = product.stock <= 0;
     final isSelected = selectedIds.contains(product.id);
 
@@ -1419,7 +1405,7 @@ class _ClassicListView extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: isSelected ? AppTheme.primaryColor : Theme.of(context).dividerColor,
+          color: isSelected ? AppColors.accent : Theme.of(context).dividerColor,
           width: isSelected ? 2 : 1,
         ),
       ),
@@ -1464,10 +1450,10 @@ class _ClassicListView extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             '₹${product.price.toStringAsFixed(2)}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 14,
-                              color: AppTheme.primaryColor,
+                              color: AppColors.accentText(Theme.of(context).brightness),
                             ),
                           ),
                         ],
@@ -1552,17 +1538,17 @@ class _ClassicListView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
-          color: Colors.green,
+          color: AppColors.success,
           borderRadius: BorderRadius.circular(16),
         ),
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.add_circle_outline_rounded, color: Colors.white),
+            Icon(Icons.add_circle_outline_rounded, color: AppColors.onAccent),
             SizedBox(width: 8),
             Text('Stock +',
                 style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w700)),
+                    color: AppColors.onAccent, fontWeight: FontWeight.w700)),
           ],
         ),
       ),
@@ -1571,17 +1557,17 @@ class _ClassicListView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         alignment: Alignment.centerRight,
         decoration: BoxDecoration(
-          color: Colors.green,
+          color: AppColors.success,
           borderRadius: BorderRadius.circular(16),
         ),
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.add_shopping_cart_rounded, color: Colors.white),
+            Icon(Icons.add_shopping_cart_rounded, color: AppColors.onAccent),
             SizedBox(width: 8),
             Text('Add to Cart',
                 style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w700)),
+                    color: AppColors.onAccent, fontWeight: FontWeight.w700)),
           ],
         ),
       ),
@@ -1605,16 +1591,16 @@ class _ClassicListView extends StatelessWidget {
       height: 26,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isSelected ? AppTheme.primaryColor : Colors.transparent,
+        color: isSelected ? AppColors.accent : Colors.transparent,
         border: Border.all(
           color: isSelected
-              ? AppTheme.primaryColor
+              ? AppColors.accent
               : Theme.of(context).colorScheme.outlineVariant,
           width: 2,
         ),
       ),
       child: isSelected
-          ? const Icon(Icons.check_rounded, size: 16, color: Colors.white)
+          ? const Icon(Icons.check_rounded, size: 16, color: AppColors.onAccent)
           : null,
     );
   }
@@ -1686,10 +1672,11 @@ class _ClassicListView extends StatelessWidget {
     );
   }
 
-  Color _stockColor(int stock, int minLevel) {
-    if (stock <= 0) return const Color(0xFFEF4444);
-    if (stock <= minLevel) return const Color(0xFFF59E0B);
-    return const Color(0xFF22C55E);
+  Color _stockColor(BuildContext context, int stock, int minLevel) {
+    final b = Theme.of(context).brightness;
+    if (stock <= 0) return AppColors.error(b);
+    if (stock <= minLevel) return AppColors.warningText(b);
+    return AppColors.successText(b);
   }
 }
 
@@ -1716,12 +1703,12 @@ class _EmptyState extends StatelessWidget {
                 child: Container(
                   width: 96,
                   height: 96,
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.08),
+                  decoration: const BoxDecoration(
+                    color: AppColors.accentSubtle,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.inventory_2_outlined,
-                      size: 46, color: AppTheme.primaryColor),
+                  child: Icon(Icons.inventory_2_outlined,
+                      size: 46, color: AppColors.accentText(Theme.of(context).brightness)),
                 ),
               );
             },

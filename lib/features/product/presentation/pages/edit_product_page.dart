@@ -11,7 +11,7 @@ import '../bloc/product_bloc.dart';
 import '../../../category/presentation/bloc/category_bloc.dart';
 import '../../domain/entities/product.dart';
 import '../../../category/domain/entities/category.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_validators.dart';
 import '../../../../core/utils/image_compress.dart';
 import '../../../../core/utils/image_upload_service.dart';
@@ -93,8 +93,9 @@ class _EditProductPageState extends State<EditProductPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Image compressed: ${compressedSize.toStringAsFixed(1)} KB'),
-              backgroundColor: Colors.green,
+              content: Text('Image compressed: ${compressedSize.toStringAsFixed(1)} KB',
+                  style: const TextStyle(color: AppColors.onAccent, fontWeight: FontWeight.w600)),
+              backgroundColor: AppColors.success,
             ),
           );
         }
@@ -266,8 +267,8 @@ class _EditProductPageState extends State<EditProductPage> {
                       hintText: 'Scan or enter barcode',
                       prefixIcon: const Icon(Icons.qr_code_scanner),
                       suffixIcon: IconButton(
-                        icon: const Icon(Icons.camera_alt_rounded,
-                            color: AppTheme.primaryColor),
+                        icon: Icon(Icons.camera_alt_rounded,
+                            color: AppColors.accentText(Theme.of(context).brightness)),
                         onPressed: () async {
                           final scanned = await context.push<String>('/scan/scanner');
                           if (scanned != null && mounted) {
@@ -492,10 +493,14 @@ class _EditProductPageState extends State<EditProductPage> {
         ),
         bottomNavigationBar: SafeArea(
           top: false,
-          child: PrimaryButton(
-            onPressed: _isUploading ? null : _submit,
-            icon: Icons.save,
-            label: _isUploading ? 'Uploading...' : 'Save Changes',
+          child: Padding(
+            // Clearance above floating bottom-nav FAB so save stays tappable
+            padding: const EdgeInsets.only(bottom: 96),
+            child: PrimaryButton(
+              onPressed: _isUploading ? null : _submit,
+              icon: Icons.save,
+              label: _isUploading ? 'Uploading...' : 'Save Changes',
+            ),
           ),
         ));
   }
@@ -576,7 +581,7 @@ class _EditProductPageState extends State<EditProductPage> {
                                         fontSize: 15,
                                         fontWeight: FontWeight.w500,
                                         color: _categoryId == null
-                                            ? AppTheme.primaryColor
+                                            ? AppColors.accentText(Theme.of(context).brightness)
                                             : Theme.of(context)
                                                 .colorScheme
                                                 .onSurface,
@@ -594,8 +599,7 @@ class _EditProductPageState extends State<EditProductPage> {
                                       horizontal: 16, vertical: 14),
                                   decoration: BoxDecoration(
                                     color: isSelected
-                                        ? AppTheme.primaryColor
-                                            .withValues(alpha: 0.06)
+                                        ? AppColors.accentSubtle
                                         : null,
                                   ),
                                   child: Row(
@@ -609,7 +613,7 @@ class _EditProductPageState extends State<EditProductPage> {
                                                 ? FontWeight.w600
                                                 : FontWeight.w400,
                                             color: isSelected
-                                                ? AppTheme.primaryColor
+                                                ? AppColors.accentText(Theme.of(context).brightness)
                                                 : Theme.of(context)
                                                     .colorScheme
                                                     .onSurface,
@@ -617,9 +621,9 @@ class _EditProductPageState extends State<EditProductPage> {
                                         ),
                                       ),
                                       if (isSelected)
-                                        const Icon(Icons.check_rounded,
+                                        Icon(Icons.check_rounded,
                                             size: 18,
-                                            color: AppTheme.primaryColor),
+                                            color: AppColors.accentText(Theme.of(context).brightness)),
                                     ],
                                   ),
                                 ),

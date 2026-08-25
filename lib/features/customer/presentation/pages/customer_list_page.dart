@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:billing_app/core/service_locator.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/widgets/app_feedback.dart';
 import 'package:billing_app/core/widgets/app_skeleton.dart';
 import 'package:billing_app/features/customer/domain/entities/customer.dart';
@@ -46,7 +47,10 @@ class _CustomerListPageState extends State<CustomerListPage> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).primaryColor),
+            icon: Icon(Icons.arrow_back_ios,
+                color: AppColors.textPrimary(
+                    Theme.of(context).brightness),
+                size: 20),
             onPressed: () => context.go('/'),
           ),
         ),
@@ -106,7 +110,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
                     itemCount: state.customers.length,
                     itemBuilder: (context, index) {
                       final customer = state.customers[index];
@@ -118,40 +122,48 @@ class _CustomerListPageState extends State<CustomerListPage> {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => context.push('/customers/add'),
-          icon: const Icon(Icons.add),
-          label: const Text('Add Customer'),
-        ),
       ),
     ),
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
+    final b = Theme.of(context).brightness;
     final isSearching = _searchController.text.trim().isNotEmpty;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.people_outline, size: 64, color: Colors.grey.shade400),
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              color: AppColors.accentSubtle,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(
+              Icons.people_outline,
+              size: 36,
+              color: AppColors.accentText(b),
+            ),
+          ),
           const SizedBox(height: 16),
           Text(
             isSearching ? 'No matching customers' : 'No customers yet',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary(b),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             isSearching
                 ? 'Try a different name or phone'
                 : 'Tap + to add your first customer',
             style: TextStyle(
               fontSize: 14,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: AppColors.textTertiary(b),
             ),
           ),
         ],
@@ -160,42 +172,58 @@ class _CustomerListPageState extends State<CustomerListPage> {
   }
 
   Widget _buildCustomerTile(BuildContext context, Customer customer) {
+    final theme = Theme.of(context);
+    final b = theme.brightness;
     final initial = customer.name.isNotEmpty
         ? customer.name.trim()[0].toUpperCase()
         : '?';
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AppColors.surface(b),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border(b)),
       ),
       child: ListTile(
         onTap: () => context.push('/customers/detail', extra: customer),
-        leading: CircleAvatar(
-          backgroundColor:
-              Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        leading: Container(
+          width: 40,
+          height: 40,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Text(
             initial,
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary(b),
             ),
           ),
         ),
         title: Text(
           customer.name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary(b),
+          ),
         ),
-        subtitle: Text(customer.phone),
-        trailing: const Icon(Icons.chevron_right),
+        subtitle: Text(
+          customer.phone,
+          style: TextStyle(
+            fontSize: 12,
+            color: AppColors.textTertiary(b),
+          ),
+        ),
+        trailing: Icon(Icons.chevron_right,
+            size: 20, color: AppColors.textTertiary(b)),
       ),
     );
   }

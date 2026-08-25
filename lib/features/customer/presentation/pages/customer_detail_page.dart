@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:billing_app/core/supabase/supabase_client.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/features/customer/domain/entities/customer.dart';
 
 class CustomerDetailPage extends StatefulWidget {
@@ -91,12 +92,12 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios,
-              color: Theme.of(context).primaryColor),
+              color: AppColors.accentText(Theme.of(context).brightness)),
           onPressed: () => context.pop(),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -259,16 +260,16 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
             child: Row(
               children: [
                 Icon(Icons.account_balance_wallet,
-                    color: Colors.orange.shade600),
+                    color: AppColors.warningText(Theme.of(context).brightness)),
                 const SizedBox(width: 12),
                 const Text('Total Pending', style: TextStyle(fontSize: 14)),
                 const Spacer(),
                 Text(
                   '₹${total.toStringAsFixed(2)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.orange,
+                    color: AppColors.warningText(Theme.of(context).brightness),
                   ),
                 ),
               ],

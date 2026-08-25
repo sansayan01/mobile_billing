@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:billing_app/core/widgets/app_feedback.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:billing_app/features/billing/domain/entities/cart_item.dart';
 import 'package:billing_app/core/utils/printer_helper.dart';
@@ -457,9 +458,9 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             decoration: BoxDecoration(
-                              color: Colors.orange.shade50,
+                              color: AppColors.warningText(Theme.of(context).brightness).withValues(alpha: 0.10),
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.orange.shade200),
+                              border: Border.all(color: AppColors.warningText(Theme.of(context).brightness).withValues(alpha: 0.35)),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -469,22 +470,22 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                                   children: [
                                     Text(
                                       'Paid: ₹${_formatPrice(widget.amountPaid ?? 0)}',
-                                      style: TextStyle(fontSize: 13, color: Colors.green.shade700, fontWeight: FontWeight.w600),
+                                      style: TextStyle(fontSize: 13, color: AppColors.successText(Theme.of(context).brightness), fontWeight: FontWeight.w600),
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
                                       'Due: ₹${_formatPrice(widget.dueAmount!)}',
-                                      style: TextStyle(fontSize: 15, color: Colors.orange.shade700, fontWeight: FontWeight.w700),
+                                      style: TextStyle(fontSize: 15, color: AppColors.warningText(Theme.of(context).brightness), fontWeight: FontWeight.w700),
                                     ),
                                   ],
                                 ),
-                                Icon(Icons.access_time, color: Colors.orange.shade600, size: 20),
+                                Icon(Icons.access_time, color: AppColors.warningText(Theme.of(context).brightness), size: 20),
                               ],
                             ),
                           ),
                         ],
                         const SizedBox(height: 6),
-                        Text('Thank you for your purchase!', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Theme.of(context).primaryColor)),
+                        Text('Thank you for your purchase!', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.accentText(Theme.of(context).brightness))),
                         if (widget.footer.isNotEmpty) ...[
                           const SizedBox(height: 4),
                           Text(widget.footer, textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
@@ -513,8 +514,8 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                     icon: const Icon(Icons.print, size: 18),
                     label: const Text('Print'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Theme.of(context).colorScheme.surface,
+                      backgroundColor: AppColors.accent,
+                      foregroundColor: AppColors.onAccent,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -554,8 +555,8 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
                 icon: const Icon(Icons.check_circle, size: 18),
                 label: const Text('Done'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.surface,
+                  backgroundColor: AppColors.accent,
+                  foregroundColor: AppColors.onAccent,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),

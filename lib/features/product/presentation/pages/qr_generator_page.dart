@@ -5,7 +5,8 @@ import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../domain/entities/product.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_typography.dart';
 
 class QrGeneratorPage extends StatefulWidget {
   final Product product;
@@ -62,7 +63,7 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 96),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -116,10 +117,10 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
               // Price
               Text(
                 '₹${widget.product.price.toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.primaryColor,
+                style: AppMoneyText.sized(
+                  18,
+                  FontWeight.w600,
+                  AppColors.accentText(Theme.of(context).brightness),
                 ),
               ),
               const SizedBox(height: 32),
@@ -158,8 +159,8 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                       icon: const Icon(Icons.save_alt),
                       label: const Text('Save QR'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor,
-                        foregroundColor: Theme.of(context).colorScheme.surface,
+                        backgroundColor: AppColors.accent,
+                        foregroundColor: AppColors.onAccent,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -174,8 +175,8 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                       icon: const Icon(Icons.share),
                       label: const Text('Share'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.secondaryColor,
-                        foregroundColor: Theme.of(context).colorScheme.surface,
+                        backgroundColor: AppColors.infoText(Theme.of(context).brightness),
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -199,8 +200,8 @@ class _QrGeneratorPageState extends State<QrGeneratorPage> {
                   icon: const Icon(Icons.print),
                   label: const Text('Print QR'),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppTheme.primaryColor,
-                    side: BorderSide(color: AppTheme.primaryColor),
+                    foregroundColor: AppColors.accentText(Theme.of(context).brightness),
+                    side: BorderSide(color: AppColors.accentText(Theme.of(context).brightness)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),

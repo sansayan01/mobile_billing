@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/widgets/app_feedback.dart';
 import 'package:billing_app/features/audit/domain/entities/audit_log.dart';
 import 'package:billing_app/features/audit/presentation/bloc/audit_bloc.dart';
@@ -83,15 +83,15 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
   }
 
   // ── Helpers ──
-  Color _entityColor(String entityType) {
+  Color _entityColor(String entityType, Brightness b) {
     switch (entityType) {
-      case 'stock': return const Color(0xFF2ECC71);
-      case 'bill': return const Color(0xFF3498DB);
-      case 'product': return const Color(0xFFFF9800);
-      case 'category': return const Color(0xFF9B59B6);
-      case 'auth': return const Color(0xFF1ABC9C);
-      case 'settings': return const Color(0xFF95A5A6);
-      default: return AppTheme.primaryColor;
+      case 'stock': return AppColors.successText(b);
+      case 'bill': return AppColors.infoText(b);
+      case 'product': return AppColors.warningText(b);
+      case 'category': return AppColors.textSecondary(b);
+      case 'auth': return AppColors.accentText(b);
+      case 'settings': return AppColors.textTertiary(b);
+      default: return AppColors.accentText(b);
     }
   }
 
@@ -107,13 +107,13 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
     }
   }
 
-  Color _actionColor(String action) {
-    if (action.contains('created') || action.contains('added')) return const Color(0xFF2ECC71);
-    if (action.contains('deleted') || action.contains('voided')) return const Color(0xFFE74C3C);
-    if (action.contains('edited') || action.contains('adjusted')) return const Color(0xFF3498DB);
-    if (action.contains('login')) return const Color(0xFF1ABC9C);
-    if (action.contains('payment')) return const Color(0xFFF39C12);
-    return const Color(0xFF95A5A6);
+  Color _actionColor(String action, Brightness b) {
+    if (action.contains('created') || action.contains('added')) return AppColors.successText(b);
+    if (action.contains('deleted') || action.contains('voided')) return AppColors.error(b);
+    if (action.contains('edited') || action.contains('adjusted')) return AppColors.infoText(b);
+    if (action.contains('login')) return AppColors.accentText(b);
+    if (action.contains('payment')) return AppColors.warningText(b);
+    return AppColors.textTertiary(b);
   }
 
   String _timeAgo(DateTime dt) {
@@ -169,7 +169,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
       backgroundColor: t.colorScheme.surface,
       body: RefreshIndicator(
         onRefresh: _onRefresh,
-        color: AppTheme.primaryColor,
+        color: AppColors.accent,
         child: CustomScrollView(
           slivers: [
             // ── SliverAppBar ──
@@ -240,7 +240,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const CircularProgressIndicator(color: AppTheme.primaryColor),
+                          const CircularProgressIndicator(color: AppColors.accent),
                           const SizedBox(height: 16),
                           Text('Loading activities...', style: TextStyle(color: t.colorScheme.onSurfaceVariant)),
                         ],
@@ -431,15 +431,15 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: isSelected ? AppTheme.primaryColor : t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            color: isSelected ? AppColors.accent : t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(icon, size: 14, color: isSelected ? Colors.white : t.colorScheme.onSurfaceVariant),
+            Icon(icon, size: 14, color: isSelected ? AppColors.onAccent : t.colorScheme.onSurfaceVariant),
             const SizedBox(width: 4),
             Text(label, style: TextStyle(
               fontSize: 11, fontWeight: FontWeight.w600,
-              color: isSelected ? Colors.white : t.colorScheme.onSurface,
+              color: isSelected ? AppColors.onAccent : t.colorScheme.onSurface,
             )),
           ]),
         ),
@@ -483,7 +483,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
 
   Widget _actionChip(String label, String? action, ThemeData t) {
     final isSelected = _filterAction == action;
-    final color = action != null ? _actionColor(action) : AppTheme.primaryColor;
+    final color = action != null ? _actionColor(action, t.brightness) : AppColors.accentText(t.brightness);
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -496,12 +496,12 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: isSelected ? color : t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+            color: isSelected ? color.withValues(alpha: 0.14) : t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(label, style: TextStyle(
             fontSize: 10.5, fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : t.colorScheme.onSurface,
+            color: isSelected ? color : t.colorScheme.onSurface,
           )),
         ),
       ),
@@ -548,15 +548,15 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: hasDateFilter
-                      ? AppTheme.primaryColor.withValues(alpha: 0.1)
+                      ? AppColors.accentSubtle
                       : t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(10),
                   border: hasDateFilter
-                      ? Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3))
+                      ? Border.all(color: AppColors.accent.withValues(alpha: 0.3))
                       : null,
                 ),
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Icon(Icons.date_range_rounded, size: 16, color: hasDateFilter ? AppTheme.primaryColor : t.colorScheme.onSurfaceVariant),
+                  Icon(Icons.date_range_rounded, size: 16, color: hasDateFilter ? AppColors.accentText(t.brightness) : t.colorScheme.onSurfaceVariant),
                   const SizedBox(width: 6),
                   Flexible(
                     child: Text(
@@ -565,7 +565,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
                           : 'Date Range',
                       style: TextStyle(
                         fontSize: 11.5, fontWeight: FontWeight.w600,
-                        color: hasDateFilter ? AppTheme.primaryColor : t.colorScheme.onSurface,
+                        color: hasDateFilter ? AppColors.accentText(t.brightness) : t.colorScheme.onSurface,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -583,11 +583,11 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
                   color: _filterStaff != null
-                      ? AppTheme.primaryColor.withValues(alpha: 0.1)
+                      ? AppColors.accentSubtle
                       : t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(10),
                   border: _filterStaff != null
-                      ? Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3))
+                      ? Border.all(color: AppColors.accent.withValues(alpha: 0.3))
                       : null,
                 ),
                 child: DropdownButtonHideUnderline(
@@ -629,7 +629,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(primary: AppTheme.primaryColor),
+            colorScheme: Theme.of(context).colorScheme.copyWith(primary: AppColors.accent),
           ),
           child: child!,
         );
@@ -671,14 +671,14 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              AppTheme.primaryColor.withValues(alpha: 0.08),
-              AppTheme.primaryColor.withValues(alpha: 0.03),
+              AppColors.accent.withValues(alpha: 0.08),
+              AppColors.accent.withValues(alpha: 0.03),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.12)),
+          border: Border.all(color: AppColors.accent.withValues(alpha: 0.12)),
         ),
         child: Row(
           children: [
@@ -701,7 +701,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
     return Expanded(
       child: Column(
         children: [
-          Icon(icon, size: 14, color: AppTheme.primaryColor.withValues(alpha: 0.7)),
+          Icon(icon, size: 14, color: AppColors.accentText(t.brightness).withValues(alpha: 0.7)),
           const SizedBox(height: 2),
           Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: t.colorScheme.onSurface)),
           Text(label, style: TextStyle(fontSize: 9.5, color: t.colorScheme.onSurfaceVariant.withValues(alpha: 0.7))),
@@ -716,7 +716,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
   // TIMELINE ITEM
   // ══════════════════════════════════════════════════
   Widget _buildTimelineItem(ThemeData t, AuditLog log, bool isLast) {
-    final color = _entityColor(log.entityType);
+    final color = _entityColor(log.entityType, t.brightness);
     final icon = _entityIcon(log.entityType);
 
     return GestureDetector(
@@ -783,12 +783,12 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: _actionColor(log.action).withValues(alpha: 0.1),
+                          color: _actionColor(log.action, t.brightness).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           log.actionLabel,
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: _actionColor(log.action)),
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: _actionColor(log.action, t.brightness)),
                         ),
                       ),
                       const Spacer(),
@@ -872,13 +872,13 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
             child: Row(children: [
               Text('$key: ', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: t.colorScheme.onSurface)),
               Flexible(
-                child: Text('${oldVal[key]}', style: TextStyle(fontSize: 11, color: Colors.red.withValues(alpha: 0.8), decoration: TextDecoration.lineThrough), overflow: TextOverflow.ellipsis),
+                child: Text('${oldVal[key]}', style: TextStyle(fontSize: 11, color: t.colorScheme.error.withValues(alpha: 0.8), decoration: TextDecoration.lineThrough), overflow: TextOverflow.ellipsis),
               ),
               const SizedBox(width: 4),
               Icon(Icons.arrow_forward_rounded, size: 10, color: t.colorScheme.onSurfaceVariant),
               const SizedBox(width: 4),
               Flexible(
-                child: Text('${newVal[key]}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.green), overflow: TextOverflow.ellipsis),
+                child: Text('${newVal[key]}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.successText(t.brightness)), overflow: TextOverflow.ellipsis),
               ),
             ]),
           );
@@ -891,8 +891,8 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
   // DETAIL BOTTOM SHEET — ENTITY-SPECIFIC
   // ══════════════════════════════════════════════════
   void _showDetailSheet(ThemeData t, AuditLog log) {
-    final color = _entityColor(log.entityType);
-    final actionColor = _actionColor(log.action);
+    final color = _entityColor(log.entityType, t.brightness);
+    final actionColor = _actionColor(log.action, t.brightness);
 
     showModalBottomSheet(
       context: context,
@@ -1003,7 +1003,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
   // ── Section Header ──
   Widget _sectionHeader(ThemeData t, String title, IconData icon) {
     return Row(children: [
-      Icon(icon, size: 15, color: AppTheme.primaryColor.withValues(alpha: 0.8)),
+      Icon(icon, size: 15, color: AppColors.accentText(t.brightness).withValues(alpha: 0.8)),
       const SizedBox(width: 6),
       Text(title, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: t.colorScheme.onSurface)),
     ]);
@@ -1039,9 +1039,9 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFF3498DB).withValues(alpha: 0.06),
+            color: AppColors.info.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFF3498DB).withValues(alpha: 0.15)),
+            border: Border.all(color: AppColors.info.withValues(alpha: 0.15)),
           ),
           child: Column(children: [
             if (customerName != null && customerName.isNotEmpty)
@@ -1132,13 +1132,13 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.08),
+                  color: AppColors.accent.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(children: [
                   Text('Grand Total', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: t.colorScheme.onSurface)),
                   const Spacer(),
-                  Text('₹${_formatNumber(total)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppTheme.primaryColor)),
+                  Text('₹${_formatNumber(total)}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.accentText(t.brightness))),
                 ]),
               ),
             ],
@@ -1253,9 +1253,9 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
           ),
           child: Row(children: [
             Expanded(child: Text('Field', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: t.colorScheme.onSurfaceVariant))),
-            Expanded(child: Text('Old', textAlign: TextAlign.center, style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: Colors.red.shade600))),
+            Expanded(child: Text('Old', textAlign: TextAlign.center, style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: t.colorScheme.error))),
             const SizedBox(width: 4),
-            Expanded(child: Text('New', textAlign: TextAlign.center, style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: Colors.green.shade600))),
+            Expanded(child: Text('New', textAlign: TextAlign.center, style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: AppColors.successText(t.brightness)))),
           ]),
         ),
         // Rows
@@ -1267,14 +1267,14 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
             decoration: BoxDecoration(
-              color: changed ? AppTheme.primaryColor.withValues(alpha: 0.04) : null,
+              color: changed ? AppColors.accent.withValues(alpha: 0.04) : null,
               border: Border(bottom: BorderSide(color: t.colorScheme.outlineVariant.withValues(alpha: 0.08))),
             ),
             child: Row(children: [
               Expanded(child: Text(label, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: t.colorScheme.onSurfaceVariant))),
-              Expanded(child: Text(changed ? '${oldV ?? '-'}' : '-', textAlign: TextAlign.center, style: TextStyle(fontSize: 11.5, color: changed ? Colors.red.shade600 : t.colorScheme.onSurfaceVariant.withValues(alpha: 0.4), decoration: changed ? TextDecoration.lineThrough : null))),
+              Expanded(child: Text(changed ? '${oldV ?? '-'}' : '-', textAlign: TextAlign.center, style: TextStyle(fontSize: 11.5, color: changed ? t.colorScheme.error : t.colorScheme.onSurfaceVariant.withValues(alpha: 0.4), decoration: changed ? TextDecoration.lineThrough : null))),
               const SizedBox(width: 4),
-              Expanded(child: Text('${newV ?? '-'}', textAlign: TextAlign.center, style: TextStyle(fontSize: 11.5, fontWeight: changed ? FontWeight.w600 : FontWeight.normal, color: changed ? Colors.green.shade700 : t.colorScheme.onSurface))),
+              Expanded(child: Text('${newV ?? '-'}', textAlign: TextAlign.center, style: TextStyle(fontSize: 11.5, fontWeight: changed ? FontWeight.w600 : FontWeight.normal, color: changed ? AppColors.successText(t.brightness) : t.colorScheme.onSurface))),
             ]),
           );
         }),
@@ -1339,12 +1339,12 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
           child: Row(children: [
             SizedBox(width: 90, child: Text(e.value, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: t.colorScheme.onSurfaceVariant))),
             if (changed) ...[
-              Flexible(child: Text('${oldV ?? '-'}', style: TextStyle(fontSize: 11.5, color: Colors.red.shade600, decoration: TextDecoration.lineThrough), overflow: TextOverflow.ellipsis)),
+              Flexible(child: Text('${oldV ?? '-'}', style: TextStyle(fontSize: 11.5, color: t.colorScheme.error, decoration: TextDecoration.lineThrough), overflow: TextOverflow.ellipsis)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6),
                 child: Icon(Icons.arrow_forward_rounded, size: 12, color: t.colorScheme.onSurfaceVariant),
               ),
-              Flexible(child: Text('${newV ?? '-'}', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: Colors.green.shade700), overflow: TextOverflow.ellipsis)),
+              Flexible(child: Text('${newV ?? '-'}', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.successText(t.brightness)), overflow: TextOverflow.ellipsis)),
             ] else
               Flexible(child: Text('${newV ?? '-'}', style: TextStyle(fontSize: 11.5, color: t.colorScheme.onSurfaceVariant), overflow: TextOverflow.ellipsis)),
           ]),
@@ -1370,9 +1370,9 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isIncrease ? const Color(0xFF2ECC71).withValues(alpha: 0.06) : const Color(0xFFE74C3C).withValues(alpha: 0.06),
+          color: isIncrease ? AppColors.success.withValues(alpha: 0.06) : AppColors.error(t.brightness).withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isIncrease ? const Color(0xFF2ECC71).withValues(alpha: 0.15) : const Color(0xFFE74C3C).withValues(alpha: 0.15)),
+          border: Border.all(color: isIncrease ? AppColors.success.withValues(alpha: 0.15) : AppColors.error(t.brightness).withValues(alpha: 0.15)),
         ),
         child: Row(children: [
           // Old stock
@@ -1386,14 +1386,14 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
           ),
           // Arrow
           Column(children: [
-            Icon(isIncrease ? Icons.arrow_forward_rounded : Icons.arrow_forward_rounded, size: 24, color: isIncrease ? const Color(0xFF2ECC71) : const Color(0xFFE74C3C)),
+            Icon(isIncrease ? Icons.arrow_forward_rounded : Icons.arrow_forward_rounded, size: 24, color: isIncrease ? AppColors.successText(t.brightness) : t.colorScheme.error),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: isIncrease ? const Color(0xFF2ECC71).withValues(alpha: 0.12) : const Color(0xFFE74C3C).withValues(alpha: 0.12),
+                color: isIncrease ? AppColors.success.withValues(alpha: 0.12) : AppColors.error(t.brightness).withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: Text('${isIncrease ? '+' : ''}$diff', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: isIncrease ? const Color(0xFF2ECC71) : const Color(0xFFE74C3C))),
+              child: Text('${isIncrease ? '+' : ''}$diff', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: isIncrease ? AppColors.successText(t.brightness) : t.colorScheme.error)),
             ),
           ]),
           // New stock
@@ -1401,7 +1401,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
             child: Column(children: [
               Text('After', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: t.colorScheme.onSurfaceVariant.withValues(alpha: 0.7))),
               const SizedBox(height: 4),
-              Text('$newStock', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: isIncrease ? const Color(0xFF2ECC71) : const Color(0xFFE74C3C))),
+              Text('$newStock', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: isIncrease ? AppColors.successText(t.brightness) : t.colorScheme.error)),
               Text('units', style: TextStyle(fontSize: 10, color: t.colorScheme.onSurfaceVariant.withValues(alpha: 0.5))),
             ]),
           ),
@@ -1420,9 +1420,9 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF1ABC9C).withValues(alpha: 0.06),
+          color: AppColors.accent.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFF1ABC9C).withValues(alpha: 0.15)),
+          border: Border.all(color: AppColors.accent.withValues(alpha: 0.15)),
         ),
         child: Column(children: [
           if (log.staffName != null)
@@ -1495,18 +1495,18 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: isOld
-            ? Colors.red.withValues(alpha: 0.04)
+            ? t.colorScheme.error.withValues(alpha: 0.04)
             : isNew
-                ? Colors.green.withValues(alpha: 0.04)
+                ? AppColors.success.withValues(alpha: 0.04)
                 : isMetadata
                     ? t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
                     : t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: isOld
-              ? Colors.red.withValues(alpha: 0.12)
+              ? t.colorScheme.error.withValues(alpha: 0.12)
               : isNew
-                  ? Colors.green.withValues(alpha: 0.12)
+                  ? AppColors.success.withValues(alpha: 0.12)
                   : t.colorScheme.outlineVariant.withValues(alpha: 0.15),
         ),
       ),
@@ -1525,7 +1525,7 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
                 Expanded(
                   child: Text('${e.value ?? 'null'}', style: TextStyle(
                     fontSize: 11.5,
-                    color: isOld ? Colors.red.shade700 : isNew ? Colors.green.shade700 : t.colorScheme.onSurface,
+                    color: isOld ? t.colorScheme.error : isNew ? AppColors.successText(t.brightness) : t.colorScheme.onSurface,
                   )),
                 ),
               ],
@@ -1564,14 +1564,14 @@ class _AuditTimelinePageState extends State<AuditTimelinePage> {
                 ),
                 if (changed) ...[
                   Flexible(
-                    child: Text('$oldV', style: TextStyle(fontSize: 11, color: Colors.red.shade600, decoration: TextDecoration.lineThrough), overflow: TextOverflow.ellipsis),
+                    child: Text('$oldV', style: TextStyle(fontSize: 11, color: t.colorScheme.error, decoration: TextDecoration.lineThrough), overflow: TextOverflow.ellipsis),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: Icon(Icons.arrow_forward_rounded, size: 11, color: t.colorScheme.onSurfaceVariant),
                   ),
                   Flexible(
-                    child: Text('$newV', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.green.shade700), overflow: TextOverflow.ellipsis),
+                    child: Text('$newV', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.successText(t.brightness)), overflow: TextOverflow.ellipsis),
                   ),
                 ] else
                   Flexible(

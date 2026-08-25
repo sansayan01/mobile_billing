@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
+import 'package:billing_app/core/theme/app_typography.dart';
 import 'package:billing_app/core/utils/csv_export_import.dart';
 import 'package:billing_app/core/widgets/app_feedback.dart';
 import 'package:billing_app/core/widgets/app_skeleton.dart';
@@ -183,28 +185,16 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
 
   Widget _buildSummaryCard(BuildContext context, DamagedProductsState state) {
     final theme = Theme.of(context);
+    final b = theme.brightness;
 
+    // v3: solid error surface, white content, no gradient/glow.
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            theme.colorScheme.error,
-            theme.colorScheme.error.withValues(alpha: 0.8),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: theme.colorScheme.error.withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: AppColors.error(b),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,22 +204,23 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withValues(alpha: 0.18),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.broken_image_rounded,
                   color: Colors.white,
-                  size: 24,
+                  size: 22,
                 ),
               ),
               const SizedBox(width: 12),
               Text(
                 'Total Damage Loss',
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  color: Colors.white.withValues(alpha: 0.85),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
                 ),
               ),
             ],
@@ -239,16 +230,19 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
             '₹${state.totalLoss.toStringAsFixed(2)}',
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
+              fontSize: 30,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+              fontFeatures: [FontFeature.tabularFigures()],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             '${state.totalCount} damaged product${state.totalCount == 1 ? '' : 's'}',
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: Colors.white.withValues(alpha: 0.75),
               fontSize: 13,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -258,31 +252,40 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
 
   Widget _buildEmptyState(BuildContext context) {
     final theme = Theme.of(context);
+    final b = theme.brightness;
 
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.check_circle_outline_rounded,
-            size: 64,
-            color: theme.colorScheme.primary.withValues(alpha: 0.5),
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              color: AppColors.accentSubtle,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(
+              Icons.check_circle_outline_rounded,
+              size: 36,
+              color: AppColors.accentText(b),
+            ),
           ),
           const SizedBox(height: 16),
           Text(
             'No damaged products',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.onSurface,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary(b),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             'All products are in good condition!',
             style: TextStyle(
               fontSize: 14,
-              color: theme.colorScheme.onSurfaceVariant,
+              color: AppColors.textTertiary(b),
             ),
           ),
         ],
@@ -295,18 +298,17 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
     final theme = Theme.of(context);
 
     return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
       itemCount: state.damagedProducts.length,
       separatorBuilder: (_, __) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final damaged = state.damagedProducts[index];
         return Card(
           elevation: 0,
+          color: AppColors.surface(theme.brightness),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(
-              color: theme.colorScheme.error.withValues(alpha: 0.2),
-            ),
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: AppColors.border(theme.brightness)),
           ),
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -326,7 +328,7 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
-                          color: theme.colorScheme.onSurface,
+                          color: AppColors.textPrimary(theme.brightness),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -337,36 +339,35 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
                           damaged.productBarcode!,
                           style: TextStyle(
                             fontSize: 12,
-                            color: theme.colorScheme.onSurfaceVariant,
+                            color: AppColors.textTertiary(theme.brightness),
                             fontFamily: 'monospace',
                           ),
                         ),
                       ],
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Row(
                         children: [
                           _buildBadge(
                             context,
                             '${damaged.quantityDamaged} units',
-                            theme.colorScheme.error,
+                            AppColors.error(theme.brightness),
                           ),
                           const SizedBox(width: 8),
                           _buildBadge(
                             context,
                             '₹${damaged.productPrice.toStringAsFixed(0)}/unit',
-                            theme.colorScheme.primary,
+                            AppColors.textSecondary(theme.brightness),
                           ),
                         ],
                       ),
                       if (damaged.damageType != null &&
                           damaged.damageType!.isNotEmpty) ...[
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           'Reason: ${DamagedProduct.damageTypeLabel(damaged.damageType)}',
                           style: TextStyle(
                             fontSize: 12,
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontStyle: FontStyle.italic,
+                            color: AppColors.textTertiary(theme.brightness),
                           ),
                         ),
                       ],
@@ -377,7 +378,7 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
                           'Note: ${damaged.notes}',
                           style: TextStyle(
                             fontSize: 12,
-                            color: theme.colorScheme.onSurfaceVariant,
+                            color: AppColors.textTertiary(theme.brightness),
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -393,10 +394,10 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
                   children: [
                     Text(
                       '₹${damaged.estimatedLoss.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                        color: theme.colorScheme.error,
+                      style: AppMoneyText.sized(
+                        15,
+                        FontWeight.w700,
+                        AppColors.error(theme.brightness),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -404,13 +405,13 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
                       DateFormat('dd MMM yy').format(damaged.damageDate),
                       style: TextStyle(
                         fontSize: 11,
-                        color: theme.colorScheme.onSurfaceVariant,
+                        color: AppColors.textTertiary(theme.brightness),
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     IconButton(
                       icon: const Icon(Icons.restore_from_trash_outlined, size: 18),
-                      color: theme.colorScheme.primary,
+                      color: AppColors.textTertiary(theme.brightness),
                       tooltip: 'Reverse damage',
                       onPressed: () => _confirmUndo(context, damaged),
                     ),
@@ -427,11 +428,11 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
   Widget _buildProductImage(BuildContext context, dynamic damaged) {
     if (damaged.productImage != null && damaged.productImage!.isNotEmpty) {
       return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         child: Image.network(
           damaged.productImage!,
-          width: 48,
-          height: 48,
+          width: 40,
+          height: 40,
           fit: BoxFit.cover,
           errorBuilder: (_, __, ___) => _buildImagePlaceholder(context, damaged),
         ),
@@ -442,24 +443,25 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
 
   Widget _buildImagePlaceholder(BuildContext context, dynamic damaged) {
     final theme = Theme.of(context);
+    final b = theme.brightness;
     final initial = damaged.productName.isNotEmpty
         ? damaged.productName[0].toUpperCase()
         : '?';
 
     return Container(
-      width: 48,
-      height: 48,
+      width: 40,
+      height: 40,
       decoration: BoxDecoration(
-        color: theme.colorScheme.errorContainer,
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.error(b).withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
         child: Text(
           initial,
           style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onErrorContainer,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: AppColors.error(b),
           ),
         ),
       ),
@@ -468,10 +470,10 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
 
   Widget _buildBadge(BuildContext context, String text, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         text,
@@ -485,7 +487,6 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
   }
 
   Future<void> _confirmUndo(BuildContext context, DamagedProduct damaged) async {
-    final theme = Theme.of(context);
     final bloc = context.read<DamagedProductsBloc>();
     final confirmed = await showDialog<bool>(
       context: context,
@@ -506,10 +507,10 @@ class _DamagedProductsPageState extends State<DamagedProductsPage> {
             icon: const Icon(Icons.restore_from_trash_outlined, size: 18),
             label: const Text('Reverse'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary,
-              foregroundColor: theme.colorScheme.onPrimary,
+              backgroundColor: AppColors.accent,
+              foregroundColor: AppColors.onAccent,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
           ),

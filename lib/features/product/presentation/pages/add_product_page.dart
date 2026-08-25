@@ -12,7 +12,7 @@ import '../bloc/product_bloc.dart';
 import '../../../category/presentation/bloc/category_bloc.dart';
 import '../../domain/entities/product.dart';
 import '../../../category/domain/entities/category.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_validators.dart';
 import '../../../../core/utils/image_compress.dart';
 import '../../../../core/utils/image_upload_service.dart';
@@ -79,11 +79,11 @@ class _AddProductPageState extends State<AddProductPage> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8850C).withValues(alpha: 0.12),
+                    color: AppColors.warning.withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.info_outline_rounded,
-                      color: Color(0xFFE8850C), size: 22),
+                  child: Icon(Icons.info_outline_rounded,
+                      color: AppColors.warningText(Theme.of(context).brightness), size: 22),
                 ),
                 const SizedBox(width: 12),
                 const Expanded(
@@ -170,8 +170,8 @@ class _AddProductPageState extends State<AddProductPage> {
                       extra: existingProduct);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE8850C),
-                  foregroundColor: Theme.of(context).colorScheme.surface,
+                  backgroundColor: AppColors.warning,
+                  foregroundColor: AppColors.onAccent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -261,7 +261,7 @@ class _AddProductPageState extends State<AddProductPage> {
                                         fontSize: 15,
                                         fontWeight: FontWeight.w500,
                                         color: _categoryId == null
-                                            ? AppTheme.primaryColor
+                                            ? AppColors.accentText(Theme.of(context).brightness)
                                             : Theme.of(context)
                                                 .colorScheme
                                                 .onSurface,
@@ -279,8 +279,7 @@ class _AddProductPageState extends State<AddProductPage> {
                                       horizontal: 16, vertical: 14),
                                   decoration: BoxDecoration(
                                     color: isSelected
-                                        ? AppTheme.primaryColor
-                                            .withValues(alpha: 0.06)
+                                        ? AppColors.accentSubtle
                                         : null,
                                   ),
                                   child: Row(
@@ -294,7 +293,7 @@ class _AddProductPageState extends State<AddProductPage> {
                                                 ? FontWeight.w600
                                                 : FontWeight.w400,
                                             color: isSelected
-                                                ? AppTheme.primaryColor
+                                                ? AppColors.accentText(Theme.of(context).brightness)
                                                 : Theme.of(context)
                                                     .colorScheme
                                                     .onSurface,
@@ -302,9 +301,9 @@ class _AddProductPageState extends State<AddProductPage> {
                                         ),
                                       ),
                                       if (isSelected)
-                                        const Icon(Icons.check_rounded,
+                                        Icon(Icons.check_rounded,
                                             size: 18,
-                                            color: AppTheme.primaryColor),
+                                            color: AppColors.accentText(Theme.of(context).brightness)),
                                     ],
                                   ),
                                 ),
@@ -357,8 +356,9 @@ class _AddProductPageState extends State<AddProductPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Image compressed: ${compressedSize.toStringAsFixed(1)} KB'),
-              backgroundColor: Colors.green,
+              content: Text('Image compressed: ${compressedSize.toStringAsFixed(1)} KB',
+                  style: const TextStyle(color: AppColors.onAccent, fontWeight: FontWeight.w600)),
+              backgroundColor: AppColors.success,
             ),
           );
         }
@@ -561,12 +561,12 @@ class _AddProductPageState extends State<AddProductPage> {
                       const SizedBox(width: 12),
                       Container(
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                          color: AppColors.accentSubtle,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.qr_code_scanner,
-                              color: AppTheme.primaryColor),
+                          icon: Icon(Icons.qr_code_scanner,
+                              color: AppColors.accentText(Theme.of(context).brightness)),
                           onPressed: _scanBarcode,
                           padding: const EdgeInsets.all(14),
                         ),
@@ -577,10 +577,8 @@ class _AddProductPageState extends State<AddProductPage> {
                   Text('Tap the icon to open camera scanner',
                       style: TextStyle(
                           fontSize: 12,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withValues(alpha: 0.7))),
+                          color: AppColors.accentText(Theme.of(context).brightness)
+                              .withValues(alpha: 0.8))),
                   const SizedBox(height: 24),
                   const InputLabel(text: 'Product Name'),
                   TextFormField(
@@ -818,10 +816,14 @@ class _AddProductPageState extends State<AddProductPage> {
         ),
         bottomNavigationBar: SafeArea(
           top: false,
-          child: PrimaryButton(
-            onPressed: _isUploading ? null : _submit,
-            icon: Icons.add_circle,
-            label: _isUploading ? 'Uploading...' : 'Add Product',
+          child: Padding(
+            // Clearance above floating bottom-nav FAB so save stays tappable
+            padding: const EdgeInsets.only(bottom: 96),
+            child: PrimaryButton(
+              onPressed: _isUploading ? null : _submit,
+              icon: Icons.add_circle,
+              label: _isUploading ? 'Uploading...' : 'Add Product',
+            ),
           ),
         ));
   }

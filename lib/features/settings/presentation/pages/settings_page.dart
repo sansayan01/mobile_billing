@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:app_settings/app_settings.dart';
 
 import '../../../../core/navigation/navigation_cubit.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/theme/theme_cubit.dart';
 import '../../../shop/presentation/bloc/shop_bloc.dart';
@@ -71,11 +71,11 @@ class _SettingsPageState extends State<SettingsPage> {
                         width: 96,
                         height: 96,
                         decoration: BoxDecoration(
-                            color: AppTheme.primaryColor,
+                            color: AppColors.accent,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: AppTheme.primaryColor
+                                color: AppColors.accent
                                     .withValues(alpha: 0.2),
                                 blurRadius: 15,
                                 spreadRadius: 5,
@@ -84,7 +84,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         alignment: Alignment.center,
                         child: Text(initials,
                             style: const TextStyle(
-                                color: Colors.white,
+                                color: AppColors.onAccent,
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: -1)),
@@ -136,13 +136,12 @@ class _SettingsPageState extends State<SettingsPage> {
                                 width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
-                                  color: AppTheme.primaryColor
-                                      .withValues(alpha: 0.1),
+                                  color: AppColors.accentSubtle,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.swap_horiz_rounded,
-                                  color: AppTheme.primaryColor,
+                                  color: AppColors.accentText(theme.brightness),
                                   size: 20,
                                 ),
                               ),
@@ -271,16 +270,17 @@ class _SettingsPageState extends State<SettingsPage> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                  color: Colors.teal[100],
+                                  color: AppColors.success
+                                      .withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(10),
                                   border:
-                                      Border.all(color: Colors.teal[200]!)),
+                                      Border.all(color: AppColors.success.withValues(alpha: 0.3))),
                               child: Text(
                                 'CONNECTED',
                                 style: TextStyle(
                                     fontSize: 9,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.teal[700]),
+                                    color: AppColors.successText(theme.brightness)),
                               ),
                             ),
                           ]
@@ -302,7 +302,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               onPressed: () => context
                                   .read<PrinterBloc>()
                                   .add(RefreshPrinterEvent()),
-                              color: AppTheme.primaryColor,
+                              color: AppColors.accentText(theme.brightness),
                             ),
                           IconButton(
                             icon: const Icon(Icons.settings),
@@ -332,7 +332,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
 
-            const SizedBox(height: 48),
+            const SizedBox(height: 96),
           ],
         ),
       ),
@@ -394,10 +394,10 @@ class _SettingsPageState extends State<SettingsPage> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                color: AppColors.accentSubtle,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, color: iconColor ?? AppTheme.primaryColor, size: 20),
+              child: Icon(icon, color: iconColor ?? AppColors.accentText(theme.brightness), size: 20),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -449,10 +449,10 @@ class _SettingsPageState extends State<SettingsPage> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+              color: AppColors.accentSubtle,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: AppTheme.primaryColor, size: 20),
+            child: Icon(icon, color: AppColors.accentText(theme.brightness), size: 20),
           ),
           const SizedBox(width: 16),
           Expanded(

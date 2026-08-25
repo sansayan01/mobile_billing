@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_skeleton.dart';
 import '../bloc/warranty_bloc.dart';
@@ -78,18 +79,18 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
     }
   }
 
-  Color _statusColor(String status) {
+  Color _statusColor(String status, Brightness b) {
     switch (status) {
       case 'pending':
-        return Colors.orange;
+        return AppColors.warningText(b);
       case 'approved':
-        return Colors.green;
+        return AppColors.successText(b);
       case 'rejected':
-        return Colors.red;
+        return AppColors.error(b);
       case 'resolved':
-        return Colors.blue;
+        return AppColors.infoText(b);
       default:
-        return Colors.grey;
+        return AppColors.textTertiary(b);
     }
   }
 
@@ -123,9 +124,16 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: theme.primaryColor),
+          icon: Icon(Icons.arrow_back_ios, color: AppColors.accentText(theme.brightness)),
           onPressed: () => context.go('/'),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_rounded),
+            tooltip: 'New Claim',
+            onPressed: () => _scanBillAndCreateClaim(),
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -227,7 +235,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
                     final claim = filtered[index];
@@ -262,21 +270,8 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
         ),
       ],
     ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _startNewClaim(),
-        icon: const Icon(Icons.add, size: 20),
-        label: const Text('New Claim'),
-        backgroundColor: theme.primaryColor,
-        foregroundColor: theme.colorScheme.surface,
-      ),
     ),
     );
-  }
-
-  /// New Claim button now goes straight to scanning the receipt QR.
-  /// (Manual entry removed — scan is the only path, fully auto-filled.)
-  void _startNewClaim() {
-    _scanBillAndCreateClaim();
   }
 
   Widget _buildTypeFilterChip(String label, String value, ThemeData theme) {
@@ -287,10 +282,10 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
       onSelected: (selected) {
         setState(() => _selectedType = value);
       },
-      selectedColor: theme.primaryColor.withValues(alpha: 0.15),
-      checkmarkColor: theme.primaryColor,
+      selectedColor: AppColors.accentSubtle,
+      checkmarkColor: AppColors.accentText(theme.brightness),
       labelStyle: TextStyle(
-        color: isSelected ? theme.primaryColor : theme.colorScheme.onSurfaceVariant,
+        color: isSelected ? AppColors.accentText(theme.brightness) : theme.colorScheme.onSurfaceVariant,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
       ),
     );
@@ -306,10 +301,10 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
         context.read<WarrantyBloc>().add(
             LoadWarrantyClaims(status: value.isEmpty ? null : value));
       },
-      selectedColor: theme.primaryColor.withValues(alpha: 0.15),
-      checkmarkColor: theme.primaryColor,
+      selectedColor: AppColors.accentSubtle,
+      checkmarkColor: AppColors.accentText(theme.brightness),
       labelStyle: TextStyle(
-        color: isSelected ? theme.primaryColor : theme.colorScheme.onSurfaceVariant,
+        color: isSelected ? AppColors.accentText(theme.brightness) : theme.colorScheme.onSurfaceVariant,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
       ),
     );
@@ -317,7 +312,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
 
   Widget _buildClaimCard(WarrantyClaim claim, ThemeData theme) {
     final dateFormat = DateFormat('dd MMM yyyy, hh:mm a');
-    final statusColor = _statusColor(claim.claimStatus);
+    final statusColor = _statusColor(claim.claimStatus, theme.brightness);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -358,13 +353,13 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: claim.claimType == 'guarantee'
-                          ? Colors.purple.shade50
-                          : Colors.blue.shade50,
+                          ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.10)
+                          : AppColors.info.withValues(alpha: 0.14),
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(
                         color: claim.claimType == 'guarantee'
-                            ? Colors.purple.shade200
-                            : Colors.blue.shade200,
+                            ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.2)
+                            : AppColors.info.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
@@ -376,8 +371,8 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                               : Icons.shield_rounded,
                           size: 12,
                           color: claim.claimType == 'guarantee'
-                              ? Colors.purple.shade700
-                              : Colors.blue.shade700,
+                              ? theme.colorScheme.onSurfaceVariant
+                              : AppColors.infoText(theme.brightness),
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -386,8 +381,8 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
                             color: claim.claimType == 'guarantee'
-                                ? Colors.purple.shade700
-                                : Colors.blue.shade700,
+                                ? theme.colorScheme.onSurfaceVariant
+                                : AppColors.infoText(theme.brightness),
                           ),
                         ),
                       ],
@@ -463,14 +458,14 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                       Row(
                         children: [
                           Icon(_statusIcon(claim.claimStatus),
-                              color: _statusColor(claim.claimStatus), size: 24),
+                              color: _statusColor(claim.claimStatus, theme.brightness), size: 24),
                           const SizedBox(width: 8),
                           Text(
                             claim.claimStatus.toUpperCase(),
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: _statusColor(claim.claimStatus),
+                              color: _statusColor(claim.claimStatus, theme.brightness),
                             ),
                           ),
                         ],
@@ -511,7 +506,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                               icon: const Icon(Icons.check, size: 18),
                               label: const Text('Approve'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
+                                backgroundColor: AppColors.successText(theme.brightness),
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(vertical: 12),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -530,7 +525,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                               icon: const Icon(Icons.close, size: 18),
                               label: const Text('Reject'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
+                                backgroundColor: theme.colorScheme.error,
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(vertical: 12),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -552,7 +547,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                           icon: const Icon(Icons.done_all, size: 18),
                           label: const Text('Mark Resolved'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
+                            backgroundColor: AppColors.infoText(theme.brightness),
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -597,6 +592,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
   /// Customer + product list come straight from the fetched bill, so the
   /// shopkeeper only picks the product and writes a reason.
   void _showPrefilledClaimDialog(BillSummary bill) {
+    final b = Theme.of(context).brightness;
     final List<BillItem> items = bill.items;
     BillItem selectedItem;
     // Pick the first item that actually has a warranty; fall back to the first item.
@@ -644,7 +640,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                           if (bill.customerName != null && bill.customerName!.isNotEmpty)
                             Text('Customer: ${bill.customerName}', style: const TextStyle(fontSize: 13)),
                           Text('Date: ${DateFormat('dd MMM yyyy').format(bill.createdAt)}',
-                              style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                              style: TextStyle(fontSize: 12, color: AppColors.textTertiary(b))),
                         ],
                       ),
                     ),
@@ -681,20 +677,20 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: isExpired
-                              ? Colors.red.shade50
-                              : Colors.green.shade50,
+                              ? AppColors.error(b).withValues(alpha: 0.12)
+                              : AppColors.success.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             color: isExpired
-                                ? Colors.red.shade200
-                                : Colors.green.shade200,
+                                ? AppColors.error(b).withValues(alpha: 0.3)
+                                : AppColors.success.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
                           children: [
                             Icon(
                               isExpired ? Icons.warning_amber_rounded : Icons.verified_outlined,
-                              color: isExpired ? Colors.red.shade700 : Colors.green.shade700,
+                              color: isExpired ? AppColors.error(b) : AppColors.successText(b),
                               size: 18,
                             ),
                             const SizedBox(width: 8),
@@ -705,7 +701,7 @@ class _WarrantyClaimsPageState extends State<WarrantyClaimsPage> {
                                     : 'Under warranty until ${DateFormat('dd MMM yyyy').format(endDate)}',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: isExpired ? Colors.red.shade700 : Colors.green.shade700,
+                                  color: isExpired ? AppColors.error(b) : AppColors.successText(b),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),

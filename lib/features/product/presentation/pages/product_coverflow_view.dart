@@ -5,7 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/product_bloc.dart';
 import '../../../category/presentation/bloc/category_bloc.dart';
 import '../../domain/entities/product.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_typography.dart';
 
 /// Spotlight Cover-flow view — a 3D product carousel with a category dial.
 class ProductCoverflowView extends StatefulWidget {
@@ -193,18 +194,18 @@ class _ProductCoverflowViewState extends State<ProductCoverflowView> {
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             color: selected
-                ? AppTheme.primaryColor
+                ? AppColors.accent
                 : Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: selected
-                  ? AppTheme.primaryColor
+                  ? AppColors.accent
                   : Theme.of(context).dividerColor,
             ),
             boxShadow: selected
                 ? [
                     BoxShadow(
-                      color: AppTheme.primaryColor.withValues(alpha: 0.35),
+                      color: AppColors.accent.withValues(alpha: 0.30),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),
@@ -217,7 +218,7 @@ class _ProductCoverflowViewState extends State<ProductCoverflowView> {
               Icon(
                 icon,
                 size: 17,
-                color: selected ? Colors.white : AppTheme.primaryColor,
+                color: selected ? AppColors.onAccent : AppColors.accentText(Theme.of(context).brightness),
               ),
               const SizedBox(width: 7),
               Text(
@@ -226,7 +227,7 @@ class _ProductCoverflowViewState extends State<ProductCoverflowView> {
                   fontSize: 12.5,
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   color: selected
-                      ? Colors.white
+                      ? AppColors.onAccent
                       : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
@@ -236,8 +237,8 @@ class _ProductCoverflowViewState extends State<ProductCoverflowView> {
                     const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                 decoration: BoxDecoration(
                   color: selected
-                      ? Colors.white.withValues(alpha: 0.25)
-                      : AppTheme.primaryColor.withValues(alpha: 0.12),
+                      ? AppColors.onAccent.withValues(alpha: 0.18)
+                      : AppColors.accent.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -245,7 +246,7 @@ class _ProductCoverflowViewState extends State<ProductCoverflowView> {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: selected ? Colors.white : AppTheme.primaryColor,
+                    color: selected ? AppColors.onAccent : AppColors.accentText(Theme.of(context).brightness),
                   ),
                 ),
               ),
@@ -275,7 +276,7 @@ class _ProductCoverflowViewState extends State<ProductCoverflowView> {
                     margin: const EdgeInsets.symmetric(horizontal: 3),
                     decoration: BoxDecoration(
                       color: i == current
-                          ? AppTheme.primaryColor
+                          ? AppColors.accent
                           : Theme.of(context)
                               .colorScheme
                               .onSurfaceVariant
@@ -291,8 +292,8 @@ class _ProductCoverflowViewState extends State<ProductCoverflowView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.swipe_rounded,
-                  size: 14, color: AppTheme.primaryColor),
+              Icon(Icons.swipe_rounded,
+                  size: 14, color: AppColors.accentText(Theme.of(context).brightness)),
               const SizedBox(width: 6),
               Text(
                 '${current + 1} of $total  ·  Swipe to browse',
@@ -373,7 +374,7 @@ class _CoverCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final stockColor = _stockColor(product.stock, product.minStockLevel);
+    final stockColor = _stockColor(context, product.stock, product.minStockLevel);
     final hasImage =
         product.imageUrl != null && product.imageUrl!.isNotEmpty;
 
@@ -434,7 +435,7 @@ class _CoverCard extends StatelessWidget {
                     child: _badge(
                       context,
                       categoryName ?? 'No Category',
-                      const Color(0xFF9333EA),
+                      AppColors.info,
                     ),
                   ),
                   Positioned(
@@ -451,20 +452,19 @@ class _CoverCard extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
-                        color: const Color(0xFFF59E0B)
-                            .withValues(alpha: 0.9),
+                        color: AppColors.warning.withValues(alpha: 0.92),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.warning_amber_rounded,
-                                size: 14, color: Colors.white),
+                                size: 14, color: AppColors.onAccent),
                             SizedBox(width: 6),
                             Text(
                               'Low stock — reorder soon',
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                                color: AppColors.onAccent,
                               ),
                             ),
                           ],
@@ -496,10 +496,10 @@ class _CoverCard extends StatelessWidget {
                     children: [
                       Text(
                         '₹${product.price.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 22,
-                          color: AppTheme.primaryColor,
+                        style: AppMoneyText.sized(
+                          22,
+                          FontWeight.w800,
+                          AppColors.accentText(Theme.of(context).brightness),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -507,7 +507,7 @@ class _CoverCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 7, vertical: 3),
                         decoration: BoxDecoration(
-                          color: Colors.purple.withValues(alpha: 0.1),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.10),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -515,7 +515,7 @@ class _CoverCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
-                            color: Colors.purple[700],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
@@ -542,7 +542,7 @@ class _CoverCard extends StatelessWidget {
                           context,
                           icon: Icons.edit_rounded,
                           label: 'Edit',
-                          color: AppTheme.primaryColor,
+                          color: AppColors.accentText(Theme.of(context).brightness),
                           onTap: onEdit,
                         ),
                       ),
@@ -552,7 +552,7 @@ class _CoverCard extends StatelessWidget {
                           context,
                           icon: Icons.qr_code_2_rounded,
                           label: 'QR Code',
-                          color: const Color(0xFF9333EA),
+                          color: AppColors.infoText(Theme.of(context).brightness),
                           onTap: onQr,
                         ),
                       ),
@@ -635,10 +635,11 @@ class _CoverCard extends StatelessWidget {
     );
   }
 
-  Color _stockColor(int stock, int minLevel) {
-    if (stock <= 0) return const Color(0xFFEF4444);
-    if (stock <= minLevel) return const Color(0xFFF59E0B);
-    return const Color(0xFF22C55E);
+  Color _stockColor(BuildContext context, int stock, int minLevel) {
+    final b = Theme.of(context).brightness;
+    if (stock <= 0) return AppColors.error(b);
+    if (stock <= minLevel) return AppColors.warningText(b);
+    return AppColors.successText(b);
   }
 }
 

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/widgets/app_feedback.dart';
 import 'package:billing_app/core/widgets/app_skeleton.dart';
 import 'package:billing_app/features/report/domain/entities/report_entities.dart';
@@ -28,12 +28,12 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
   late DateTime _fromDate;
   late DateTime _toDate;
 
-  final List<Map<String, dynamic>> _changeTypes = [
+  List<Map<String, dynamic>> _changeTypeItems(ThemeData t) => [
     {'label': 'All', 'icon': Icons.all_inclusive_rounded, 'color': null},
-    {'label': 'add', 'icon': Icons.add_circle_outline_rounded, 'color': Colors.green},
-    {'label': 'sale', 'icon': Icons.shopping_cart_rounded, 'color': Colors.orange},
-    {'label': 'remove', 'icon': Icons.remove_circle_outline_rounded, 'color': Colors.red},
-    {'label': 'return', 'icon': Icons.replay_rounded, 'color': Colors.blue},
+    {'label': 'add', 'icon': Icons.add_circle_outline_rounded, 'color': AppColors.success},
+    {'label': 'sale', 'icon': Icons.shopping_cart_rounded, 'color': AppColors.warning},
+    {'label': 'remove', 'icon': Icons.remove_circle_outline_rounded, 'color': t.colorScheme.error},
+    {'label': 'return', 'icon': Icons.replay_rounded, 'color': AppColors.info},
   ];
 
   late AnimationController _animController;
@@ -75,7 +75,7 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
       lastDate: _toDate,
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: Theme.of(context).colorScheme.copyWith(primary: AppTheme.primaryColor),
+          colorScheme: Theme.of(context).colorScheme.copyWith(primary: AppColors.accent),
         ),
         child: child!,
       ),
@@ -91,7 +91,7 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
       lastDate: DateTime.now(),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: Theme.of(context).colorScheme.copyWith(primary: AppTheme.primaryColor),
+          colorScheme: Theme.of(context).colorScheme.copyWith(primary: AppColors.accent),
         ),
         child: child!,
       ),
@@ -99,17 +99,17 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
     if (picked != null) setState(() => _toDate = picked);
   }
 
-  Color _changeColor(String type) {
+  Color _changeColor(String type, ThemeData t) {
     switch (type.toLowerCase()) {
       case 'add':
       case 'return':
-        return const Color(0xFF2ECC71);
+        return AppColors.successText(t.brightness);
       case 'sale':
-        return const Color(0xFFFF9800);
+        return AppColors.warningText(t.brightness);
       case 'remove':
-        return const Color(0xFFE74C3C);
+        return t.colorScheme.error;
       default:
-        return const Color(0xFF95A5A6);
+        return AppColors.textTertiary(t.brightness);
     }
   }
 
@@ -279,9 +279,9 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
             children: [
               _buildStatItem(t, 'Total', '${movements.length}', Icons.receipt_long_rounded, t.colorScheme.primary),
               _buildStatDivider(t),
-              _buildStatItem(t, 'Added', '+$totalAdded', Icons.arrow_upward_rounded, const Color(0xFF2ECC71)),
+              _buildStatItem(t, 'Added', '+$totalAdded', Icons.arrow_upward_rounded, AppColors.successText(t.brightness)),
               _buildStatDivider(t),
-              _buildStatItem(t, 'Removed', '-$totalRemoved', Icons.arrow_downward_rounded, const Color(0xFFE74C3C)),
+              _buildStatItem(t, 'Removed', '-$totalRemoved', Icons.arrow_downward_rounded, t.colorScheme.error),
             ],
           ),
         );
@@ -319,15 +319,16 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
 
   // ────────────── Type Chips ──────────────
   Widget _buildTypeChips(ThemeData t) {
+    final typeItems = _changeTypeItems(t);
     return SizedBox(
       height: 44,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         scrollDirection: Axis.horizontal,
-        itemCount: _changeTypes.length,
+        itemCount: typeItems.length,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
-          final type = _changeTypes[index];
+          final type = typeItems[index];
           final selected = _selectedChangeType == type['label'];
           final color = type['color'] as Color? ?? t.colorScheme.onSurface;
 
@@ -403,13 +404,13 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
-                color: _groupByProduct ? AppTheme.primaryColor : t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                color: _groupByProduct ? AppColors.accent : t.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Icon(Icons.group_work_rounded, size: 16, color: _groupByProduct ? Colors.white : t.colorScheme.onSurfaceVariant),
+                Icon(Icons.group_work_rounded, size: 16, color: _groupByProduct ? AppColors.onAccent : t.colorScheme.onSurfaceVariant),
                 const SizedBox(width: 6),
-                Text('Group', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _groupByProduct ? Colors.white : t.colorScheme.onSurface)),
+                Text('Group', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _groupByProduct ? AppColors.onAccent : t.colorScheme.onSurface)),
               ]),
             ),
           ),
@@ -437,7 +438,7 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         // Product name
         Row(children: [
-          const Icon(Icons.inventory_2_rounded, size: 18, color: AppTheme.primaryColor),
+          Icon(Icons.inventory_2_rounded, size: 18, color: AppColors.accentText(t.brightness)),
           const SizedBox(width: 8),
           Expanded(
             child: Text(productName, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700), overflow: TextOverflow.ellipsis),
@@ -450,22 +451,22 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
           // Added
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              const Icon(Icons.add_circle_rounded, size: 12, color: Colors.green),
+              Icon(Icons.add_circle_rounded, size: 12, color: AppColors.successText(t.brightness)),
               const SizedBox(width: 4),
-              Text('+$totalAdded', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.green)),
+              Text('+$totalAdded', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.successText(t.brightness))),
             ]),
           ),
           const SizedBox(width: 8),
           // Removed
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: t.colorScheme.error.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              const Icon(Icons.remove_circle_rounded, size: 12, color: Colors.red),
+              Icon(Icons.remove_circle_rounded, size: 12, color: t.colorScheme.error),
               const SizedBox(width: 4),
-              Text('-$totalRemoved', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.red)),
+              Text('-$totalRemoved', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: t.colorScheme.error)),
             ]),
           ),
           const Spacer(),
@@ -511,7 +512,7 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: Text(
                     'Apply',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13),
+                    style: TextStyle(color: AppColors.onAccent, fontWeight: FontWeight.w600, fontSize: 13),
                   ),
                 ),
               ),
@@ -552,7 +553,7 @@ class _StockMovementPageState extends State<StockMovementPage> with SingleTicker
   // ────────────── Movement Card ──────────────
   Widget _buildMovementCard(ThemeData t, StockMovement movement, int index) {
     final isPositive = movement.changeType == 'add' || movement.changeType == 'return';
-    final color = _changeColor(movement.changeType);
+    final color = _changeColor(movement.changeType, t);
     final icon = _changeIcon(movement.changeType);
     final sign = isPositive ? '+' : '-';
 

@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
@@ -45,7 +46,7 @@ class MonthlyTrendCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryColor.withValues(alpha: 0.8),
+                    color: AppColors.accentText(theme.brightness),
                   ),
                 ),
               ],
@@ -70,15 +71,15 @@ class MonthlyTrendCard extends StatelessWidget {
                             return LineTooltipItem(
                               '$label\n',
                               const TextStyle(
-                                color: Colors.white,
+                                color: AppColors.onAccent,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 12,
                               ),
                               children: [
                                 TextSpan(
                                   text: '$currencyPrefix${val.toStringAsFixed(0)}',
-                                  style: const TextStyle(
-                                    color: Color(0xFFE0E0FF),
+                                  style: TextStyle(
+                                    color: AppColors.onAccent.withValues(alpha: 0.75),
                                     fontSize: 10,
                                   ),
                                 ),
@@ -94,7 +95,7 @@ class MonthlyTrendCard extends StatelessWidget {
                       horizontalInterval: _gridInterval(total),
                       getDrawingHorizontalLine: (value) {
                         return FlLine(
-                          color: onSurface.withValues(alpha: 0.07),
+                          color: AppColors.divider(theme.brightness),
                           strokeWidth: 1,
                         );
                       },
@@ -151,7 +152,7 @@ class MonthlyTrendCard extends StatelessWidget {
                         }),
                         isCurved: true,
                         curveSmoothness: 0.35,
-                        color: AppTheme.primaryColor,
+                        color: AppColors.accentText(theme.brightness),
                         barWidth: 2.5,
                         isStrokeCapRound: true,
                         dotData: FlDotData(
@@ -159,7 +160,7 @@ class MonthlyTrendCard extends StatelessWidget {
                           getDotPainter: (spot, percent, barData, index) {
                             return FlDotCirclePainter(
                               radius: 3.5,
-                              color: AppTheme.primaryColor,
+                              color: AppColors.accentText(theme.brightness),
                               strokeWidth: 1.5,
                               strokeColor: isDark ? AppTheme.darkSurface : Colors.white,
                             );
@@ -171,8 +172,8 @@ class MonthlyTrendCard extends StatelessWidget {
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              AppTheme.primaryColor.withValues(alpha: 0.18),
-                              AppTheme.primaryColor.withValues(alpha: 0.02),
+                              AppColors.accentSubtle,
+                              AppColors.accentSubtle.withValues(alpha: 0.0),
                             ],
                           ),
                         ),
@@ -205,20 +206,21 @@ class MonthlyTrendCard extends StatelessWidget {
   }
 
   Widget _buildStatsRow(BuildContext context, double total, double average) {
+    final b = Theme.of(context).brightness;
     return Row(
       children: [
         _buildStatChip(
           context: context,
           label: 'Total',
           value: '$currencyPrefix${_formatShort(total)}',
-          color: AppTheme.primaryColor,
+          color: AppColors.accentText(b),
         ),
         const SizedBox(width: 10),
         _buildStatChip(
           context: context,
           label: 'Avg',
           value: '$currencyPrefix${_formatShort(average)}',
-          color: const Color(0xFF00C9A7),
+          color: AppColors.successText(b),
         ),
       ],
     );
@@ -255,7 +257,7 @@ class MonthlyTrendCard extends StatelessWidget {
       alignment: Alignment.center,
       child: Column(
         children: [
-          Icon(Icons.show_chart_rounded, size: 32, color: AppTheme.primaryColor.withValues(alpha: 0.3)),
+          Icon(Icons.show_chart_rounded, size: 32, color: AppColors.accentText(Theme.of(context).brightness).withValues(alpha: 0.3)),
           const SizedBox(height: 8),
           Text('No data yet', style: AppTextStyles.of(context).trendPlaceholder),
         ],

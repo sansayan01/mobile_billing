@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_feedback.dart';
 import '../../../../core/widgets/app_skeleton.dart';
 import '../../../../features/auth/domain/entities/user.dart';
-import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
-import '../../../../features/auth/presentation/bloc/auth_state.dart';
 import '../bloc/staff_bloc.dart';
 
 class StaffListPage extends StatefulWidget {
@@ -49,11 +46,7 @@ class _StaffListPageState extends State<StaffListPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final borderColor = theme.dividerColor;
-
-    // Owner check — FAB sirf owner ke liye show karein.
-    final isOwner = context.read<AuthBloc>().state is Authenticated &&
-        (context.read<AuthBloc>().state as Authenticated).user.role == 'owner';
+    final b = theme.brightness;
 
     return Scaffold(
       appBar: AppBar(
@@ -61,24 +54,21 @@ class _StaffListPageState extends State<StaffListPage> {
         elevation: 0,
         centerTitle: true,
         leading: const AdaptiveAppBarLeading(),
-        title: const Text(
-          'Staff',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
+        title: const Text('Staff'),
       ),
       body: Column(
         children: [
           // Search Bar
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: TextFormField(
               controller: _searchController,
               textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
                 hintText: 'Search staff...',
                 prefixIcon: Icon(
-                  Icons.search,
-                  color: theme.colorScheme.onSurfaceVariant,
+                  Icons.search_rounded,
+                  color: AppColors.textTertiary(b),
                 ),
               ),
             ),
@@ -111,15 +101,17 @@ class _StaffListPageState extends State<StaffListPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.error_outline,
-                                size: 64, color: theme.colorScheme.onSurfaceVariant),
+                            Icon(Icons.error_outline_rounded,
+                                size: 56,
+                                color: AppColors.textTertiary(b)),
                             const SizedBox(height: 16),
                             Text(
                               'Error: ${state.message}',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: theme.colorScheme.onSurfaceVariant,
-                                fontSize: 16,
+                                color: AppColors.textSecondary(b),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
@@ -131,14 +123,15 @@ class _StaffListPageState extends State<StaffListPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.people_outlined,
-                            size: 64, color: theme.colorScheme.onSurfaceVariant),
+                        Icon(Icons.people_outline_rounded,
+                            size: 56, color: AppColors.textTertiary(b)),
                         const SizedBox(height: 16),
                         Text(
                           'No staff found',
                           style: TextStyle(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontSize: 16,
+                            color: AppColors.textSecondary(b),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -156,14 +149,15 @@ class _StaffListPageState extends State<StaffListPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.search_off,
-                            size: 64, color: theme.colorScheme.onSurfaceVariant),
+                        Icon(Icons.search_off_rounded,
+                            size: 56, color: AppColors.textTertiary(b)),
                         const SizedBox(height: 16),
                         Text(
                           'No staff match your search.',
                           style: TextStyle(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontSize: 16,
+                            color: AppColors.textSecondary(b),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -173,129 +167,151 @@ class _StaffListPageState extends State<StaffListPage> {
 
                 return ListView.separated(
                   padding: const EdgeInsets.only(
-                      left: 16, right: 16, top: 8, bottom: 100),
+                      left: 16, right: 16, top: 12, bottom: 100),
                   itemCount: filteredStaff.length,
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final user = filteredStaff[index];
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: borderColor),
-                        boxShadow: [
-                          BoxShadow(
-                              color: theme.shadowColor.withValues(alpha: 0.1),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2))
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 24,
-                            backgroundColor:
-                                AppTheme.primaryColor.withValues(alpha: 0.1),
-                            child: Text(
-                              _initials(user.name),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primaryColor,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  user.name,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  user.email,
-                                  style: TextStyle(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                                if (user.phone != null &&
-                                    user.phone!.isNotEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.phone,
-                                          size: 13, color: theme.colorScheme.onSurfaceVariant),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        user.phone!,
-                                        style: TextStyle(
-                                          color: theme.colorScheme.onSurfaceVariant,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                                const SizedBox(height: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 3),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.primaryColor
-                                        .withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    user.role.toUpperCase(),
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppTheme.primaryColor,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.error.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: IconButton(
-                              icon: Icon(Icons.delete_outline_rounded,
-                                  color: theme.colorScheme.error, size: 20),
-                              constraints: const BoxConstraints(),
-                              padding: const EdgeInsets.all(8),
-                              onPressed: () => _confirmDelete(context, user),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                  itemBuilder: (context, index) =>
+                      _buildStaffCard(context, filteredStaff[index], b),
                 );
               },
             ),
           ),
         ],
       ),
-      floatingActionButton: isOwner
-          ? FloatingActionButton(
-              onPressed: () => context.push('/staff/add'),
-              backgroundColor: AppTheme.primaryColor,
-              foregroundColor: theme.colorScheme.onPrimary,
-              shape: const CircleBorder(),
-              child: const Icon(Icons.add, size: 32),
-            )
-          : null,
+    );
+  }
+
+  Widget _buildStaffCard(BuildContext context, User user, Brightness b) {
+    final isOwnerRole = user.role.toLowerCase() == 'owner';
+    final badgeColor = isOwnerRole ? AppColors.success : AppColors.info;
+    final badgeTextColor =
+        isOwnerRole ? AppColors.successText(b) : AppColors.infoText(b);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface(b),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border(b)),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Leading initials chip
+          Container(
+            width: 44,
+            height: 44,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.accentSubtle,
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              _initials(user.name),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+                color: AppColors.accentText(b),
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        user.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: AppColors.textPrimary(b),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: badgeColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        user.role.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.6,
+                          color: badgeTextColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(Icons.mail_outline_rounded,
+                        size: 13, color: AppColors.textTertiary(b)),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        user.email,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: AppColors.textTertiary(b),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                if (user.phone != null && user.phone!.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(Icons.phone_outlined,
+                          size: 13, color: AppColors.textTertiary(b)),
+                      const SizedBox(width: 6),
+                      Text(
+                        user.phone!,
+                        style: TextStyle(
+                          color: AppColors.textTertiary(b),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.error(b).withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.delete_outline_rounded,
+                  color: AppColors.error(b), size: 20),
+              constraints: const BoxConstraints(),
+              padding: const EdgeInsets.all(8),
+              onPressed: () => _confirmDelete(context, user),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

@@ -1,14 +1,17 @@
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/app_typography.dart';
+import 'package:billing_app/core/theme/app_dimensions.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 import 'package:billing_app/core/widgets/dashboard_action_card.dart';
-import 'package:billing_app/core/widgets/greeting_header.dart';
 import 'package:billing_app/core/widgets/inventory_health_card.dart';
-import 'package:billing_app/core/widgets/premium_stat_card.dart';
 import 'package:billing_app/core/widgets/recent_transactions_card.dart';
 import 'package:billing_app/core/widgets/sales_trend_card.dart';
 import 'package:billing_app/core/widgets/payment_donut_chart.dart';
 import 'package:billing_app/core/widgets/top_products_bar_chart.dart';
 import 'package:billing_app/core/widgets/monthly_trend_card.dart';
+import 'package:billing_app/core/widgets/press_scale.dart';
+import 'package:billing_app/core/widgets/staggered_fade.dart';
 import 'package:billing_app/core/widgets/staff_performance_card.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
@@ -115,86 +118,114 @@ class _DashboardViewState extends State<_DashboardView> {
 
                 // ── Content ──
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 96),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       // Wrap entire scrollable content in RepaintBoundary
                       // so glassmorphism cards don't repaint the whole list
                       RepaintBoundary(
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                      // Greeting
-                      BlocBuilder<AuthBloc, AuthState>(
-                        buildWhen: (previous, current) {
-                          if (previous is! Authenticated || current is! Authenticated) return true;
-                          return previous.user.name != current.user.name;
-                        },
-                        builder: (context, state) {
-                          final name = state is Authenticated ? state.user.name : '';
-                          return GreetingHeader(userName: name);
-                        },
+                      // Compact greeting header
+                      StaggeredFade(
+                        index: 0,
+                        child: BlocBuilder<AuthBloc, AuthState>(
+                          buildWhen: (previous, current) {
+                            if (previous is! Authenticated || current is! Authenticated) return true;
+                            return previous.user.name != current.user.name;
+                          },
+                          builder: (context, state) {
+                            final name = state is Authenticated ? state.user.name : '';
+                            return _CompactHeader(userName: name);
+                          },
+                        ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: AppSpacing.lg),
 
                       // Low stock banner
-                      const _LowStockBanner(),
-                      const SizedBox(height: 16),
+                      const StaggeredFade(
+                        index: 1,
+                        child: _LowStockBanner(),
+                      ),
+                      SizedBox(height: AppSpacing.lg),
 
-                      // ── Today's Sales Section ──
-                      _sectionTitle("Today's Sales"),
-                      const SizedBox(height: 16),
-                      const _TodaysSales(),
-                      const SizedBox(height: 24),
+                      // ── Hero: Today's Sales ──
+                      const StaggeredFade(
+                        index: 2,
+                        child: PressScale(child: _HeroSalesCard()),
+                      ),
+                      SizedBox(height: AppSpacing.lg),
+
+                      // ── Primary action ──
+                      const StaggeredFade(
+                        index: 3,
+                        child: PressScale(child: _NewBillButton()),
+                      ),
+                      SizedBox(height: AppSpacing.xl),
 
                       // ── Quick Actions ──
-                      _sectionTitle('Quick Actions'),
-                      const SizedBox(height: 16),
-                      DashboardActionCard(
-                        icon: Icons.shopping_cart_rounded,
-                        title: 'New Bill',
-                        subtitle: 'Scan products & checkout',
-                        color: AppTheme.primaryColor,
-                        onTap: () { HapticFeedback.lightImpact(); context.go('/scan'); },
+                      StaggeredFade(index: 4, child: _sectionTitle('Quick Actions')),
+                      SizedBox(height: AppSpacing.md),
+                      StaggeredFade(
+                        index: 5,
+                        child: BlocBuilder<AuthBloc, AuthState>(
+                          buildWhen: (previous, current) {
+                            if (previous is! Authenticated || current is! Authenticated) return true;
+                            return previous.user.role != current.user.role;
+                          },
+                          builder: (context, state) => _buildQuickTiles(context, state),
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                      BlocBuilder<AuthBloc, AuthState>(
-                        buildWhen: (previous, current) {
-                          if (previous is! Authenticated || current is! Authenticated) return true;
-                          return previous.user.role != current.user.role;
-                        },
-                        builder: (context, state) => _buildQuickTiles(context, state),
-                      ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: AppSpacing.xl),
 
                       // ── Weekly Trend ──
-                      _sectionTitle('This Week'),
-                      const SizedBox(height: 16),
-                      const _WeeklyTrend(),
-                      const SizedBox(height: 24),
-
-                      // ── Payment Methods Donut ──
-                      const _PaymentMethodsSection(),
-                      const SizedBox(height: 24),
-
-                      // ── Top Products Bar Chart ──
-                      const _TopProductsSection(),
-                      const SizedBox(height: 24),
-
-                      // ── Inventory Health ──
-                      const _InventoryHealth(),
-                      const SizedBox(height: 24),
+                      StaggeredFade(index: 6, child: _sectionTitle('This Week')),
+                      SizedBox(height: AppSpacing.md),
+                      const StaggeredFade(index: 7, child: _WeeklyTrend()),
+                      SizedBox(height: AppSpacing.xl),
 
                       // ── Recent Transactions ──
-                      const _RecentTransactions(),
-                      const SizedBox(height: 24),
+                      const StaggeredFade(
+                        index: 8,
+                        child: _RecentTransactions(),
+                      ),
+                      SizedBox(height: AppSpacing.xl),
+
+                      // ── Payment Methods Donut ──
+                      const StaggeredFade(
+                        index: 9,
+                        child: _PaymentMethodsSection(),
+                      ),
+                      SizedBox(height: AppSpacing.xl),
+
+                      // ── Top Products Bar Chart ──
+                      const StaggeredFade(
+                        index: 10,
+                        child: _TopProductsSection(),
+                      ),
+                      SizedBox(height: AppSpacing.xl),
 
                       // ── Monthly / 30-Day Trend ──
-                       const _MonthlyTrendSection(),
-                      const SizedBox(height: 24),
+                      const StaggeredFade(
+                        index: 11,
+                        child: _MonthlyTrendSection(),
+                      ),
+                      SizedBox(height: AppSpacing.xl),
+
+                      // ── Inventory Health ──
+                      const StaggeredFade(
+                        index: 12,
+                        child: _InventoryHealth(),
+                      ),
+                      SizedBox(height: AppSpacing.xl),
 
                       // ── Staff Performance ──
-                      const _StaffPerformanceSection(),
-                      const SizedBox(height: 16),
+                      const StaggeredFade(
+                        index: 13,
+                        child: _StaffPerformanceSection(),
+                      ),
+                      SizedBox(height: AppSpacing.lg),
                     ], // Column children
                   ), // Column
                 ), // RepaintBoundary
@@ -218,14 +249,21 @@ class _DashboardViewState extends State<_DashboardView> {
     );
   }
 
-  Widget _sectionTitle(String text) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16),
-    child: Text(text, style: AppTextStyles.of(context).sectionTitle.copyWith(
-      fontSize: 14,
-      letterSpacing: 0.3,
-      color: Theme.of(context).colorScheme.onSurfaceVariant,
-    )),
-  );
+  Widget _sectionTitle(String text) {
+    final b = Theme.of(context).brightness;
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 2),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
+          color: AppColors.textTertiary(b),
+        ),
+      ),
+    );
+  }
 
   Widget _buildQuickTiles(BuildContext context, AuthState authState) {
     final isOwner =
@@ -236,68 +274,119 @@ class _DashboardViewState extends State<_DashboardView> {
     // the rest are direct children with zero alloc.
     // NOTE: Products & Reports tiles removed — bottom nav now owns
     // those destinations. Surface secondary business features instead.
+    // v3.1 (ui-ux-pro-max): stagger entrance + semantic wayfinding colors —
+    // business-critical tiles get hue, utilities stay muted (labels carry
+    // meaning, color only aids scanning).
+    final b = Theme.of(context).brightness;
+    final muted = AppColors.textSecondary(b);
+
     return GridView.count(
-      crossAxisCount: 3,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      childAspectRatio: 0.95,
+      crossAxisCount: 4,
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
+      childAspectRatio: 0.85,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        QuickActionTile(
-          icon: Icons.payments_outlined,
-          label: 'Due Payments',
-          color: AppTheme.primaryColor,
-          onTap: () { HapticFeedback.lightImpact(); context.go('/due-payments'); },
-        ),
-        QuickActionTile(
-          icon: Icons.people_outline_rounded,
-          label: 'Customers',
-          color: AppTheme.primaryColor,
-          onTap: () { HapticFeedback.lightImpact(); context.go('/customers'); },
-        ),
-        QuickActionTile(
-          icon: Icons.category_rounded,
-          label: 'Categories',
-          color: AppTheme.primaryColor,
-          onTap: () { HapticFeedback.lightImpact(); context.go('/categories'); },
-        ),
-        QuickActionTile(
-          icon: Icons.verified_outlined,
-          label: 'Warranty',
-          color: AppTheme.primaryColor,
-          onTap: () { HapticFeedback.lightImpact(); context.go('/warranty'); },
-        ),
-        QuickActionTile(
-          icon: Icons.store_rounded,
-          label: 'Shop',
-          color: AppTheme.primaryColor,
-          onTap: () { HapticFeedback.lightImpact(); context.go('/shop'); },
-        ),
-        QuickActionTile(
-          icon: Icons.settings_rounded,
-          label: 'Settings',
-          color: AppTheme.primaryColor,
-          onTap: () { HapticFeedback.lightImpact(); context.go('/settings'); },
-        ),
+        _quickTile(context, AppColors.warningText(b), Icons.payments_outlined, 'Due Payments', '/due-payments', Duration.zero),
+        _quickTile(context, AppColors.infoText(b), Icons.people_outline_rounded, 'Customers', '/customers', const Duration(milliseconds: 60)),
+        _quickTile(context, AppColors.successText(b), Icons.category_rounded, 'Categories', '/categories', const Duration(milliseconds: 120)),
+        _quickTile(context, AppColors.accentText(b), Icons.verified_outlined, 'Warranty', '/warranty', const Duration(milliseconds: 180)),
+        _quickTile(context, muted, Icons.store_rounded, 'Shop', '/shop', const Duration(milliseconds: 240)),
+        _quickTile(context, muted, Icons.settings_rounded, 'Settings', '/settings', const Duration(milliseconds: 300)),
         if (isOwner)
-          QuickActionTile(
-            icon: Icons.people_rounded,
-            label: 'Staff',
-            color: AppTheme.primaryColor,
-            onTap: () { HapticFeedback.lightImpact(); context.go('/staff'); },
+          _quickTile(context, muted, Icons.people_rounded, 'Staff', '/staff', const Duration(milliseconds: 360)),
+      ],
+    );
+  }
+
+  /// Quick-action tile wrapped with press-scale feedback (Framer `whileTap`
+  /// equivalent) on top of the tile's own staggered fade+slide entry + ripple.
+  Widget _quickTile(BuildContext context, Color color, IconData icon,
+      String label, String route, Duration staggerDelay) {
+    return PressScale(
+      child: QuickActionTile(
+        icon: icon,
+        label: label,
+        color: color,
+        staggerDelay: staggerDelay,
+        onTap: () {
+          HapticFeedback.lightImpact();
+          context.go(route);
+        },
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Compact header — greeting + name, flat (no glass)
+// ═══════════════════════════════════════════════════════════════════════
+
+class _CompactHeader extends StatelessWidget {
+  final String userName;
+  const _CompactHeader({required this.userName});
+
+  @override
+  Widget build(BuildContext context) {
+    final b = Theme.of(context).brightness;
+    final hour = DateTime.now().hour;
+    final greeting = hour < 12
+        ? 'Good morning'
+        : hour < 17
+            ? 'Good afternoon'
+            : 'Good evening';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              greeting,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textTertiary(b),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '·',
+              style: TextStyle(color: AppColors.textTertiary(b)),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              DateFormat('EEE, d MMM').format(DateTime.now()),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textTertiary(b),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 2),
+        Text(
+          userName.isEmpty ? 'Welcome' : userName,
+          style: AppTypography.displaySmall.copyWith(
+            fontSize: 24,
+            color: AppColors.textPrimary(b),
           ),
+        ),
       ],
     );
   }
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// Today's Sales — 4 glass stat cards in 2×2 grid
+// Hero sales card — today's total front and center (v3 surface card,
+// money in IBM Plex Mono), sub-stats: bills / avg / discount.
+// Tap → daily sales report.
 // ═══════════════════════════════════════════════════════════════════════
 
-class _TodaysSales extends StatelessWidget {
-  const _TodaysSales();
+class _HeroSalesCard extends StatelessWidget {
+  const _HeroSalesCard();
 
   static final _inrFormat = NumberFormat.currency(
     locale: 'en_IN',
@@ -305,74 +394,354 @@ class _TodaysSales extends StatelessWidget {
     decimalDigits: 0,
   );
 
-  String _formatCurrency(double v) => _inrFormat.format(v);
+  /// 7-day totals (oldest → today) from billHistory — same single-pass
+  /// grouping as _WeeklyTrend. Powers the hero sparkline + delta pill.
+  static List<double> _weekValues(List<dynamic> bills) {
+    final now = DateTime.now();
+    final Map<int, double> dayTotals = {};
+    for (int i = 6; i >= 0; i--) {
+      dayTotals[i] = 0.0;
+    }
+    for (final bill in bills) {
+      final diff = DateTime(now.year, now.month, now.day)
+          .difference(DateTime(
+              bill.createdAt.year, bill.createdAt.month, bill.createdAt.day))
+          .inDays;
+      if (diff >= 0 && diff <= 6) {
+        dayTotals[6 - diff] = (dayTotals[6 - diff] ?? 0) + bill.grandTotal;
+      }
+    }
+    return [for (int i = 6; i >= 0; i--) dayTotals[i] ?? 0];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final b = Theme.of(context).brightness;
+
     return BlocBuilder<ReportBloc, ReportState>(
-      buildWhen: (a, b) => a.dailySales != b.dailySales || a.status != b.status,
+      // billHistory bhi — sparkline + delta usi se bante hain.
+      buildWhen: (a, b) =>
+          a.dailySales != b.dailySales ||
+          a.status != b.status ||
+          a.billHistory != b.billHistory,
       builder: (context, state) {
         final sales = state.dailySales;
         final loading = state.status == ReportStatus.loading && sales == null;
 
-        final totalSales =
-            loading ? '…' : _formatCurrency(sales?.totalSales ?? 0);
-        final billCount =
-            loading ? '…' : (sales?.billCount ?? 0).toString();
-        final avgBill =
-            loading ? '…' : _formatCurrency(sales?.averageBill ?? 0);
-        final discount =
-            loading ? '…' : _formatCurrency(sales?.totalDiscount ?? 0);
+        final totalText =
+            loading ? '…' : _inrFormat.format(sales?.totalSales ?? 0);
+        final billCount = loading ? '—' : (sales?.billCount ?? 0).toString();
+        final avgBill = loading ? '—' : _inrFormat.format(sales?.averageBill ?? 0);
+        final discount = loading ? '—' : _inrFormat.format(sales?.totalDiscount ?? 0);
 
-        return Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: PremiumStatCard(
-                    label: 'Total Sales',
-                    value: totalSales,
-                    color: const Color(0xFF4CAF50),
-                    icon: Icons.currency_rupee_rounded,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                 Expanded(
-                   child: PremiumStatCard(
-                     label: 'Bills',
-                    value: billCount,
-                    color: AppTheme.primaryColor,
-                    icon: Icons.receipt_long_rounded,
-                  ),
-                ),
-              ],
+        // Trend context from already-loaded billHistory (no extra fetch).
+        final week = _weekValues(state.billHistory);
+        final hasTrend = week.any((v) => v > 0);
+        final today = week.last;
+        final prevAvg = week.take(6).isEmpty
+            ? 0.0
+            : week.take(6).reduce((a, c) => a + c) / 6;
+        final hasDelta = prevAvg > 0;
+        final deltaPct = hasDelta ? ((today - prevAvg) / prevAvg) * 100 : 0.0;
+        final isUp = deltaPct >= 0;
+
+        return TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0.0, end: 1.0),
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+          builder: (context, t, child) => Opacity(
+            opacity: t,
+            child: Transform.translate(
+              offset: Offset(0, 10 * (1 - t)),
+              child: child,
             ),
-            const SizedBox(height: 16),
-             Row(
-               children: [
-                 Expanded(
-                   child: PremiumStatCard(
-                     label: 'Avg Bill',
-                    value: avgBill,
-                    color: const Color(0xFFFF9800),
-                    icon: Icons.trending_up_rounded,
-                  ),
+          ),
+          child: Semantics(
+            button: true,
+            label: 'Today sales $totalText. Tap to view daily sales report.',
+            child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => context.go('/reports/daily-sales'),
+              borderRadius: BorderRadius.circular(24),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.surface(b),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: AppColors.border(b)),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: PremiumStatCard(
-                    label: 'Discount',
-                    value: discount,
-                    color: const Color(0xFFE91E63),
-                    icon: Icons.local_offer_rounded,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          "TODAY'S SALES",
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.2,
+                            color: AppColors.textTertiary(b),
+                          ),
+                        ),
+                        const Spacer(),
+                        if (hasDelta)
+                          _DeltaPill(
+                            percent: deltaPct.abs(),
+                            isUp: isUp,
+                            b: b,
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      totalText,
+                      style: AppMoneyText.sized(
+                        34,
+                        FontWeight.w700,
+                        AppColors.textPrimary(b),
+                      ),
+                    ),
+                    if (hasTrend) ...[
+                      const SizedBox(height: 16),
+                      RepaintBoundary(
+                        child: SizedBox(
+                          height: 44,
+                          width: double.infinity,
+                          child: CustomPaint(
+                            painter: _SparklinePainter(
+                              values: week,
+                              color: AppColors.accentText(b),
+                              fillColor: AppColors.accentSubtle,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    Container(height: 1, color: AppColors.divider(b)),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        _HeroStat(label: 'Bills', value: billCount, b: b),
+                        _HeroDivider(b: b),
+                        _HeroStat(label: 'Avg Bill', value: avgBill, b: b),
+                        _HeroDivider(b: b),
+                        _HeroStat(label: 'Discount', value: discount, b: b),
+                        _HeroDivider(b: b),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          size: 18,
+                          color: AppColors.textTertiary(b),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ],
+          ),
+        ),
         );
       },
     );
+  }
+}
+
+/// Delta pill — icon + text + tinted bg (hue never alone).
+class _DeltaPill extends StatelessWidget {
+  final double percent;
+  final bool isUp;
+  final Brightness b;
+
+  const _DeltaPill({required this.percent, required this.isUp, required this.b});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isUp
+        ? AppColors.successText(b)
+        : AppColors.error(b);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isUp ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+            size: 13,
+            color: color,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            '${percent.toStringAsFixed(percent.abs() >= 10 ? 0 : 1)}% vs avg',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Minimal smooth area sparkline — no dots/labels (hero context).
+class _SparklinePainter extends CustomPainter {
+  final List<double> values;
+  final Color color;
+  final Color fillColor;
+
+  _SparklinePainter({
+    required this.values,
+    required this.color,
+    required this.fillColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (values.length < 2) return;
+    final maxVal = values.reduce((a, c) => a > c ? a : c);
+    final minVal = values.reduce((a, c) => a < c ? a : c);
+    final range = (maxVal - minVal).clamp(1, double.infinity);
+
+    final points = <Offset>[];
+    for (int i = 0; i < values.length; i++) {
+      final dx = (i / (values.length - 1)) * size.width;
+      final dy = size.height - 4 - ((values[i] - minVal) / range) * (size.height - 8);
+      points.add(Offset(dx, dy));
+    }
+
+    final line = Path()..moveTo(points.first.dx, points.first.dy);
+    for (int i = 1; i < points.length; i++) {
+      final prev = points[i - 1];
+      final curr = points[i];
+      final midX = (prev.dx + curr.dx) / 2;
+      line.quadraticBezierTo(prev.dx, prev.dy, midX, (prev.dy + curr.dy) / 2);
+    }
+    line.lineTo(points.last.dx, points.last.dy);
+
+    final fill = Path.from(line)
+      ..lineTo(points.last.dx, size.height)
+      ..lineTo(points.first.dx, size.height)
+      ..close();
+
+    canvas.drawPath(
+      fill,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [fillColor, fillColor.withValues(alpha: 0.0)],
+        ).createShader(Rect.fromLTWH(0, 0, size.width, size.height)),
+    );
+
+    canvas.drawPath(
+      line,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _SparklinePainter old) =>
+      old.values != values || old.color != color;
+}
+
+class _HeroStat extends StatelessWidget {
+  final String label;
+  final String value;
+  final Brightness b;
+
+  const _HeroStat({required this.label, required this.value, required this.b});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textTertiary(b),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: AppMoneyText.sized(15, FontWeight.w600, AppColors.textPrimary(b)),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeroDivider extends StatelessWidget {
+  final Brightness b;
+  const _HeroDivider({required this.b});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 32,
+      margin: const EdgeInsets.symmetric(horizontal: 14),
+      color: AppColors.divider(b),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Primary action — New Bill (lime pill, the one big accent on this screen)
+// ═══════════════════════════════════════════════════════════════════════
+
+class _NewBillButton extends StatelessWidget {
+  const _NewBillButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 54,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          context.go('/scan');
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.accent,
+          foregroundColor: AppColors.onAccent,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        icon: const Icon(Icons.qr_code_scanner_rounded, size: 22),
+        label: const Text(
+          'New Bill',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.1,
+          ),
+        ),
+      ),    );
   }
 }
 
@@ -697,20 +1066,21 @@ class _LowStockBanner extends StatelessWidget {
       builder: (context, state) {
         final count = state.lowStockProducts.length;
         if (count == 0) return const SizedBox.shrink();
+        final b = Theme.of(context).brightness;
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                AppTheme.errorColor.withValues(alpha: 0.10),
-                AppTheme.errorColor.withValues(alpha: 0.04),
+                AppColors.error(b).withValues(alpha: 0.10),
+                AppColors.error(b).withValues(alpha: 0.04),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: AppTheme.errorColor.withValues(alpha: 0.25),
+              color: AppColors.error(b).withValues(alpha: 0.25),
               width: 1,
             ),
           ),
@@ -726,12 +1096,12 @@ class _LowStockBanner extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppTheme.errorColor.withValues(alpha: 0.12),
+                        color: AppColors.error(b).withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.warning_amber_rounded,
-                        color: AppTheme.errorColor,
+                        color: AppColors.error(b),
                         size: 20,
                       ),
                     ),
@@ -739,16 +1109,16 @@ class _LowStockBanner extends StatelessWidget {
                     Expanded(
                       child: Text(
                         '$count item${count == 1 ? '' : 's'} running low on stock',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: AppTheme.errorColor,
+                          color: AppColors.error(b),
                         ),
                       ),
                     ),
                     Icon(
                       Icons.chevron_right_rounded,
-                      color: AppTheme.errorColor.withValues(alpha: 0.7),
+                      color: AppColors.error(b).withValues(alpha: 0.7),
                       size: 20,
                     ),
                   ],
@@ -815,6 +1185,7 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
   Widget _buildSearchResults(BuildContext context) {
     final allProducts = _getAllProducts(context);
     final queryLower = query.toLowerCase().trim();
+    final b = Theme.of(context).brightness;
 
     if (queryLower.isEmpty) {
       return Center(
@@ -851,9 +1222,9 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
         final product = results[index];
         return ListTile(
           leading: CircleAvatar(
-            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
-            child: const Icon(Icons.inventory_2_outlined,
-                color: AppTheme.primaryColor, size: 20),
+            backgroundColor: AppColors.accentSubtle,
+            child: Icon(Icons.inventory_2_outlined,
+                color: AppColors.accentText(b), size: 20),
           ),
           title: Text(
             product.name,
@@ -866,8 +1237,8 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
                 children: [
                   Text(
                     '₹${product.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      color: AppTheme.primaryColor,
+                    style: TextStyle(
+                      color: AppColors.accentText(b),
                       fontWeight: FontWeight.w500,
                       fontSize: 13,
                     ),
@@ -902,8 +1273,7 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
   }
 
   Widget _buildDescriptionSnippet(BuildContext context, String description, String query) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final b = Theme.of(context).brightness;
     final lowerDesc = description.toLowerCase();
     final index = lowerDesc.indexOf(query);
 
@@ -916,16 +1286,16 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF3A2A00) : const Color(0xFFFEF3C7),
+        color: AppColors.warning.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-            color: isDark ? const Color(0xFF5C4000) : const Color(0xFFFDE68A)),
+            color: AppColors.warning.withValues(alpha: 0.35)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.saved_search_rounded,
-              size: 12, color: isDark ? const Color(0xFFFFB800) : const Color(0xFFD97706)),
+              size: 12, color: AppColors.warningText(b)),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
@@ -933,7 +1303,7 @@ class _ProductSearchDelegate extends SearchDelegate<Product?> {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
-                color: isDark ? const Color(0xFFFFF3CD) : const Color(0xFF92400E),
+                color: AppColors.warningText(b),
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

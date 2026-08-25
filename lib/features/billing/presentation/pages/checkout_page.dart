@@ -16,6 +16,8 @@ import '../../../../core/usecase/usecase.dart';
 import '../../../../core/service_locator.dart' as di;
 import '../bloc/billing_bloc.dart';
 import '../../../../core/widgets/app_feedback.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/cart_item.dart';
 import '../../../customer/domain/entities/customer.dart';
 import '../../../customer/presentation/bloc/customer_bloc.dart';
@@ -157,7 +159,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                     children: [
                                       Icon(Icons.person_outline,
                                           size: 18,
-                                          color: Theme.of(context).primaryColor),
+                                          color: AppColors.accentText(Theme.of(context).brightness)),
                                       const SizedBox(width: 8),
                                       const Text('Customer Info',
                                           style: TextStyle(
@@ -218,23 +220,23 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 10, vertical: 6),
                                           decoration: BoxDecoration(
-                                            color: Colors.green.withValues(
-                                                alpha: 0.12),
+                                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.06),
                                             borderRadius:
                                                 BorderRadius.circular(8),
+                                            border: Border.all(color: AppColors.success.withValues(alpha: 0.35)),
                                           ),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              const Icon(Icons.check_circle,
-                                                  size: 14, color: Colors.green),
+                                              Icon(Icons.check_circle,
+                                                  size: 14, color: AppColors.successText(Theme.of(context).brightness)),
                                               const SizedBox(width: 6),
                                               Flexible(
                                                 child: Text(
                                                   'Linked: ${selected.name} (${selected.phone})',
-                                                  style: const TextStyle(
+                                                  style: TextStyle(
                                                       fontSize: 12,
-                                                      color: Colors.green,
+                                                      color: AppColors.successText(Theme.of(context).brightness),
                                                       fontWeight:
                                                           FontWeight.w600),
                                                   overflow:
@@ -251,23 +253,23 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 10, vertical: 6),
                                           decoration: BoxDecoration(
-                                            color: Colors.orange.withValues(
-                                                alpha: 0.12),
+                                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.06),
                                             borderRadius:
                                                 BorderRadius.circular(8),
+                                            border: Border.all(color: AppColors.warning.withValues(alpha: 0.35)),
                                           ),
-                                          child: const Row(
+                                          child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Icon(Icons.sync,
-                                                  size: 14, color: Colors.orange),
-                                              SizedBox(width: 6),
+                                                  size: 14, color: AppColors.warningText(Theme.of(context).brightness)),
+                                              const SizedBox(width: 6),
                                               Flexible(
                                                 child: Text(
                                                   'Will match/create customer by phone',
                                                   style: TextStyle(
                                                       fontSize: 12,
-                                                      color: Colors.orange,
+                                                      color: AppColors.warningText(Theme.of(context).brightness),
                                                       fontWeight:
                                                           FontWeight.w600),
                                                   overflow:
@@ -431,7 +433,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                         style: TextStyle(
                                                           fontSize: 14,
                                                           fontWeight: FontWeight.w500,
-                                                          color: isLowStock ? Colors.red.shade700 : Theme.of(context).colorScheme.onSurface,
+                                                          color: isLowStock ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.onSurface,
                                                         ),
                                                       ),
                                                       if (hasWarranty)
@@ -439,17 +441,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                           onTap: () => _showWarrantyDialog(context, item),
                                                           child: Padding(
                                                             padding: const EdgeInsets.only(top: 2),
-                                                            child: Row(
+                                                              child: Row(
                                                               mainAxisSize: MainAxisSize.min,
                                                               children: [
-                                                                Icon(Icons.verified_outlined, size: 12, color: Colors.blue[600]),
+                                                                Icon(Icons.verified_outlined, size: 12, color: AppColors.infoText(Theme.of(context).brightness)),
                                                                 const SizedBox(width: 3),
                                                                 Text(
                                                                   item.product.warrantyLabel,
-                                                                  style: TextStyle(fontSize: 10, color: Colors.blue[600], fontWeight: FontWeight.w500),
+                                                                  style: TextStyle(fontSize: 10, color: AppColors.infoText(Theme.of(context).brightness), fontWeight: FontWeight.w500),
                                                                 ),
                                                                 const SizedBox(width: 2),
-                                                                Icon(Icons.edit_rounded, size: 9, color: Colors.blue[400]),
+                                                                Icon(Icons.edit_rounded, size: 9, color: AppColors.infoText(Theme.of(context).brightness).withValues(alpha: 0.7)),
                                                               ],
                                                             ),
                                                           ),
@@ -475,12 +477,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                       if (isLowStock)
                                                         Padding(
                                                           padding: const EdgeInsets.only(top: 2),
-                                                          child: Text('Insufficient Stock (${item.product.stock} avail)', style: TextStyle(fontSize: 10, color: Colors.red.shade700)),
+                                                          child: Text('Insufficient Stock (${item.product.stock} avail)', style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.error)),
                                                         )
                                                       else if (isLowStockWarning)
                                                         Padding(
                                                           padding: const EdgeInsets.only(top: 2),
-                                                          child: Text('Low Stock (${item.product.stock} left)', style: TextStyle(fontSize: 10, color: Colors.orange.shade700)),
+                                                          child: Text('Low Stock (${item.product.stock} left)', style: TextStyle(fontSize: 10, color: AppColors.warningText(Theme.of(context).brightness))),
                                                         ),
                                                     ],
                                                   ),
@@ -591,19 +593,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       children: [
                                         Row(
                                           children: [
-                                            Icon(Icons.local_offer_outlined, size: 16, color: Theme.of(context).primaryColor),
+                                            Icon(Icons.local_offer_outlined, size: 16, color: AppColors.accentText(Theme.of(context).brightness)),
                                             const SizedBox(width: 4),
                                             Text('Discount', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                                             if (billingState.discount != null && billingState.discount! > 0) ...[
                                               const SizedBox(width: 6),
                                               Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                                                decoration: BoxDecoration(color: Colors.green.shade50, borderRadius: BorderRadius.circular(4)),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.successText(Theme.of(context).brightness).withValues(alpha: 0.12),
+                                                  borderRadius: BorderRadius.circular(4),
+                                                ),
                                                 child: Text(
                                                   billingState.discountIsPercentage
                                                       ? '${billingState.discount!.toStringAsFixed(0)}%'
                                                       : '₹${_formatPrice(billingState.discount!)}',
-                                                  style: TextStyle(fontSize: 10, color: Colors.green.shade700, fontWeight: FontWeight.w600),
+                                                  style: TextStyle(fontSize: 10, color: AppColors.successText(Theme.of(context).brightness), fontWeight: FontWeight.w600),
                                                 ),
                                               ),
                                             ],
@@ -662,15 +667,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       children: [
                                         Row(
                                           children: [
-                                            Icon(Icons.payments_outlined, size: 16, color: Theme.of(context).primaryColor),
+                                            Icon(Icons.payments_outlined, size: 16, color: AppColors.accentText(Theme.of(context).brightness)),
                                             const SizedBox(width: 4),
                                             Text('Payment', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                                             if (billingState.amountPaid != null && billingState.amountPaid! > 0 && billingState.amountPaid! < billingState.totalAmount) ...[
                                               const SizedBox(width: 6),
                                               Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                                                decoration: BoxDecoration(color: Colors.orange.shade50, borderRadius: BorderRadius.circular(4)),
-                                                child: Text('Due ₹${_formatPrice(billingState.totalAmount - (billingState.amountPaid ?? 0))}', style: TextStyle(fontSize: 10, color: Colors.orange.shade700, fontWeight: FontWeight.w600)),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.warningText(Theme.of(context).brightness).withValues(alpha: 0.12),
+                                                  borderRadius: BorderRadius.circular(4),
+                                                ),
+                                                child: Text('Due ₹${_formatPrice(billingState.totalAmount - (billingState.amountPaid ?? 0))}', style: TextStyle(fontSize: 10, color: AppColors.warningText(Theme.of(context).brightness), fontWeight: FontWeight.w600)),
                                               ),
                                             ],
                                           ],
@@ -773,8 +781,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   },
                                   showSelectedIcon: false,
                                   style: SegmentedButton.styleFrom(
-                                    selectedBackgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                                    selectedForegroundColor: Theme.of(context).primaryColor,
+                                    selectedBackgroundColor: AppColors.accentSubtle,
+                                    selectedForegroundColor: AppColors.accentText(Theme.of(context).brightness),
                                     visualDensity: VisualDensity.compact,
                                   ),
                                 ),
@@ -862,11 +870,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                         children: [
                                           Text(
                                             '₹${_formatPrice(billingState.totalAmount)}',
-                                            style: TextStyle(
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: -0.5,
-                                              color: Theme.of(context).colorScheme.onSurface,
+                                            style: AppMoneyText.sized(
+                                              24,
+                                              FontWeight.w700,
+                                              Theme.of(context).colorScheme.onSurface,
                                             ),
                                           ),
                                           IconButton(
@@ -914,7 +921,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                         height: 18,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          color: Colors.white,
+                                          color: AppColors.onAccent,
                                         ),
                                       )
                                     : const Icon(Icons.save, size: 20),
@@ -922,8 +929,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                     ? 'Checking...'
                                     : 'Save Bill'),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Theme.of(context).colorScheme.primary,
-                                  foregroundColor: Theme.of(context).colorScheme.surface,
+                                  backgroundColor: AppColors.accent,
+                                  foregroundColor: AppColors.onAccent,
+                                  disabledBackgroundColor: AppColors.accent.withValues(alpha: 0.4),
+                                  disabledForegroundColor: AppColors.onAccent.withValues(alpha: 0.7),
                                   padding: const EdgeInsets.symmetric(vertical: 14),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
@@ -1050,7 +1059,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               title: Row(
                 children: [
-                  Icon(Icons.add_shopping_cart_rounded, size: 22, color: Theme.of(context).primaryColor),
+                  Icon(Icons.add_shopping_cart_rounded, size: 22, color: AppColors.accentText(Theme.of(context).brightness)),
                   const SizedBox(width: 8),
                   const Text('Add Product',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -1170,7 +1179,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                 crossAxisAlignment: CrossAxisAlignment.end,
                                                 children: [
                                                   Text('Stock: ${product.stock}', style: TextStyle(fontSize: 12, color: product.stock > 0 ? Theme.of(context).colorScheme.onSurfaceVariant : Theme.of(context).colorScheme.error)),
-                                                  Text('₹${product.price.toStringAsFixed(2)}', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Theme.of(context).primaryColor)),
+                                                  Text('₹${product.price.toStringAsFixed(2)}', style: AppMoneyText.sized(14, FontWeight.w700, AppColors.accentText(Theme.of(context).brightness))),
                                                 ],
                                               ),
                                               if (inCart) ...[
@@ -1215,7 +1224,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       builder: (ctx) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.edit_rounded, size: 20, color: Theme.of(context).primaryColor),
+            Icon(Icons.edit_rounded, size: 20, color: AppColors.accentText(Theme.of(context).brightness)),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -1329,7 +1338,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             title: Row(
               children: [
-                Icon(Icons.verified_outlined, size: 22, color: Theme.of(ctx).primaryColor),
+                Icon(Icons.verified_outlined, size: 22, color: AppColors.accentText(Theme.of(ctx).brightness)),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(

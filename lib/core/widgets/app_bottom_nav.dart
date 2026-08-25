@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
+import '../theme/app_colors.dart';
 import '../theme/app_dimensions.dart';
 import '../theme/app_theme.dart';
 import 'quick_actions_panel.dart';
@@ -96,13 +97,13 @@ class AppBottomNav extends StatelessWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            AppTheme.primaryColor,
-                            Color(0xFF554EE0),
+                            AppColors.accent,
+                            AppColors.accentDark,
                           ],
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppTheme.primaryColor
+                            color: AppColors.accent
                                 .withValues(alpha: 0.35),
                             blurRadius: 14,
                             offset: const Offset(0, 5),

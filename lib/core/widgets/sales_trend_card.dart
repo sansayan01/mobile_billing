@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 
@@ -14,7 +15,7 @@ class SalesTrendCard extends StatelessWidget {
     required this.labels,
   });
 
-  static const Color _primaryColor = Color(0xFF6C63FF);
+  static Color _chartColor(bool isDark) => AppColors.accentText(isDark ? Brightness.dark : Brightness.light);
 
   bool get _hasData =>
       values.isNotEmpty && values.any((v) => v > 0);
@@ -44,7 +45,7 @@ class SalesTrendCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: _primaryColor.withValues(alpha: 0.08),
+              color: _chartColor(isDark).withValues(alpha: 0.08),
               blurRadius: 24,
               offset: const Offset(0, 8),
             ),
@@ -77,7 +78,7 @@ class SalesTrendCard extends StatelessWidget {
                     painter: _SalesTrendPainter(
                       values: values,
                       labels: labels,
-                      primaryColor: _primaryColor,
+                      primaryColor: _chartColor(isDark),
                       dotFillColor: isDark ? darkSurface : Colors.white,
                       labelStyle: AppTextStyles.of(context).trendChipLabel,
                       valueStyle: AppTextStyles.of(context).trendChipValue,
@@ -109,7 +110,9 @@ class SalesTrendCard extends StatelessWidget {
           Icon(
             Icons.insights_rounded,
             size: 32,
-            color: _primaryColor.withValues(alpha: 0.3),
+            color: _chartColor(
+                    Theme.of(context).brightness == Brightness.dark)
+                .withValues(alpha: 0.3),
           ),
           const SizedBox(height: 8),
           Text(
@@ -128,14 +131,14 @@ class SalesTrendCard extends StatelessWidget {
           context: context,
           label: 'Total',
           value: _formatCurrency(total),
-          color: _primaryColor,
+          color: _chartColor(Theme.of(context).brightness == Brightness.dark),
         ),
         const SizedBox(width: 10),
         _buildStatChip(
           context: context,
           label: 'Avg/day',
           value: _formatCurrency(average),
-          color: const Color(0xFF00C9A7),
+          color: AppColors.info,
         ),
       ],
     );

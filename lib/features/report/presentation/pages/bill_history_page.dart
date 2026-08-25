@@ -15,7 +15,8 @@ import 'package:printing/printing.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 // ignore_for_file: prefer_const_constructors
-import 'package:billing_app/core/theme/app_theme.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
+import 'package:billing_app/core/theme/app_typography.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_state.dart';
@@ -356,10 +357,10 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                 final bills = state.billHistory;
                 if (bills.isEmpty && state.status == ReportStatus.loaded) {
                   return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    TweenAnimationBuilder<double>(tween: Tween(begin: 0.6, end: 1.0), duration: const Duration(milliseconds: 800), curve: Curves.easeOutBack,
-                        builder: (_, val, child) => Transform.scale(scale: val, child: child),
-                        child: Container(width: 100, height: 100, decoration: BoxDecoration(gradient: LinearGradient(colors: [AppTheme.primaryColor.withValues(alpha: 0.12), AppTheme.primaryColor.withValues(alpha: 0.04)]), shape: BoxShape.circle),
-                            child: Icon(Icons.receipt_long_rounded, size: 48, color: AppTheme.primaryColor))),
+                     TweenAnimationBuilder<double>(tween: Tween(begin: 0.6, end: 1.0), duration: const Duration(milliseconds: 800), curve: Curves.easeOutBack,
+                         builder: (_, val, child) => Transform.scale(scale: val, child: child),
+                         child: Container(width: 100, height: 100, decoration: BoxDecoration(gradient: LinearGradient(colors: [AppColors.accentSubtle, AppColors.accent.withValues(alpha: 0.04)]), shape: BoxShape.circle),
+                             child: Icon(Icons.receipt_long_rounded, size: 48, color: AppColors.accentText(theme.brightness)))),
                     const SizedBox(height: 20),
                     Text('No Bills Found', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 8),
@@ -374,7 +375,6 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
 
                 return RefreshIndicator(
                   onRefresh: () async { HapticFeedback.mediumImpact(); _loadBills(); await Future.delayed(const Duration(milliseconds: 500)); },
-                  color: AppTheme.primaryColor,
                   child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                     padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
@@ -434,38 +434,38 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
           margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [AppTheme.primaryColor, AppTheme.primaryColor.withValues(alpha: 0.75)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            gradient: const LinearGradient(colors: [AppColors.accent, AppColors.accentDark], begin: Alignment.topLeft, end: Alignment.bottomRight),
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [BoxShadow(color: AppTheme.primaryColor.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 6))],
+            boxShadow: [BoxShadow(color: AppColors.accent.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 6))],
           ),
           child: Column(
             children: [
               Row(children: [
                 Expanded(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.receipt_long_rounded, color: Colors.white, size: 20)),
+                  Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.onAccent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.receipt_long_rounded, color: AppColors.onAccent, size: 20)),
                   const SizedBox(width: 12),
                   Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('${bills.length}', style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800, height: 1.1)),
-                    Text('Bills', style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12)),
+                    Text('${bills.length}', style: TextStyle(color: AppColors.onAccent, fontSize: 24, fontWeight: FontWeight.w800, height: 1.1)),
+                    Text('Bills', style: TextStyle(color: AppColors.onAccent.withValues(alpha: 0.75), fontSize: 12)),
                   ]),
                 ])),
-                Container(width: 1, height: 44, decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.white.withValues(alpha: 0.1), Colors.white.withValues(alpha: 0.5), Colors.white.withValues(alpha: 0.1)]))),
+                Container(width: 1, height: 44, decoration: BoxDecoration(gradient: LinearGradient(colors: [AppColors.onAccent.withValues(alpha: 0.1), AppColors.onAccent.withValues(alpha: 0.5), AppColors.onAccent.withValues(alpha: 0.1)]))),
                 Expanded(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.currency_rupee_rounded, color: Colors.white, size: 20)),
+                  Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.onAccent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.currency_rupee_rounded, color: AppColors.onAccent, size: 20)),
                   const SizedBox(width: 12),
                   Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(nf.format(totalRevenue), style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800, height: 1.1)),
-                    Text('Revenue', style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12)),
+                    Text(nf.format(totalRevenue), style: AppMoneyText.sized(20, FontWeight.w800, AppColors.onAccent)),
+                    Text('Revenue', style: TextStyle(color: AppColors.onAccent.withValues(alpha: 0.75), fontSize: 12)),
                   ]),
                 ])),
               ]),
               const SizedBox(height: 16),
               Row(children: [
-                _quickStatBadge('Paid', paidCount, Colors.green),
+                _quickStatBadge('Paid', paidCount, AppColors.success),
                 const SizedBox(width: 8),
-                _quickStatBadge('Partial', partialCount, Colors.orange),
+                _quickStatBadge('Partial', partialCount, AppColors.warning),
                 const SizedBox(width: 8),
-                _quickStatBadge('Due', dueCount, Colors.red),
+                _quickStatBadge('Due', dueCount, t.colorScheme.error),
               ]),
             ],
           ),
@@ -478,13 +478,13 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
+        decoration: BoxDecoration(color: AppColors.onAccent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
           const SizedBox(width: 6),
-          Text(label, style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 11, fontWeight: FontWeight.w600)),
+          Text(label, style: TextStyle(color: AppColors.onAccent.withValues(alpha: 0.85), fontSize: 11, fontWeight: FontWeight.w600)),
           const SizedBox(width: 4),
-          Text('$count', style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w800)),
+          Text('$count', style: TextStyle(color: AppColors.onAccent, fontSize: 13, fontWeight: FontWeight.w800)),
         ]),
       ),
     );
@@ -514,6 +514,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
 
   Widget _dateFilterChip(String label, DateRange range, IconData icon) {
     final isSelected = _selectedRange == range;
+    final accentText = AppColors.accentText(Theme.of(context).brightness);
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -527,15 +528,15 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryColor : AppTheme.primaryColor.withValues(alpha: 0.08),
+          color: isSelected ? AppColors.accent : AppColors.accentSubtle,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 14, color: isSelected ? Colors.white : AppTheme.primaryColor),
+            Icon(icon, size: 14, color: isSelected ? AppColors.onAccent : accentText),
             const SizedBox(width: 4),
-            Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isSelected ? Colors.white : AppTheme.primaryColor)),
+            Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isSelected ? AppColors.onAccent : accentText)),
           ],
         ),
       ),
@@ -577,7 +578,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 8, 0, 10),
           child: Row(children: [
-            Icon(Icons.people_rounded, size: 16, color: AppTheme.primaryColor),
+            Icon(Icons.people_rounded, size: 16, color: AppColors.accentText(t.brightness)),
             const SizedBox(width: 6),
             Text('Top Customers', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: t.colorScheme.onSurfaceVariant)),
           ]),
@@ -593,19 +594,19 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.08),
+                  color: AppColors.accentSubtle,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.15)),
+                  border: Border.all(color: AppColors.accentSubtle),
                 ),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.person_rounded, size: 14, color: AppTheme.primaryColor),
+                  Icon(Icons.person_rounded, size: 14, color: AppColors.accentText(t.brightness)),
                   const SizedBox(width: 6),
-                  Text(entry.key, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.primaryColor)),
+                  Text(entry.key, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.accentText(t.brightness))),
                   const SizedBox(width: 4),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                    decoration: BoxDecoration(color: AppTheme.primaryColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(6)),
-                    child: Text('${entry.value}', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppTheme.primaryColor)),
+                    decoration: BoxDecoration(color: AppColors.accentSubtle, borderRadius: BorderRadius.circular(6)),
+                    child: Text('${entry.value}', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppColors.accentText(t.brightness))),
                   ),
                 ]),
               );
@@ -641,6 +642,8 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
 
         final revenueChange = lastMonthRevenue > 0 ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue * 100) : 0.0;
         final isUp = revenueChange >= 0;
+        final upColor = AppColors.successText(t.brightness);
+        final downColor = t.colorScheme.error;
 
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
@@ -658,19 +661,27 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text('vs Last Month', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: t.colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 2),
-                  Text('${thisMonthBills.length} bills · ${nf.format(thisMonthRevenue)}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  Text.rich(
+                    TextSpan(
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: t.colorScheme.onSurface),
+                      children: [
+                        TextSpan(text: '${thisMonthBills.length} bills · '),
+                        TextSpan(text: nf.format(thisMonthRevenue), style: AppMoneyText.sized(13, FontWeight.w600, t.colorScheme.onSurface)),
+                      ],
+                    ),
+                  ),
                 ]),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isUp ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+                  color: isUp ? upColor.withValues(alpha: 0.1) : downColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(isUp ? Icons.trending_up_rounded : Icons.trending_down_rounded, size: 14, color: isUp ? Colors.green[700] : Colors.red[700]),
+                  Icon(isUp ? Icons.trending_up_rounded : Icons.trending_down_rounded, size: 14, color: isUp ? upColor : downColor),
                   const SizedBox(width: 4),
-                  Text('${revenueChange.toStringAsFixed(1)}%', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: isUp ? Colors.green[700] : Colors.red[700])),
+                  Text('${revenueChange.toStringAsFixed(1)}%', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: isUp ? upColor : downColor)),
                 ]),
               ),
             ],
@@ -707,7 +718,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Icon(Icons.pie_chart_rounded, size: 16, color: AppTheme.primaryColor),
+          Icon(Icons.pie_chart_rounded, size: 16, color: AppColors.accentText(t.brightness)),
           const SizedBox(width: 8),
           Text('Payment Breakdown', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: t.colorScheme.onSurfaceVariant)),
         ]),
@@ -722,7 +733,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
               child: CustomPaint(
                 painter: _PieChartPainter(
                   values: [cashAmt, upiAmt, cardAmt],
-                  colors: [Colors.green, Colors.purple, Colors.blue],
+                  colors: [AppColors.success, AppColors.info, AppColors.warning],
                 ),
               ),
             ),
@@ -730,11 +741,11 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
             // Legend
             Expanded(
               child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                _legendRow('Cash', '$cashCount bills', nf.format(cashAmt), Colors.green),
+                _legendRow('Cash', '$cashCount bills', nf.format(cashAmt), AppColors.success),
                 const SizedBox(height: 6),
-                _legendRow('UPI', '$upiCount bills', nf.format(upiAmt), Colors.purple),
+                _legendRow('UPI', '$upiCount bills', nf.format(upiAmt), AppColors.info),
                 const SizedBox(height: 6),
-                _legendRow('Card', '$cardCount bills', nf.format(cardAmt), Colors.blue),
+                _legendRow('Card', '$cardCount bills', nf.format(cardAmt), AppColors.warning),
               ]),
             ),
           ]),
@@ -751,7 +762,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
       const SizedBox(width: 4),
       Text(count, style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
       const Spacer(),
-      Text(amount, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface)),
+      Text(amount, style: AppMoneyText.sized(12, FontWeight.w700, Theme.of(context).colorScheme.onSurface)),
     ]);
   }
 
@@ -784,7 +795,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Icon(Icons.show_chart_rounded, size: 16, color: AppTheme.primaryColor),
+          Icon(Icons.show_chart_rounded, size: 16, color: AppColors.accentText(t.brightness)),
           const SizedBox(width: 8),
           Text('Sales Trend', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: t.colorScheme.onSurfaceVariant)),
         ]),
@@ -797,8 +808,8 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
               values: entries.map((e) => e.value).toList(),
               labels: entries.map((e) => e.key).toList(),
               maxValue: maxVal,
-              lineColor: AppTheme.primaryColor,
-              fillColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+              lineColor: AppColors.accentText(t.brightness),
+              fillColor: AppColors.accentSubtle,
             ),
           ),
         ),
@@ -836,7 +847,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                 const SizedBox(width: 8),
                 _buildPaymentStatusBadge(bill),
               ]),
-              Text(numberFormat.format(bill.grandTotal), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppTheme.primaryColor)),
+              Text(numberFormat.format(bill.grandTotal), style: AppMoneyText.sized(18, FontWeight.bold, AppColors.accentText(t.brightness))),
             ]),
             const SizedBox(height: 10),
             Row(children: [
@@ -851,8 +862,8 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(color: AppTheme.primaryColor.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(6)),
-                  child: Text('-${_formatDiscount(bill.discount)}', style: TextStyle(fontSize: 11, color: AppTheme.primaryColor, fontWeight: FontWeight.w600)),
+                  decoration: BoxDecoration(color: AppColors.accentSubtle, borderRadius: BorderRadius.circular(6)),
+                  child: Text('-${_formatDiscount(bill.discount)}', style: AppMoneyText.sized(11, FontWeight.w600, AppColors.accentText(t.brightness))),
                 ),
               ],
             ]),
@@ -881,11 +892,22 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                 Container(
                   margin: const EdgeInsets.only(right: 8),
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.orange.withValues(alpha: 0.2))),
+                  decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.warning.withValues(alpha: 0.2))),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    Icon(Icons.warning_amber_rounded, size: 12, color: Colors.orange[700]),
+                    Icon(Icons.warning_amber_rounded, size: 12, color: AppColors.warningText(t.brightness)),
                     const SizedBox(width: 4),
-                    Text('Due: ₹${_formatDueAmount(bill.dueAmount)}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.orange[700])),
+                    Text.rich(
+                      TextSpan(
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.warningText(t.brightness)),
+                        children: [
+                          const TextSpan(text: 'Due: '),
+                          TextSpan(
+                            text: '₹${_formatDueAmount(bill.dueAmount)}',
+                            style: AppMoneyText.sized(11, FontWeight.w700, AppColors.warningText(t.brightness)),
+                          ),
+                        ],
+                      ),
+                    ),
                   ]),
                 ),
               Container(
@@ -901,15 +923,16 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
   }
 
   Widget _buildPaymentStatusBadge(BillSummary bill) {
+    final b = Theme.of(context).brightness;
     Color bgColor, textColor;
     String label;
     IconData icon;
 
     switch (bill.paymentStatus) {
-      case 'paid': bgColor = Colors.green.shade50; textColor = Colors.green.shade700; label = 'Paid'; icon = Icons.check_circle_rounded;
-      case 'partial': bgColor = Colors.orange.shade50; textColor = Colors.orange.shade700; label = 'Partial'; icon = Icons.schedule_rounded;
-      case 'due': bgColor = Colors.red.shade50; textColor = Colors.red.shade700; label = 'Due'; icon = Icons.warning_amber_rounded;
-      default: bgColor = Colors.green.shade50; textColor = Colors.green.shade700; label = 'Paid'; icon = Icons.check_circle_rounded;
+      case 'paid': bgColor = AppColors.success.withValues(alpha: 0.12); textColor = AppColors.successText(b); label = 'Paid'; icon = Icons.check_circle_rounded;
+      case 'partial': bgColor = AppColors.warning.withValues(alpha: 0.12); textColor = AppColors.warningText(b); label = 'Partial'; icon = Icons.schedule_rounded;
+      case 'due': bgColor = Theme.of(context).colorScheme.error.withValues(alpha: 0.12); textColor = Theme.of(context).colorScheme.error; label = 'Due'; icon = Icons.warning_amber_rounded;
+      default: bgColor = AppColors.success.withValues(alpha: 0.12); textColor = AppColors.successText(b); label = 'Paid'; icon = Icons.check_circle_rounded;
     }
 
     return Container(
@@ -924,11 +947,12 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
   }
 
   Color _paymentColor(String method) {
+    final b = Theme.of(context).brightness;
     switch (method.toLowerCase()) {
-      case 'upi': return Colors.purple;
-      case 'cash': return Colors.green;
-      case 'card': return Colors.blue;
-      default: return AppTheme.primaryColor;
+      case 'upi': return AppColors.infoText(b);
+      case 'cash': return AppColors.successText(b);
+      case 'card': return AppColors.warningText(b);
+      default: return AppColors.accentText(b);
     }
   }
 

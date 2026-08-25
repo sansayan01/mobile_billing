@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:billing_app/core/service_locator.dart';
+import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/utils/phone_utils.dart';
 import 'package:billing_app/features/customer/presentation/bloc/customer_bloc.dart';
 
@@ -29,9 +30,10 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
 
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a name'),
-          backgroundColor: Colors.red,
+        SnackBar(
+          content: const Text('Please enter a name',
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -39,9 +41,10 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
 
     if (!isValidPhone(phone)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid 10-digit phone number'),
-          backgroundColor: Colors.red,
+        SnackBar(
+          content: const Text('Please enter a valid 10-digit phone number',
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -59,8 +62,11 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
           if (state.successMessage != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.successMessage!),
-                backgroundColor: Colors.green,
+                content: Text(state.successMessage!,
+                    style: const TextStyle(
+                        color: AppColors.onAccent,
+                        fontWeight: FontWeight.w600)),
+                backgroundColor: AppColors.success,
               ),
             );
             sl<CustomerBloc>().add(const ClearCustomerMessage());
@@ -85,7 +91,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
               elevation: 0,
               leading: IconButton(
                 icon: Icon(Icons.arrow_back_ios,
-                    color: Theme.of(context).primaryColor),
+                    color: AppColors.accentText(Theme.of(context).brightness)),
                 onPressed: () => context.pop(),
               ),
             ),
@@ -132,15 +138,14 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                               height: 18,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: Colors.white,
+                                color: AppColors.onAccent,
                               ),
                             )
                           : const Icon(Icons.save, size: 18),
                       label: Text(state.isLoading ? 'Saving...' : 'Save'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor:
-                            Theme.of(context).colorScheme.surface,
+                        backgroundColor: AppColors.accent,
+                        foregroundColor: AppColors.onAccent,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                     ),

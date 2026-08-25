@@ -1,5 +1,6 @@
-
 import 'package:flutter/material.dart';
+
+import '../theme/app_colors.dart';
 
 class InputLabel extends StatelessWidget {
   const InputLabel({
@@ -15,8 +16,8 @@ class InputLabel extends StatelessWidget {
       padding: const EdgeInsets.only(left: 4, bottom: 8),
       child: Text(
         text,
-        style: const TextStyle(
-          color: Color(0xFF4C669A),
+        style: TextStyle(
+          color: AppColors.infoText(Theme.of(context).brightness),
         ),
       ),
     );
