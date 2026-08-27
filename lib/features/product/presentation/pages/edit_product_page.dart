@@ -183,9 +183,11 @@ class _EditProductPageState extends State<EditProductPage> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           centerTitle: true,
         ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        body: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
             child: Form(
               key: _formKey,
               child: Column(
@@ -533,18 +535,18 @@ class _EditProductPageState extends State<EditProductPage> {
             ),
           ),
         ),
-        bottomNavigationBar: SafeArea(
-          top: false,
-          child: Padding(
-            // Clearance above floating bottom-nav FAB so save stays tappable
-            padding: const EdgeInsets.only(bottom: 96),
+          // Sticky footer — pinned above floating nav
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
             child: PrimaryButton(
               onPressed: _isUploading ? null : _submit,
               icon: Icons.save,
               label: _isUploading ? 'Uploading...' : 'Save Changes',
             ),
           ),
-        ));
+        ],
+      ),
+    );
   }
 
   Future<void> _showCategoryPicker(

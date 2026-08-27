@@ -111,16 +111,16 @@ class _ActionsPanel extends StatelessWidget {
           decoration: BoxDecoration(
             color: isDark
                 ? AppTheme.darkSurface.withValues(alpha: 0.82)
-                : theme.colorScheme.surface.withValues(alpha: 0.88),
+                : theme.colorScheme.surface.withValues(alpha: 0.96),
             borderRadius: BorderRadius.circular(28),
             border: Border.all(
               color: isDark
                   ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black.withValues(alpha: 0.06),
+                  : Colors.black.withValues(alpha: 0.12),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.25),
+                color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.18),
                 blurRadius: 32,
                 offset: const Offset(0, 12),
               ),
@@ -172,15 +172,23 @@ class _PanelTile extends StatelessWidget {
             width: 46,
             height: 46,
             decoration: BoxDecoration(
-              color: theme.colorScheme.primary.withValues(alpha: 0.10),
+              color: isDark
+                  ? theme.colorScheme.primary.withValues(alpha: 0.10)
+                  : theme.colorScheme.primary.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isDark
                     ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.black.withValues(alpha: 0.05),
+                    : Colors.black.withValues(alpha: 0.10),
               ),
             ),
-            child: Icon(item.icon, size: 22, color: theme.colorScheme.primary),
+            child: Icon(
+              item.icon,
+              size: 22,
+              color: isDark
+                  ? theme.colorScheme.primary
+                  : AppColors.accentTextOnLight,
+            ),
           ),
           const SizedBox(height: 6),
           Text(

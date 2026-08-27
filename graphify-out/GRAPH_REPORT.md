@@ -1,16 +1,16 @@
-# Graph Report - flutter_billing_app-main  (2026-08-25)
+# Graph Report - flutter_billing_app-main  (2026-08-27)
 
 ## Corpus Check
-- 460 files · ~1,922,712 words
+- 460 files · ~1,948,588 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 7958 nodes · 11098 edges · 496 communities (434 shown, 62 thin omitted)
+- 8000 nodes · 11157 edges · 486 communities (424 shown, 62 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 88 edges (avg confidence: 0.52)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `bcb1ad3a`
+- Built from commit: `388ad468`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -24,7 +24,7 @@
 - dashboard_page.dart
 - bill_history_page.dart
 - app_routes.dart
-- String?
+- printer_state.dart
 - text_styles.dart
 - product_list_page.dart
 - due_payments_bloc.dart
@@ -33,23 +33,23 @@
 - report_entities.dart
 - .claude/skills/ui-ux-pro-max/scripts/validate_data.py
 - product_coverflow_view.dart
-- receipt_preview_page.dart
-- ReportBloc
+- bill_detail_page.dart
+- report_event.dart
 - .opencode/skills/ui-ux-pro-max/scripts/validate_data.py
 - app_dimensions.dart
 - stock_movement_page.dart
-- monthly_trend_card.dart
+- package:flutter/material.dart
 - DesignSystemGenerator
-- State
+- product_repository_impl.dart
 - product_model.dart
 - settings_page.dart
 - shop_bloc.dart
 - shop_details_page.dart
 - .generate
-- daily_sales_page.dart
+- beep_helper.dart
 - category_list_page.dart
-- category_usecases.dart
-- auth_repository.dart
+- State
+- low_stock_page.dart
 - checkout_page.dart
 - Changelog — Flutter Billing App
 - app_theme.dart
@@ -62,19 +62,19 @@
 - warranty_claim.dart
 - Tailwind CSS Utility Reference
 - cart_item.dart
-- product_repository_impl.dart
+- dashboard_action_card.dart
 - .opencode/skills/ui-ux-pro-max/scripts/core.py
-- package:fpdart/fpdart.dart
+- shop_usecases.dart
 - user.dart
 - DesignSystemGenerator
-- low_stock_page.dart
+- customer_repository_impl.dart
 - slide_search_core.py
-- product_detail_page.dart
+- daily_sales_page.dart
 - add_staff_page.dart
 - audit_log.dart
 - audit_state.dart
 - customer_bloc.dart
-- damaged_products_repository_impl.dart
+- package:flutter/services.dart
 - button
 - 🔍 FULL APP AUDIT REPORT — flutter_billing_app
 - customer_detail_page.dart
@@ -89,30 +89,30 @@
 - shop_model.dart
 - .application
 - .opencode/skills/ui-ux-pro-max/scripts/design_system.py
-- bill_detail_page.dart
+- BM25
 - hive_database.dart
 - .claude/skills/design-system/scripts/slide_search_core.py
-- main.dart
+- report_bloc.dart
 - warranty_claims_page.dart
 - search
-- .opencode/skills/design/scripts/icon/generate.py
+- stock_bloc.dart
 - Brand Guidelines v1.0
 - BUG FIX 8: 2026-08-24 - AddProductPage category select crash (type mismatch)
 - register_page.dart
-- stock_bloc.dart
+- product_detail_page.dart
 - Brand Guidelines v1.0
 - auth_repository_impl.dart
-- inventory_health_card.dart
+- _palette_is_dark
 - Design
 - Design
 - due_payment.dart
 - damaged_products_bloc.dart
 - 🎨 DESIGN SYSTEM v3 — "MIDNIGHT LIME" (Source of Truth, LOCKED after Phase 5)
 - Equatable
-- package:go_router/go_router.dart
-- customer_repository_impl.dart
-- home_page.dart
-- .generate
+- email_verification_page.dart
+- package:billing_app/core/error/failure.dart
+- printer_repository.dart
+- category_repository_impl.dart
 - Canvas Design System
 - Design
 - manifest.json
@@ -123,11 +123,11 @@
 - damaged_product.dart
 - Previous Session: 2026-08-20 — Dual View (Classic List + Cover-flow) 🔀
 - Memory — Session Log & Context
-- read_rows
+- parse_decision_rules
 - List
 - Prerequisites
 - stock_adjustment.dart
-- realtime_service.dart
+- app_drawer.dart
 - MainActivity
 - Form & Input Components
 - app_validators.dart
@@ -142,7 +142,7 @@
 - Architecture
 - CLAUDE.md — Flutter Billing App
 - Phases — Roadmap
-- duration
+- primitive
 - Customer CMS — Final Implementation Plan (v1)
 - gray
 - Development Rules
@@ -159,11 +159,11 @@
 - Previous: 2026-08-20 — Product Page UI Upgrade v2 (Spotlight Cover-flow) 🎡
 - Current Session: 2026-07-21 — Shop Persistence Fix + Final Cleanup ✅
 - Current Session: 2026-07-23 — Stock Decrease/Increase Logic Audit + Realtime ✅
-- staff_performance_card.dart
+- package:flutter_bloc/flutter_bloc.dart
 - Current Session: 2026-07-18 — Dashboard Premium Redesign ✅
 - Current Session: 2026-07-21 — Customer Info on Checkout Page ✅
-- package:flutter/services.dart
-- ProductModel
+- generate_design_system
+- phone_utils.dart
 - Current Session: 2026-07-22 — Bill History "0 Items" Bug Fix ✅
 - Current Session: 2026-07-22 — Stock Revert Bug Fix (deleteBill + updateBill) ✅
 - Current Session: 2026-07-22 — Complete Navigation Fix ✅
@@ -172,9 +172,9 @@
 - Typography Specifications
 - .claude/skills/ui-ux-pro-max/scripts/tests/test_design_system_mode.py
 - Feature: 2026-08-21 - Warranty claim via scanned bill QR
-- audit_bloc.dart
+- qr_generator_page.dart
 - customer_model.dart
-- BUG FIX 3: 2026-08-21 - scan prefilled dialog STILL crashing (firstWhere)
+- home_page.dart
 - primary_button.dart
 - search_stack
 - Current Session: 2026-08-21 — Checkout Dialog: Scanner Add Broken ✅
@@ -188,13 +188,13 @@
 - search
 - Current Session: 2026-08-21 — Navigation Back-Button Fix (app close bug) ✅
 - LaunchImage.imageset/README.md
-- warranty_repository_impl.dart
+- .opencode/skills/design/scripts/icon/generate.py
 - BUG FIX: 2026-08-21 - Warranty scan crashed (blank screen)
 - html-token-validator.py
-- package:billing_app/core/error/failure.dart
-- category_repository_impl.dart
-- .opencode/skills/ui-ux-pro-max/scripts/tests/test_design_system_mode.py
-- WarrantyBloc
+- lg
+- sm
+- quick_actions_panel.dart
+- main.dart
 - Fix: 2026-08-21 - Product long-press menu UI improvement
 - Asset Approval Checklist
 - Fix: 2026-08-21 - Receipt due/payment not showing
@@ -203,12 +203,12 @@
 - Tailwind CSS Responsive Design
 - Current Session: 2026-08-21 - Customer CMS FEATURE BUILT (needs device verify)
 - CHANGE: 2026-08-21 - Manual warranty entry REMOVED (scan-only)
-- BUG FIX 5: 2026-08-21 - card tap crash (Spacer in fixed-height bottom sheet)
-- .opencode/skills/design/scripts/logo/generate.py
+- BUG FIX 3: 2026-08-21 - scan prefilled dialog STILL crashing (firstWhere)
+- read_rows
 - Current Session: 2026-07-21 — Edit Page Barcode Editable + Scanner Back Button ✅
-- BM25
-- app_shell.dart
-- report_repository_impl.dart
+- padding-x
+- AuditBloc
+- report_repository.dart
 - Current Session: 2026-07-23 — prefer_const_constructors Lint Warnings Fix ✅
 - search_stack
 - Color Palette Management
@@ -218,7 +218,7 @@
 - Logo Usage Rules
 - BM25
 - States and Variants
-- package:flutter/material.dart
+- staggered_fade.dart
 - UI Styling Skill
 - Workflow
 - Design System
@@ -227,7 +227,7 @@
 - Current Session: 2026-07-21 — Fixed Category Chip Highlight State Sync ✅
 - spacing
 - Component Specifications
-- signup_usecase.dart
+- $type
 - BM25
 - Routing by Task Type
 - .opencode/skills/design-system/scripts/generate-slide.py
@@ -246,7 +246,7 @@
 - TestThresholdGate
 - Design Principles
 - Design Principles
-- staff_repository_impl.dart
+- _select_palette_for_mode
 - fontSize
 - CatalogRefreshTest
 - CIP Design Reference
@@ -255,7 +255,7 @@
 - radius
 - Copywriting Formulas
 - main
-- _normalize
+- xl
 - shadcn/ui Accessibility Patterns
 - TestTailwindConfigGenerator
 - Current Session: 2026-07-21 — Billing History Section Audit + Warnings Fix ✅
@@ -281,7 +281,7 @@
 - ShadcnInstaller
 - .opencode/skills/ui-styling/scripts/tests/test_tailwind_config_gen.py
 - .generate_config_string
-- .claude/skills/design/scripts/logo/generate.py
+- radius
 - Core Visual Elements
 - inject-brand-context.cjs
 - CIP Design Style Guide
@@ -301,7 +301,7 @@
 - .__init__
 - sync-brand-to-tokens.cjs
 - .claude/skills/ui-ux-pro-max/scripts/design_system.py
-- input
+- .opencode/skills/ui-ux-pro-max/scripts/tests/test_design_system_mode.py
 - Slides Reference
 - HTML Slide Template
 - HTML Slide Template
@@ -324,11 +324,11 @@
 - Workflow
 - Design System
 - Tailwind CSS Customization
-- generate_design_system
+- md
 - spacing
 - Current Session: 2026-08-20 — Signed Release APK + Split-per-ABI 📦
-- warranty_usecases.dart
-- sm
+- .claude/skills/design/scripts/icon/generate.py
+- staff_performance_card.dart
 - Current Session: 2026-07-21 — Description Match Snippet Highlight on Homepage Search ✅
 - Routing by Task Type
 - .test_list_installed_with_components
@@ -336,7 +336,7 @@
 - create.md
 - DateTime
 - .test_check_shadcn_config_not_exists
-- $type
+- package:supabase_flutter/supabase_flutter.dart
 - .test_init_dry_run
 - shadcn/ui Theming & Customization
 - Asset Organization Guide
@@ -352,18 +352,18 @@
 - TailwindConfigGenerator
 - AuthBloc
 - .test_add_colors
-- xl
-- none
+- input
+- package:fpdart/fpdart.dart
 - TestThresholdGate
 - .test_get_installed_components_no_config
 - Design Principles
 - .test_get_installed_components_empty
 - Design Principles
-- radius
+- input
 - fontSize
 - ShadcnInstaller
 - Current Session: 2026-07-21 — Receipt Preview + WhatsApp Share ✅
-- _style_is_dark_primary
+- _suggest_identities
 - main
 - TestShadcnInstaller
 - CatalogRefreshTest
@@ -384,15 +384,15 @@
 - Logo Design Reference
 - Token Architecture
 - .claude/skills/design-system/templates/design-tokens-starter.json
-- lg
-- sm
+- 2
+- 4
 - Primitive Tokens
 - .claude/skills/design-system/scripts/validate-tokens.cjs
-- _suggest_identities
+- auth_repository.dart
 - .generate_config_string
-- padding-y
-- input
-- parse_decision_rules
+- .generate
+- 8
+- .claude/skills/design/scripts/logo/generate.py
 - Core Visual Elements
 - .claude/skills/brand/scripts/inject-brand-context.cjs
 - CIP Design Style Guide
@@ -405,16 +405,16 @@
 - Component Tokens
 - .claude/skills/design-system/scripts/generate-tokens.cjs
 - card
-- xl
+- destructive-foreground
 - Slide Strategies
 - ._base_config
 - .claude/skills/ui-ux-pro-max/scripts/tests/test_text_layout_resilience.py
-- 6
+- muted
 - .claude/skills/brand/scripts/sync-brand-to-tokens.cjs
 - _run
-- none
+- primary-foreground
 - UI/UX Pro Max - Design Intelligence
-- $type
+- ring
 - Current Session: 2026-07-22 — Bill History Product Search ✅
 - Slides Reference
 - HTML Slide Template
@@ -426,43 +426,36 @@
 - Brand Guidelines Template
 - Current Session: 2026-07-18 — Product Card Tap + Description Copy + Extra Fields ✅
 - Current Session: 2026-07-21 — Description Search on Product Management Page ✅
-- padding-x
+- .opencode/skills/design/scripts/logo/generate.py
 - Current Session: 2026-07-21 — Fixed Category "All" Selection Not Clearing ✅
 - Common Rules for Professional UI
 - Example Workflow
-- radius
-- md
+- secondary-foreground
+- primary
 - Current Session: 2026-07-22 — Navigation Fix v2: PopScope + addPostFrameCallback ✅
 - Previous Session: 2026-08-19 — Due Payments Management Feature ✅
-- 0
-- 16
+- signup_usecase.dart
+- realtime_service.dart
 - Tips for Better Results
 - Current Session: 2026-07-21 — Ultra-Compact Product Cards + Alignment Fix ✅
-- 3
+- .tokenize
 - .claude/skills/brand/scripts/tests/test_sync_brand_to_tokens.py
 - main
 - DESIGN FIX: 2026-08-24 - Reports Home page redesign
-- destructive-foreground
-- muted
-- primary-foreground
-- 8
-- ring
-- secondary-foreground
-- destructive
+- stock_repository_impl.dart
+- build
+- String?
+- audit_event.dart
+- 16
 - Current Session: 2026-07-22 — Staff Widget Owner-Only (Dashboard + Drawer + Route Guard) ✅
-- destructive-foreground
 - .__init__
 - .temp_project
 - Previous Session: 2026-08-20 — Report Pages Modernization 📊✨
 - Previous: 2026-08-20 — Product Page UI Upgrade (Bento Inventory) 🎨
-- muted
-- primary-foreground
-- ring
 - Current Session: 2026-08-21 — Product Page: Remove Redundant Add Button ✅
 - Current Session: 2026-07-18 — Dashboard Product Search ✅
 - Current Session: 2026-07-21 — Description Match Snippet Highlight on Search ✅
 - Current Session: 2026-07-28 — README.md Update ✅
-- secondary-foreground
 - .temp_project
 - .claude/skills/design/references/slides-create.md
 - .claude/skills/slides/references/create.md
@@ -500,21 +493,18 @@
 - .test_init_framework
 - .test_custom_output_path
 - .test_default_content_paths_react
-- 12
-- 2
-- 8
 - Current Session: 2026-07-21 — Fixed Category Switch Animation Glitch ✅
 - Current Session: 2026-07-21 — Layout + Routing Fixes ✅
-- primary
+- BUG FIX 5: 2026-08-21 - card tap crash (Spacer in fixed-height bottom sheet)
 
 ## God Nodes (most connected - your core abstractions)
-1. `Memory — Session Log & Context` - 100 edges
+1. `Memory — Session Log & Context` - 116 edges
 2. `AuthBloc` - 73 edges
 3. `DesignSystemGenerator` - 64 edges
 4. `TailwindConfigGenerator` - 60 edges
 5. `TailwindConfigGenerator` - 56 edges
 6. `ReportBloc` - 55 edges
-7. `ProductBloc` - 50 edges
+7. `ProductBloc` - 52 edges
 8. `search()` - 46 edges
 9. `search()` - 46 edges
 10. `BillingBloc` - 40 edges
@@ -534,7 +524,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (496 total, 62 thin omitted)
+## Communities (486 total, 62 thin omitted)
 
 ### Community 0 - "billing_bloc.dart"
 Cohesion: 0.03
@@ -549,20 +539,20 @@ Cohesion: 0.04
 Nodes (56): accent, accentDark, accentLight, accentSubtle, accentText, accentTextOnLight, AppColors, bg (+48 more)
 
 ### Community 3 - "category_bloc.dart"
-Cohesion: 0.07
-Nodes (40): AddCategory, categories, CategoryEvent, CategoryState, CategoryStatus, colorValue, copyWith, DeleteCategory (+32 more)
+Cohesion: 0.05
+Nodes (38): categories, CategoryStatus, colorValue, copyWith, description, iconCodePoint, id, ids (+30 more)
 
 ### Community 4 - "printer_helper.dart"
-Cohesion: 0.06
-Nodes (29): cleaned, isValidPhone, normalized, normalizePhone, alignCenter, alignLeft, alignRight, boldOff (+21 more)
+Cohesion: 0.08
+Nodes (24): alignCenter, alignLeft, alignRight, boldOff, boldOn, bytes, checkPermission, connect (+16 more)
 
 ### Community 5 - "printer_bloc.dart"
-Cohesion: 0.15
-Nodes (24): _onConnect, _onDisconnect, _onInit, _onRefresh, _onScan, _onTestPrint, PrinterBloc, repository (+16 more)
+Cohesion: 0.14
+Nodes (25): ../../domain/repositories/printer_repository.dart, _onConnect, _onDisconnect, _onInit, _onRefresh, _onScan, _onTestPrint, PrinterBloc (+17 more)
 
 ### Community 6 - "dashboard_page.dart"
 Cohesion: 0.04
-Nodes (57): appBarTheme, b, buildActions, _buildDescriptionSnippet, _buildInsightsSection, buildLeading, _buildLoadingPlaceholder, _buildQuickTiles (+49 more)
+Nodes (70): appBarTheme, b, buildActions, _buildDescriptionSnippet, _buildInsightsSection, buildLeading, _buildLoadingPlaceholder, _buildQuickTiles (+62 more)
 
 ### Community 7 - "bill_history_page.dart"
 Cohesion: 0.04
@@ -570,14 +560,14 @@ Nodes (50): CustomPainter, _SalesTrendPainter, _SparklinePainter, _applyDateRang
 
 ### Community 8 - "app_routes.dart"
 Cohesion: 0.04
-Nodes (48): app_shell.dart, ChangeNotifier, ../../features/audit/presentation/bloc/audit_event.dart, ../../features/audit/presentation/pages/audit_timeline_page.dart, ../../features/auth/presentation/pages/email_verification_page.dart, ../../features/auth/presentation/pages/login_page.dart, ../../features/auth/presentation/pages/register_page.dart, ../../features/billing/domain/entities/cart_item.dart (+40 more)
+Nodes (46): app_shell.dart, ChangeNotifier, ../../features/audit/presentation/bloc/audit_event.dart, ../../features/audit/presentation/pages/audit_timeline_page.dart, ../../features/auth/presentation/pages/email_verification_page.dart, ../../features/auth/presentation/pages/login_page.dart, ../../features/auth/presentation/pages/register_page.dart, ../../features/billing/domain/entities/cart_item.dart (+38 more)
 
-### Community 9 - "String?"
-Cohesion: 0.09
-Nodes (20): connecting,
+### Community 9 - "printer_state.dart"
+Cohesion: 0.17
+Nodes (11): connecting,
   connected,
   connectionFailure,
-  disconnected,, colorValue, copyWith, createdAt, description, iconCodePoint, id, name (+12 more)
+  disconnected,, connectedMac, connectedName, copyWith, devices, errorMessage, PrinterState, PrinterStatus (+3 more)
 
 ### Community 10 - "text_styles.dart"
 Cohesion: 0.05
@@ -585,99 +575,99 @@ Nodes (40): Brightness, Color get, actionCardSubtitle, actionCardTitle, Adaptive
 
 ### Community 11 - "product_list_page.dart"
 Cohesion: 0.05
-Nodes (39): ../../../../core/utils/csv_export_import.dart, allProducts, _buildDescriptionSnippet, _buildProductTile, _buildStatsBar, categories, _copyBarcode, createState (+31 more)
+Nodes (41): ../../../../core/utils/csv_export_import.dart, allProducts, _buildDescriptionSnippet, _buildProductTile, _buildStatsBar, categories, _copyBarcode, createState (+33 more)
 
 ### Community 12 - "due_payments_bloc.dart"
-Cohesion: 0.07
-Nodes (40): amount, billId, ClearDueMessages, CollectPayment, copyWith, duePayments, DuePaymentsEvent, DuePaymentsState (+32 more)
+Cohesion: 0.06
+Nodes (48): amount, billId, ClearDueMessages, CollectPayment, copyWith, duePayments, DuePaymentsEvent, DuePaymentsState (+40 more)
 
 ### Community 13 - "service_locator.dart"
 Cohesion: 0.05
-Nodes (41): ../../features/audit/data/repositories/audit_repository_impl.dart, ../../features/audit/domain/repositories/audit_repository.dart, ../../features/audit/presentation/bloc/audit_bloc.dart, ../../features/auth/data/repositories/auth_repository_impl.dart, ../../features/auth/domain/usecases/get_current_user_usecase.dart, ../../features/auth/domain/usecases/login_usecase.dart, ../../features/auth/domain/usecases/logout_usecase.dart, ../../features/auth/domain/usecases/signup_usecase.dart (+33 more)
+Nodes (43): ../../features/audit/data/repositories/audit_repository_impl.dart, ../../features/audit/domain/repositories/audit_repository.dart, ../../features/audit/presentation/bloc/audit_bloc.dart, ../../features/auth/data/repositories/auth_repository_impl.dart, ../../features/auth/domain/usecases/get_current_user_usecase.dart, ../../features/auth/domain/usecases/login_usecase.dart, ../../features/auth/domain/usecases/logout_usecase.dart, ../../features/auth/domain/usecases/signup_usecase.dart (+35 more)
 
 ### Community 14 - "product_bloc.dart"
 Cohesion: 0.04
-Nodes (63): ../../../../core/realtime/realtime_service.dart, AddProduct, AddProductsBulk, categoryId, changeType, copyWith, DeleteProduct, FilterByCategory (+55 more)
+Nodes (66): ../../../../core/realtime/realtime_service.dart, AddProduct, AddProductsBulk, categoryId, changeType, copyWith, DeleteProduct, FilterByCategory (+58 more)
 
 ### Community 15 - "report_entities.dart"
-Cohesion: 0.05
-Nodes (38): BillItemModel, StockMovementModel, amountPaid, averageBill, billCount, BillItem, changeType, copyWith (+30 more)
+Cohesion: 0.06
+Nodes (34): amountPaid, averageBill, billCount, changeType, copyWith, createdAt, customerId, customerName (+26 more)
 
 ### Community 16 - ".claude/skills/ui-ux-pro-max/scripts/validate_data.py"
 Cohesion: 0.08
 Nodes (45): read_rows(), TestAccessibilityGuidance, TestChartsTypographyAndIcons, TestCurrentReactGuidance, TestSemanticColors, _catalog_date(), _check_app_interface_contract(), _check_catalog_contract() (+37 more)
 
 ### Community 17 - "product_coverflow_view.dart"
+Cohesion: 0.06
+Nodes (32): ../bloc/product_bloc.dart, _actionBtn, _allDialKey, _badge, _bottomPanel, build, categoryName, categoryNames (+24 more)
+
+### Community 18 - "bill_detail_page.dart"
 Cohesion: 0.04
-Nodes (51): ../bloc/product_bloc.dart, ../../../../core/theme/app_colors.dart, ../../../../core/theme/app_typography.dart, ../../domain/entities/product.dart, _ProductSearchDelegate, Product, addProduct, deleteProduct (+43 more)
+Nodes (56): GlobalKey, address1, address2, amountPaid, billId, cartItems, createState, customerName (+48 more)
 
-### Community 18 - "receipt_preview_page.dart"
-Cohesion: 0.07
-Nodes (26): GlobalKey, address1, address2, amountPaid, billId, cartItems, createState, customerName (+18 more)
-
-### Community 19 - "ReportBloc"
-Cohesion: 0.05
-Nodes (67): _HeroSalesCard, _loadDashboardData, _MonthlyTrendSection, _RecentTransactions, _StaffPerformanceSection, _TopProductsSection, authBloc, deleteBillUseCase (+59 more)
+### Community 19 - "report_event.dart"
+Cohesion: 0.10
+Nodes (28): billId, changeType, date, DeleteBill, from, items, limit, LoadBillHistory (+20 more)
 
 ### Community 20 - ".opencode/skills/ui-ux-pro-max/scripts/validate_data.py"
 Cohesion: 0.08
-Nodes (46): read_rows(), TestAccessibilityGuidance, TestChartsTypographyAndIcons, TestCurrentReactGuidance, TestSemanticColors, _catalog_date(), _check_app_interface_contract(), _check_catalog_contract() (+38 more)
+Nodes (45): read_rows(), TestAccessibilityGuidance, TestChartsTypographyAndIcons, TestCurrentReactGuidance, TestSemanticColors, _catalog_date(), _check_app_interface_contract(), _check_catalog_contract() (+37 more)
 
 ### Community 21 - "app_dimensions.dart"
 Cohesion: 0.05
 Nodes (38): AppDurations, AppElevation, AppRadius, AppSpacing, AppTouchTarget, buttonHeight, card, ease (+30 more)
 
 ### Community 22 - "stock_movement_page.dart"
-Cohesion: 0.04
-Nodes (52): _loadThemeMode, setThemeMode, toggleTheme, build, createState, dispose, _nameController, _phoneController (+44 more)
+Cohesion: 0.07
+Nodes (29): _animController, build, _buildDateButton, _buildDateRange, _buildEmptyState, _buildGroupedCard, _buildMovementCard, _buildStatDivider (+21 more)
 
-### Community 23 - "monthly_trend_card.dart"
-Cohesion: 0.05
-Nodes (45): build, GreetingHeader, _monthName, userName, build, _buildEmptyState, _buildGlassContainer, _buildStatChip (+37 more)
+### Community 23 - "package:flutter/material.dart"
+Cohesion: 0.04
+Nodes (59): IconData?, AppBackButton, icon, size, build, GreetingHeader, _monthName, userName (+51 more)
 
 ### Community 24 - "DesignSystemGenerator"
-Cohesion: 0.11
-Nodes (9): DesignSystemGenerator, Generates design system recommendations from aggregated searches., Load reasoning rules from CSV., Find matching reasoning rule for a category., Apply reasoning rules to search results., Select best matching result based on priority keywords., TestReasoningMatch, The exact reproduction from issue #428. (+1 more)
+Cohesion: 0.12
+Nodes (8): DesignSystemGenerator, Generates design system recommendations from aggregated searches., Load reasoning rules from CSV., Find matching reasoning rule for a category., Apply reasoning rules to search results., Select best matching result based on priority keywords., TestReasoningMatch, TestReasoningContract
 
-### Community 25 - "State"
-Cohesion: 0.09
-Nodes (31): AppSkeleton, _AppSkeletonState, PrimaryButton, _PrimaryButtonState, StaggeredFade, _StaggeredFadeState, CheckoutPage, HomePage (+23 more)
+### Community 25 - "product_repository_impl.dart"
+Cohesion: 0.10
+Nodes (20): core/data/hive_database.dart, core/supabase/supabase_client.dart, dart:async, ../../domain/repositories/product_repository.dart, addProduct, deleteProduct, _fromMap, getCurrentStockBulk (+12 more)
 
 ### Community 26 - "product_model.dart"
 Cohesion: 0.07
 Nodes (26): hashCode, operator, read, typeId, write, barcode, categoryId, createdAt (+18 more)
 
 ### Community 27 - "settings_page.dart"
-Cohesion: 0.09
-Nodes (23): ../bloc/printer_bloc.dart, ../bloc/printer_event.dart, ../bloc/printer_state.dart, core/theme/theme_cubit.dart, Cubit, AppShell, AppNavigationMode, _loadMode (+15 more)
+Cohesion: 0.06
+Nodes (38): ../bloc/printer_bloc.dart, ../bloc/printer_event.dart, ../bloc/printer_state.dart, ../../config/routes/app_shell.dart, core/navigation/navigation_cubit.dart, core/theme/theme_cubit.dart, ../../core/widgets/app_bottom_nav.dart, ../../core/widgets/app_drawer.dart (+30 more)
 
 ### Community 28 - "shop_bloc.dart"
 Cohesion: 0.14
 Nodes (24): LoadShopEvent, message, ShopError, ShopEvent, ShopInitial, ShopLoaded, ShopLoading, ShopOperationSuccess (+16 more)
 
 ### Community 29 - "shop_details_page.dart"
-Cohesion: 0.11
-Nodes (18): ../bloc/shop_bloc.dart, _address1Controller, _address2Controller, _buildTextField, createState, dispose, _footerController, _formKey (+10 more)
+Cohesion: 0.12
+Nodes (16): ../bloc/shop_bloc.dart, _address1Controller, _address2Controller, _buildTextField, createState, dispose, _footerController, _formKey (+8 more)
 
 ### Community 30 - ".generate"
 Cohesion: 0.16
 Nodes (8): _filter_anti_patterns_for_mode(), Drop "avoid dark mode" advice once dark mode is the resolved answer., Execute searches across multiple domains., Extract results list from search result dict., Generate complete design system recommendation. variance/motion/density are…, Bucket a 1-10 dial value into its tier config. Returns None if value is None., _resolve_dial(), TestAntiPatternGating
 
-### Community 31 - "daily_sales_page.dart"
-Cohesion: 0.03
-Nodes (62): dart:io, dart:math, dart:typed_data, ../../features/damaged_products/domain/entities/damaged_product.dart, ../../../../features/product/domain/entities/product.dart, BeepHelper, _beepPath, dispose (+54 more)
+### Community 31 - "beep_helper.dart"
+Cohesion: 0.07
+Nodes (27): dart:io, dart:math, dart:typed_data, BeepHelper, _beepPath, dispose, _fileReady, _generateBeepWav (+19 more)
 
 ### Community 32 - "category_list_page.dart"
+Cohesion: 0.05
+Nodes (53): add_edit_category_dialog.dart, AddCategory, CategoryEvent, CategoryState, DeleteCategoriesBulk, DeleteCategory, LoadCategories, UpdateCategory (+45 more)
+
+### Community 33 - "State"
 Cohesion: 0.07
-Nodes (26): add_edit_category_dialog.dart, ../../domain/usecases/category_usecases.dart, _buildEmptySearch, _buildEmptyState, _buildStatsCard, _categoryCard, _confirmSwipeDelete, _count (+18 more)
+Nodes (46): DamagedProductsEvent, FilterDamagedProductsByDate, LoadDamagedProducts, MarkProductAsDamaged, SearchDamagedProducts, UndoDamagedProduct, LoadProducts, CheckoutPage (+38 more)
 
-### Community 33 - "category_usecases.dart"
-Cohesion: 0.13
-Nodes (14): CategoryRepositoryImpl, addCategory, CategoryRepository, deleteCategory, getCategories, updateCategory, AddCategoryUseCase, call (+6 more)
-
-### Community 34 - "auth_repository.dart"
-Cohesion: 0.10
-Nodes (17): fromJson, fromProfileJson, fromSupabaseAuth, toJson, UserModel, User, authStateChanges, getCurrentUser (+9 more)
+### Community 34 - "low_stock_page.dart"
+Cohesion: 0.08
+Nodes (26): LoadLowStockProducts, _animatedCount, _animController, _applyThreshold, build, _buildCategoryChips, _buildEmptyState, _buildFilterSection (+18 more)
 
 ### Community 35 - "checkout_page.dart"
 Cohesion: 0.10
@@ -724,40 +714,40 @@ Cohesion: 0.05
 Nodes (43): Arbitrary Values, Aspect Ratio, Background Colors, Border Color, Border Radius, Border Style, Border Width, Borders (+35 more)
 
 ### Community 46 - "cart_item.dart"
-Cohesion: 0.10
-Nodes (19): double get, int?, CartItem, copyWith, customPrice, effectiveWarrantyDuration, effectiveWarrantyType, effectiveWarrantyUnit (+11 more)
+Cohesion: 0.11
+Nodes (18): double get, int?, copyWith, customPrice, effectiveWarrantyDuration, effectiveWarrantyType, effectiveWarrantyUnit, hasWarranty (+10 more)
 
-### Community 47 - "product_repository_impl.dart"
-Cohesion: 0.13
-Nodes (14): dart:async, ../../domain/repositories/product_repository.dart, addProduct, deleteProduct, _fromMap, getCurrentStockBulk, getProductByBarcode, getProducts (+6 more)
+### Community 47 - "dashboard_action_card.dart"
+Cohesion: 0.06
+Nodes (30): Color, build, color, DashboardActionCard, icon, label, onTap, QuickActionTile (+22 more)
 
 ### Community 48 - ".opencode/skills/ui-ux-pro-max/scripts/core.py"
 Cohesion: 0.10
-Nodes (29): _contains_phrase(), _domain_keywords(), _file_signature(), _get_bm25(), _load_csv(), _load_csv_snapshot(), _load_product_keywords(), _load_rows_or_empty() (+21 more)
+Nodes (32): _contains_phrase(), _domain_keywords(), _exact_match_diagnostic(), _exact_stack_identifier(), _file_signature(), _get_bm25(), _legacy_successor_guidance(), _load_csv() (+24 more)
 
-### Community 49 - "package:fpdart/fpdart.dart"
-Cohesion: 0.06
-Nodes (36): core/data/hive_database.dart, ../../../../core/error/failure.dart, core/supabase/supabase_client.dart, ../../../../core/usecase/usecase.dart, ../../domain/entities/shop.dart, ../../domain/entities/stock_adjustment.dart, ../../domain/repositories/shop_repository.dart, ../../domain/repositories/stock_repository.dart (+28 more)
+### Community 49 - "shop_usecases.dart"
+Cohesion: 0.17
+Nodes (11): ../../../../core/usecase/usecase.dart, ../../domain/entities/shop.dart, ../../domain/repositories/shop_repository.dart, ShopRepositoryImpl, getShop, ShopRepository, updateShop, call (+3 more)
 
 ### Community 50 - "user.dart"
-Cohesion: 0.11
-Nodes (17): copyWith, email, emailConfirmedAt, fromString, id, isEmailConfirmed, isOwner, isStaff (+9 more)
+Cohesion: 0.10
+Nodes (19): UserModel, copyWith, email, emailConfirmedAt, fromString, id, isEmailConfirmed, isOwner (+11 more)
 
 ### Community 51 - "DesignSystemGenerator"
 Cohesion: 0.06
 Nodes (21): DesignSystemGenerator, Generates design system recommendations from aggregated searches., Load reasoning rules from CSV., Find matching reasoning rule for a category., Apply reasoning rules to search results., Select best matching result based on priority keywords., apply_decision_rules(), _object_without_duplicates() (+13 more)
 
-### Community 52 - "low_stock_page.dart"
-Cohesion: 0.08
-Nodes (24): _animatedCount, _animController, _applyThreshold, build, _buildCategoryChips, _buildEmptyState, _buildFilterSection, _buildProductCard (+16 more)
+### Community 52 - "customer_repository_impl.dart"
+Cohesion: 0.20
+Nodes (9): addCustomer, findCustomerByPhone, getCustomerDetail, getCustomers, _resolveShopId, _supabase, package:billing_app/core/utils/phone_utils.dart, package:billing_app/features/customer/data/models/customer_model.dart (+1 more)
 
 ### Community 53 - "slide_search_core.py"
 Cohesion: 0.09
 Nodes (36): format_context(), format_result(), main(), Format a single search result for display, Format contextual recommendations for display., BM25, calculate_pattern_break(), detect_domain() (+28 more)
 
-### Community 54 - "product_detail_page.dart"
-Cohesion: 0.09
-Nodes (21): ../../../category/presentation/bloc/category_bloc.dart, ../../../damaged_products/presentation/bloc/damaged_products_bloc.dart, ../../../damaged_products/presentation/pages/mark_damaged_dialog.dart, _actionButton, build, createState, _currentProduct, _descriptionRow (+13 more)
+### Community 54 - "daily_sales_page.dart"
+Cohesion: 0.04
+Nodes (50): ../../../../core/widgets/adaptive_app_bar_leading.dart, ../../features/damaged_products/domain/entities/damaged_product.dart, ../../../../features/product/domain/entities/product.dart, CsvExportImport, exportDamagedProducts, exportProducts, importProducts, _applyTimeRange (+42 more)
 
 ### Community 55 - "add_staff_page.dart"
 Cohesion: 0.12
@@ -768,16 +758,16 @@ Cohesion: 0.12
 Nodes (16): action, AuditLog, copyWith, createdAt, description, entityId, entityName, entityType (+8 more)
 
 ### Community 57 - "audit_state.dart"
-Cohesion: 0.13
-Nodes (14): AuditStatus, copyWith, currentPage, error, hasMore, lastFilterAction, lastFilterEntity, lastFilterFrom (+6 more)
+Cohesion: 0.12
+Nodes (15): AuditState, AuditStatus, copyWith, currentPage, error, hasMore, lastFilterAction, lastFilterEntity (+7 more)
 
 ### Community 58 - "customer_bloc.dart"
 Cohesion: 0.10
 Nodes (28): AddCustomer, ClearCustomerMessage, copyWith, CustomerEvent, customerId, customers, CustomerState, error (+20 more)
 
-### Community 59 - "damaged_products_repository_impl.dart"
-Cohesion: 0.14
-Nodes (13): DamagedProductsRepositoryImpl, getDamagedProducts, markAsDamaged, _resolveShopId, _supabase, undoDamage, DamagedProductsRepository, getDamagedProducts (+5 more)
+### Community 59 - "package:flutter/services.dart"
+Cohesion: 0.15
+Nodes (12): build, _buildQuantityButton, createState, currentStock, _damageTypes, dispose, _notesController, productName (+4 more)
 
 ### Community 60 - "button"
 Cohesion: 0.20
@@ -800,16 +790,16 @@ Cohesion: 0.07
 Nodes (42): BM25, detect_domain(), get_cip_brief(), _load_csv(), Load CSV and return list of dicts, Core search function using BM25, Auto-detect the most relevant domain from query, Main search function with auto-domain detection (+34 more)
 
 ### Community 65 - "report_state.dart"
-Cohesion: 0.11
-Nodes (18): DailySalesModel, DailySales, billDeleted, billDetail, billHistory, copyWith, currentPage, dailySales (+10 more)
+Cohesion: 0.07
+Nodes (28): BillItemModel, BillSummaryModel, DailySalesModel, fromJson, fromSupabaseRow, StockMovementModel, toJson, BillItem (+20 more)
 
 ### Community 66 - "Current Session: 2026-08-24 — PREMIUM UI/UX REDESIGN PROJECT 🚀 (Research Phase ✅)"
 Cohesion: 0.40
 Nodes (5): Current Session: 2026-08-24 — PREMIUM UI/UX REDESIGN PROJECT 🚀 (Research Phase ✅), Design Direction Decision (pending user confirmation), Next Steps, Project Goal (user's master prompt), Research Done (2026-08-24)
 
 ### Community 67 - "printer_repository_impl.dart"
-Cohesion: 0.08
-Nodes (23): ../../../../core/utils/printer_helper.dart, ../../domain/repositories/printer_repository.dart, PrinterHelper, clearPrinterData, connect, disconnect, getSavedPrinterMac, getSavedPrinterName (+15 more)
+Cohesion: 0.17
+Nodes (11): ../../../../core/utils/printer_helper.dart, PrinterHelper, clearPrinterData, connect, disconnect, getSavedPrinterMac, getSavedPrinterName, _printerHelper (+3 more)
 
 ### Community 68 - "Tailwind CSS Utility Reference"
 Cohesion: 0.05
@@ -835,33 +825,33 @@ Nodes (10): Bool, Flutter, FlutterAppDelegate, AppDelegate, Any, RunnerTests, UI
 Cohesion: 0.11
 Nodes (25): ansi_ljust(), _detect_page_type(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), _generate_intelligent_overrides(), hex_to_ansi() (+17 more)
 
-### Community 74 - "bill_detail_page.dart"
-Cohesion: 0.05
-Nodes (38): ../../../../core/widgets/adaptive_app_bar_leading.dart, BillSummaryModel, fromJson, fromSupabaseRow, toJson, BillSummary, _actionBtn, bill (+30 more)
+### Community 74 - "BM25"
+Cohesion: 0.09
+Nodes (14): BM25, BM25 ranking algorithm for text search, Lowercase, split, remove punctuation, filter short words, Build BM25 index from documents, Score all documents against query, format_markdown(), generate_design_system(), Format design system as markdown. (+6 more)
 
 ### Community 75 - "hive_database.dart"
-Cohesion: 0.14
-Nodes (13): ../../features/product/data/models/product_model.dart, ../../features/shop/data/models/shop_model.dart, HiveDatabase, init, productBox, productBoxName, settingsBox, settingsBoxName (+5 more)
+Cohesion: 0.10
+Nodes (20): @HiveType, ProductModelAdapter, ShopModelAdapter, ../../features/product/data/models/product_model.dart, ../../features/shop/data/models/shop_model.dart, HiveDatabase, init, productBox (+12 more)
 
 ### Community 76 - ".claude/skills/design-system/scripts/slide_search_core.py"
 Cohesion: 0.09
 Nodes (36): format_context(), format_result(), main(), Format a single search result for display, Format contextual recommendations for display., BM25, calculate_pattern_break(), detect_domain() (+28 more)
 
-### Community 77 - "main.dart"
-Cohesion: 0.10
-Nodes (20): config/routes/app_routes.dart, features/auth/domain/repositories/auth_repository.dart, features/auth/presentation/bloc/auth_event.dart, features/billing/presentation/bloc/billing_bloc.dart, features/category/presentation/bloc/category_bloc.dart, features/damaged_products/presentation/bloc/damaged_products_bloc.dart, features/product/presentation/bloc/product_bloc.dart, features/report/presentation/bloc/report_bloc.dart (+12 more)
+### Community 77 - "report_bloc.dart"
+Cohesion: 0.06
+Nodes (41): class, ../entities/product.dart, UseCase, AddProductUseCase, call, DeleteProductUseCase, GetCurrentStockBulkUseCase, GetProductByBarcodeUseCase (+33 more)
 
 ### Community 78 - "warranty_claims_page.dart"
 Cohesion: 0.11
-Nodes (17): ../bloc/warranty_bloc.dart, core/service_locator.dart, _buildClaimCard, _buildTypeFilterChip, _claimDialogOpen, createState, _detailRow, _isFetchingBill (+9 more)
+Nodes (30): ../bloc/warranty_bloc.dart, core/service_locator.dart, ClearWarrantyFeedback, CreateWarrantyClaim, LoadWarrantyClaims, UpdateWarrantyClaimStatus, WarrantyEvent, WarrantyState (+22 more)
 
 ### Community 79 - "search"
 Cohesion: 0.08
 Nodes (37): detect_domain(), get_cip_brief(), _load_csv(), Load CSV and return list of dicts, Core search function using BM25, Auto-detect the most relevant domain from query, Main search function with auto-domain detection, Search across all domains and combine results (+29 more)
 
-### Community 80 - ".opencode/skills/design/scripts/icon/generate.py"
-Cohesion: 0.20
-Nodes (15): apply_color(), apply_viewbox_size(), extract_svgs(), generate_batch(), generate_icon(), generate_sizes(), load_env(), main() (+7 more)
+### Community 80 - "stock_bloc.dart"
+Cohesion: 0.11
+Nodes (23): Bloc, adjustments, AdjustStock, copyWith, LoadAllAdjustments, LoadStockHistory, message, note (+15 more)
 
 ### Community 81 - "Brand Guidelines v1.0"
 Cohesion: 0.05
@@ -872,12 +862,12 @@ Cohesion: 0.40
 Nodes (5): BUG FIX 8: 2026-08-24 - AddProductPage category select crash (type mismatch), Fix, Root cause, Symptom, Verify
 
 ### Community 83 - "register_page.dart"
-Cohesion: 0.06
-Nodes (35): FormState, createState, dispose, email, EmailVerificationPage, _EmailVerificationPageState, _isChecking, _isResending (+27 more)
+Cohesion: 0.08
+Nodes (26): FormState, LoginRequested, createState, dispose, _emailController, _formKey, _isLoading, LoginPage (+18 more)
 
-### Community 84 - "stock_bloc.dart"
-Cohesion: 0.11
-Nodes (24): adjustments, AdjustStock, copyWith, LoadAllAdjustments, LoadStockHistory, message, note, productId (+16 more)
+### Community 84 - "product_detail_page.dart"
+Cohesion: 0.08
+Nodes (23): ../../../category/presentation/bloc/category_bloc.dart, ../../../damaged_products/presentation/bloc/damaged_products_bloc.dart, ../../../damaged_products/presentation/pages/mark_damaged_dialog.dart, _ProductSearchDelegate, Product, _actionButton, build, createState (+15 more)
 
 ### Community 85 - "Brand Guidelines v1.0"
 Cohesion: 0.05
@@ -887,9 +877,9 @@ Nodes (37): 1. Color Palette, 2. Typography, 3. Logo Usage, 4. Voice & Tone, 5. 
 Cohesion: 0.14
 Nodes (13): _createProfile, _ensureProfileRole, _extractErrorMessage, _fetchProfile, _friendlyMessage, getCurrentUser, login, logout (+5 more)
 
-### Community 87 - "inventory_health_card.dart"
-Cohesion: 0.15
-Nodes (12): build, _buildGlassContainer, color, count, _healthInfo, InventoryHealthCard, label, lowStockCount (+4 more)
+### Community 87 - "_palette_is_dark"
+Cohesion: 0.18
+Nodes (7): _palette_is_dark(), WCAG relative luminance of a #RRGGBB string, or None if unparseable., True when a colors.csv row's Background is a dark surface., _relative_luminance(), The exact reproduction from issue #428., TestEndToEndCoherence, TestLuminance
 
 ### Community 88 - "Design"
 Cohesion: 0.06
@@ -905,31 +895,31 @@ Nodes (12): amountPaid, billDate, billId, copyWith, customerName, customerPhone,
 
 ### Community 91 - "damaged_products_bloc.dart"
 Cohesion: 0.05
-Nodes (61): adjustmentId, copyWith, damagedProducts, DamagedProductsEvent, DamagedProductsState, damageType, error, FilterDamagedProductsByDate (+53 more)
+Nodes (36): adjustmentId, copyWith, damagedProducts, DamagedProductsState, damageType, error, isLoading, isMarking (+28 more)
 
 ### Community 92 - "🎨 DESIGN SYSTEM v3 — "MIDNIGHT LIME" (Source of Truth, LOCKED after Phase 5)"
 Cohesion: 0.14
 Nodes (14): 2.10 RESPONSIVE — Portrait-first, content max-width none (phone), fluid widths, min touch 48, 2.11 MOBILE UX — v2 touch targets + SafeArea(top:false) rule for pinned bottom UI (existing pattern), 2.12 ACCESSIBILITY — Text contrast ≥ 4.5:1 (lime ONLY as fill w/ midnight text on dark, never lime text on light bg — use #55700A), semantics labels on icon buttons (existing), textScale honor, 2.1 COLOR SYSTEM (`lib/core/theme/app_colors.dart`), 2.2 TYPOGRAPHY, 2.3 SPACING — v2 tokens UNCHANGED (4-pt grid: 4/8/12/16/24/32/48; screen margin 16), 2.4 RADIUS — v2 + card=20 (xl), sheet top=24, pill=full. Buttons=14., 2.5 ELEVATION — Dark mode: depth via surface color steps, shadows minimal (black @ 20% blur 16). (+6 more)
 
 ### Community 93 - "Equatable"
-Cohesion: 0.06
-Nodes (48): class, BillingState, ../entities/product.dart, Equatable, UseCase, SignUpParams, AddProductUseCase, call (+40 more)
+Cohesion: 0.09
+Nodes (28): BillingState, Equatable, CartItem, BillDetailParams, BillHistoryParams, billId, call, changeType (+20 more)
 
-### Community 94 - "package:go_router/go_router.dart"
-Cohesion: 0.03
-Nodes (63): ../../config/routes/app_shell.dart, dart:ui, double?, ../../../../features/auth/presentation/bloc/auth_state.dart, active, AppBottomNav, build, children (+55 more)
-
-### Community 95 - "customer_repository_impl.dart"
-Cohesion: 0.12
-Nodes (16): addCustomer, CustomerRepositoryImpl, findCustomerByPhone, getCustomerDetail, getCustomers, _resolveShopId, _supabase, addCustomer (+8 more)
-
-### Community 96 - "home_page.dart"
-Cohesion: 0.05
-Nodes (43): ../../../billing/presentation/bloc/billing_bloc.dart, core/theme/app_theme.dart, core/utils/beep_helper.dart, ../../../../features/product/domain/repositories/product_repository.dart, ../../../../features/product/domain/usecases/product_usecases.dart, build, _buildBottomPanel, _buildCameraOffState (+35 more)
-
-### Community 97 - ".generate"
+### Community 94 - "email_verification_page.dart"
 Cohesion: 0.16
-Nodes (8): _filter_anti_patterns_for_mode(), Drop "avoid dark mode" advice once dark mode is the resolved answer., Execute searches across multiple domains., Extract results list from search result dict., Generate complete design system recommendation. variance/motion/density are…, Bucket a 1-10 dial value into its tier config. Returns None if value is None., _resolve_dial(), TestAntiPatternGating
+Nodes (14): CheckAuthStatus, createState, dispose, email, EmailVerificationPage, _EmailVerificationPageState, initState, _isChecking (+6 more)
+
+### Community 95 - "package:billing_app/core/error/failure.dart"
+Cohesion: 0.06
+Nodes (37): AuditRepositoryImpl, _fromJson, getAuditLogs, getEntityAuditLogs, logAction, _supabase, AuditRepository, getAuditLogs (+29 more)
+
+### Community 96 - "printer_repository.dart"
+Cohesion: 0.17
+Nodes (11): PrinterRepositoryImpl, clearPrinterData, connect, disconnect, getSavedPrinterMac, getSavedPrinterName, PrinterRepository, savePrinterData (+3 more)
+
+### Community 97 - "category_repository_impl.dart"
+Cohesion: 0.20
+Nodes (9): ../../domain/repositories/category_repository.dart, addCategory, deleteCategory, getCategories, _logAudit, _resolveShopId, _supabase, updateCategory (+1 more)
 
 ### Community 98 - "Canvas Design System"
 Cohesion: 0.06
@@ -968,12 +958,12 @@ Cohesion: 0.50
 Nodes (4): Decision, Previous Session: 2026-08-20 — Dual View (Classic List + Cover-flow) 🔀, Reminder, What Was Done
 
 ### Community 107 - "Memory — Session Log & Context"
-Cohesion: 0.04
-Nodes (48): 2026-08-25 — App-wide navbar/FAB overlap audit + fix ⚡, 2026-08-25 — Dashboard v3.4 fix batch (This Week remove + first-run card + lazy slivers), 2026-08-25 — Dead Code Cleanup (11-item audit batch), 2026-08-25 — Deep navbar overlap re-audit (FAB + buttons + pinned CTAs) ⚡, 2026-08-25 — Money font rollout (report + due_payments), 2026-08-25 - Report/audit/dashboard fix batch (10 fixes), [Audit-Fix Agent] 2026-08-25 — 14-fix audit batch, BUG FIX 7: 2026-08-21 back button black screen on Due Payments / Damaged / Customers (+40 more)
+Cohesion: 0.03
+Nodes (64): 2026-08-25 — App-wide navbar/FAB overlap audit + fix ⚡, 2026-08-25 — Dashboard v3.4 fix batch (This Week remove + first-run card + lazy slivers), 2026-08-25 — Dead Code Cleanup (11-item audit batch), 2026-08-25 — Deep navbar overlap re-audit (FAB + buttons + pinned CTAs) ⚡, 2026-08-25 — Money font rollout (report + due_payments), 2026-08-25 - Report/audit/dashboard fix batch (10 fixes), 2026-08-27 — CHECKOUT CUSTOMER PICKER CRASH FIX ✅, 2026-08-27 — GAP FIX ROLLOUT (ALL PAGES) ✅ (+56 more)
 
-### Community 108 - "read_rows"
-Cohesion: 0.11
-Nodes (7): read_rows(), split_values(), style_identities(), TestGeneratedCatalogContract, TestLandingAndStackContract, TestReasoningContract, TestStyleIdentityContract
+### Community 108 - "parse_decision_rules"
+Cohesion: 0.21
+Nodes (7): apply_decision_rules(), _object_without_duplicates(), parse_decision_rules(), Return deterministic mutations and an audit trail; never execute data., Parse the canonical condition -> action-array representation., _validate_action(), _check_reasoning_contract()
 
 ### Community 109 - "List"
 Cohesion: 0.09
@@ -987,9 +977,9 @@ Nodes (34): Accessibility, Available Domains, Available Stacks, Common Rules for
 Cohesion: 0.14
 Nodes (13): createdAt, createdBy, id, isIncrease, newStock, note, previousStock, productId (+5 more)
 
-### Community 112 - "realtime_service.dart"
-Cohesion: 0.15
-Nodes (12): bool get, _channels, dispose, _disposed, _isConnected, RealtimeService, _retryTimers, _scheduleRetry (+4 more)
+### Community 112 - "app_drawer.dart"
+Cohesion: 0.09
+Nodes (22): audit_event.dart, audit_state.dart, currentRoute, _DrawerItem, icon, _initials, label, onTap (+14 more)
 
 ### Community 113 - "MainActivity"
 Cohesion: 0.40
@@ -1009,7 +999,7 @@ Nodes (21): 1. `lib/features/report/domain/entities/report_entities.dart`, 2. `l
 
 ### Community 124 - "staff_bloc.dart"
 Cohesion: 0.07
-Nodes (37): Bloc, ../bloc/staff_bloc.dart, ../../../../core/widgets/app_feedback.dart, ../../../../core/widgets/app_skeleton.dart, copyWith, DeleteStaffMember, id, LoadStaff (+29 more)
+Nodes (36): ../bloc/staff_bloc.dart, ../../../../core/theme/app_colors.dart, ../../../../core/widgets/app_feedback.dart, ../../../../core/widgets/app_skeleton.dart, copyWith, DeleteStaffMember, id, LoadStaff (+28 more)
 
 ### Community 125 - "Component Specs"
 Cohesion: 0.10
@@ -1035,9 +1025,9 @@ Nodes (15): Architecture, AUTO-PILOT MODE — No Questions, Just Execute 🤖⚡
 Cohesion: 0.12
 Nodes (16): 2A — Categories ✅, 2B — Products (Inventory) ✅, 2C — Billing (Enhanced) ✅, Known Issues / TODO, Phase 0 — Foundation ✅ (Complete), Phase 1 — Database & Auth 🏗️ ✅, Phase 2 — Core Features 🔧 ✅, Phase 3 — Real-time & Multi-user 🔄 ✅ (+8 more)
 
-### Community 131 - "duration"
-Cohesion: 0.20
-Nodes (10): fast, normal, slow, $type, $value, $type, $value, duration (+2 more)
+### Community 131 - "primitive"
+Cohesion: 0.18
+Nodes (11): fast, normal, slow, $type, $value, $type, $value, primitive (+3 more)
 
 ### Community 132 - "Customer CMS — Final Implementation Plan (v1)"
 Cohesion: 0.15
@@ -1103,9 +1093,9 @@ Nodes (5): Current Session: 2026-07-21 — Shop Persistence Fix + Final Cleanup 
 Cohesion: 0.40
 Nodes (5): Current Session: 2026-07-23 — Stock Decrease/Increase Logic Audit + Realtime ✅, Files Modified, flutter analyze, Graphify, What Was Done
 
-### Community 149 - "staff_performance_card.dart"
-Cohesion: 0.14
-Nodes (13): _avatarColor, billCount, build, _buildGlassContainer, _initial, name, revenue, _short (+5 more)
+### Community 149 - "package:flutter_bloc/flutter_bloc.dart"
+Cohesion: 0.07
+Nodes (31): FloatingActionButtonLocation, _loadThemeMode, setThemeMode, toggleTheme, _AboveNavFabLocation, build, createState, dispose (+23 more)
 
 ### Community 150 - "Current Session: 2026-07-18 — Dashboard Premium Redesign ✅"
 Cohesion: 0.50
@@ -1115,13 +1105,13 @@ Nodes (4): Current Session: 2026-07-18 — Dashboard Premium Redesign ✅, flutt
 Cohesion: 0.50
 Nodes (4): Current Session: 2026-07-21 — Customer Info on Checkout Page ✅, DB Migration, flutter analyze, What Was Done
 
-### Community 152 - "package:flutter/services.dart"
-Cohesion: 0.15
-Nodes (12): build, _buildQuantityButton, createState, currentStock, _damageTypes, dispose, _notesController, productName (+4 more)
+### Community 152 - "generate_design_system"
+Cohesion: 0.25
+Nodes (5): generate_design_system(), Main entry point for design system generation. Args: query: Search query (e.g.,…, format_output(), Format results for Claude consumption (token-optimized), TestPersistence
 
-### Community 153 - "ProductModel"
+### Community 153 - "phone_utils.dart"
 Cohesion: 0.33
-Nodes (7): @HiveType, ProductModelAdapter, ShopModelAdapter, ProductModel, ShopModel, Shop, TypeAdapter
+Nodes (5): cleaned, isValidPhone, normalized, normalizePhone, return
 
 ### Community 154 - "Current Session: 2026-07-22 — Bill History "0 Items" Bug Fix ✅"
 Cohesion: 0.50
@@ -1155,21 +1145,21 @@ Nodes (21): _contrast_ratio(), _derive_dark_palette(), _palette_is_dark(), _quer
 Cohesion: 0.33
 Nodes (6): Error-proofing, Feature: 2026-08-21 - Warranty claim via scanned bill QR, Files, Flow added, Verify, What
 
-### Community 162 - "audit_bloc.dart"
-Cohesion: 0.10
-Nodes (28): audit_event.dart, audit_state.dart, AuditBloc, auditRepository, authBloc, _onLoadAuditLogs, _onLoadMoreAuditLogs, _onReset (+20 more)
+### Community 162 - "qr_generator_page.dart"
+Cohesion: 0.09
+Nodes (21): ../../../../core/theme/app_typography.dart, ../../domain/entities/product.dart, addProduct, deleteProduct, getCurrentStockBulk, getProductByBarcode, getProducts, getProductsByCategory (+13 more)
 
 ### Community 163 - "customer_model.dart"
-Cohesion: 0.17
-Nodes (11): copyWith, createdAt, CustomerModel, fromEntity, fromJson, id, name, phone (+3 more)
+Cohesion: 0.10
+Nodes (18): copyWith, createdAt, CustomerModel, fromEntity, fromJson, id, name, phone (+10 more)
 
-### Community 164 - "BUG FIX 3: 2026-08-21 - scan prefilled dialog STILL crashing (firstWhere)"
-Cohesion: 0.33
-Nodes (6): BUG FIX 3: 2026-08-21 - scan prefilled dialog STILL crashing (firstWhere), Fix, Lesson, Root cause, Symptom, Verify
+### Community 164 - "home_page.dart"
+Cohesion: 0.05
+Nodes (41): ../../../billing/presentation/bloc/billing_bloc.dart, core/theme/app_theme.dart, core/utils/beep_helper.dart, ../../../../features/product/domain/repositories/product_repository.dart, ../../../../features/product/domain/usecases/product_usecases.dart, _buildBottomPanel, _buildCameraOffState, _buildCorner (+33 more)
 
 ### Community 165 - "primary_button.dart"
-Cohesion: 0.09
-Nodes (21): EdgeInsetsGeometry, AppFeedback, error, FeedbackType, info, _show, success, borderRadius (+13 more)
+Cohesion: 0.12
+Nodes (16): EdgeInsetsGeometry, borderRadius, build, createState, elevation, icon, isFullWidth, isLoading (+8 more)
 
 ### Community 166 - "search_stack"
 Cohesion: 0.11
@@ -1208,16 +1198,16 @@ Cohesion: 0.33
 Nodes (6): BUG FIX 6: 2026-08-21 - warranty back button black screen, Fix, Lesson, Root cause, Symptom, Verify
 
 ### Community 175 - "search"
-Cohesion: 0.11
-Nodes (9): _exact_stack_identifier(), Resolve a deprecated in-domain alias, or expose a cross-domain redirect., Main search function with auto-domain detection, Resolve a standalone API identifier even when its BM25 IDF is low., search(), _style_search_destination(), TestSearchDomains, read_rows() (+1 more)
+Cohesion: 0.12
+Nodes (7): Resolve a deprecated in-domain alias, or expose a cross-domain redirect., Main search function with auto-domain detection, search(), _style_search_destination(), TestSearchDomains, read_rows(), TestStyleTaxonomy
 
 ### Community 176 - "Current Session: 2026-08-21 — Navigation Back-Button Fix (app close bug) ✅"
 Cohesion: 0.33
 Nodes (6): Current Session: 2026-08-21 — Navigation Back-Button Fix (app close bug) ✅, Fix, Flow now, Problem (user reported), Root Cause (graphify + code), Verify
 
-### Community 178 - "warranty_repository_impl.dart"
-Cohesion: 0.12
-Nodes (14): ../../domain/entities/warranty_claim.dart, ../../domain/repositories/warranty_repository.dart, ../entities/warranty_claim.dart, createClaim, _fromMap, getClaims, _resolveShopId, _supabase (+6 more)
+### Community 178 - ".opencode/skills/design/scripts/icon/generate.py"
+Cohesion: 0.20
+Nodes (15): apply_color(), apply_viewbox_size(), extract_svgs(), generate_batch(), generate_icon(), generate_sizes(), load_env(), main() (+7 more)
 
 ### Community 179 - "BUG FIX: 2026-08-21 - Warranty scan crashed (blank screen)"
 Cohesion: 0.33
@@ -1227,21 +1217,21 @@ Nodes (6): BUG FIX: 2026-08-21 - Warranty scan crashed (blank screen), Fix, Less
 Cohesion: 0.14
 Nodes (24): get_context(), is_allowed_exception(), is_allowed_rgba(), is_inside_block(), load_css_variables(), main(), print_result(), print_summary() (+16 more)
 
-### Community 181 - "package:billing_app/core/error/failure.dart"
-Cohesion: 0.08
-Nodes (25): AuditRepositoryImpl, _fromJson, getAuditLogs, getEntityAuditLogs, logAction, _supabase, AuditRepository, getAuditLogs (+17 more)
+### Community 181 - "lg"
+Cohesion: 0.60
+Nodes (5): lg, $type, $value, lg, lg
 
-### Community 182 - "category_repository_impl.dart"
-Cohesion: 0.09
-Nodes (21): ../config/app_config.dart, ../../domain/repositories/category_repository.dart, _anonKey, client, initialize, SupabaseConfig, _url, ImageUploadService (+13 more)
+### Community 182 - "sm"
+Cohesion: 0.60
+Nodes (5): sm, sm, sm, $type, $value
 
-### Community 183 - ".opencode/skills/ui-ux-pro-max/scripts/tests/test_design_system_mode.py"
-Cohesion: 0.16
-Nodes (12): _contrast_ratio(), _derive_dark_palette(), _palette_is_dark(), WCAG relative luminance of a #RRGGBB string, or None if unparseable., True when a colors.csv row's Background is a dark surface., WCAG contrast ratio for two hex colors, or None if either is invalid., Keep product brand tokens while deriving accessible dark surfaces., Pick the highest-ranked palette matching the resolved mode. Only the dark case… (+4 more)
+### Community 183 - "quick_actions_panel.dart"
+Cohesion: 0.03
+Nodes (57): dart:ui, double?, features/auth/presentation/bloc/auth_bloc.dart, ../../../../features/auth/presentation/bloc/auth_state.dart, active, AppBottomNav, build, children (+49 more)
 
-### Community 184 - "WarrantyBloc"
-Cohesion: 0.35
-Nodes (13): ClearWarrantyFeedback, CreateWarrantyClaim, LoadWarrantyClaims, UpdateWarrantyClaimStatus, WarrantyEvent, WarrantyState, WarrantyBloc, build (+5 more)
+### Community 184 - "main.dart"
+Cohesion: 0.10
+Nodes (20): config/routes/app_routes.dart, features/auth/domain/repositories/auth_repository.dart, features/auth/presentation/bloc/auth_event.dart, features/billing/presentation/bloc/billing_bloc.dart, features/category/presentation/bloc/category_bloc.dart, features/damaged_products/presentation/bloc/damaged_products_bloc.dart, features/product/presentation/bloc/product_bloc.dart, features/report/presentation/bloc/report_bloc.dart (+12 more)
 
 ### Community 185 - "Fix: 2026-08-21 - Product long-press menu UI improvement"
 Cohesion: 0.50
@@ -1271,29 +1261,29 @@ Nodes (4): Current Session: 2026-08-21 - Customer CMS FEATURE BUILT (needs devic
 Cohesion: 0.40
 Nodes (5): CHANGE: 2026-08-21 - Manual warranty entry REMOVED (scan-only), Result, Verify, What, Why
 
-### Community 193 - "BUG FIX 5: 2026-08-21 - card tap crash (Spacer in fixed-height bottom sheet)"
+### Community 193 - "BUG FIX 3: 2026-08-21 - scan prefilled dialog STILL crashing (firstWhere)"
 Cohesion: 0.33
-Nodes (6): BUG FIX 5: 2026-08-21 - card tap crash (Spacer in fixed-height bottom sheet), Fix, Lesson, Root cause, Symptom, Verify
+Nodes (6): BUG FIX 3: 2026-08-21 - scan prefilled dialog STILL crashing (firstWhere), Fix, Lesson, Root cause, Symptom, Verify
 
-### Community 194 - ".opencode/skills/design/scripts/logo/generate.py"
-Cohesion: 0.29
-Nodes (9): enhance_prompt(), generate_batch(), generate_logo(), load_env(), main(), Enhance the logo prompt with style and industry modifiers, Generate a logo using Gemini models with image generation Args: aspect_ratio:…, Generate multiple logo variants with different styles (+1 more)
+### Community 194 - "read_rows"
+Cohesion: 0.15
+Nodes (6): read_rows(), split_values(), style_identities(), TestGeneratedCatalogContract, TestLandingAndStackContract, TestStyleIdentityContract
 
 ### Community 195 - "Current Session: 2026-07-21 — Edit Page Barcode Editable + Scanner Back Button ✅"
 Cohesion: 0.67
 Nodes (3): Current Session: 2026-07-21 — Edit Page Barcode Editable + Scanner Back Button ✅, flutter analyze, What Was Done
 
-### Community 196 - "BM25"
-Cohesion: 0.09
-Nodes (14): BM25, BM25 ranking algorithm for text search, Lowercase, split, remove punctuation, filter short words, Build BM25 index from documents, Score all documents against query, format_markdown(), generate_design_system(), Format design system as markdown. (+6 more)
+### Community 196 - "padding-x"
+Cohesion: 0.67
+Nodes (4): padding-x, padding-x, $type, $value
 
-### Community 197 - "app_shell.dart"
+### Community 197 - "AuditBloc"
+Cohesion: 0.36
+Nodes (10): AuditBloc, AuditEvent, LoadAuditLogs, LoadMoreAuditLogs, ResetAuditLogs, AuditTimelinePage, _AuditTimelinePageState, build (+2 more)
+
+### Community 198 - "report_repository.dart"
 Cohesion: 0.18
-Nodes (10): core/navigation/navigation_cubit.dart, ../../core/widgets/app_bottom_nav.dart, ../../core/widgets/app_drawer.dart, build, child, _fullScreenRoutes, scaffoldKey, ScaffoldState (+2 more)
-
-### Community 198 - "report_repository_impl.dart"
-Cohesion: 0.08
-Nodes (23): deleteBill, getBillDetail, getBillHistory, getDailySales, getLowStockProducts, getSalesRange, getStockMovements, _logAudit (+15 more)
+Nodes (10): ReportRepositoryImpl, deleteBill, getBillDetail, getBillHistory, getDailySales, getLowStockProducts, getSalesRange, getStockMovements (+2 more)
 
 ### Community 199 - "Current Session: 2026-07-23 — prefer_const_constructors Lint Warnings Fix ✅"
 Cohesion: 0.50
@@ -1331,9 +1321,9 @@ Nodes (19): BM25, detect_domain(), _load_csv(), Load CSV and return list of dict
 Cohesion: 0.08
 Nodes (24): Accessibility, Accessibility Requirements, ARIA States, Color Contrast, Color Variants, Disabled States, Error Messages, Error States (+16 more)
 
-### Community 208 - "package:flutter/material.dart"
-Cohesion: 0.03
-Nodes (73): Animation, AnimationController, Color, Curve, Duration?, IconData?, AnimatedSwap, build (+65 more)
+### Community 208 - "staggered_fade.dart"
+Cohesion: 0.05
+Nodes (47): Animation, AnimationController, Curve, Duration?, AnimatedSwap, build, child, duration (+39 more)
 
 ### Community 209 - "UI Styling Skill"
 Cohesion: 0.08
@@ -1367,9 +1357,9 @@ Nodes (22): $type, $value, $type, $value, $type, $value, $type, $value (+14 more
 Cohesion: 0.07
 Nodes (28): Alert, Anatomy, Anatomy, Anatomy, Anatomy, Anatomy, Badge, Button (+20 more)
 
-### Community 217 - "signup_usecase.dart"
-Cohesion: 0.15
-Nodes (12): call, email, emailRedirectTo, name, password, phone, props, repository (+4 more)
+### Community 217 - "$type"
+Cohesion: 0.60
+Nodes (5): $type, $value, border, border, border
 
 ### Community 218 - "BM25"
 Cohesion: 0.16
@@ -1380,8 +1370,8 @@ Cohesion: 0.10
 Nodes (19): Banner Design Tasks, Brand Identity Tasks, Component Creation, Corporate Identity Program Tasks, Design Routing Guide, Design System Migration, Icon Design Tasks, Implementation Tasks (+11 more)
 
 ### Community 220 - ".opencode/skills/design-system/scripts/generate-slide.py"
-Cohesion: 0.08
-Nodes (34): apply_color(), apply_viewbox_size(), extract_svgs(), generate_batch(), generate_icon(), generate_sizes(), load_env(), main() (+26 more)
+Cohesion: 0.15
+Nodes (19): _e(), generate_chart_slide(), generate_cta_slide(), generate_deck(), generate_metrics_slide(), generate_problem_slide(), generate_solution_slide(), generate_testimonial_slide() (+11 more)
 
 ### Community 221 - "shadcn/ui Theming & Customization"
 Cohesion: 0.10
@@ -1443,9 +1433,9 @@ Nodes (15): 22 Art Direction Styles, Banner Sizes & Art Direction Styles Referen
 Cohesion: 0.12
 Nodes (15): 22 Art Direction Styles, Banner Sizes & Art Direction Styles Reference, Complete Banner Sizes, CTA Rules, Design Principles, Pinterest Research Queries, Print, Print Specs (+7 more)
 
-### Community 236 - "staff_repository_impl.dart"
-Cohesion: 0.12
-Nodes (14): ../../../auth/data/models/user_model.dart, ../../../auth/domain/entities/user.dart, ../../domain/repositories/staff_repository.dart, deleteStaffMember, getStaffMembers, _resolveShopId, StaffRepositoryImpl, _supabase (+6 more)
+### Community 236 - "_select_palette_for_mode"
+Cohesion: 0.22
+Nodes (7): _contrast_ratio(), _derive_dark_palette(), WCAG contrast ratio for two hex colors, or None if either is invalid., Keep product brand tokens while deriving accessible dark surfaces., Pick the highest-ranked palette matching the resolved mode. Only the dark case…, _select_palette_for_mode(), TestPaletteSelection
 
 ### Community 237 - "fontSize"
 Cohesion: 0.12
@@ -1464,8 +1454,8 @@ Cohesion: 0.13
 Nodes (14): AIDA (Attention-Interest-Desire-Action), Before-After-Bridge, Contrast Patterns, Copywriting Formulas, Core Formulas, Cost of Inaction, FAB (Features-Advantages-Benefits), Formula-to-Slide Mapping (+6 more)
 
 ### Community 242 - "radius"
-Cohesion: 0.18
-Nodes (15): $type, $value, lg, $type, $value, $type, $value, primitive (+7 more)
+Cohesion: 0.19
+Nodes (14): $type, $value, $type, $value, $type, $value, primitive, radius (+6 more)
 
 ### Community 243 - "Copywriting Formulas"
 Cohesion: 0.13
@@ -1475,9 +1465,9 @@ Nodes (14): AIDA (Attention-Interest-Desire-Action), Before-After-Bridge, Contra
 Cohesion: 0.12
 Nodes (8): main(), Add custom font families. Args: fonts: Dict of font_type: [font_names] e.g.,…, Add custom spacing values. Args: spacing: Dict of name: value e.g., {'18':…, Add custom breakpoints. Args: breakpoints: Dict of name: width e.g., {'3xl':…, Add plugin requirements. Args: plugins: List of plugin names e.g.,…, Get plugin recommendations based on configuration. Returns: List of recommended…, Validate configuration. Returns: Tuple of (valid, message), Add custom colors to theme. Args: colors: Dict of color_name: color_value Value…
 
-### Community 245 - "_normalize"
-Cohesion: 0.25
-Nodes (9): _exact_match_diagnostic(), _legacy_successor_guidance(), _normalize(), Apply longest-first synonym substitution at token boundaries., Whether a stack query explicitly targets an older framework generation., Choose one coherent applicability generation for stack retrieval., Prefer the explicit successor row for a brand-new app on legacy-only stacks., _stack_query_requests_legacy() (+1 more)
+### Community 245 - "xl"
+Cohesion: 0.67
+Nodes (4): xl, xl, $type, $value
 
 ### Community 246 - "shadcn/ui Accessibility Patterns"
 Cohesion: 0.07
@@ -1575,9 +1565,9 @@ Nodes (8): parametrize, Tests for tailwind_config_gen.py, Reduce a generated TS/
 Cohesion: 0.20
 Nodes (6): Generate configuration file content. Returns: Configuration file as string, Generate TypeScript configuration., Generate JavaScript configuration., Format plugins array for config. Validates each plugin name against a strict…, Add indentation to JSON string., Write configuration to file. Returns: Tuple of (success, message)
 
-### Community 271 - ".claude/skills/design/scripts/logo/generate.py"
-Cohesion: 0.29
-Nodes (9): enhance_prompt(), generate_batch(), generate_logo(), load_env(), main(), Enhance the logo prompt with style and industry modifiers, Generate a logo using Gemini models with image generation Args: aspect_ratio:…, Generate multiple logo variants with different styles (+1 more)
+### Community 271 - "radius"
+Cohesion: 0.60
+Nodes (5): radius, radius, radius, $type, $value
 
 ### Community 272 - "Core Visual Elements"
 Cohesion: 0.18
@@ -1651,9 +1641,9 @@ Nodes (8): adjustBrightness(), { execFileSync }, extractColorsFromMarkdown(), fs
 Cohesion: 0.12
 Nodes (23): ansi_ljust(), _detect_page_type(), format_ascii_box(), format_master_md(), format_page_override_md(), _generate_intelligent_overrides(), hex_to_ansi(), persist_design_system() (+15 more)
 
-### Community 291 - "input"
-Cohesion: 0.29
-Nodes (8): padding-x, input, $type, $value, focus-ring, padding-x, $type, $value
+### Community 291 - ".opencode/skills/ui-ux-pro-max/scripts/tests/test_design_system_mode.py"
+Cohesion: 0.23
+Nodes (7): _query_wants_dark(), True when a styles.csv row describes itself as dark-first., True when the query explicitly asks for a dark theme., Resolve the mode the rest of the output has to agree with., _resolve_color_mode(), _style_is_dark_primary(), TestModeResolution
 
 ### Community 292 - "Slides Reference"
 Cohesion: 0.29
@@ -1684,8 +1674,8 @@ Cohesion: 0.08
 Nodes (24): Apparel, Business Card, Car/Sedan, CIP Deliverable Guide, Core Identity, Digital Assets, Email Signature, Envelope (+16 more)
 
 ### Community 299 - "add_edit_category_dialog.dart"
-Cohesion: 0.08
-Nodes (23): ../bloc/category_bloc.dart, ../../../../core/utils/app_validators.dart, ../../domain/entities/category.dart, CategoryModel, fromEntity, fromJson, toEntity, toJson (+15 more)
+Cohesion: 0.09
+Nodes (22): ../bloc/category_bloc.dart, ../../../../core/utils/app_validators.dart, ../../domain/entities/category.dart, CategoryModel, fromEntity, fromJson, toEntity, toJson (+14 more)
 
 ### Community 300 - "NAV FIX: 2026-08-24 - Reports sub-pages added to sidebar"
 Cohesion: 0.50
@@ -1696,8 +1686,8 @@ Cohesion: 0.12
 Nodes (19): BM25, detect_domain(), _load_csv(), Load CSV and return list of dicts, Core search function using BM25, Auto-detect the most relevant domain from query, Main search function with auto-domain detection, Search across all domains and combine results (+11 more)
 
 ### Community 302 - "button"
-Cohesion: 0.20
-Nodes (10): fg, font-size, hover-bg, button, $type, $value, $type, $value (+2 more)
+Cohesion: 0.15
+Nodes (15): fg, font-size, hover-bg, radius, radius, button, $type, $value (+7 more)
 
 ### Community 303 - "Current Session: 2026-07-21 — Shop Isolation Audit & Fix ✅"
 Cohesion: 0.50
@@ -1735,25 +1725,25 @@ Nodes (22): Best Practices, Chart.js Integration, Command, Component Spec Patter
 Cohesion: 0.09
 Nodes (22): @apply Directive, Best Practices, Color Customization, Complete Tailwind Config, Configuration Examples, Content Configuration, Custom Color Palette, Custom Font Sizes (+14 more)
 
-### Community 314 - "generate_design_system"
-Cohesion: 0.25
-Nodes (5): generate_design_system(), Main entry point for design system generation. Args: query: Search query (e.g.,…, format_output(), Format results for Claude consumption (token-optimized), TestPersistence
+### Community 314 - "md"
+Cohesion: 0.67
+Nodes (4): $type, $value, md, md
 
 ### Community 315 - "spacing"
-Cohesion: 0.09
-Nodes (22): $type, $value, $type, $value, $type, $value, $type, $value (+14 more)
+Cohesion: 0.06
+Nodes (34): $type, $value, $type, $value, $type, $value, $type, $value (+26 more)
 
 ### Community 316 - "Current Session: 2026-08-20 — Signed Release APK + Split-per-ABI 📦"
 Cohesion: 0.67
 Nodes (3): Current Session: 2026-08-20 — Signed Release APK + Split-per-ABI 📦, Notes, What Was Done
 
-### Community 317 - "warranty_usecases.dart"
-Cohesion: 0.29
-Nodes (6): call, CreateWarrantyClaimUseCase, GetWarrantyClaimsUseCase, repository, UpdateClaimStatusUseCase, ../repositories/warranty_repository.dart
+### Community 317 - ".claude/skills/design/scripts/icon/generate.py"
+Cohesion: 0.20
+Nodes (15): apply_color(), apply_viewbox_size(), extract_svgs(), generate_batch(), generate_icon(), generate_sizes(), load_env(), main() (+7 more)
 
-### Community 318 - "sm"
-Cohesion: 0.60
-Nodes (5): sm, sm, sm, $type, $value
+### Community 318 - "staff_performance_card.dart"
+Cohesion: 0.14
+Nodes (13): _avatarColor, billCount, build, _buildGlassContainer, _initial, name, revenue, _short (+5 more)
 
 ### Community 319 - "Current Session: 2026-07-21 — Description Match Snippet Highlight on Homepage Search ✅"
 Cohesion: 0.67
@@ -1767,9 +1757,9 @@ Nodes (19): Banner Design Tasks, Brand Identity Tasks, Component Creation, Corpo
 Cohesion: 0.14
 Nodes (20): _e(), generate_chart_slide(), generate_cta_slide(), generate_deck(), generate_metrics_slide(), generate_problem_slide(), generate_solution_slide(), generate_testimonial_slide() (+12 more)
 
-### Community 326 - "$type"
-Cohesion: 0.60
-Nodes (5): $type, $value, border, border, border
+### Community 326 - "package:supabase_flutter/supabase_flutter.dart"
+Cohesion: 0.12
+Nodes (14): ../../../auth/data/models/user_model.dart, ../../../auth/domain/entities/user.dart, ../config/app_config.dart, ../../domain/repositories/staff_repository.dart, _anonKey, client, initialize, SupabaseConfig (+6 more)
 
 ### Community 328 - "shadcn/ui Theming & Customization"
 Cohesion: 0.10
@@ -1788,8 +1778,8 @@ Cohesion: 0.11
 Nodes (18): 1. Wordmark (Logotype), 2. Lettermark (Monogram), 3. Pictorial Mark (Brand Mark), 4. Abstract Mark, 5. Mascot, 6. Emblem, 7. Combination Mark, Aesthetic Styles (+10 more)
 
 ### Community 332 - "color"
-Cohesion: 0.11
-Nodes (19): $type, $value, background, foreground, muted-foreground, primary, primary-hover, secondary (+11 more)
+Cohesion: 0.05
+Nodes (37): $type, $value, background, destructive, destructive-foreground, foreground, muted, muted-foreground (+29 more)
 
 ### Community 333 - "Brand Consistency Checklist"
 Cohesion: 0.11
@@ -1812,16 +1802,16 @@ Cohesion: 0.11
 Nodes (10): Generate Tailwind CSS configuration files., Add full color palette (50-950 shades) for a base color. Args: name: Color name…, TailwindConfigGenerator, Test adding custom fonts., Test adding custom spacing., Test plugin recommendations., Test initialization for JavaScript config., Test writing config to invalid path. (+2 more)
 
 ### Community 340 - "AuthBloc"
-Cohesion: 0.09
-Nodes (38): AppDrawer, AuthBloc, AuthEvent, CheckAuthStatus, email, LoginRequested, LogoutRequested, name (+30 more)
+Cohesion: 0.10
+Nodes (33): AppDrawer, AuthBloc, AuthEvent, email, LogoutRequested, name, password, phone (+25 more)
 
-### Community 342 - "xl"
-Cohesion: 0.67
-Nodes (4): xl, xl, $type, $value
+### Community 342 - "input"
+Cohesion: 0.15
+Nodes (17): $type, $value, bg, padding-x, padding-y, bg, input, $type (+9 more)
 
-### Community 343 - "none"
-Cohesion: 0.67
-Nodes (4): $type, $value, none, none
+### Community 343 - "package:fpdart/fpdart.dart"
+Cohesion: 0.07
+Nodes (29): ../../../../core/error/failure.dart, ../../domain/entities/warranty_claim.dart, ../../domain/repositories/warranty_repository.dart, ../entities/stock_adjustment.dart, ../entities/warranty_claim.dart, ../error/failure.dart, call, NoParams (+21 more)
 
 ### Community 344 - "TestThresholdGate"
 Cohesion: 0.13
@@ -1835,13 +1825,13 @@ Nodes (15): 22 Art Direction Styles, Banner Sizes & Art Direction Styles Referen
 Cohesion: 0.12
 Nodes (15): 22 Art Direction Styles, Banner Sizes & Art Direction Styles Reference, Complete Banner Sizes, CTA Rules, Design Principles, Pinterest Research Queries, Print, Print Specs (+7 more)
 
-### Community 349 - "radius"
-Cohesion: 0.60
-Nodes (5): radius, radius, radius, $type, $value
+### Community 349 - "input"
+Cohesion: 0.29
+Nodes (8): padding-y, input, $type, $value, focus-ring, padding-y, $type, $value
 
 ### Community 350 - "fontSize"
-Cohesion: 0.12
-Nodes (16): $type, $value, $type, $value, $type, $value, $type, $value (+8 more)
+Cohesion: 0.11
+Nodes (20): $type, $value, $type, $value, $type, $value, $type, $value (+12 more)
 
 ### Community 351 - "ShadcnInstaller"
 Cohesion: 0.23
@@ -1851,9 +1841,9 @@ Nodes (9): main(), Add all available shadcn/ui components. Args: overwrite: If T
 Cohesion: 0.67
 Nodes (3): Current Session: 2026-07-21 — Receipt Preview + WhatsApp Share ✅, flutter analyze, What Was Done
 
-### Community 353 - "_style_is_dark_primary"
-Cohesion: 0.21
-Nodes (7): _query_wants_dark(), True when a styles.csv row describes itself as dark-first., True when the query explicitly asks for a dark theme., Resolve the mode the rest of the output has to agree with., _resolve_color_mode(), _style_is_dark_primary(), TestModeResolution
+### Community 353 - "_suggest_identities"
+Cohesion: 0.25
+Nodes (8): _exact_row_identity(), Suggest complete public identities so a retry can bypass score thresholds., Return non-empty public identities from ordinary and alias fields., Resolve an explicit style identity without opening generic variant ranking., Return one row whose stable public identity exactly matches the query., _row_identities(), _style_identity(), _suggest_identities()
 
 ### Community 354 - "main"
 Cohesion: 0.12
@@ -1908,8 +1898,8 @@ Cohesion: 0.14
 Nodes (13): Animation Tokens, Base Layer, Button Example, Component Classes, CSS Variables Setup, Dark Mode Toggle, HSL Format Benefits, shadcn/ui Alignment (+5 more)
 
 ### Community 368 - "radius"
-Cohesion: 0.19
-Nodes (14): $type, $value, $type, $value, $type, $value, primitive, radius (+6 more)
+Cohesion: 0.11
+Nodes (27): $type, $value, lg, sm, $type, $value, $type, $value (+19 more)
 
 ### Community 369 - "Layout Patterns"
 Cohesion: 0.14
@@ -1931,13 +1921,13 @@ Nodes (12): Categories, Dark Mode, File Organization, Layer 1: Primitive Tokens,
 Cohesion: 0.15
 Nodes (12): component, $type, $value, dark, semantic, $schema, $type, $value (+4 more)
 
-### Community 374 - "lg"
-Cohesion: 0.60
-Nodes (5): lg, $type, $value, lg, lg
+### Community 374 - "2"
+Cohesion: 0.67
+Nodes (3): $type, $value, 2
 
-### Community 375 - "sm"
-Cohesion: 0.60
-Nodes (5): sm, sm, sm, $type, $value
+### Community 375 - "4"
+Cohesion: 0.67
+Nodes (3): $type, $value, 4
 
 ### Community 376 - "Primitive Tokens"
 Cohesion: 0.17
@@ -1947,25 +1937,25 @@ Nodes (11): Border Radius, Color Scales, Gray Scale, Motion / Duration, Primary 
 Cohesion: 0.24
 Nodes (11): extensions, formatReport(), fs, getFiles(), main(), parseArgs(), path, patterns (+3 more)
 
-### Community 378 - "_suggest_identities"
-Cohesion: 0.25
-Nodes (8): _exact_row_identity(), Suggest complete public identities so a retry can bypass score thresholds., Return non-empty public identities from ordinary and alias fields., Resolve an explicit style identity without opening generic variant ranking., Return one row whose stable public identity exactly matches the query., _row_identities(), _style_identity(), _suggest_identities()
+### Community 378 - "auth_repository.dart"
+Cohesion: 0.08
+Nodes (22): fromJson, fromProfileJson, fromSupabaseAuth, toJson, authStateChanges, getCurrentUser, login, logout (+14 more)
 
 ### Community 379 - ".generate_config_string"
 Cohesion: 0.20
 Nodes (6): Generate configuration file content. Returns: Configuration file as string, Generate TypeScript configuration., Generate JavaScript configuration., Format plugins array for config. Validates each plugin name against a strict…, Add indentation to JSON string., Write configuration to file. Returns: Tuple of (success, message)
 
-### Community 380 - "padding-y"
+### Community 380 - ".generate"
+Cohesion: 0.16
+Nodes (8): _filter_anti_patterns_for_mode(), Drop "avoid dark mode" advice once dark mode is the resolved answer., Execute searches across multiple domains., Extract results list from search result dict., Generate complete design system recommendation. variance/motion/density are…, Bucket a 1-10 dial value into its tier config. Returns None if value is None., _resolve_dial(), TestAntiPatternGating
+
+### Community 381 - "8"
 Cohesion: 0.67
-Nodes (4): padding-y, padding-y, $type, $value
+Nodes (3): $type, $value, 8
 
-### Community 381 - "input"
+### Community 382 - ".claude/skills/design/scripts/logo/generate.py"
 Cohesion: 0.29
-Nodes (8): padding-y, input, $type, $value, focus-ring, padding-y, $type, $value
-
-### Community 382 - "parse_decision_rules"
-Cohesion: 0.31
-Nodes (6): apply_decision_rules(), _object_without_duplicates(), parse_decision_rules(), Return deterministic mutations and an audit trail; never execute data., Parse the canonical condition -> action-array representation., _validate_action()
+Nodes (9): enhance_prompt(), generate_batch(), generate_logo(), load_env(), main(), Enhance the logo prompt with style and industry modifiers, Generate a logo using Gemini models with image generation Args: aspect_ratio:…, Generate multiple logo variants with different styles (+1 more)
 
 ### Community 383 - "Core Visual Elements"
 Cohesion: 0.18
@@ -2013,11 +2003,11 @@ Nodes (9): flattenTokens(), fs, generateCSS(), generateTailwind(), main(), parse
 
 ### Community 394 - "card"
 Cohesion: 0.20
-Nodes (12): $type, $value, bg, bg, padding, shadow, card, bg (+4 more)
+Nodes (12): $type, $value, border, padding, shadow, border, card, border (+4 more)
 
-### Community 395 - "xl"
+### Community 395 - "destructive-foreground"
 Cohesion: 0.67
-Nodes (4): xl, xl, $type, $value
+Nodes (3): destructive-foreground, $type, $value
 
 ### Community 396 - "Slide Strategies"
 Cohesion: 0.20
@@ -2031,9 +2021,9 @@ Nodes (6): Any, Path, Initialize generator. Args: typescript: If True, generate 
 Cohesion: 0.22
 Nodes (3): read_rows(), TestTextLayoutDataContracts, TestTextLayoutRetrieval
 
-### Community 399 - "6"
+### Community 399 - "muted"
 Cohesion: 0.67
-Nodes (3): $type, $value, 6
+Nodes (3): muted, $type, $value
 
 ### Community 400 - ".claude/skills/brand/scripts/sync-brand-to-tokens.cjs"
 Cohesion: 0.33
@@ -2043,17 +2033,17 @@ Nodes (8): adjustBrightness(), { execFileSync }, extractColorsFromMarkdown(), fs
 Cohesion: 0.28
 Nodes (8): CompletedProcess, Path, Regression tests for validate-tokens.cjs. The validator used to skip any line…, A hardcoded hex on the same line as a var() token is still a violation., A line that references only tokens produces no false positives., _run(), test_flags_hardcoded_hex_sharing_line_with_token(), test_token_only_line_reports_no_violation()
 
-### Community 402 - "none"
+### Community 402 - "primary-foreground"
 Cohesion: 0.67
-Nodes (4): $type, $value, none, none
+Nodes (3): primary-foreground, $type, $value
 
 ### Community 403 - "UI/UX Pro Max - Design Intelligence"
 Cohesion: 0.25
 Nodes (7): How to Use, Primary Use Cases, Recommended, Rule Categories by Priority, Skip, UI/UX Pro Max - Design Intelligence, When to Apply
 
-### Community 404 - "$type"
-Cohesion: 0.60
-Nodes (5): $type, $value, border, border, border
+### Community 404 - "ring"
+Cohesion: 0.67
+Nodes (3): ring, $type, $value
 
 ### Community 405 - "Current Session: 2026-07-22 — Bill History Product Search ✅"
 Cohesion: 0.50
@@ -2099,9 +2089,9 @@ Nodes (3): Current Session: 2026-07-18 — Product Card Tap + Description Copy +
 Cohesion: 0.67
 Nodes (3): Current Session: 2026-07-21 — Description Search on Product Management Page ✅, flutter analyze, What Was Done
 
-### Community 416 - "padding-x"
-Cohesion: 0.67
-Nodes (4): padding-x, padding-x, $type, $value
+### Community 416 - ".opencode/skills/design/scripts/logo/generate.py"
+Cohesion: 0.29
+Nodes (9): enhance_prompt(), generate_batch(), generate_logo(), load_env(), main(), Enhance the logo prompt with style and industry modifiers, Generate a logo using Gemini models with image generation Args: aspect_ratio:…, Generate multiple logo variants with different styles (+1 more)
 
 ### Community 417 - "Current Session: 2026-07-21 — Fixed Category "All" Selection Not Clearing ✅"
 Cohesion: 0.67
@@ -2115,13 +2105,13 @@ Nodes (5): Common Rules for Professional UI, Icons & Visual Elements, Interactio
 Cohesion: 0.40
 Nodes (5): Example Workflow, Step 1: Analyze Requirements, Step 2: Generate Design System, Step 3: Supplement with Detailed Searches (as needed), Step 4: Stack Guidelines
 
-### Community 420 - "radius"
-Cohesion: 0.60
-Nodes (5): radius, radius, radius, $type, $value
-
-### Community 421 - "md"
+### Community 420 - "secondary-foreground"
 Cohesion: 0.67
-Nodes (4): $type, $value, md, md
+Nodes (3): secondary-foreground, $type, $value
+
+### Community 421 - "primary"
+Cohesion: 0.67
+Nodes (3): primary, $type, $value
 
 ### Community 422 - "Current Session: 2026-07-22 — Navigation Fix v2: PopScope + addPostFrameCallback ✅"
 Cohesion: 0.67
@@ -2131,13 +2121,13 @@ Nodes (3): Current Session: 2026-07-22 — Navigation Fix v2: PopScope + addPost
 Cohesion: 0.67
 Nodes (3): Files Created/Modified, Previous Session: 2026-08-19 — Due Payments Management Feature ✅, What Was Done
 
-### Community 424 - "0"
-Cohesion: 0.67
-Nodes (3): $type, $value, 0
+### Community 424 - "signup_usecase.dart"
+Cohesion: 0.14
+Nodes (13): call, email, emailRedirectTo, name, password, phone, props, repository (+5 more)
 
-### Community 425 - "16"
-Cohesion: 0.67
-Nodes (3): $type, $value, 16
+### Community 425 - "realtime_service.dart"
+Cohesion: 0.15
+Nodes (12): bool get, _channels, dispose, _disposed, _isConnected, RealtimeService, _retryTimers, _scheduleRetry (+4 more)
 
 ### Community 426 - "Tips for Better Results"
 Cohesion: 0.50
@@ -2147,49 +2137,37 @@ Nodes (4): Common Sticking Points, Pre-Delivery Checklist, Query Strategy, Tips 
 Cohesion: 0.67
 Nodes (3): Current Session: 2026-07-21 — Ultra-Compact Product Cards + Alignment Fix ✅, flutter analyze, What Was Done
 
-### Community 428 - "3"
-Cohesion: 0.67
-Nodes (3): $type, $value, 3
+### Community 428 - ".tokenize"
+Cohesion: 0.21
+Nodes (8): _passes_threshold(), _query_coverage(), Lowercase, normalize synonyms, split, remove punctuation, filter stopwords, Build BM25 index from documents, Score all documents against query, All indexed terms, for suggestion/typo-recovery purposes., Nearest known vocabulary terms for a query that returned 0 hits, so the caller…, _suggest_terms()
 
 ### Community 431 - "DESIGN FIX: 2026-08-24 - Reports Home page redesign"
 Cohesion: 0.40
 Nodes (5): DESIGN FIX: 2026-08-24 - Reports Home page redesign, Fix, Lesson, Symptom, Verify
 
-### Community 432 - "destructive-foreground"
-Cohesion: 0.67
-Nodes (3): destructive-foreground, $type, $value
+### Community 432 - "stock_repository_impl.dart"
+Cohesion: 0.18
+Nodes (10): ../../domain/entities/stock_adjustment.dart, ../../domain/repositories/stock_repository.dart, adjustStock, _fromMap, getAllAdjustments, getStockHistory, _resolveShopId, StockRepositoryImpl (+2 more)
 
-### Community 433 - "muted"
-Cohesion: 0.67
-Nodes (3): muted, $type, $value
+### Community 433 - "build"
+Cohesion: 0.50
+Nodes (4): build, build, Route /products/add, Route /scan/checkout
 
-### Community 434 - "primary-foreground"
-Cohesion: 0.67
-Nodes (3): primary-foreground, $type, $value
+### Community 434 - "String?"
+Cohesion: 0.20
+Nodes (9): colorValue, copyWith, createdAt, description, iconCodePoint, id, name, props (+1 more)
 
-### Community 435 - "8"
-Cohesion: 0.67
-Nodes (3): $type, $value, 8
+### Community 435 - "audit_event.dart"
+Cohesion: 0.25
+Nodes (7): action, entityType, from, performedBy, props, searchQuery, to
 
-### Community 436 - "ring"
+### Community 436 - "16"
 Cohesion: 0.67
-Nodes (3): ring, $type, $value
-
-### Community 437 - "secondary-foreground"
-Cohesion: 0.67
-Nodes (3): secondary-foreground, $type, $value
-
-### Community 438 - "destructive"
-Cohesion: 0.67
-Nodes (3): destructive, $type, $value
+Nodes (3): $type, $value, 16
 
 ### Community 439 - "Current Session: 2026-07-22 — Staff Widget Owner-Only (Dashboard + Drawer + Route Guard) ✅"
 Cohesion: 0.67
 Nodes (3): Current Session: 2026-07-22 — Staff Widget Owner-Only (Dashboard + Drawer + Route Guard) ✅, flutter analyze, What Was Done
-
-### Community 440 - "destructive-foreground"
-Cohesion: 0.67
-Nodes (3): destructive-foreground, $type, $value
 
 ### Community 443 - "Previous Session: 2026-08-20 — Report Pages Modernization 📊✨"
 Cohesion: 0.67
@@ -2198,18 +2176,6 @@ Nodes (3): flutter analyze, Previous Session: 2026-08-20 — Report Pages Modern
 ### Community 444 - "Previous: 2026-08-20 — Product Page UI Upgrade (Bento Inventory) 🎨"
 Cohesion: 0.67
 Nodes (3): flutter analyze, Previous: 2026-08-20 — Product Page UI Upgrade (Bento Inventory) 🎨, What Was Done
-
-### Community 445 - "muted"
-Cohesion: 0.67
-Nodes (3): muted, $type, $value
-
-### Community 446 - "primary-foreground"
-Cohesion: 0.67
-Nodes (3): primary-foreground, $type, $value
-
-### Community 447 - "ring"
-Cohesion: 0.67
-Nodes (3): ring, $type, $value
 
 ### Community 448 - "Current Session: 2026-08-21 — Product Page: Remove Redundant Add Button ✅"
 Cohesion: 0.67
@@ -2227,22 +2193,6 @@ Nodes (3): Current Session: 2026-07-21 — Description Match Snippet Highlight o
 Cohesion: 0.67
 Nodes (3): Current Session: 2026-07-28 — README.md Update ✅, What Was Done, What Was NOT Changed
 
-### Community 452 - "secondary-foreground"
-Cohesion: 0.67
-Nodes (3): secondary-foreground, $type, $value
-
-### Community 490 - "12"
-Cohesion: 0.67
-Nodes (3): $type, $value, 12
-
-### Community 491 - "2"
-Cohesion: 0.67
-Nodes (3): $type, $value, 2
-
-### Community 492 - "8"
-Cohesion: 0.67
-Nodes (3): $type, $value, 8
-
 ### Community 493 - "Current Session: 2026-07-21 — Fixed Category Switch Animation Glitch ✅"
 Cohesion: 0.67
 Nodes (3): Current Session: 2026-07-21 — Fixed Category Switch Animation Glitch ✅, flutter analyze, What Was Done
@@ -2251,29 +2201,29 @@ Nodes (3): Current Session: 2026-07-21 — Fixed Category Switch Animation Glitc
 Cohesion: 0.67
 Nodes (3): Current Session: 2026-07-21 — Layout + Routing Fixes ✅, flutter analyze, What Was Done
 
-### Community 495 - "primary"
-Cohesion: 0.67
-Nodes (3): primary, $type, $value
+### Community 496 - "BUG FIX 5: 2026-08-21 - card tap crash (Spacer in fixed-height bottom sheet)"
+Cohesion: 0.33
+Nodes (6): BUG FIX 5: 2026-08-21 - card tap crash (Spacer in fixed-height bottom sheet), Fix, Lesson, Root cause, Symptom, Verify
 
 ## Knowledge Gaps
-- **4170 isolated node(s):** `fs`, `path`, `fs`, `path`, `fs` (+4165 more)
+- **4204 isolated node(s):** `fs`, `path`, `fs`, `path`, `fs` (+4199 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **62 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `search()` connect `search` to `.claude/skills/ui-ux-pro-max/scripts/design_system.py`, `BM25`, `detect_domain`, `search_stack`, `.claude/skills/ui-ux-pro-max/scripts/core.py`, `.claude/skills/ui-ux-pro-max/scripts/tests/test_text_layout_resilience.py`, `.claude/skills/ui-ux-pro-max/scripts/validate_data.py`, `.generate`?**
+- **Why does `search()` connect `search` to `.claude/skills/ui-ux-pro-max/scripts/design_system.py`, `detect_domain`, `search_stack`, `.claude/skills/ui-ux-pro-max/scripts/core.py`, `BM25`, `.claude/skills/ui-ux-pro-max/scripts/tests/test_text_layout_resilience.py`, `.claude/skills/ui-ux-pro-max/scripts/validate_data.py`, `.generate`?**
   _High betweenness centrality (0.028) - this node is a cross-community bridge._
-- **Why does `search()` connect `search` to `.generate`, `detect_domain`, `.opencode/skills/ui-ux-pro-max/scripts/design_system.py`, `BM25`, `generate_design_system`, `.opencode/skills/ui-ux-pro-max/scripts/core.py`, `.opencode/skills/ui-ux-pro-max/scripts/validate_data.py`, `_normalize`, `_suggest_identities`, `test_text_layout_resilience.py`?**
+- **Why does `search()` connect `search` to `_suggest_identities`, `detect_domain`, `.opencode/skills/ui-ux-pro-max/scripts/design_system.py`, `.tokenize`, `.opencode/skills/ui-ux-pro-max/scripts/core.py`, `.opencode/skills/ui-ux-pro-max/scripts/validate_data.py`, `generate_design_system`, `BM25`, `.generate`, `test_text_layout_resilience.py`?**
   _High betweenness centrality (0.019) - this node is a cross-community bridge._
-- **Why does `AuthBloc` connect `AuthBloc` to `billing_bloc.dart`, `warranty_bloc.dart`, `category_bloc.dart`, `printer_bloc.dart`, `app_routes.dart`, `due_payments_bloc.dart`, `product_bloc.dart`, `ReportBloc`, `State`, `settings_page.dart`, `BillingBloc`, `audit_bloc.dart`, `checkout_page.dart`, `Route /`, `add_staff_page.dart`, `customer_bloc.dart`, `auth_bloc.dart`, `bill_detail_page.dart`, `main.dart`, `register_page.dart`, `stock_bloc.dart`, `damaged_products_bloc.dart`, `package:go_router/go_router.dart`, `home_page.dart`, `build`, `staff_bloc.dart`?**
+- **Why does `AuthBloc` connect `AuthBloc` to `billing_bloc.dart`, `warranty_bloc.dart`, `category_bloc.dart`, `printer_bloc.dart`, `dashboard_page.dart`, `app_routes.dart`, `due_payments_bloc.dart`, `product_bloc.dart`, `bill_detail_page.dart`, `settings_page.dart`, `BillingBloc`, `State`, `checkout_page.dart`, `home_page.dart`, `Route /`, `quick_actions_panel.dart`, `add_staff_page.dart`, `main.dart`, `customer_bloc.dart`, `auth_bloc.dart`, `report_bloc.dart`, `stock_bloc.dart`, `register_page.dart`, `damaged_products_bloc.dart`, `email_verification_page.dart`, `build`, `app_drawer.dart`, `staff_bloc.dart`?**
   _High betweenness centrality (0.011) - this node is a cross-community bridge._
 - **Are the 32 inferred relationships involving `DesignSystemGenerator` (e.g. with `TestBm25CoreBehavior` and `TestDiagnosticsContracts`) actually correct?**
   _`DesignSystemGenerator` has 32 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 4 inferred relationships involving `TailwindConfigGenerator` (e.g. with `TestGeneratedConfigIsValidJs` and `TestTailwindConfigGenerator`) actually correct?**
   _`TailwindConfigGenerator` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `fs`, `path`, `fs` to the rest of the system?**
-  _4170 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _4204 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `billing_bloc.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.029850746268656716 - nodes in this community are weakly interconnected._

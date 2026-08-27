@@ -437,8 +437,12 @@ class _DrawerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final isActive = currentRoute == route ||
         (route != '/' && currentRoute.startsWith(route));
+    // Lime primary fails contrast on light surfaces → use dark-olive variant.
+    final activeColor =
+        isDark ? theme.colorScheme.primary : AppColors.accentTextOnLight;
 
     return Container(
       margin: const EdgeInsets.symmetric(
@@ -447,7 +451,8 @@ class _DrawerItem extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: isActive
-            ? theme.colorScheme.primary.withValues(alpha: 0.08)
+            ? theme.colorScheme.primary
+                .withValues(alpha: isDark ? 0.08 : 0.16)
             : null,
         borderRadius: BorderRadius.circular(12),
       ),
@@ -455,7 +460,7 @@ class _DrawerItem extends StatelessWidget {
         leading: Icon(
           icon,
           color: isActive
-              ? theme.colorScheme.primary
+              ? activeColor
               : theme.colorScheme.onSurfaceVariant,
           size: 22,
         ),
@@ -464,9 +469,7 @@ class _DrawerItem extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-            color: isActive
-                ? theme.colorScheme.primary
-                : theme.colorScheme.onSurface,
+            color: isActive ? activeColor : theme.colorScheme.onSurface,
           ),
         ),
         shape:

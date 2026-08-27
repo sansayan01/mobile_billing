@@ -59,7 +59,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           16,
           16,
           16,
-          96 + MediaQuery.of(context).padding.bottom,
+          96,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

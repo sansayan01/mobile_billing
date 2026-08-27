@@ -453,9 +453,11 @@ class _AddProductPageState extends State<AddProductPage> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           centerTitle: true,
         ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        body: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
             child: Form(
               key: _formKey,
               child: Column(
@@ -827,17 +829,17 @@ class _AddProductPageState extends State<AddProductPage> {
             ),
           ),
         ),
-        bottomNavigationBar: SafeArea(
-          top: false,
-          child: Padding(
-            // Clearance above floating bottom-nav FAB so save stays tappable
-            padding: const EdgeInsets.only(bottom: 96),
+          // Sticky footer — pinned above floating nav
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 96),
             child: PrimaryButton(
               onPressed: _isUploading ? null : _submit,
               icon: Icons.add_circle,
               label: _isUploading ? 'Uploading...' : 'Add Product',
             ),
           ),
-        ));
+        ],
+      ),
+    );
   }
 }

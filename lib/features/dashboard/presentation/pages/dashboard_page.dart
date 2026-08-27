@@ -77,12 +77,67 @@ class _DashboardViewState extends State<_DashboardView> {
         SystemNavigator.pop();
       },
       child: Scaffold(
-        body: Container(
-          // ignore: prefer_const_constructors
-          decoration: BoxDecoration(
-            gradient: AppTheme.gradientFor(context),
-          ),
-          child: SafeArea(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black
+            : AppColors.lightBg,
+        body: Stack(
+          children: [
+            // ── Lime aurora glows (dark mode only) — like Spendly green aura ──
+            if (Theme.of(context).brightness == Brightness.dark) ...[
+              // Top-center main glow — bright lime halo at the top
+              Positioned(
+                top: -120,
+                left: -60,
+                right: -60,
+                height: 520,
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: const Alignment(0, -0.35),
+                        radius: 1.05,
+                        colors: [
+                          AppColors.accent.withValues(alpha: 0.38),
+                          AppColors.accent.withValues(alpha: 0.14),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.45, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Secondary soft wash — spreads lime tint across top 40%
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 380,
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColors.accent.withValues(alpha: 0.15),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ] else
+              // Light mode keeps the soft light gradient
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.gradientFor(context),
+                  ),
+                ),
+              ),
+            SafeArea(
             child: RefreshIndicator(
               onRefresh: () async {
                 _loadDashboardData();
@@ -135,7 +190,8 @@ class _DashboardViewState extends State<_DashboardView> {
               ), // CustomScrollView
             ), // RefreshIndicator
           ), // SafeArea
-        ), // Container
+          ], // Stack
+        ), // Stack
       ), // Scaffold
     ); // PopScope
   }

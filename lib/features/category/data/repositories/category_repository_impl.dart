@@ -52,12 +52,15 @@ class CategoryRepositoryImpl implements CategoryRepository {
       {String? shopId}) async {
     try {
       final resolvedShopId = await _resolveShopId(shopId);
+      // Postgres `color_value` is `integer` (max 2,147,483,647). Dart's
+      // Color.toARGB32() yields opaque ARGB up to 4,294,967,295 which overflows
+      // the column and makes insert fail. Mask to 24-bit RGB before sending.
       final payload = <String, dynamic>{
         'id': category.id,
         'name': category.name,
         'description': category.description,
         'icon_code_point': category.iconCodePoint,
-        'color_value': category.colorValue,
+        'color_value': category.colorValue & 0x00FFFFFF,
       };
       if (resolvedShopId != null) payload['shop_id'] = resolvedShopId;
       await _supabase.from('categories').insert(payload);
@@ -79,12 +82,15 @@ class CategoryRepositoryImpl implements CategoryRepository {
       {String? shopId}) async {
     try {
       final resolvedShopId = await _resolveShopId(shopId);
+      // Postgres `color_value` is `integer` (max 2,147,483,647). Dart's
+      // Color.toARGB32() yields opaque ARGB up to 4,294,967,295 which overflows
+      // the column and makes upsert fail. Mask to 24-bit RGB before sending.
       final payload = <String, dynamic>{
         'id': category.id,
         'name': category.name,
         'description': category.description,
         'icon_code_point': category.iconCodePoint,
-        'color_value': category.colorValue,
+        'color_value': category.colorValue & 0x00FFFFFF,
       };
       if (resolvedShopId != null) payload['shop_id'] = resolvedShopId;
       // Fetch old category name for audit

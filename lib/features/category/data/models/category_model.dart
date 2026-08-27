@@ -19,7 +19,11 @@ class CategoryModel extends Category {
           ? DateTime.parse(json['created_at'] as String)
           : null,
       iconCodePoint: json['icon_code_point'] as int? ?? 0xe559,
-      colorValue: json['color_value'] as int? ?? 0xFF6750A4,
+      // Postgres `color_value` is `integer` (max 2,147,483,647). Dart stores
+      // opaque ARGB (up to 4,294,967,295) which overflows that column and makes
+      // add/update fail. We persist only the 24-bit RGB and restore alpha here
+      // so the UI never sees a transparent color.
+      colorValue: ((json['color_value'] as int? ?? 0xFF6750A4)) | 0xFF000000,
     );
   }
 

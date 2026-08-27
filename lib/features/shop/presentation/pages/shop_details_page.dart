@@ -121,8 +121,11 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
               return const Center(child: CircularProgressIndicator());
             }
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -203,15 +206,23 @@ class _ShopDetailsPageState extends State<ShopDetailsPage> {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    PrimaryButton(
-                      onPressed: _saveShop,
-                      icon: Icons.save_outlined,
-                      label: 'Save Details',
-                    ),
                   ],
                 ),
               ),
-            );
+              ),
+            ),
+              // Sticky footer — pinned above floating nav
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
+                child: PrimaryButton(
+                  onPressed: _saveShop,
+                  icon: Icons.save_outlined,
+                  label: 'Save Details',
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ],
+          );
           },
         ),
       );

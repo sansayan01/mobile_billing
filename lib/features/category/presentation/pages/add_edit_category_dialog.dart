@@ -93,6 +93,8 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AlertDialog(
+      backgroundColor: theme.colorScheme.surface,
+      surfaceTintColor: theme.colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Text(_isEditMode ? 'Edit Category' : 'Add Category'),
       content: Form(

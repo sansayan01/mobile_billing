@@ -657,6 +657,20 @@ class _ProductListPageState extends State<ProductListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
+      // FAB to add a product quickly. Re-uses the category page's approach:
+      // floats ABOVE the AppShell floating bottom-nav (and the mini-cart bar
+      // when present) so it never hides behind either. The earlier note about
+      // "FAB removed to avoid nav collision" is resolved by _AboveNavFabLocation.
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.accent,
+        foregroundColor: AppColors.onAccent,
+        elevation: 4,
+        shape: const CircleBorder(),
+        tooltip: 'Add Product',
+        onPressed: () => context.push('/products/add'),
+        child: const Icon(Icons.add_rounded, size: 26),
+      ),
+      floatingActionButtonLocation: _AboveNavFabLocation(),
       body: Stack(
         children: [
           Container(
@@ -664,6 +678,8 @@ class _ProductListPageState extends State<ProductListPage> {
               gradient: AppTheme.gradientFor(context),
             ),
             child: SafeArea(
+              top: false,
+              bottom: false,
               child: Column(
                 children: [
                   _buildAppBar(context),
@@ -1794,4 +1810,21 @@ class _NoMatchState extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Floats the FAB above the AppShell floating bottom-nav.
+/// The nav pill is ~72px tall, so 90px lift clears it comfortably on all devices.
+class _AboveNavFabLocation extends FloatingActionButtonLocation {
+  const _AboveNavFabLocation();
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry geometry) {
+    const endFloat = FloatingActionButtonLocation.endFloat;
+    final base = endFloat.getOffset(geometry);
+    // Lift the FAB up so it sits above the floating nav.
+    return Offset(base.dx, base.dy - 90);
+  }
+
+  @override
+  String toString() => 'ProductListPage._AboveNavFabLocation';
 }

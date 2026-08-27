@@ -14,13 +14,14 @@ class AppColors {
   static const Color accentSubtle = Color(0x1FC8F031);
   static const Color accentTextOnLight = Color(0xFF55700A);
 
-  // ── Dark palette (primary experience) ──
-  static const Color darkBg = Color(0xFF0B0F1A);
-  static const Color darkBgSecondary = Color(0xFF0F1522);
-  static const Color darkSurface = Color(0xFF151C2C);
-  static const Color darkSurfaceElevated = Color(0xFF1C2436);
-  static const Color darkModal = Color(0xFF1A2233);
-  static const Color darkNav = Color(0xFF101625);
+  // ── Dark palette — AMOLED pure black (OLED battery saving) ──
+  // bg/nav/modal = true black 0xFF000000, surfaces = subtle elevation so cards stay visible
+  static const Color darkBg = Color(0xFF000000);
+  static const Color darkBgSecondary = Color(0xFF000000);
+  static const Color darkSurface = Color(0xFF0A0A0A);
+  static const Color darkSurfaceElevated = Color(0xFF141414);
+  static const Color darkModal = Color(0xFF000000);
+  static const Color darkNav = Color(0xFF000000);
   static const Color darkTextPrimary = Color(0xFFF5F7FA);
   static const Color darkTextSecondary = Color(0xFFA8B3C5);
   static const Color darkTextTertiary = Color(0xFF6B7688);
@@ -98,7 +99,7 @@ class AppColors {
   );
 
   static const LinearGradient darkGradient = LinearGradient(
-    colors: [Color(0xFF0B0F1A), Color(0xFF0F1522), Color(0xFF121A2A)],
+    colors: [Color(0xFF000000), Color(0xFF000000), Color(0xFF000000)],
     stops: [0.0, 0.5, 1.0],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,

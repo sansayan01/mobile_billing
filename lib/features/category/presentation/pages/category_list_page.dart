@@ -14,6 +14,24 @@ import '../../../product/domain/entities/product.dart';
 import 'add_edit_category_dialog.dart';
 import '../../../product/presentation/bloc/product_bloc.dart';
 
+/// Custom FAB location: floats the FAB above the app's floating bottom-nav
+/// pill (end-aligned) so it never hides behind it. ~96px clears the nav
+/// height + gesture bar on all devices (same clearance as list bottom padding).
+class _AboveNavFabLocation extends FloatingActionButtonLocation {
+  const _AboveNavFabLocation();
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final endFloat = FloatingActionButtonLocation.endFloat
+        .getOffset(scaffoldGeometry);
+    // Lift the FAB up by the nav clearance so it sits ABOVE the floating pill.
+    return Offset(endFloat.dx, endFloat.dy - 96);
+  }
+
+  @override
+  String toString() => 'CategoryListPage._AboveNavFabLocation';
+}
+
 class CategoryListPage extends StatefulWidget {
   const CategoryListPage({super.key});
 
@@ -28,6 +46,7 @@ class _CategoryListPageState extends State<CategoryListPage>
   String _searchQuery = '';
   bool _sortAscending = true;
   bool _isSelectionMode = false;
+  bool _isGridView = false;
   final Set<String> _selectedIds = {};
 
   late AnimationController _headerAnimController;
@@ -69,6 +88,30 @@ class _CategoryListPageState extends State<CategoryListPage>
     return products.length;
   }
 
+  /// Total inventory value = sum(price * stock) across all products.
+  double _inventoryValue(List<Product> products) {
+    double total = 0;
+    for (final p in products) {
+      total += p.price * p.stock;
+    }
+    return total;
+  }
+
+  /// Count of products currently at/under their reorder point.
+  int _lowStockCount(List<Product> products) {
+    int n = 0;
+    for (final p in products) {
+      if (p.isLowStock) n++;
+    }
+    return n;
+  }
+
+  String _formatINR(double amount) {
+    if (amount >= 100000) return '₹${(amount / 100000).toStringAsFixed(1)}L';
+    if (amount >= 1000) return '₹${(amount / 1000).toStringAsFixed(1)}K';
+    return '₹${amount.toStringAsFixed(0)}';
+  }
+
   /// Resolve a stored codePoint to a CONST IconData from the shared registry.
   /// Dynamic `IconData(codePoint)` breaks release builds (icon tree-shaking).
   IconData _categoryIcon(int codePoint) {
@@ -77,6 +120,11 @@ class _CategoryListPageState extends State<CategoryListPage>
     }
     return Icons.category_rounded; // const fallback
   }
+
+  /// Darken a (possibly very light) category color so accents stay visible on
+  /// both light/dark surfaces. Light stored colors (cream/beige) were invisible
+  /// as a 5px strip on a white card — 22% toward black guarantees contrast.
+  Color _strongColor(Color c) => Color.lerp(c, Colors.black, 0.22) ?? c;
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +135,14 @@ class _CategoryListPageState extends State<CategoryListPage>
 
     return Scaffold(
       backgroundColor: t.scaffoldBackgroundColor,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.accent,
+        foregroundColor: AppColors.onAccent,
+        tooltip: 'Add Category',
+        onPressed: () => _openAddEditDialog(),
+        child: const Icon(Icons.add_rounded),
+      ),
+      floatingActionButtonLocation: const _AboveNavFabLocation(),
       body: CustomScrollView(
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),
@@ -136,6 +192,15 @@ class _CategoryListPageState extends State<CategoryListPage>
                   ),
                   onPressed: () => setState(() => _sortAscending = !_sortAscending),
                   tooltip: _sortAscending ? 'A → Z' : 'Z → A',
+                ),
+                IconButton(
+                  icon: Icon(
+                    _isGridView ? Icons.view_list_rounded : Icons.grid_view_rounded,
+                    color: t.colorScheme.onSurface,
+                    size: 22,
+                  ),
+                  onPressed: () => setState(() => _isGridView = !_isGridView),
+                  tooltip: _isGridView ? 'List view' : 'Grid view',
                 ),
                 IconButton(
                   icon: Icon(Icons.checklist_rounded, color: t.colorScheme.onSurface, size: 22),
@@ -244,7 +309,36 @@ class _CategoryListPageState extends State<CategoryListPage>
               return SliverPadding(
                 // 144 clears the floating nav + gesture bar on all devices
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 144),
-                sliver: SliverList.separated(
+                sliver: _isGridView
+                    ? SliverGrid(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 1.05,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final cat = sorted[index];
+                            final count = _count(cat, products);
+                            final selected = _selectedIds.contains(cat.id);
+                            return TweenAnimationBuilder<double>(
+                              tween: Tween(begin: 0.0, end: 1.0),
+                              duration: Duration(milliseconds: 350 + (index * 40).clamp(0, 500)),
+                              curve: Curves.easeOutCubic,
+                              builder: (context, val, child) {
+                                return Transform.translate(
+                                  offset: Offset(0, 16 * (1 - val)),
+                                  child: Opacity(opacity: val, child: child),
+                                );
+                              },
+                              child: _categoryGridCard(cat, count, selected, t),
+                            );
+                          },
+                          childCount: sorted.length,
+                        ),
+                      )
+                    : SliverList.separated(
                   itemCount: sorted.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
@@ -310,7 +404,7 @@ class _CategoryListPageState extends State<CategoryListPage>
         return Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
           child: Container(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [AppColors.accent, AppColors.accentDark],
@@ -328,18 +422,40 @@ class _CategoryListPageState extends State<CategoryListPage>
               ],
             ),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _statBlock((_totalProducts(products) * anim.value).toInt(), 'Products', Icons.inventory_2_rounded),
+                _statBlock(
+                    (_totalProducts(products) * anim.value).toInt(), 'Products', Icons.inventory_2_rounded, false),
                 Container(
-                  width: 1, height: 48,
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  width: 1, height: 40,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [AppColors.onAccent.withValues(alpha: 0.1), AppColors.onAccent.withValues(alpha: 0.35), AppColors.onAccent.withValues(alpha: 0.1)],
                     ),
                   ),
                 ),
-                _statBlock((cats.length * anim.value).toInt(), 'Categories', Icons.category_rounded),
+                _statBlock((cats.length * anim.value).toInt(), 'Categories', Icons.category_rounded, false),
+                Container(
+                  width: 1, height: 40,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.onAccent.withValues(alpha: 0.1), AppColors.onAccent.withValues(alpha: 0.35), AppColors.onAccent.withValues(alpha: 0.1)],
+                    ),
+                  ),
+                ),
+                _statBlockMonetary(_inventoryValue(products) * anim.value, 'Inventory', Icons.account_balance_wallet_rounded),
+                Container(
+                  width: 1, height: 40,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.onAccent.withValues(alpha: 0.1), AppColors.onAccent.withValues(alpha: 0.35), AppColors.onAccent.withValues(alpha: 0.1)],
+                    ),
+                  ),
+                ),
+                _statBlock(_lowStockCount(products), 'Low Stock', Icons.warning_amber_rounded, true),
               ],
             ),
           ),
@@ -348,32 +464,53 @@ class _CategoryListPageState extends State<CategoryListPage>
     );
   }
 
-  Widget _statBlock(int value, String label, IconData icon) {
+  Widget _statBlock(int value, String label, IconData icon, bool warn) {
+    final valueColor = warn && value > 0 ? AppColors.warning : AppColors.onAccent;
+    final iconColor = warn && value > 0 ? AppColors.warning : AppColors.onAccent;
     return Expanded(
-      child: Row(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.onAccent.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(14),
+              color: iconColor.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: AppColors.onAccent, size: 22),
+            child: Icon(icon, color: iconColor, size: 18),
           ),
-          const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('$value', style: const TextStyle(color: AppColors.onAccent, fontSize: 26, fontWeight: FontWeight.w800, height: 1.0)),
-              const SizedBox(height: 2),
-              Text(label, style: TextStyle(color: AppColors.onAccent.withValues(alpha: 0.75), fontSize: 12, fontWeight: FontWeight.w500)),
-            ],
-          ),
+          const SizedBox(height: 8),
+          Text('$value', style: TextStyle(color: valueColor, fontSize: 19, fontWeight: FontWeight.w800, height: 1.0)),
+          const SizedBox(height: 3),
+          Text(label, style: TextStyle(color: AppColors.onAccent.withValues(alpha: 0.75), fontSize: 10.5, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
         ],
       ),
     );
   }
+
+  /// Monetary stat block — compact ₹ formatting for large inventory values.
+  Widget _statBlockMonetary(double value, String label, IconData icon) {
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.onAccent.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: AppColors.onAccent, size: 18),
+          ),
+          const SizedBox(height: 8),
+          Text(_formatINR(value), style: const TextStyle(color: AppColors.onAccent, fontSize: 17, fontWeight: FontWeight.w800, height: 1.0)),
+          const SizedBox(height: 3),
+          Text(label, style: TextStyle(color: AppColors.onAccent.withValues(alpha: 0.75), fontSize: 10.5, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
+
 
   // ═══════════════════════════════════════════════════════════════
   //  RECENTLY USED
@@ -468,12 +605,13 @@ class _CategoryListPageState extends State<CategoryListPage>
   // ═══════════════════════════════════════════════════════════════
   Widget _categoryCard(Category cat, int count, bool selected, ThemeData t) {
     final color = Color(cat.colorValue);
+    final strong = _strongColor(color);
     final icon = _categoryIcon(cat.iconCodePoint);
 
-    // REDESIGN (ui-ux-pro-max): tap = primary action (open Products filtered
-    // by this category — previously tap was dead outside selection mode).
-    // InkWell gives proper press ripple; secondary actions moved into one
-    // overflow menu instead of two always-visible icon buttons.
+    // OPTION A (user-chosen): left vertical accent strip in the category's own
+    // color — gives each card a distinct identity while keeping the rest clean.
+    // `strong` darkens light stored colors so the strip is always visible.
+    const stripW = 6.0;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -507,50 +645,298 @@ class _CategoryListPageState extends State<CategoryListPage>
           duration: const Duration(milliseconds: 160),
           curve: Curves.easeOut,
           decoration: BoxDecoration(
-            color: selected ? color.withValues(alpha: 0.06) : t.colorScheme.surface,
+            color: selected
+                ? strong.withValues(alpha: 0.10)
+                : Color.lerp(t.colorScheme.surface, color, 0.05) ?? t.colorScheme.surface,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: selected
-                  ? color.withValues(alpha: 0.5)
-                  : t.colorScheme.outlineVariant.withValues(alpha: 0.35),
+                  ? strong.withValues(alpha: 0.55)
+                  : strong.withValues(alpha: 0.28),
               width: selected ? 1.5 : 1,
             ),
           ),
-          padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
-          child: Row(
+          // Clip so the left strip hugs the rounded corner.
+          clipBehavior: Clip.antiAlias,
+          child: Stack(
             children: [
-              if (_isSelectionMode) ...[
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 160),
-                  child: Icon(
-                    selected ? Icons.check_circle_rounded : Icons.circle_outlined,
-                    key: ValueKey(selected),
-                    color: selected
-                        ? color
-                        : t.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                    size: 24,
+              // Left accent strip (category color) — full height.
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                child: Container(
+                  width: stripW,
+                  decoration: BoxDecoration(
+                    color: strong,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(17),
+                      bottomLeft: Radius.circular(17),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
-              ],
-
-              // Icon — flat tinted square (no gradient/glow: cleaner hierarchy)
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(icon, color: color, size: 24),
               ),
-              const SizedBox(width: 14),
+              // Content (shifted right of the strip)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14 + stripW, 12, 6, 12),
+                child: Row(
+                  children: [
+                    if (_isSelectionMode) ...[
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 160),
+                        child: Icon(
+                          selected ? Icons.check_circle_rounded : Icons.circle_outlined,
+                          key: ValueKey(selected),
+                          color: selected
+                              ? color
+                              : t.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                    ],
 
-              // Info — name + single meta row (count pill + description)
-              Expanded(
+                    // Icon — flat tinted square (no gradient/glow: cleaner hierarchy)
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: strong.withValues(alpha: 0.18),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(icon, color: strong, size: 24),
+                    ),
+                    const SizedBox(width: 14),
+
+                    // Info — name + single meta row (count pill + description)
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(cat.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                  letterSpacing: -0.2)),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: strong.withValues(alpha: 0.14),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                    '$count ${count == 1 ? "product" : "products"}',
+                                    style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                        color: strong)),
+                              ),
+                              if (cat.description != null &&
+                                  cat.description!.isNotEmpty) ...[
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(cat.description!,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: t.colorScheme.onSurfaceVariant)),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Overflow menu — one secondary entry point (44px target)
+                    if (!_isSelectionMode)
+                      SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: PopupMenuButton<String>(
+                          icon: Icon(Icons.more_vert_rounded,
+                              color: t.colorScheme.onSurfaceVariant, size: 22),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
+                          onSelected: (value) {
+                            if (value == 'edit') _openAddEditDialog(category: cat);
+                            if (value == 'delete') _confirmDelete(cat);
+                          },
+                          itemBuilder: (_) => [
+                            PopupMenuItem(
+                              value: 'edit',
+                              child: Row(children: [
+                                Icon(Icons.edit_rounded,
+                                    size: 18, color: t.colorScheme.onSurfaceVariant),
+                                const SizedBox(width: 12),
+                                const Text('Edit'),
+                              ]),
+                            ),
+                            PopupMenuItem(
+                              value: 'delete',
+                              child: Row(children: [
+                                Icon(Icons.delete_outline_rounded,
+                                    size: 18, color: t.colorScheme.error),
+                                const SizedBox(width: 12),
+                                Text('Delete',
+                                    style: TextStyle(color: t.colorScheme.error)),
+                              ]),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  CATEGORY GRID CARD (grid view)
+  // ═══════════════════════════════════════════════════════════════
+  Widget _categoryGridCard(Category cat, int count, bool selected, ThemeData t) {
+    final color = Color(cat.colorValue);
+    final strong = _strongColor(color);
+    final icon = _categoryIcon(cat.iconCodePoint);
+    const stripW = 6.0;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () {
+          HapticFeedback.lightImpact();
+          if (_isSelectionMode) {
+            setState(() {
+              if (_selectedIds.contains(cat.id)) {
+                _selectedIds.remove(cat.id);
+                if (_selectedIds.isEmpty) _isSelectionMode = false;
+              } else {
+                _selectedIds.add(cat.id);
+              }
+            });
+            return;
+          }
+          context.read<ProductBloc>().add(FilterByCategory(cat.id));
+          context.go('/products');
+        },
+        onLongPress: () {
+          HapticFeedback.mediumImpact();
+          if (!_isSelectionMode) {
+            setState(() {
+              _isSelectionMode = true;
+              _selectedIds.add(cat.id);
+            });
+          }
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOut,
+          decoration: BoxDecoration(
+            color: selected
+                ? strong.withValues(alpha: 0.10)
+                : Color.lerp(t.colorScheme.surface, color, 0.05) ?? t.colorScheme.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: selected
+                  ? strong.withValues(alpha: 0.55)
+                  : strong.withValues(alpha: 0.28),
+              width: selected ? 1.5 : 1,
+            ),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Stack(
+            children: [
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                child: Container(
+                  width: stripW,
+                  decoration: BoxDecoration(
+                    color: strong,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(17),
+                      bottomLeft: Radius.circular(17),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14 + stripW, 14, 14, 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: strong.withValues(alpha: 0.18),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Icon(icon, color: strong, size: 24),
+                        ),
+                        const Spacer(),
+                        if (!_isSelectionMode)
+                          SizedBox(
+                            width: 36,
+                            height: 36,
+                            child: PopupMenuButton<String>(
+                              icon: Icon(Icons.more_vert_rounded,
+                                  color: t.colorScheme.onSurfaceVariant, size: 20),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14)),
+                              onSelected: (value) {
+                                if (value == 'edit') _openAddEditDialog(category: cat);
+                                if (value == 'delete') _confirmDelete(cat);
+                              },
+                              itemBuilder: (_) => [
+                                PopupMenuItem(
+                                  value: 'edit',
+                                  child: Row(children: [
+                                    Icon(Icons.edit_rounded,
+                                        size: 18, color: t.colorScheme.onSurfaceVariant),
+                                    const SizedBox(width: 12),
+                                    const Text('Edit'),
+                                  ]),
+                                ),
+                                PopupMenuItem(
+                                  value: 'delete',
+                                  child: Row(children: [
+                                    Icon(Icons.delete_outline_rounded,
+                                        size: 18, color: t.colorScheme.error),
+                                    const SizedBox(width: 12),
+                                    Text('Delete',
+                                        style: TextStyle(color: t.colorScheme.error)),
+                                  ]),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          Icon(
+                            selected ? Icons.check_circle_rounded : Icons.circle_outlined,
+                            color: selected
+                                ? strong
+                                : t.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                            size: 22,
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
                     Text(cat.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -558,78 +944,21 @@ class _CategoryListPageState extends State<CategoryListPage>
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
                             letterSpacing: -0.2)),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: color.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                              '$count ${count == 1 ? "product" : "products"}',
-                              style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  color: color)),
-                        ),
-                        if (cat.description != null &&
-                            cat.description!.isNotEmpty) ...[
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(cat.description!,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: t.colorScheme.onSurfaceVariant)),
-                          ),
-                        ],
-                      ],
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: strong.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                          '$count ${count == 1 ? "product" : "products"}',
+                          style: TextStyle(
+                              fontSize: 11, fontWeight: FontWeight.w700, color: strong)),
                     ),
                   ],
                 ),
               ),
-
-              // Overflow menu — one secondary entry point (44px target)
-              if (!_isSelectionMode)
-                SizedBox(
-                  width: 44,
-                  height: 44,
-                  child: PopupMenuButton<String>(
-                    icon: Icon(Icons.more_vert_rounded,
-                        color: t.colorScheme.onSurfaceVariant, size: 22),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
-                    onSelected: (value) {
-                      if (value == 'edit') _openAddEditDialog(category: cat);
-                      if (value == 'delete') _confirmDelete(cat);
-                    },
-                    itemBuilder: (_) => [
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: Row(children: [
-                          Icon(Icons.edit_rounded,
-                              size: 18, color: t.colorScheme.onSurfaceVariant),
-                          const SizedBox(width: 12),
-                          const Text('Edit'),
-                        ]),
-                      ),
-                      PopupMenuItem(
-                        value: 'delete',
-                        child: Row(children: [
-                          Icon(Icons.delete_outline_rounded,
-                              size: 18, color: t.colorScheme.error),
-                          const SizedBox(width: 12),
-                          Text('Delete',
-                              style: TextStyle(color: t.colorScheme.error)),
-                        ]),
-                      ),
-                    ],
-                  ),
-                ),
             ],
           ),
         ),
@@ -756,6 +1085,8 @@ class _CategoryListPageState extends State<CategoryListPage>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: t.colorScheme.surface,
+        surfaceTintColor: t.colorScheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
         contentPadding: const EdgeInsets.fromLTRB(24, 16, 24, 0),

@@ -22,6 +22,11 @@ import 'package:billing_app/features/product/domain/usecases/product_usecases.da
 import 'package:billing_app/features/shop/presentation/bloc/shop_bloc.dart';
 import 'package:billing_app/features/due_payments/domain/repositories/due_payments_repository.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
+import 'dart:io';
+import 'dart:ui' as ui;
+import 'package:flutter/rendering.dart';
+import 'package:path_provider/path_provider.dart';
 
 class BillDetailPage extends StatefulWidget {
   final BillSummary bill;
@@ -34,6 +39,7 @@ class BillDetailPage extends StatefulWidget {
 
 class _BillDetailPageState extends State<BillDetailPage> {
   bool _isPrinting = false;
+  bool _isSharing = false;
 
   @override
   void initState() {
@@ -200,8 +206,11 @@ class _BillDetailPageState extends State<BillDetailPage> {
               );
             }
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -470,19 +479,131 @@ class _BillDetailPageState extends State<BillDetailPage> {
                 ]),
                 const SizedBox(height: 12),
 
-                // Print button
-                PrimaryButton(
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+        ),
+              // Sticky footer — pinned above floating nav
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
+                child: PrimaryButton(
                   onPressed: _isPrinting ? null : () => _printReceipt(bill),
                   label: _isPrinting ? 'Printing...' : 'Print Receipt',
                   icon: _isPrinting ? null : Icons.print,
                   isLoading: _isPrinting,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-              ],
-            ),
+              ),
+            ],
           );
         },
       ),
     ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  HIDDEN RECEIPT WIDGET (for WhatsApp screenshot)
+  // ═══════════════════════════════════════════════════════════════
+  Widget _buildReceiptWidget(BillSummary bill) {
+    final nf = NumberFormat.currency(symbol: '₹', decimalDigits: 0);
+    final dateFormat = DateFormat('dd-MM-yyyy hh:mm a');
+    return Container(
+      width: 360,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Shop header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 8),
+            child: Column(
+              children: [
+                const Text('Receipt', textAlign: TextAlign.center, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.black87)),
+                const SizedBox(height: 6),
+                Text(dateFormat.format(bill.createdAt), textAlign: TextAlign.center, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+              ],
+            ),
+          ),
+          const Padding(padding: EdgeInsets.symmetric(horizontal: 24), child: Divider(height: 24, thickness: 1)),
+          // Bill info
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _receiptInfoRow('Bill ID', bill.id.substring(0, bill.id.length > 8 ? 8 : bill.id.length)),
+                const SizedBox(height: 4),
+                _receiptInfoRow('Staff', bill.staffName),
+                const SizedBox(height: 4),
+                _receiptInfoRow('Payment', bill.paymentMethod.toUpperCase()),
+                if (bill.customerName != null && bill.customerName!.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  _receiptInfoRow('Customer', bill.customerName!),
+                ],
+              ],
+            ),
+          ),
+          const Padding(padding: EdgeInsets.symmetric(horizontal: 24), child: Divider(height: 24, thickness: 1)),
+          // Items header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              children: const [
+                Expanded(flex: 3, child: Text('Item', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.black54))),
+                Expanded(flex: 1, child: Text('Qty', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.black54), textAlign: TextAlign.center)),
+                Expanded(flex: 2, child: Text('Total', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.black54), textAlign: TextAlign.right)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Items
+          ...bill.items.map((item) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+            child: Row(
+              children: [
+                Expanded(flex: 3, child: Text(item.productName, style: const TextStyle(fontSize: 14, color: Colors.black87), overflow: TextOverflow.ellipsis)),
+                Expanded(flex: 1, child: Text('${item.quantity}x', textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, color: Colors.black54))),
+                Expanded(flex: 2, child: Text(nf.format(item.total), textAlign: TextAlign.right, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87))),
+              ],
+            ),
+          )),
+          const SizedBox(height: 12),
+          const Padding(padding: EdgeInsets.symmetric(horizontal: 24), child: Divider(thickness: 1)),
+          // Grand total
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('GRAND TOTAL', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black87)),
+                Text(nf.format(bill.grandTotal), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.black87)),
+              ],
+            ),
+          ),
+          const Padding(padding: EdgeInsets.symmetric(horizontal: 24), child: Divider(thickness: 1)),
+          // Footer
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: Text('Thank you for your purchase!', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87)),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _receiptInfoRow(String label, String value) {
+    return Row(
+      children: [
+        Text('$label: ', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+        Expanded(child: Text(value, style: const TextStyle(fontSize: 13, color: Colors.black87))),
+      ],
     );
   }
 
@@ -1140,30 +1261,99 @@ class _BillDetailPageState extends State<BillDetailPage> {
   // ═══════════════════════════════════════════════════════════════
   //  WHATSAPP SHARE
   // ═══════════════════════════════════════════════════════════════
-  void _shareOnWhatsApp(BillSummary bill) {
-    final nf = NumberFormat.currency(symbol: '₹', decimalDigits: 0);
-    final dateFormat = DateFormat('dd MMM yyyy, hh:mm a');
-    String receipt = '🧾 *Receipt*\n';
-    receipt += '━━━━━━━━━━━━━━━━\n';
-    receipt += '📅 ${dateFormat.format(bill.createdAt)}\n';
-    receipt += '🆔 Bill #${bill.id.substring(0, bill.id.length > 8 ? 8 : bill.id.length)}\n';
-    receipt += '👨‍💼 Staff: ${bill.staffName}\n';
-    if (bill.customerName != null && bill.customerName!.isNotEmpty) {
-      receipt += '👤 Customer: ${bill.customerName}\n';
-    }
-    receipt += '━━━━━━━━━━━━━━━━\n';
-    for (final item in bill.items) {
-      receipt += '• ${item.productName} x${item.quantity} = ${nf.format(item.total)}\n';
-    }
-    receipt += '━━━━━━━━━━━━━━━━\n';
-    receipt += '💰 Total: ${nf.format(bill.grandTotal)}\n';
-    receipt += '💳 Payment: ${bill.paymentMethod.toUpperCase()}\n';
-    receipt += '━━━━━━━━━━━━━━━━\n';
-    receipt += 'Thank you for shopping with us! 🙏';
+  Future<void> _shareOnWhatsApp(BillSummary bill) async {
+    if (_isSharing) return;
+    setState(() => _isSharing = true);
 
-    // Note: url_launcher needed for WhatsApp
-    Clipboard.setData(ClipboardData(text: receipt));
-    AppFeedback.success(context, 'Receipt copied to clipboard');
+    OverlayEntry? overlayEntry;
+    try {
+      // Build receipt on-demand via overlay (not in the widget tree)
+      // so theme-change rebuilds don't cause renderObject.child == child.
+      // Wrap in Theme(brightness: light) so receipt is always white even in dark mode.
+      final overlayKey = GlobalKey();
+      overlayEntry = OverlayEntry(
+        builder: (_) => Positioned(
+          left: -9999,
+          child: RepaintBoundary(
+            key: overlayKey,
+            child: Theme(
+              data: Theme.of(context).copyWith(brightness: Brightness.light),
+              child: _buildReceiptWidget(bill),
+            ),
+          ),
+        ),
+      );
+      Overlay.of(context).insert(overlayEntry);
+
+      // Capture context-dependent values before the async gap.
+      final size = MediaQuery.of(context).size;
+
+      // Let the overlay render one frame before capturing.
+      await Future.delayed(const Duration(milliseconds: 150));
+
+      final boundaryContext = overlayKey.currentContext;
+      if (boundaryContext == null || !boundaryContext.mounted) {
+        debugPrint('WhatsApp share: overlay boundaryContext is NULL');
+        if (mounted) AppFeedback.error(context, 'Receipt not ready.');
+        return;
+      }
+      debugPrint('WhatsApp share: boundaryContext found, capturing...');
+      final boundary =
+          boundaryContext.findRenderObject() as RenderRepaintBoundary;
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      debugPrint('WhatsApp share: image captured, converting...');
+      final byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      final pngBytes = byteData!.buffer.asUint8List();
+      final tempDir = await getTemporaryDirectory();
+      final file = File(
+          '${tempDir.path}/bill_${DateTime.now().millisecondsSinceEpoch}.png');
+      await file.writeAsBytes(pngBytes);
+      debugPrint('WhatsApp share: file saved at ${file.path}');
+
+      final shareOrigin = Rect.fromLTWH(
+          size.width / 2 - 150, size.height / 2 - 300, 300, 600);
+      final phone = bill.customerPhone;
+      if (phone != null && phone.isNotEmpty) {
+        final digits = phone.replaceAll(RegExp(r'[^\d]'), '');
+        final waPhone = digits.startsWith('91') && digits.length == 12
+            ? digits
+            : digits.length == 10
+                ? '91$digits'
+                : digits;
+        bool shared = false;
+        try {
+          final result = await const MethodChannel(
+                  'com.example.billing_app/whatsapp_share')
+              .invokeMethod(
+                  'shareFile', {'phone': waPhone, 'filePath': [file.path]});
+          shared = result == true;
+        } on PlatformException catch (_) {}
+        if (!shared) {
+          await Share.shareXFiles(
+            [XFile(file.path)],
+            text:
+                'Receipt - Bill #${bill.id.substring(0, bill.id.length > 8 ? 8 : bill.id.length)}',
+            sharePositionOrigin: shareOrigin,
+          );
+        }
+      } else {
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text:
+              'Receipt - Bill #${bill.id.substring(0, bill.id.length > 8 ? 8 : bill.id.length)}',
+          sharePositionOrigin: shareOrigin,
+        );
+      }
+    } catch (e, st) {
+      debugPrint('WhatsApp share error: $e\n$st');
+      if (mounted) {
+        AppFeedback.error(context, 'Failed to share: ${e.toString()}');
+      }
+    } finally {
+      overlayEntry?.remove();
+      if (mounted) setState(() => _isSharing = false);
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════

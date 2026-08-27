@@ -144,8 +144,11 @@ class _AddStaffPageState extends State<AddStaffPage> {
               title: const Text('Add Staff'),
             ),
             body: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 96),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -333,18 +336,24 @@ class _AddStaffPageState extends State<AddStaffPage> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Submit
-                      PrimaryButton(
-                        label: 'Add Staff',
-                        icon: Icons.person_add_rounded,
-                        isLoading: _isLoading,
-                        onPressed: _isLoading ? null : _onSubmit,
-                      ),
                       const SizedBox(height: 24),
                     ],
                   ),
                 ),
               ),
+              ),
+              // Sticky footer — pinned above floating nav
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                child: PrimaryButton(
+                  label: 'Add Staff',
+                  icon: Icons.person_add_rounded,
+                  isLoading: _isLoading,
+                  onPressed: _isLoading ? null : _onSubmit,
+                ),
+              ),
+            ],
+          ),
             ),
           );
         },

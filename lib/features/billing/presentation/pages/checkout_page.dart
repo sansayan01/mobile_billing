@@ -376,9 +376,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                Icon(Icons.add_rounded, size: 16, color: Theme.of(context).colorScheme.primary),
+                                                Icon(Icons.add_rounded, size: 16, color: AppColors.accentText(Theme.of(context).brightness)),
                                                 const SizedBox(width: 4),
-                                                Text('Add More', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.primary)),
+                                                Text('Add More', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.accentText(Theme.of(context).brightness))),
                                               ],
                                             ),
                                           ),
@@ -507,7 +507,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                               color: Theme.of(context).colorScheme.primaryContainer,
                                                               borderRadius: BorderRadius.circular(8),
                                                             ),
-                                                            child: Icon(Icons.remove, size: 14, color: Theme.of(context).colorScheme.primary),
+                                                            child: Icon(Icons.remove, size: 14, color: AppColors.accentText(Theme.of(context).brightness)),
                                                           ),
                                                         ),
                                                       ),
@@ -530,7 +530,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                               color: Theme.of(context).colorScheme.primaryContainer,
                                                               borderRadius: BorderRadius.circular(8),
                                                             ),
-                                                            child: Icon(Icons.add, size: 14, color: Theme.of(context).colorScheme.primary),
+                                                            child: Icon(Icons.add, size: 14, color: AppColors.accentText(Theme.of(context).brightness)),
                                                           ),
                                                         ),
                                                       ),
@@ -657,7 +657,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                 ),
                                                 child: Text(
                                                   billingState.discountIsPercentage ? '%' : '₹',
-                                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: billingState.discountIsPercentage ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant),
+                                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: billingState.discountIsPercentage ? AppColors.accentText(Theme.of(context).brightness) : Theme.of(context).colorScheme.onSurfaceVariant),
                                                 ),
                                               ),
                                             ),
@@ -723,7 +723,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                   color: Theme.of(context).colorScheme.primaryContainer,
                                                   borderRadius: BorderRadius.circular(8),
                                                 ),
-                                                child: Text('Full', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.primary)),
+                                                child: Text('Full', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.accentText(Theme.of(context).brightness))),
                                               ),
                                             ),
                                           ],
@@ -1211,7 +1211,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                 Container(
                                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                                   decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.circular(4)),
-                                                  child: Text('In Cart', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.primary)),
+                                                  child: Text('In Cart', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.accentText(Theme.of(context).brightness))),
                                                 ),
                                               ],
                                             ],
@@ -1495,14 +1495,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ),
       builder: (sheetContext) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.65,
-          maxChildSize: 0.9,
-          minChildSize: 0.4,
-          expand: false,
-          builder: (_, scrollController) {
-            return BlocProvider.value(
-              value: customerBloc,
-              child: Padding(
+            initialChildSize: 0.65,
+            maxChildSize: 0.9,
+            minChildSize: 0.4,
+            expand: false,
+            builder: (_, scrollController) {
+              return Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                 child: Column(
                   children: [
@@ -1553,6 +1551,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     // Customer list
                     Expanded(
                       child: BlocBuilder<CustomerBloc, CustomerState>(
+                        bloc: customerBloc,
                         builder: (_, state) {
                           if (state.isLoading && state.customers.isEmpty) {
                             return const Center(
@@ -1616,10 +1615,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
                   ],
                 ),
-              ),
-            );
-          },
-        );
+              );
+            },
+          );
       },
     );
 

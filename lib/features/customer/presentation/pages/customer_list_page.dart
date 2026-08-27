@@ -64,6 +64,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
           onPressed: () => context.push('/customers/add'),
           child: const Icon(Icons.person_add_rounded),
         ),
+        floatingActionButtonLocation: _AboveNavFabLocation(),
         body: Column(
           children: [
             // Search Bar (reuses the due_payments / product search UX)
@@ -242,4 +243,19 @@ class _CustomerListPageState extends State<CustomerListPage> {
       ),
     );
   }
+}
+
+/// Floats the FAB above the AppShell floating bottom-nav.
+class _AboveNavFabLocation extends FloatingActionButtonLocation {
+  const _AboveNavFabLocation();
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry geometry) {
+    const endFloat = FloatingActionButtonLocation.endFloat;
+    final base = endFloat.getOffset(geometry);
+    return Offset(base.dx, base.dy - 90);
+  }
+
+  @override
+  String toString() => 'CustomerListPage._AboveNavFabLocation';
 }
