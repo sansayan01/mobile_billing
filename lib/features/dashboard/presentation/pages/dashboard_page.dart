@@ -16,6 +16,7 @@ import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:billing_app/features/product/presentation/bloc/product_bloc.dart';
 import 'package:billing_app/features/product/domain/entities/product.dart';
+import 'package:billing_app/features/report/domain/entities/report_entities.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_state.dart';
@@ -140,8 +141,27 @@ class _DashboardViewState extends State<_DashboardView> {
             SafeArea(
             child: RefreshIndicator(
               onRefresh: () async {
-                _loadDashboardData();
-                await Future<void>.delayed(const Duration(milliseconds: 600));
+                final bloc = context.read<ReportBloc>();
+                bloc
+                  ..add(LoadDailySales(DateTime.now()))
+                  ..add(const LoadLowStockProducts(DashboardPage._lowStockThreshold));
+                // Wait for the ReportBloc to finish reloading (or timeout) so
+                // the spinner reflects real work, not a hardcoded delay.
+                final now = DateTime.now();
+                await bloc.stream
+                    .firstWhere((s) => s.status != ReportStatus.loading)
+                    .timeout(
+                      const Duration(seconds: 2),
+                      onTimeout: () => bloc.state,
+                    );
+                bloc
+                  ..add(LoadBillHistory(
+                      from: now.subtract(const Duration(days: 6)),
+                      to: now,
+                      page: 1,
+                      limit: 200))
+                  ..add(LoadSalesRange(
+                      from: DateTime(now.year, now.month, 1), to: now));
               },
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -172,9 +192,14 @@ class _DashboardViewState extends State<_DashboardView> {
                     ],
                   ),
 
-                  // ── Content ──
+                  // ── Content ── (skill Native law 8: home indicator clearance)
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 96),
+                    padding: EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      AppSpacing.sm / 2,
+                      AppSpacing.lg,
+                      96 + MediaQuery.of(context).padding.bottom,
+                    ),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
                         // Lazy build — each section mounts only when scrolled
@@ -353,8 +378,8 @@ class _DashboardViewState extends State<_DashboardView> {
 
     return GridView.count(
       crossAxisCount: 4,
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
+      mainAxisSpacing: AppSpacing.md,
+      crossAxisSpacing: AppSpacing.md,
       childAspectRatio: 0.85,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -467,7 +492,7 @@ class _HeroSalesCard extends StatelessWidget {
 
   /// 7-day totals (oldest → today) from billHistory — single-pass
   /// day grouping. Powers the hero sparkline + delta pill.
-  static List<double> _weekValues(List<dynamic> bills) {
+  static List<double> _weekValues(List<BillSummary> bills) {
     final now = DateTime.now();
     final Map<int, double> dayTotals = {};
     for (int i = 6; i >= 0; i--) {
@@ -518,8 +543,8 @@ class _HeroSalesCard extends StatelessWidget {
 
         return TweenAnimationBuilder<double>(
           tween: Tween(begin: 0.0, end: 1.0),
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOutCubic,
+          duration: AppDurations.normal,
+          curve: AppDurations.strongEase,
           builder: (context, t, child) => Opacity(
             opacity: t,
             child: Transform.translate(
@@ -534,13 +559,13 @@ class _HeroSalesCard extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               onTap: () => context.go('/reports/daily-sales'),
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: AppRadius.rXl,
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(AppSpacing.xl),
                 decoration: BoxDecoration(
                   color: AppColors.surface(b),
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: AppRadius.rXl,
                   border: Border.all(color: AppColors.border(b)),
                 ),
                 child: Column(
@@ -789,7 +814,7 @@ class _NewBillButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 54,
+      height: AppTouchTarget.buttonHeight,
       child: ElevatedButton.icon(
         onPressed: () {
           HapticFeedback.lightImpact();
@@ -800,7 +825,7 @@ class _NewBillButton extends StatelessWidget {
           foregroundColor: AppColors.onAccent,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: AppRadius.rLg,
           ),
         ),
         icon: const Icon(Icons.qr_code_scanner_rounded, size: 22),
@@ -829,10 +854,10 @@ class _FirstRunCard extends StatelessWidget {
     final b = Theme.of(context).brightness;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
         color: AppColors.surface(b),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: AppRadius.rXl,
         border: Border.all(color: AppColors.border(b)),
       ),
       child: Column(
