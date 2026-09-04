@@ -80,6 +80,13 @@
       "output_tokens": 0,
       "files": 160,
       "mode": "update-code-only-filtered"
+    },
+    {
+      "date": "2026-09-04T21:09:44.298639+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 160,
+      "mode": "rebuild-merged"
     }
   ],
   "total_input_tokens": 0,
