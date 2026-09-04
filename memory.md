@@ -1,5 +1,14 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-09-05 — DASHBOARD AUDIT + 3 FIXES ✅
+User: "dashboard page check kr". Audit: dart analyze clean, architecture sahi (lazy SliverList + RepaintBoundary, buildWhen guards, sparkline custom painter). 3 fixes kiye in `lib/features/dashboard/presentation/pages/dashboard_page.dart`:
+1. **Type safety**: `_weekValues(List<dynamic>)` → `List<BillSummary>` (report_entities.dart import add kiya).
+2. **Pull-to-refresh fake delay fix**: `Future.delayed(600ms)` hata diya. Ab `bloc.stream.firstWhere(status != loading).timeout(2s)` — spinner real work ka wait karta hai. "BuildContext across async gap" lint aaya tha → `bloc` reference pehle capture karke fix.
+3. Refresh handler self-contained — inline events (same 4: LoadDailySales, LoadLowStockProducts, LoadBillHistory, LoadSalesRange).
+- dart analyze → **No issues**. Commit `1281d07`. NOTE: us commit mein untracked skill files (`.agents/`, `.claude/` new, `skills-lock.json`) accidentally staged ho gaye the — aage se `git add <specific-file>` use karo, `git add .` nahi.
+- Remaining (chhote, fix nahi kiye): file 1438 lines — sections ko alag files mein split kar sakte hain.
+
+
 ## Current Session: 2026-08-27 — BILL DETAIL WHATSAPP SHARE CRASH FIX ✅
 User: bill detail page pe WhatsApp click se crash — `proxy_box.dart:3553 debugNeedsPaint` assert fail. ROOT CAUSE: hidden receipt capture widget tha `Offstage(offstage:true)` ke andar, jo paint phase skip karta hai → `RenderRepaintBoundary.toImage()` throw karta hai `!debugNeedsPaint`. FIX (`lib/features/report/presentation/pages/bill_detail_page.dart`): `Offstage` ko replace kiya `Stack(clipBehavior: Clip.none, children:[Positioned(left:-10000, child: RepaintBoundary(key:_receiptKey, ...))])` — widget ab bhi laid-out+painted hai (toImage kaam karega) par screen se bahar hai (invisible). `receipt_preview_page.dart` wala receipt on-screen visible hai to wahan same bug nahi. analyze 0 errors.
 
