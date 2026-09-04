@@ -132,6 +132,16 @@ Shop isolation is enforced at **3 layers**:
 - [ ] Light link: billing checkout customer select-by-phone
 - [ ] Full plan: `customer_cms_plan.md`
 
+### 12. Premium UX Polish ✅ (2026-09-05)
+- [x] **Count-up money** — dashboard hero card ₹ 0→value animation (`CountUpMoney` widget)
+- [x] **Aurora glow** — breathing drift lime glow, dashboard dark mode (`AuroraGlow`)
+- [x] **Success burst** — bill-save pe lime checkmark overlay (`SuccessBurst.show()`)
+- [x] **Customer swipe actions** — left-swipe Call (tel:), right-swipe Edit (`flutter_slidable` + `url_launcher`)
+- [x] **Customer edit flow** — UpdateCustomer bloc event + edit-mode AddCustomerPage (Dart-only, no migration)
+- [x] **Collapsing large-title AppBar** — Reports page (iOS-style, no double-title)
+- [x] **Chart polish** — trend entry fade, accent gradient fill, last-dot highlight
+- Design tokens/components: `design.md` → Premium Motion Components (v3.1)
+
 ---
 
 ## Tech Stack Changes
