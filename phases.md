@@ -141,5 +141,17 @@
 - [ ] Full plan: `customer_cms_plan.md`
 - [ ] Device verify: add → list → search → detail
 
+## Phase 8.5 — Premium UX Polish ✅ (2026-09-05)
+- [x] **CountUpMoney** widget — hero/count money 0→value count-up (dashboard hero card wired)
+- [x] **AuroraGlow** widget — breathing drift lime glow, dashboard dark mode
+- [x] **SuccessBurst** overlay — bill-save pe lime checkmark animation (checkout wired)
+- [x] **Customer swipe actions** — Call (url_launcher tel:) + Edit (flutter_slidable)
+- [x] **Customer edit flow end-to-end** — repo.updateCustomer → UpdateCustomer bloc event → AddCustomerPage edit mode → route extra parse (Dart-only, no migration)
+- [x] **Collapsing large-title AppBar** — reports home (expandedHeight 96, no double-title)
+- [x] **Chart polish** — trend entry fade, accent gradient fill, last-dot highlight
+- [x] `dart analyze lib` → 0 issues · commits `722e4c0`, `944f311`
+- [ ] Device verify: pull-to-refresh, count-up, burst on bill save, customer swipe call/edit
+- Components documented in `design.md` → Premium Motion Components (v3.1)
+
 ## Known Issues / TODO
 - [ ] **Kotlin Gradle Plugin warning** — `app_settings, device_info_plus, mobile_scanner, print_bluetooth_thermal, share_plus` apply KGP; future Flutter build break. `flutter pub upgrade` done (partial), full Built-in Kotlin migration pending rebuild verification.

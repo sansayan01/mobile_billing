@@ -136,6 +136,18 @@ negative=error, gridlines = divider, tooltips = modal surface. Metric cards: mon
 - Buttons: press-scale 0.97 (`PrimaryButton`)
 - Motion purposeful ho — decoration animation mat daalo
 
+### Premium Motion Components (v3.1 — 2026-09-05)
+Naye reusable widgets, sab `lib/core/widgets/` mein. V3 tokens pe bane hain, inhi ko use karna — copies mat banao:
+
+- **`CountUpMoney` / `CountUpText`** (`count_up_money.dart`) — money/count 0→value count-up (600ms easeOutCubic). Money numbers ke liye standard ab yehi hai (hero cards, stat values). Value change pe ValueKey se re-animate.
+- **`AuroraGlow`** (`aurora_glow.dart`) — breathing drift radial glow dark backgrounds ke liye (10s loop, sin/cos organic drift). Sirf decorative bg ke liye, `IgnorePointer` + `RepaintBoundary` ke saath. Alpha multipliers small rakho — text contrast kabhi harm nahi.
+- **`SuccessBurst`** (`success_burst.dart`) — milestone success overlay (bill saved, payment done): lime circle scale-in + checkmark stroke-draw + radial burst + message card. API: `await SuccessBurst.show(context, message: '...')`. Sirf HIGH-value moments pe — har snackbar ke liye nahi (wahan AppFeedback).
+- **Swipe actions** (`flutter_slidable`) — list rows pe Call/Edit jaise quick actions. Motion = `BehindMotion`, accent/info colors, haptic on trigger. NOTE: jab row pe pehle se Dismissible ho, dono mat lagao.
+- **Collapsing large-title AppBar** — SliverAppBar `expandedHeight: 96` + FlexibleSpaceBar large title (24/w800) jo `FlexibleSpaceBarSettings.currentExtent < 60` pe hide hota hai (double-title overlap avoid). Compact 18 title stays. See `reports_home_page.dart`.
+- **Chart entry** — fl_chart wrappers 800ms opacity fade-in + accentText-based gradient fill (light/dark dono mein sahi), last dot highlight "today".
+
+Rule: naya UI component banate waqt pehle check karo ye section — reusable version already ho sakta hai.
+
 ---
 
 ## Theme — Liquid Glass + Dark Mode
