@@ -30,6 +30,15 @@ class AddCustomer extends CustomerEvent {
   List<Object?> get props => [name, phone];
 }
 
+class UpdateCustomer extends CustomerEvent {
+  final Customer customer;
+
+  const UpdateCustomer(this.customer);
+
+  @override
+  List<Object?> get props => [customer];
+}
+
 class GetCustomerDetail extends CustomerEvent {
   final String customerId;
 

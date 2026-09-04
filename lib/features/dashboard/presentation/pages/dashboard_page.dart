@@ -4,6 +4,7 @@ import 'package:billing_app/core/theme/app_typography.dart';
 import 'package:billing_app/core/theme/app_dimensions.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
 import 'package:billing_app/core/widgets/dashboard_action_card.dart';
+import 'package:billing_app/core/widgets/count_up_money.dart';
 import 'package:billing_app/core/widgets/inventory_health_card.dart';
 import 'package:billing_app/core/widgets/recent_transactions_card.dart';
 import 'package:billing_app/core/widgets/payment_donut_chart.dart';
@@ -21,7 +22,8 @@ import 'package:billing_app/features/report/presentation/bloc/report_bloc.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_event.dart';
 import 'package:billing_app/features/report/presentation/bloc/report_state.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/widgets/adaptive_app_bar_leading.dart';
+import 'package:billing_app/core/widgets/adaptive_app_bar_leading.dart';
+import 'package:billing_app/core/widgets/aurora_glow.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -83,27 +85,20 @@ class _DashboardViewState extends State<_DashboardView> {
             : AppColors.lightBg,
         body: Stack(
           children: [
-            // ── Lime aurora glows (dark mode only) — like Spendly green aura ──
+            // ── Lime aurora glow (dark mode only) — slow breathing drift ──
             if (Theme.of(context).brightness == Brightness.dark) ...[
-              // Top-center main glow — bright lime halo at the top
+              // Main halo — bright lime breathing glow at the top
               Positioned(
-                top: -120,
+                top: -180,
                 left: -60,
                 right: -60,
                 height: 520,
                 child: IgnorePointer(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: const Alignment(0, -0.35),
-                        radius: 1.05,
-                        colors: [
-                          AppColors.accent.withValues(alpha: 0.38),
-                          AppColors.accent.withValues(alpha: 0.14),
-                          Colors.transparent,
-                        ],
-                        stops: const [0.0, 0.45, 1.0],
-                      ),
+                  child: Center(
+                    child: AuroraGlow(
+                      color: AppColors.accent,
+                      size: 560,
+                      period: const Duration(seconds: 10),
                     ),
                   ),
                 ),
@@ -592,13 +587,18 @@ class _HeroSalesCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      totalText,
-                      style: AppMoneyText.sized(
-                        34,
-                        FontWeight.w700,
-                        AppColors.textPrimary(b),
-                      ),
+                    // Count-up: ₹ number 0 → value slide-in — Monex-style
+                    // "money counts" feel. Crossfades on value change.
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      child: loading
+                          ? Text('…', key: const ValueKey('loading'), style: AppMoneyText.sized(34, FontWeight.w700, AppColors.textPrimary(b)))
+                          : CountUpMoney(
+                              key: ValueKey(sales?.totalSales ?? 0),
+                              value: sales?.totalSales ?? 0,
+                              duration: const Duration(milliseconds: 600),
+                              style: AppMoneyText.sized(34, FontWeight.w700, AppColors.textPrimary(b)),
+                            ),
                     ),
                     if (hasTrend) ...[
                       const SizedBox(height: 16),

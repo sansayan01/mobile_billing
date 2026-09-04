@@ -69,18 +69,42 @@ class _ReportsHomePageState extends State<ReportsHomePage> {
                 child: CustomScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   slivers: [
-                    // ── AppBar ──
-                    const SliverAppBar(
+                    // ── AppBar — large title collapses on scroll ──
+                    SliverAppBar(
                       floating: true,
                       snap: true,
                       backgroundColor: Colors.transparent,
                       elevation: 0,
-                      leading: AdaptiveAppBarLeading(),
-                      title: Text('Reports & History',
+                      leading: const AdaptiveAppBarLeading(),
+                      centerTitle: false,
+                      expandedHeight: 96,
+                      // Scrolled-down compact title
+                      title: const Text('Reports & History',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18)),
-                      centerTitle: true,
+                              fontWeight: FontWeight.bold, fontSize: 18)),
+                      // Expanded large title (iOS-style)
+                      flexibleSpace: FlexibleSpaceBar(
+                        collapseMode: CollapseMode.parallax,
+                        titlePadding:
+                            const EdgeInsets.only(left: 18, bottom: 14),
+                        title: Builder(builder: (context) {
+                          final scrolled =
+                              context.dependOnInheritedWidgetOfExactType<
+                                      FlexibleSpaceBarSettings>()!
+                                  .currentExtent <
+                              60;
+                          // Hide large title once compact title is showing —
+                          // no double-title overlap.
+                          return scrolled
+                              ? const SizedBox.shrink()
+                              : const Text('Reports & History',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 24,
+                                    letterSpacing: -0.5,
+                                  ));
+                        }),
+                      ),
                     ),
 
                     // ── Hero Stat: Month Revenue ──

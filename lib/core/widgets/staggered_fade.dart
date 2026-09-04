@@ -29,12 +29,12 @@ class _StaggeredFadeState extends State<StaggeredFade>
   );
   late final Animation<double> _opacity = CurvedAnimation(
     parent: _ctrl,
-    curve: AppDurations.ease,
+    curve: AppDurations.strongEase,
   );
   late final Animation<Offset> _offset = Tween<Offset>(
     begin: const Offset(0, 0.04),
     end: Offset.zero,
-  ).animate(CurvedAnimation(parent: _ctrl, curve: AppDurations.ease));
+  ).animate(CurvedAnimation(parent: _ctrl, curve: AppDurations.strongEase));
 
   @override
   void initState() {
@@ -53,6 +53,10 @@ class _StaggeredFadeState extends State<StaggeredFade>
 
   @override
   Widget build(BuildContext context) {
+    // Respect Reduce Motion — skill Motion law: spatial motion collapses to fade.
+    if (MediaQuery.of(context).disableAnimations) {
+      return widget.child;
+    }
     return FadeTransition(
       opacity: _opacity,
       child: SlideTransition(position: _offset, child: widget.child),

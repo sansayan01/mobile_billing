@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../../../core/widgets/adaptive_app_bar_leading.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+import '../../../../core/widgets/success_burst.dart';
 
 import '../../../shop/presentation/bloc/shop_bloc.dart';
 import '../../../product/domain/entities/product.dart';
@@ -81,6 +84,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
               if (state.submitSuccess) {
                 AppFeedback.success(context, 'Bill saved');
                 context.read<BillingBloc>().add(ClearCartEvent());
+
+                // Premium moment: lime checkmark burst before receipt shows.
+                unawaited(SuccessBurst.show(context, message: 'Bill Saved!'));
 
                 // Navigate to receipt preview
                 final billId = state.lastBillId;

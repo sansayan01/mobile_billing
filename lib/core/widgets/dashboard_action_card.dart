@@ -29,7 +29,7 @@ class DashboardActionCard extends StatelessWidget {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: AppDurations.normal,
-      curve: AppDurations.ease,
+      curve: AppDurations.strongEase,
       builder: (context, value, child) {
         return Opacity(
           opacity: value,
@@ -46,19 +46,19 @@ class DashboardActionCard extends StatelessWidget {
             HapticFeedback.lightImpact();
             onTap();
           },
-          borderRadius: BorderRadius.circular(AppRadius.xl),
+          borderRadius: AppRadius.rXl,
           splashColor: color.withValues(alpha: 0.12),
           highlightColor: color.withValues(alpha: 0.05),
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: AppColors.surface(b),
-              borderRadius: BorderRadius.circular(AppRadius.xl),
+              borderRadius: AppRadius.rXl,
               border: Border.all(color: AppColors.border(b), width: 1),
             ),
             child: Row(
               children: [
-                // Colored icon chip
+                // Colored icon chip — squircle (continuous corners)
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -136,7 +136,7 @@ class QuickActionTile extends StatelessWidget {
           staggerDelay.inMilliseconds /
               (AppDurations.normal.inMilliseconds + staggerDelay.inMilliseconds),
           1.0,
-          curve: AppDurations.ease,
+          curve: AppDurations.strongEase,
         ),
         builder: (context, value, child) {
           return Opacity(
@@ -154,16 +154,16 @@ class QuickActionTile extends StatelessWidget {
             HapticFeedback.lightImpact();
             onTap();
           },
-          borderRadius: BorderRadius.circular(18),
-          splashColor: color.withValues(alpha: 0.12),
-          child: Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-            decoration: BoxDecoration(
-              color: AppColors.surface(b),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border(b), width: 1),
-            ),
+           borderRadius: AppRadius.rLg,
+           splashColor: color.withValues(alpha: 0.12),
+           child: Container(
+             padding:
+                 const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+             decoration: BoxDecoration(
+               color: AppColors.surface(b),
+               borderRadius: AppRadius.rLg,
+               border: Border.all(color: AppColors.border(b), width: 1),
+             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

@@ -54,7 +54,16 @@ class MonthlyTrendCard extends StatelessWidget {
             const SizedBox(height: 16),
 
             if (_hasData)
-              AspectRatio(
+              TweenAnimationBuilder<double>(
+                // Chart "paints itself in" on entry — line draws left→right.
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeOutCubic,
+                builder: (context, t, child) => Opacity(
+                  opacity: t.clamp(0.0, 1.0),
+                  child: child,
+                ),
+                child: AspectRatio(
                 aspectRatio: 1.8,
                 child: LineChart(
                   LineChartData(
@@ -155,11 +164,13 @@ class MonthlyTrendCard extends StatelessWidget {
                         color: AppColors.accentText(theme.brightness),
                         barWidth: 2.5,
                         isStrokeCapRound: true,
+                        isStepLineChart: false,
                         dotData: FlDotData(
                           show: true,
                           getDotPainter: (spot, percent, barData, index) {
+                            final isLast = index == values.length - 1;
                             return FlDotCirclePainter(
-                              radius: 3.5,
+                              radius: isLast ? 4.5 : 3,
                               color: AppColors.accentText(theme.brightness),
                               strokeWidth: 1.5,
                               strokeColor: isDark ? AppTheme.darkSurface : Colors.white,
@@ -172,14 +183,15 @@ class MonthlyTrendCard extends StatelessWidget {
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              AppColors.accentSubtle,
-                              AppColors.accentSubtle.withValues(alpha: 0.0),
+                              AppColors.accentText(theme.brightness).withValues(alpha: 0.28),
+                              AppColors.accentText(theme.brightness).withValues(alpha: 0.0),
                             ],
                           ),
                         ),
                       ),
                     ],
                   ),
+                ),
                 ),
               )
             else

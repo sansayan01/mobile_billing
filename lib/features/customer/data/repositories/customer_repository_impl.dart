@@ -157,4 +157,28 @@ class CustomerRepositoryImpl implements CustomerRepository {
       return Left(ServerFailure('Failed to fetch customer detail: $e'));
     }
   }
+
+  @override
+  Future<Either<Failure, Customer>> updateCustomer(Customer customer) async {
+    try {
+      final normalized = normalizePhone(customer.phone);
+      final response = await _supabase
+          .from('customers')
+          .update({
+            'name': customer.name,
+            'phone': normalized,
+          })
+          .eq('id', customer.id)
+          .select()
+          .single();
+      return Right(CustomerModel.fromJson(response).toEntity());
+    } on PostgrestException catch (e) {
+      if (e.code == '23505') {
+        return const Left(ServerFailure('Customer with this phone already exists'));
+      }
+      return Left(ServerFailure('Failed to update customer: $e'));
+    } catch (e) {
+      return Left(ServerFailure('Failed to update customer: $e'));
+    }
+  }
 }

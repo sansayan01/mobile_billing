@@ -19,6 +19,7 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
     on<LoadCustomers>(_onLoadCustomers);
     on<SearchCustomers>(_onSearchCustomers);
     on<AddCustomer>(_onAddCustomer);
+    on<UpdateCustomer>(_onUpdateCustomer);
     on<GetCustomerDetail>(_onGetCustomerDetail);
     on<ClearCustomerMessage>(_onClearCustomerMessage);
   }
@@ -134,6 +135,42 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
       emit(state.copyWith(
         isLoading: false,
         error: 'Failed to add customer: $e',
+      ));
+    }
+  }
+
+  Future<void> _onUpdateCustomer(
+    UpdateCustomer event,
+    Emitter<CustomerState> emit,
+  ) async {
+    emit(state.copyWith(
+      isLoading: true,
+      error: null,
+      clearError: true,
+      successMessage: null,
+      clearSuccessMessage: true,
+    ));
+
+    try {
+      final result = await repository.updateCustomer(event.customer);
+      result.fold(
+        (failure) => emit(state.copyWith(
+              isLoading: false,
+              error: failure.message,
+            )),
+        (customer) {
+          emit(state.copyWith(
+            isLoading: false,
+            successMessage: 'Customer updated successfully',
+          ));
+          // Reload so the updated fields show up immediately.
+          add(const LoadCustomers());
+        },
+      );
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        error: 'Failed to update customer: $e',
       ));
     }
   }

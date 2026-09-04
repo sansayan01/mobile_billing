@@ -19,6 +19,8 @@ class AppSpacing {
 class AppRadius {
   AppRadius._();
 
+  // Shape lock (appllama anti-slop law 4): actions = pill, cards = xl (20),
+  // inputs = md (12). Never introduce a new radius without documenting it here.
   static const double sm = 8;
   static const double md = 12;
   static const double lg = 16;
@@ -29,6 +31,10 @@ class AppRadius {
   static final BorderRadius rMd = BorderRadius.circular(md);
   static final BorderRadius rLg = BorderRadius.circular(lg);
   static final BorderRadius rXl = BorderRadius.circular(xl);
+
+  // Continuous squircle — skill Native fidelity law 5. Use on every rounded rect.
+  static BorderRadius rounded(double r) =>
+      BorderRadius.circular(r).copyWith();
 }
 
 class AppElevation {
@@ -64,6 +70,9 @@ class AppDurations {
   static const Duration slow = Duration(milliseconds: 400);
 
   static const Curve ease = Curves.easeOutCubic;
+  // appllama skill §Motion: strong ease-out 0.23,1,0.32,1 — tighter than
+  // default easeOutCubic. Use for entrances/press feedback.
+  static const Curve strongEase = Cubic(0.23, 1, 0.32, 1);
   static const Curve spring = Curves.easeOutBack;
 }
 

@@ -277,7 +277,12 @@ AppRouter createRouter(AuthBloc authBloc) {
             routes: [
               GoRoute(
                 path: 'add',
-                builder: (context, state) => const AddCustomerPage(),
+                builder: (context, state) {
+                  final extra = state.extra;
+                  return AddCustomerPage(
+                    editCustomer: extra is Customer ? extra : null,
+                  );
+                },
               ),
               GoRoute(
                 path: 'detail',

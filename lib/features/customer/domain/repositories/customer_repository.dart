@@ -26,4 +26,8 @@ abstract class CustomerRepository {
 
   /// Fetch a single customer's detail by id.
   Future<Either<Failure, Customer>> getCustomerDetail(String customerId);
+
+  /// Update an existing customer's name/phone. Phone uniqueness per shop is
+  /// enforced server-side (unique index); surfaced as a Failure here.
+  Future<Either<Failure, Customer>> updateCustomer(Customer customer);
 }

@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:billing_app/core/service_locator.dart';
 import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/widgets/app_feedback.dart';
@@ -193,7 +196,47 @@ class _CustomerListPageState extends State<CustomerListPage> {
     final initial = customer.name.isNotEmpty
         ? customer.name.trim()[0].toUpperCase()
         : '?';
-    return Container(
+    // Swipe left → Call (instant dial, shopkeeper's #1 action).
+    // Swipe right → Edit. iOS-style actions replacing buried buttons.
+    return Slidable(
+      key: ValueKey('customer-${customer.id}'),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.28,
+        children: [
+          SlidableAction(
+            onPressed: (_) async {
+              HapticFeedback.lightImpact();
+              final uri = Uri(scheme: 'tel', path: customer.phone);
+              try {
+                final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+                if (!ok && context.mounted) {
+                  AppFeedback.error(context, 'Could not open dialer');
+                }
+              } catch (_) {
+                if (context.mounted) AppFeedback.error(context, 'Could not open dialer');
+              }
+            },
+            backgroundColor: AppColors.infoText(b),
+            foregroundColor: Colors.white,
+            icon: Icons.call_rounded,
+            label: 'Call',
+            borderRadius: BorderRadius.circular(16),
+          ),
+          SlidableAction(
+            onPressed: (_) {
+              HapticFeedback.lightImpact();
+              context.push('/customers/add', extra: customer);
+            },
+            backgroundColor: AppColors.accent,
+            foregroundColor: AppColors.onAccent,
+            icon: Icons.edit_rounded,
+            label: 'Edit',
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ],
+      ),
+      child: Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: AppColors.surface(b),
@@ -240,6 +283,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
         ),
         trailing: Icon(Icons.chevron_right,
             size: 20, color: AppColors.textTertiary(b)),
+      ),
       ),
     );
   }

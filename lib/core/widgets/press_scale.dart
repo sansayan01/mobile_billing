@@ -18,9 +18,9 @@ class PressScale extends StatefulWidget {
   const PressScale({
     super.key,
     required this.child,
-    this.pressedScale = 0.96,
+    this.pressedScale = 0.97,
     this.duration = AppDurations.fast,
-    this.curve = AppDurations.ease,
+    this.curve = AppDurations.strongEase,
   });
 
   @override

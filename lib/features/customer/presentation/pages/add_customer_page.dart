@@ -4,10 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:billing_app/core/service_locator.dart';
 import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/utils/phone_utils.dart';
+import 'package:billing_app/features/customer/domain/entities/customer.dart';
 import 'package:billing_app/features/customer/presentation/bloc/customer_bloc.dart';
 
 class AddCustomerPage extends StatefulWidget {
-  const AddCustomerPage({super.key});
+  /// When [editCustomer] is provided the page runs in EDIT mode —
+  /// fields pre-fill and save dispatches UpdateCustomer instead.
+  final Customer? editCustomer;
+
+  const AddCustomerPage({super.key, this.editCustomer});
 
   @override
   State<AddCustomerPage> createState() => _AddCustomerPageState();
@@ -16,6 +21,18 @@ class AddCustomerPage extends StatefulWidget {
 class _AddCustomerPageState extends State<AddCustomerPage> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+
+  bool get _isEdit => widget.editCustomer != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final c = widget.editCustomer;
+    if (c != null) {
+      _nameController.text = c.name;
+      _phoneController.text = c.phone;
+    }
+  }
 
   @override
   void dispose() {
@@ -50,7 +67,13 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
       return;
     }
 
-    sl<CustomerBloc>().add(AddCustomer(name: name, phone: phone));
+    if (_isEdit) {
+      sl<CustomerBloc>().add(UpdateCustomer(
+        widget.editCustomer!.copyWith(name: name, phone: phone),
+      ));
+    } else {
+      sl<CustomerBloc>().add(AddCustomer(name: name, phone: phone));
+    }
   }
 
   @override
@@ -84,7 +107,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Add Customer',
+              title: Text(_isEdit ? 'Edit Customer' : 'Add Customer',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               centerTitle: true,
               backgroundColor: Colors.transparent,
@@ -142,7 +165,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                               ),
                             )
                           : const Icon(Icons.save, size: 18),
-                      label: Text(state.isLoading ? 'Saving...' : 'Save'),
+                      label: Text(state.isLoading ? 'Saving...' : (_isEdit ? 'Update' : 'Save')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.accent,
                         foregroundColor: AppColors.onAccent,
