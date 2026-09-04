@@ -1,5 +1,17 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-09-05 — PREMIUM UX POLISH PACK (6 features) ✅⚡
+User: "frontend modern banao, UX smooth + premium hona chahiye" — full autonomy diya. 6 features implemented, ek commit `722e4c0`:
+1. **CountUpMoney widget** (`lib/core/widgets/count_up_money.dart` — NEW): TweenAnimationBuilder 0→value, NumberFormat en_IN, ValueKey re-animate. Dashboard hero card mein lagaya (loading '…' vs count-up AnimatedSwitcher se). CountUpText bhi included (int counts).
+2. **AuroraGlow widget** (`lib/core/widgets/aurora_glow.dart` — NEW): slow breathing drift — sin/cos out-of-phase waves (dx±28, dy±18, alpha breathe 0.85-1.0), 10s loop, RepaintBoundary + IgnorePointer. Dashboard ke 2 static lime glows mein se main glow replace kiya (secondary wash static rakha).
+3. **SuccessBurst widget** (`lib/core/widgets/success_burst.dart` — NEW): lime circle scale-in (easeOutBack) + checkmark stroke-draw CustomPainter (computeMetrics extractPath) + radial burst ring + message card slide-up. Timeline intervals 0-0.35/0.25-0.55/0.35-0.7/0.6-1.0 on 900ms controller. `SuccessBurst.show(context, message:)` static API, auto-dismiss 1400ms + tap-to-dismiss. Checkout ke submitSuccess listener mein `unawaited()` se wire kiya (bill save → burst → receipt preview).
+4. **Customer swipe actions** (flutter_slidable + url_launcher packages ADD kiye): left-swipe = Call (tel: launchUrl external), right-swipe = Edit. **Edit flow END-TO-END new**: repo `updateCustomer` (abstract+impl, 23505 unique-phone handling) → bloc `UpdateCustomer` event+handler → AddCustomerPage ab edit mode (editCustomer param, prefill, 'Update' button, title switch) → route `/customers/add` extra-as-Customer parse. Dart-only, NO migration (customers table already had name/phone).
+5. **Collapsing large-title AppBar** (reports_home_page): SliverAppBar expandedHeight 96, FlexibleSpaceBar large title (24/w800) jo FlexibleSpaceBarSettings.currentExtent < 60 pe hide ho jata hai (no double-title), compact 18 title remains.
+6. **Chart polish** (monthly_trend_card): entry opacity fade 800ms, below-bar gradient ab accentText-based 0.28→0 (pehle fixed accentSubtle — light mode mein green-ish lagta tha), last dot bada (4.5 vs 3) "today" highlight.
+- `dart analyze lib` → **No issues**. Products list pe slidable NAHI lagaya — wahan already Dismissible swipe (Stock+/Add to Cart) tha, double-swipe conflict hota.
+- LESSON: edit tool CRLF/whitespace mismatch pe fail hota hai (app_routes.dart) — script-based python patch fallback use kiya. Slidable ke baad bracket mismatch analyze se pakda, turant fix.
+
+
 ## Current Session: 2026-09-05 — DASHBOARD AUDIT + 3 FIXES ✅
 User: "dashboard page check kr". Audit: dart analyze clean, architecture sahi (lazy SliverList + RepaintBoundary, buildWhen guards, sparkline custom painter). 3 fixes kiye in `lib/features/dashboard/presentation/pages/dashboard_page.dart`:
 1. **Type safety**: `_weekValues(List<dynamic>)` → `List<BillSummary>` (report_entities.dart import add kiya).
