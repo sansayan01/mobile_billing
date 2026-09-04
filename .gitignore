@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+"graphify-out/gen_chunk.py"  
+"graphify-out/.graphify_all_files.json"  
+"graphify-out/.graphify_changed.txt"  
