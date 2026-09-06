@@ -5,7 +5,10 @@ import 'package:billing_app/core/theme/app_dimensions.dart';
 /// delay so a column of sections cascades in (skill rule §7: stagger 30–50ms
 /// per item, never all-at-once). Uses transform/opacity only (no layout
 /// reflow), interruptible because it snaps to final state on tap.
-class StaggeredFade extends StatefulWidget {
+///
+/// Controller-free: a single [TweenAnimationBuilder<double>] drives both
+/// the fade and the slide via a computed [Interval] (staggerFraction → 1.0).
+class StaggeredFade extends StatelessWidget {
   final int index;
   final Widget child;
   final Duration? delay;
@@ -18,48 +21,35 @@ class StaggeredFade extends StatefulWidget {
   });
 
   @override
-  State<StaggeredFade> createState() => _StaggeredFadeState();
-}
-
-class _StaggeredFadeState extends State<StaggeredFade>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl = AnimationController(
-    vsync: this,
-    duration: AppDurations.normal,
-  );
-  late final Animation<double> _opacity = CurvedAnimation(
-    parent: _ctrl,
-    curve: AppDurations.strongEase,
-  );
-  late final Animation<Offset> _offset = Tween<Offset>(
-    begin: const Offset(0, 0.04),
-    end: Offset.zero,
-  ).animate(CurvedAnimation(parent: _ctrl, curve: AppDurations.strongEase));
-
-  @override
-  void initState() {
-    super.initState();
-    final stagger = Duration(milliseconds: widget.index * 45);
-    Future.delayed(stagger, () {
-      if (mounted) _ctrl.forward();
-    });
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     // Respect Reduce Motion — skill Motion law: spatial motion collapses to fade.
     if (MediaQuery.of(context).disableAnimations) {
-      return widget.child;
+      return child;
     }
-    return FadeTransition(
-      opacity: _opacity,
-      child: SlideTransition(position: _offset, child: widget.child),
+    final stagger = delay ?? Duration(milliseconds: index * 45);
+    final total = AppDurations.normal + stagger;
+    final staggerFraction = total.inMilliseconds == 0
+        ? 0.0
+        : stagger.inMilliseconds / total.inMilliseconds;
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: total,
+      curve: Interval(
+        staggerFraction,
+        1.0,
+        curve: AppDurations.strongEase,
+      ),
+      builder: (context, value, builtChild) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, 8 * (1 - value)),
+            child: builtChild,
+          ),
+        );
+      },
+      child: child,
     );
   }
 }

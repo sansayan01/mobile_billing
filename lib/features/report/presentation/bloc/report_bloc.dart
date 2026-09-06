@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 
 import 'package:billing_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billing_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:billing_app/features/report/domain/entities/report_entities.dart';
 import 'package:billing_app/features/report/domain/usecases/report_usecases.dart';
 import 'report_event.dart';
 import 'report_state.dart';
@@ -29,6 +30,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     required this.authBloc,
   }) : super(const ReportState()) {
     on<LoadBillHistory>(_onLoadBillHistory);
+    on<LoadFullBillHistory>(_onLoadFullBillHistory);
     on<LoadBillDetail>(_onLoadBillDetail);
     on<LoadDailySales>(_onLoadDailySales);
     on<LoadSalesRange>(_onLoadSalesRange);
@@ -47,7 +49,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
   Future<void> _onLoadBillHistory(
       LoadBillHistory event, Emitter<ReportState> emit) async {
     // Preserve existing data while loading (don't clear billHistory)
-    emit(state.copyWith(status: ReportStatus.loading));
+    emit(state.copyWith(status: ReportStatus.loading, clearError: true));
 
     final result = await getBillHistoryUseCase(
       BillHistoryParams(
@@ -84,9 +86,58 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     );
   }
 
+  Future<void> _onLoadFullBillHistory(
+      LoadFullBillHistory event, Emitter<ReportState> emit) async {
+    // Preserve existing data while loading (don't clear billHistory)
+    emit(state.copyWith(status: ReportStatus.loading, clearError: true));
+
+    final List<BillSummary> all = [];
+    var reachedEnd = false;
+    var failed = false;
+    String? errorMessage;
+
+    for (int page = 1; page <= event.maxPages && !reachedEnd; page++) {
+      final result = await getBillHistoryUseCase(
+        BillHistoryParams(
+          from: event.from ?? DateTime(2020, 1, 1),
+          to: event.to ?? DateTime.now(),
+          page: page,
+          limit: event.pageSize,
+          shopId: _currentShopId,
+        ),
+      );
+      result.fold(
+        (failure) {
+          failed = true;
+          errorMessage = failure.message;
+        },
+        (bills) {
+          all.addAll(bills);
+          // Fewer than a full page → we've reached the end
+          if (bills.length < event.pageSize) reachedEnd = true;
+        },
+      );
+      if (failed) break;
+    }
+
+    // Network failure mid-paging → keep what we fetched so far; only a
+    // total failure (zero pages) surfaces as an error.
+    if (failed && all.isEmpty) {
+      emit(state.copyWith(
+          status: ReportStatus.error, error: errorMessage));
+      return;
+    }
+
+    emit(state.copyWith(
+      status: ReportStatus.loaded,
+      billHistory: all,
+      hasMorePages: false,
+    ));
+  }
+
   Future<void> _onLoadBillDetail(
       LoadBillDetail event, Emitter<ReportState> emit) async {
-    emit(state.copyWith(status: ReportStatus.loading, error: null));
+    emit(state.copyWith(status: ReportStatus.loading, clearError: true));
 
     final result = await getBillDetailUseCase(
         BillDetailParams(billId: event.billId, shopId: _currentShopId));
@@ -102,7 +153,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
   Future<void> _onLoadDailySales(
       LoadDailySales event, Emitter<ReportState> emit) async {
     // Preserve existing data while loading (don't clear billHistory)
-    emit(state.copyWith(status: ReportStatus.loading));
+    emit(state.copyWith(status: ReportStatus.loading, clearError: true));
 
     final result = await getDailySalesUseCase(
         DailySalesParams(date: event.date, shopId: _currentShopId));
@@ -117,7 +168,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
   Future<void> _onLoadSalesRange(
       LoadSalesRange event, Emitter<ReportState> emit) async {
-    emit(state.copyWith(status: ReportStatus.loading));
+    emit(state.copyWith(status: ReportStatus.loading, clearError: true));
 
     final result = await getSalesRangeUseCase(
       SalesRangeParams(from: event.from, to: event.to, shopId: _currentShopId),
@@ -133,7 +184,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
   Future<void> _onLoadLowStockProducts(
       LoadLowStockProducts event, Emitter<ReportState> emit) async {
-    emit(state.copyWith(status: ReportStatus.loading));
+    emit(state.copyWith(status: ReportStatus.loading, clearError: true));
 
     final result = await getLowStockProductsUseCase(
         LowStockParams(threshold: event.threshold, shopId: _currentShopId));
@@ -148,7 +199,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
   Future<void> _onLoadStockMovements(
       LoadStockMovements event, Emitter<ReportState> emit) async {
-    emit(state.copyWith(status: ReportStatus.loading));
+    emit(state.copyWith(status: ReportStatus.loading, clearError: true));
 
     final result = await getStockMovementsUseCase(
       StockMovementParams(
@@ -174,7 +225,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
   Future<void> _onUpdateBill(
       UpdateBill event, Emitter<ReportState> emit) async {
-    emit(state.copyWith(status: ReportStatus.loading, error: null, message: null, clearMessage: true));
+    emit(state.copyWith(status: ReportStatus.loading, clearError: true, message: null, clearMessage: true));
 
     final result = await updateBillUseCase(
       UpdateBillParams(
@@ -200,7 +251,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
   Future<void> _onDeleteBill(
       DeleteBill event, Emitter<ReportState> emit) async {
-    emit(state.copyWith(status: ReportStatus.loading, error: null, message: null, clearMessage: true));
+    emit(state.copyWith(status: ReportStatus.loading, clearError: true, message: null, clearMessage: true));
 
     final result = await deleteBillUseCase(
       DeleteBillParams(billId: event.billId, shopId: _currentShopId),

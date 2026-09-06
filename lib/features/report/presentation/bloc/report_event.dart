@@ -29,6 +29,27 @@ class LoadBillHistory extends ReportEvent {
   List<Object?> get props => [from, to, page, searchQuery, paymentMethod, limit];
 }
 
+/// Loads the complete bill history for a date range by paging through the
+/// remote results until exhausted — analytics that must cover every bill
+/// (donut, top products, staff leaderboard) use this instead of the
+/// page-capped [LoadBillHistory].
+class LoadFullBillHistory extends ReportEvent {
+  final DateTime? from;
+  final DateTime? to;
+  final int pageSize;
+  final int maxPages;
+
+  const LoadFullBillHistory({
+    this.from,
+    this.to,
+    this.pageSize = 200,
+    this.maxPages = 10,
+  });
+
+  @override
+  List<Object?> get props => [from, to, pageSize, maxPages];
+}
+
 class LoadBillDetail extends ReportEvent {
   final String billId;
 

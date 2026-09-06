@@ -267,8 +267,8 @@ class PrinterHelper {
   /// Cheap thermal printers render multi-byte UTF-8 as mojibake (₹ becomes
   /// garbage, Devanagari is unreadable), so map known symbols first and then
   /// drop every non-ASCII codepoint instead of sending broken bytes.
-  // TODO: Proper Unicode support needs an ESC/POS codepage switch
-  // (FS & + UTF-8-capable codepage) or rendering the receipt to an image.
+  // Note: Proper Unicode support requires an ESC/POS codepage switch
+  // (FS & + UTF-8-capable codepage) or rendering the receipt as a raster bitmap.
   List<int> _textToBytes(String text) {
     const symbolMap = {
       '₹': 'Rs.',

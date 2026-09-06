@@ -31,8 +31,18 @@ class _AuroraGlowState extends State<AuroraGlow>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.period)
-      ..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.period);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final reduce = MediaQuery.of(context).disableAnimations;
+    if (reduce) {
+      if (_controller.isAnimating) _controller.stop();
+    } else {
+      if (!_controller.isAnimating) _controller.repeat();
+    }
   }
 
   @override
@@ -43,6 +53,28 @@ class _AuroraGlowState extends State<AuroraGlow>
 
   @override
   Widget build(BuildContext context) {
+    final reduce = MediaQuery.of(context).disableAnimations;
+    if (reduce) {
+      const breathe = 1.0;
+      return RepaintBoundary(
+        child: Container(
+          width: widget.size,
+          height: widget.size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                widget.color.withValues(alpha: 0.34 * breathe),
+                widget.color.withValues(alpha: 0.12 * breathe),
+                widget.color.withValues(alpha: 0.0),
+              ],
+              stops: const [0.0, 0.45, 1.0],
+            ),
+          ),
+        ),
+      );
+    }
+
     return RepaintBoundary(
       child: AnimatedBuilder(
         animation: _controller,

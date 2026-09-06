@@ -123,23 +123,24 @@ Shop isolation is enforced at **3 layers**:
 - Bill submission scopes inserts + stock updates + inventory log by shop_id
 - Realtime product events filtered by shop_id before reaching ProductBloc
 
-### 11. Customer CMS (Minimal) — PLANNED
-- [ ] **Scope (v1):** only `name` + `phone` (per user — no email/address/notes)
-- [ ] Supabase `customers` table (id, shop_id, name, phone unique per shop, created_at) + RLS
-- [ ] Customer list — search by name OR phone
-- [ ] Add customer — name + phone, phone validated + unique per shop
-- [ ] Customer detail — linked purchase/warranty/due history
-- [ ] Light link: billing checkout customer select-by-phone
-- [ ] Full plan: `customer_cms_plan.md`
+### 11. Customer CMS (Minimal) ✅ (2026-09-05)
+- [x] **Scope (v1):** only `name` + `phone` (per user — no email/address/notes)
+- [x] Supabase `customers` table (id, shop_id, name, phone unique per shop, created_at) + RLS
+- [x] Customer list — search by name OR phone
+- [x] Add/Edit customer — name + phone, phone validated + unique per shop (swipe Call/Edit actions)
+- [x] Customer detail — linked purchase/warranty/due history
+- [x] Light link: billing checkout customer select-by-phone
+- [ ] Full plan: `customer_cms_plan.md` items — full plan structure me, v1 complete
 
-### 12. Premium UX Polish ✅ (2026-09-05)
-- [x] **Count-up money** — dashboard hero card ₹ 0→value animation (`CountUpMoney` widget)
+### 12. Premium UX Polish ✅ (2026-09-06)
+- [x] **Count-up money & counts** — dashboard hero card ₹ 0→value (`CountUpMoney`), inventory health 0→count (`CountUpText`)
 - [x] **Aurora glow** — breathing drift lime glow, dashboard dark mode (`AuroraGlow`)
 - [x] **Success burst** — bill-save pe lime checkmark overlay (`SuccessBurst.show()`)
 - [x] **Customer swipe actions** — left-swipe Call (tel:), right-swipe Edit (`flutter_slidable` + `url_launcher`)
 - [x] **Customer edit flow** — UpdateCustomer bloc event + edit-mode AddCustomerPage (Dart-only, no migration)
 - [x] **Collapsing large-title AppBar** — Reports page (iOS-style, no double-title)
-- [x] **Chart polish** — trend entry fade, accent gradient fill, last-dot highlight
+- [x] **Chart polish & skeleton morphing** — trend entry fade, fl_chart animated data swaps, ChartCardSkeleton for seamless loading transitions
+- [x] **Tactile Dashboard Interactions** — PressScale feedback on recent transactions (tappable rows → bill detail), inventory health "View Details", "See All", animated inventory health ratio draw-in
 - Design tokens/components: `design.md` → Premium Motion Components (v3.1)
 
 ---

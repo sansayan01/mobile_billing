@@ -77,6 +77,12 @@
   - [x] Staff Performance Card — owner-only leaderboard with rank badges + progress bars
   - [x] Quick Actions repositioned: moved up right after Today's Sales section
   - [x] `LoadSalesRange` event triggered on dashboard init + pull-to-refresh for 30-day data
+  - [x] **Motion & Haptics Polish Pack**:
+    - [x] Interactive scrubbable sparkline with selection haptic clicks and floating magnetic tooltip
+    - [x] SheenEffect (specular light sweep) on primary New Bill button
+    - [x] Realtime LivePulseBadge (expanding sonar ripple) + time-of-day greeting icons in header
+    - [x] Tactile haptic + elastic spring rebound on PressScale
+    - [x] Breathing ambient warning glow on low-stock banner + elastic spring pop on Due badge
 
 ---
 
@@ -129,27 +135,28 @@
 - [x] Auto stock decrease on damage + audit log entry
 - [x] `flutter analyze`: 0 errors, 0 warnings
 
-## Phase 8 — Customer CMS (Minimal) 📋 (PLANNED)
-- [ ] **Goal:** unify customer identity (name+phone only) across bills/warranties/dues.
-- [ ] Supabase `customers` table migration (id, shop_id, name, phone unique per shop, created_at) + RLS
-- [ ] Domain: `Customer` entity + repository interface
-- [ ] Data: `CustomerModel` + `CustomerRepositoryImpl` (Supabase, shop_id scoped)
-- [ ] Bloc: LoadCustomers, SearchCustomers, AddCustomer
-- [ ] UI: Customer List (search by name/phone), Add Customer (validate+unique phone), Customer Detail (history)
-- [ ] DI + go_router `/customers` route
-- [ ] Light link: billing checkout customer select-by-phone
-- [ ] Full plan: `customer_cms_plan.md`
+## Phase 8 — Customer CMS (Minimal) ✅ (2026-09-05)
+- [x] **Goal:** unify customer identity (name+phone only) across bills/warranties/dues.
+- [x] Supabase `customers` table migration (id, shop_id, name, phone unique per shop, created_at) + RLS
+- [x] Domain: `Customer` entity + repository interface
+- [x] Data: `CustomerModel` + `CustomerIconRepositoryImpl` (Supabase, shop_id scoped)
+- [x] Bloc: LoadCustomers, SearchCustomers, AddCustomer, UpdateCustomer, GetCustomerDetail
+- [x] UI: Customer List (search name/phone), Add Customer (validate+unique phone), Customer Detail (history)
+- [x] DI + go_router `/customers` route
+- [x] Light link: billing checkout customer select-by-phone
+- [x] Full plan: `customer_cms_plan.md`
 - [ ] Device verify: add → list → search → detail
 
-## Phase 8.5 — Premium UX Polish ✅ (2026-09-05)
-- [x] **CountUpMoney** widget — hero/count money 0→value count-up (dashboard hero card wired)
+## Phase 8.5 — Premium UX Polish ✅ (2026-09-06)
+- [x] **CountUpMoney & CountUpText** widgets — hero/count money 0→value count-up (dashboard hero card & inventory health wired)
 - [x] **AuroraGlow** widget — breathing drift lime glow, dashboard dark mode
 - [x] **SuccessBurst** overlay — bill-save pe lime checkmark animation (checkout wired)
 - [x] **Customer swipe actions** — Call (url_launcher tel:) + Edit (flutter_slidable)
 - [x] **Customer edit flow end-to-end** — repo.updateCustomer → UpdateCustomer bloc event → AddCustomerPage edit mode → route extra parse (Dart-only, no migration)
 - [x] **Collapsing large-title AppBar** — reports home (expandedHeight 96, no double-title)
-- [x] **Chart polish** — trend entry fade, accent gradient fill, last-dot highlight
-- [x] `dart analyze lib` → 0 issues · commits `722e4c0`, `944f311`
+- [x] **Chart polish & skeleton morphing** — trend entry fade, fl_chart animated data swaps, ChartCardSkeleton for seamless loading transitions
+- [x] **Dashboard Interaction Polish** — Recent transaction row taps → bill detail, PressScale feedback on CTAs, inventory health dynamic ratio draw-in, smooth collapsible error/stock banners
+- [x] `dart analyze lib` → 0 issues
 - [ ] Device verify: pull-to-refresh, count-up, burst on bill save, customer swipe call/edit
 - Components documented in `design.md` → Premium Motion Components (v3.1)
 

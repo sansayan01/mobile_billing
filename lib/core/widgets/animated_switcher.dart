@@ -21,6 +21,7 @@ class AnimatedSwap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final reduce = MediaQuery.of(context).disableAnimations;
+    if (reduce) return child;
     return AnimatedSwitcher(
       duration: duration,
       switchInCurve: AppDurations.ease,
@@ -35,7 +36,7 @@ class AnimatedSwap extends StatelessWidget {
           child: child,
         ),
       ),
-      child: reduce ? child : child,
+      child: child,
     );
   }
 }

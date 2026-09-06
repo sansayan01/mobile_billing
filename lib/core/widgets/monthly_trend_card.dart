@@ -1,10 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:billing_app/core/theme/app_colors.dart';
 import 'package:billing_app/core/theme/app_theme.dart';
 import 'package:billing_app/core/theme/text_styles.dart';
+import 'package:billing_app/core/theme/app_dimensions.dart';
 
-class MonthlyTrendCard extends StatelessWidget {
+class MonthlyTrendCard extends StatefulWidget {
   final List<double> values;
   final List<String> labels;
   final String currencyPrefix;
@@ -16,15 +18,34 @@ class MonthlyTrendCard extends StatelessWidget {
     this.currencyPrefix = '₹',
   });
 
-  bool get _hasData => values.isNotEmpty && values.any((v) => v > 0);
+  @override
+  State<MonthlyTrendCard> createState() => _MonthlyTrendCardState();
+}
+
+class _MonthlyTrendCardState extends State<MonthlyTrendCard> {
+  int _touchedIndex = -1;
+
+  bool get _hasData =>
+      widget.values.isNotEmpty && widget.values.any((v) => v > 0);
 
   @override
   Widget build(BuildContext context) {
+    final values = widget.values;
+    final labels = widget.labels;
+    final currencyPrefix = widget.currencyPrefix;
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final onSurface = theme.colorScheme.onSurface;
+    final accent = AppColors.accentText(theme.brightness);
+
     final double total = values.fold(0.0, (sum, v) => sum + v);
     final double average = values.isEmpty ? 0 : total / values.length;
+
+    final hasValidTouch = _touchedIndex >= 0 && _touchedIndex < values.length;
+    final touchedValue = hasValidTouch ? values[_touchedIndex] : null;
+    final touchedLabel =
+        (hasValidTouch && _touchedIndex < labels.length) ? labels[_touchedIndex] : null;
 
     return _buildGlassContainer(
       context: context,
@@ -37,16 +58,60 @@ class MonthlyTrendCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  _chartLabel,
-                  style: AppTextStyles.of(context).trendTitle,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _chartLabel,
+                      style: AppTextStyles.of(context).trendTitle,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      hasValidTouch
+                          ? '$touchedLabel sales'
+                          : 'Daily sales volume',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: hasValidTouch
+                            ? accent
+                            : AppColors.textTertiary(theme.brightness),
+                        fontWeight: hasValidTouch
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  '$currencyPrefix${_totalLabel(total)}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.accentText(theme.brightness),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  child: Container(
+                    key: ValueKey(hasValidTouch ? 'touched-$touchedValue' : 'total-$total'),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: hasValidTouch
+                          ? accent.withValues(alpha: 0.16)
+                          : (isDark
+                              ? Colors.white.withValues(alpha: 0.05)
+                              : Colors.black.withValues(alpha: 0.05)),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: hasValidTouch
+                            ? accent.withValues(alpha: 0.35)
+                            : Colors.transparent,
+                      ),
+                    ),
+                    child: Text(
+                      hasValidTouch
+                          ? '$currencyPrefix${touchedValue!.toStringAsFixed(0)}'
+                          : '$currencyPrefix${_totalLabel(total)}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: hasValidTouch
+                            ? accent
+                            : AppColors.textPrimary(theme.brightness),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -54,42 +119,54 @@ class MonthlyTrendCard extends StatelessWidget {
             const SizedBox(height: 16),
 
             if (_hasData)
-              TweenAnimationBuilder<double>(
-                // Chart "paints itself in" on entry — line draws left→right.
-                tween: Tween(begin: 0.0, end: 1.0),
-                duration: const Duration(milliseconds: 800),
-                curve: Curves.easeOutCubic,
-                builder: (context, t, child) => Opacity(
-                  opacity: t.clamp(0.0, 1.0),
-                  child: child,
-                ),
-                child: AspectRatio(
+              AspectRatio(
                 aspectRatio: 1.8,
                 child: LineChart(
                   LineChartData(
                     lineTouchData: LineTouchData(
                       enabled: true,
+                      touchCallback: (FlTouchEvent event, response) {
+                        if (!event.isInterestedForInteractions ||
+                            response == null ||
+                            response.lineBarSpots == null ||
+                            response.lineBarSpots!.isEmpty) {
+                          return;
+                        }
+                        final newIndex =
+                            response.lineBarSpots!.first.spotIndex;
+                        if (_touchedIndex != newIndex) {
+                          HapticFeedback.selectionClick();
+                          setState(() => _touchedIndex = newIndex);
+                        }
+                      },
                       touchTooltipData: LineTouchTooltipData(
-                        getTooltipColor: (_) =>
-                            AppTheme.primaryColor.withValues(alpha: 0.85),
+                        getTooltipColor: (_) => isDark
+                            ? const Color(0xFF1A2233)
+                            : const Color(0xFF2D3748),
+                        tooltipRoundedRadius: 10,
+                        tooltipPadding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
                         getTooltipItems: (touchedSpots) {
                           return touchedSpots.map((spot) {
                             final idx = spot.x.toInt();
-                            final label = idx < labels.length ? labels[idx] : '';
+                            final label =
+                                idx < labels.length ? labels[idx] : '';
                             final val = spot.y;
                             return LineTooltipItem(
                               '$label\n',
                               const TextStyle(
-                                color: AppColors.onAccent,
+                                color: Colors.white,
                                 fontWeight: FontWeight.w700,
-                                fontSize: 12,
+                                fontSize: 11,
                               ),
                               children: [
                                 TextSpan(
-                                  text: '$currencyPrefix${val.toStringAsFixed(0)}',
+                                  text:
+                                      '$currencyPrefix${val.toStringAsFixed(0)}',
                                   style: TextStyle(
-                                    color: AppColors.onAccent.withValues(alpha: 0.75),
-                                    fontSize: 10,
+                                    color: AppColors.accent,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
                               ],
@@ -116,15 +193,31 @@ class MonthlyTrendCard extends StatelessWidget {
                           interval: _labelInterval(),
                           getTitlesWidget: (value, meta) {
                             final idx = value.toInt();
-                            if (idx < 0 || idx >= labels.length) return const SizedBox();
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 8),
-                              child: Text(
-                                labels[idx],
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: onSurface.withValues(alpha: 0.6),
-                                  fontWeight: FontWeight.w500,
+                            if (idx < 0 || idx >= labels.length) {
+                              return const SizedBox();
+                            }
+                            final isSelected = _touchedIndex == idx;
+                            return GestureDetector(
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                setState(() {
+                                  _touchedIndex =
+                                      (_touchedIndex == idx) ? -1 : idx;
+                                });
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  labels[idx],
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: isSelected
+                                        ? accent
+                                        : onSurface.withValues(alpha: 0.6),
+                                    fontWeight: isSelected
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                  ),
                                 ),
                               ),
                             );
@@ -136,7 +229,7 @@ class MonthlyTrendCard extends StatelessWidget {
                         sideTitles: SideTitles(
                           showTitles: true,
                           interval: _gridInterval(total),
-                          reservedSize: 40,
+                          reservedSize: 36,
                           getTitlesWidget: (value, meta) {
                             return Text(
                               _shortCurrency(value),
@@ -149,8 +242,10 @@ class MonthlyTrendCard extends StatelessWidget {
                           },
                         ),
                       ),
-                      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
                     ),
                     borderData: FlBorderData(show: false),
                     minY: 0,
@@ -161,19 +256,34 @@ class MonthlyTrendCard extends StatelessWidget {
                         }),
                         isCurved: true,
                         curveSmoothness: 0.35,
-                        color: AppColors.accentText(theme.brightness),
+                        color: accent,
                         barWidth: 2.5,
                         isStrokeCapRound: true,
                         isStepLineChart: false,
                         dotData: FlDotData(
                           show: true,
                           getDotPainter: (spot, percent, barData, index) {
+                            final isTouched = index == _touchedIndex;
                             final isLast = index == values.length - 1;
+
+                            if (isTouched) {
+                              return FlDotCirclePainter(
+                                radius: 6.0,
+                                color: AppColors.accentLight,
+                                strokeWidth: 2.5,
+                                strokeColor: isDark
+                                    ? AppTheme.darkSurface
+                                    : Colors.white,
+                              );
+                            }
+
                             return FlDotCirclePainter(
-                              radius: isLast ? 4.5 : 3,
-                              color: AppColors.accentText(theme.brightness),
+                              radius: isLast ? 4.5 : 2.5,
+                              color: accent,
                               strokeWidth: 1.5,
-                              strokeColor: isDark ? AppTheme.darkSurface : Colors.white,
+                              strokeColor: isDark
+                                  ? AppTheme.darkSurface
+                                  : Colors.white,
                             );
                           },
                         ),
@@ -183,15 +293,18 @@ class MonthlyTrendCard extends StatelessWidget {
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              AppColors.accentText(theme.brightness).withValues(alpha: 0.28),
-                              AppColors.accentText(theme.brightness).withValues(alpha: 0.0),
+                              accent.withValues(alpha: 0.28),
+                              accent.withValues(alpha: 0.0),
                             ],
                           ),
                         ),
                       ),
                     ],
                   ),
-                ),
+                  duration: MediaQuery.of(context).disableAnimations
+                      ? Duration.zero
+                      : AppDurations.normal,
+                  curve: Curves.easeOutCubic,
                 ),
               )
             else
@@ -206,9 +319,9 @@ class MonthlyTrendCard extends StatelessWidget {
   }
 
   String get _chartLabel {
-    if (labels.length <= 14) return 'Last ${labels.length} Days';
-    if (labels.length == 30) return 'Monthly Trend';
-    return '${labels.length}-Day Trend';
+    if (widget.labels.length <= 14) return 'Last ${widget.labels.length} Days';
+    if (widget.labels.length == 30) return 'Monthly Trend';
+    return '${widget.labels.length}-Day Trend';
   }
 
   String _totalLabel(double total) {
@@ -223,15 +336,18 @@ class MonthlyTrendCard extends StatelessWidget {
       children: [
         _buildStatChip(
           context: context,
-          label: 'Total',
-          value: '$currencyPrefix${_formatShort(total)}',
-          color: AppColors.accentText(b),
+          label: 'Average',
+          value: '${widget.currencyPrefix}${average.toStringAsFixed(0)}/day',
+          icon: Icons.trending_flat_rounded,
+          color: AppColors.textSecondary(b),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         _buildStatChip(
           context: context,
-          label: 'Avg',
-          value: '$currencyPrefix${_formatShort(average)}',
+          label: 'Peak Day',
+          value:
+              '${widget.currencyPrefix}${widget.values.isEmpty ? 0 : widget.values.reduce((a, b) => a > b ? a : b).toStringAsFixed(0)}',
+          icon: Icons.trending_up_rounded,
           color: AppColors.successText(b),
         ),
       ],
@@ -242,21 +358,47 @@ class MonthlyTrendCard extends StatelessWidget {
     required BuildContext context,
     required String label,
     required String value,
+    required IconData icon,
     required Color color,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(10),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.04)
+              : Colors.black.withValues(alpha: 0.03),
+          borderRadius: BorderRadius.circular(8),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text(label, style: AppTextStyles.of(context).trendChipLabel),
-            const SizedBox(height: 2),
-            Text(value, style: AppTextStyles.of(context).trendChipValue.copyWith(color: color)),
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.textTertiary(
+                          Theme.of(context).brightness),
+                    ),
+                  ),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -264,15 +406,28 @@ class MonthlyTrendCard extends StatelessWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return Container(
-      height: 120,
-      alignment: Alignment.center,
-      child: Column(
-        children: [
-          Icon(Icons.show_chart_rounded, size: 32, color: AppColors.accentText(Theme.of(context).brightness).withValues(alpha: 0.3)),
-          const SizedBox(height: 8),
-          Text('No data yet', style: AppTextStyles.of(context).trendPlaceholder),
-        ],
+    final theme = Theme.of(context);
+    final onSurface = theme.colorScheme.onSurface;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      child: Center(
+        child: Column(
+          children: [
+            Icon(
+              Icons.show_chart_rounded,
+              size: 36,
+              color: onSurface.withValues(alpha: 0.3),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'No sales recorded yet',
+              style: TextStyle(
+                fontSize: 13,
+                color: onSurface.withValues(alpha: 0.5),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -308,35 +463,22 @@ class MonthlyTrendCard extends StatelessWidget {
     );
   }
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
-
-  String _formatShort(double v) {
-    if (v >= 100000) return '${(v / 100000).toStringAsFixed(1)}L';
-    if (v >= 1000) return '${(v / 1000).toStringAsFixed(1)}K';
-    return v.toStringAsFixed(0);
-  }
-
-  String _shortCurrency(double v) {
-    if (v >= 100000) return '${(v / 100000).toStringAsFixed(0)}L';
-    if (v >= 1000) return '${(v / 1000).toStringAsFixed(0)}K';
-    return v.toStringAsFixed(0);
-  }
-
   double _gridInterval(double total) {
-    if (total <= 0) return 1;
-    if (total < 100) return 10;
-    if (total < 1000) return 100;
-    if (total < 10000) return 1000;
-    if (total < 100000) return 10000;
-    return 50000;
+    if (total <= 0) return 1000;
+    final max = widget.values.reduce((a, b) => a > b ? a : b);
+    if (max <= 0) return 1000;
+    return (max / 3).ceilToDouble();
   }
 
   double _labelInterval() {
-    // Show roughly 7 labels max
-    final len = labels.length;
-    if (len <= 7) return 1;
-    if (len <= 14) return 2;
-    if (len <= 30) return 5;
-    return (len / 7).ceilToDouble();
+    if (widget.labels.length <= 7) return 1;
+    if (widget.labels.length <= 14) return 2;
+    return 5;
+  }
+
+  String _shortCurrency(double value) {
+    if (value >= 100000) return '${(value / 100000).toStringAsFixed(0)}L';
+    if (value >= 1000) return '${(value / 1000).toStringAsFixed(0)}K';
+    return value.toStringAsFixed(0);
   }
 }

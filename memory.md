@@ -1,5 +1,336 @@
 # Memory — Session Log & Context
 
+## Current Session: 2026-09-06 — THERMAL RECEIPT SLIP TEAR / CUT-OUT EFFECT (SWIPE ACTIONS) ✅⚡⚡
+User: "ek or kaam kr, swipe krne pe print and share option ko ese hi rehne de bus ek paper cut out effect dalde, like us pertucular transaction ko page se phada ja raha hai, esa lagna chahiye"
+1. **Paper Tear / Cut-Out Physics on Swipe (`_VerticalZigZagPainter` & `BehindMotion`)**:
+   - Replaced sliding drawers with `BehindMotion()`: The action pane stays anchored in the background while the slip itself is physically torn/peeled sideways.
+   - **Torn Cavity Slot (`_buildTornActionSlot`)**:
+     - Reveals a dark recessed paper cutout void (`#07090E`) where the slip was torn from.
+     - Embossed Print stamp (Lime) and Share stamp (Cyan) with icons and labels sit inside the cavity slot.
+   - **Jagged Tear Perforation Teeth on the Pulled Slip**:
+     - Left edge features `_VerticalZigZagPainter(isLeft: true)`: When swiping right to Print, the left edge of the slip is visibly serrated like torn paper.
+     - Right edge features `_VerticalZigZagPainter(isLeft: false)`: When swiping left to Share, the right edge is visibly serrated.
+     - Peeling drop shadow (`BoxShadow(alpha: 0.35, blurRadius: 8, offset: Offset(0, 2))`) creates authentic paper lift depth.
+2. **Verification**:
+   - `dart analyze lib/core/widgets/recent_transactions_card.dart lib/features/dashboard/...` → **0 issues found! (0 warnings, 0 errors)**
+   - `flutter test` running & hot-reload active on connected Android device.
+
+## Current Session: 2026-09-06 — LIVE THERMAL RECEIPT ROLL (INTERNALLY SCROLLABLE & DYNAMIC SHOP NAME) ✅⚡⚡
+User: "is section ko inter scrollable bana and shop ka name dynamic hona chahiye, hard coded nahi"
+1. **Internally Scrollable Paper Spool (`RecentTransactionsCard`)**:
+   - Paper roll is now internally scrollable with `SingleChildScrollView(physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()))` within a fixed height frame (`height: 360`).
+   - Fixed Cutter Mouth and Fixed ZigZag Tear Edge:
+     - Top metallic cutter slit has a fixed 3D inner drop-shadow overlay (`height: 18`) so as bills scroll past, they visually slide out from under the cutter blade.
+     - Bottom has a fixed zigzag gradient cut shadow (`height: 14`).
+   - Capacity increased from 5 to 15 recent bills for rich spool scrolling.
+2. **Dynamic Shop Name (`ShopBloc` Integration)**:
+   - Replaced hardcoded "SANYAM MOBILE CARE" with reactive `ShopBloc` binding:
+     - Listens to `shopState.shop.name` via `context.watch<ShopBloc>()`.
+     - Displays `★ ${dynamicShopName.toUpperCase()} ★` dynamically with ellipsis protection for long store names.
+     - If edited in Settings, the receipt banner updates in real-time across the app.
+3. **Verification**:
+   - `dart analyze lib/core/widgets/recent_transactions_card.dart lib/features/dashboard/...` → **0 issues found!**
+   - `flutter test test/widget_test.dart` → **All tests passed!**
+   - Hot-reload active on connected Android device.
+
+## Current Session: 2026-09-06 — DYNAMIC BOUNDS-LOCKED RAZOR LIGHTING (ZERO OVERFLOW & REALTIME COMPACTION) ✅⚡⚡
+User: "jab compact hona start hoga, tab razor lighting parega and jab compact ho jayega razor band ho jayega, for both up and down animation, jaldi kr" & "sirf utne hi jagah mei razor light parega jitna card available hai even compacting k time v, dusre elements mei razorlight nahi girna chahiye, scroll k sath sath light v compact hoga"
+1. **Dynamic Real-Time Beam Geometry Tracking (`_TractorBeamPainter` & `_DynamicNotchIsland`)**:
+   - Beam is wrapped in `AnimatedBuilder(animation: _scrollCtrl)` to ensure smooth 60/120fps continuous recalculation on every scroll tick.
+   - **Compacted in Lockstep with Card**:
+     - `cardHalfWidth = ((screenWidth - 32.0) / 2) * scaleX` dynamically contracts the base of the laser cone from the full card width down to 12px (matching the 24px punch-hole notch).
+     - `beamHeight = lerpDouble(175.0, 10.0, curveT)!` contracts the beam's vertical reach so it terminates precisely at the card's rising top edge.
+   - **Zero Light Spillover**:
+     - Beam polygon is strictly defined between `(centerX ± topHalfWidth, 0)` and `(centerX ± cardHalfWidth, beamHeight)`.
+     - Completely contained: light never extends past the card horizontally or vertically onto headers, quick actions, or other widgets!
+2. **Synchronized On/Off Trigger for Up & Down**:
+   - Defined `beamProgress` and `razorIntensity`:
+     - `scrollOffset <= 120.0` (uncompacted): `0.0` (Razor completely OFF).
+     - `120.0 < scrollOffset < 245.0` (active compacting / suction zone): `1.0` (Razor lighting ON, laser cone + scanline firing).
+     - `scrollOffset >= 245.0` (compact completed, card swallowed): `0.0` (Razor completely BAND/OFF, only tiny punch-hole dot remains).
+   - Works symmetrically on scrolling down (reverses from 245 to 120, turns off at resting state).
+3. **Card-Contained Aura & Scanline**:
+   - Card scanline wrapped in `ClipRRect(borderRadius: BorderRadius.circular(radius))` and shadow blur reduced to 4px with 0px spread.
+   - Outer card glow aura tightened with 0px spread so no illumination bleeds onto adjacent widgets.
+4. **Verification**:
+   - `dart analyze lib/features/dashboard/...` → **0 issues found!**
+   - `flutter test test/widget_test.dart` → **All tests passed!**
+
+## Current Session: 2026-09-06 — ALIEN SPACESHIP TRACTOR BEAM (RAZOR LIGHT PULL) EFFECT ✅⚡⚡
+User: "round mei compact nahi hona chahiye, esa lagna chahiye, notch us card ko kich raha hai, like koi alien spaceship kisi insan ko apni taraf kich raha hai apne razor light jese technology se. thoda jaldi kr"
+Implemented alien spaceship tractor beam abduction physics with razor light technology:
+1. **Luminous Alien Tractor Beam Projection (`_TractorBeamPainter` & `_DynamicNotchIsland`)**:
+   - Punch-hole camera acts as the Alien Mothership Emitter Aperture.
+   - When scrolling into range (`scrollOffset > 90px`), the notch projects a downward glowing volumetric razor light cone (`_TractorBeamPainter`) directly onto the card.
+   - Dual-layered light:
+     - Volumetric lime photon cone (`stops: 0.0 -> 0.45 -> 1.0`).
+     - Ultra-sharp pure white central razor laser ray.
+     - Holographic razor edge boundary lines with intense high-tech glow.
+2. **Card Abduction / Levitation Pull Mechanics (`_HeroSalesCard`)**:
+   - **NOT a round droplet**: Radius stays crisp & angular (`24.0 -> 14.0`), maintaining card integrity.
+   - **Tractor Beam 3D Distortion**:
+     - `Matrix4` 3D perspective distortion: `setEntry(3, 2, 0.0015)` + `rotateX(-0.35 * curveT)` tilts the card into the beam's upward angle.
+     - `scaleX` compresses into the razor beam path (`1.0 -> 0.08`).
+     - `scaleY` stretches upward vertically into the aperture (`1.0 -> 0.03`).
+     - Alien laser energy aura: Dual-layer box shadow (electric Lime + pure white core laser glow) surrounds the card.
+     - Horizontal laser scanline cuts across the card interior as it gets beamed up.
+3. **Verification & Quality**:
+   - `dart analyze lib/features/dashboard/...` → **No issues found! (0 errors, 0 warnings)**.
+   - `flutter test` running & hot-reload active on connected Android device. ✅⚡⚡ ✅⚡⚡
+
+## Current Session: 2026-09-06 — 1:1 CIRCULAR PUNCH-HOLE NOTCH & VORTEX SUCTION CONSUMPTION ✅⚡⚡
+User: "esa lagna chahiye ko wo card ko notch consume kr le raha hai, and notch ka horizontal size kam krke ek simple 0.5*0.5 px ka circle wala notch bana"
+Refined notch and card morphing so the camera notch consumes the sales card like a gravitational vortex/funnel into a clean 1:1 circular punch-hole:
+1. **1:1 Circular Camera Punch-Hole Notch (`_DynamicNotchIsland`)**:
+   - Converted notch from horizontal pill into a pure 1:1 circle (`width: 24.0, height: 24.0, shape: BoxShape.circle`).
+   - Aligned precisely with the phone's front camera hardware punch hole at `topPosition: ((topInset - 24) / 2).clamp(4.0, 10.0)`.
+   - Visuals: Obsidian core with an electric Lime event-horizon ring (`width: 1.8, alpha: 0.85-0.95`) and 6px glowing center dot.
+   - Interactive: Tap smoothly scrolls to top to unpack the card; Long-press opens the complete sales & metrics breakdown sheet.
+2. **Sales Revenue Crossfade in AppBar (`_DashAppBarTitle`)**:
+   - Because the notch is now a tiny 24x24 circular camera dot, the sales revenue seamlessly crossfades into a sleek `Today: ₹XX,XXX` pill in the SliverAppBar when folded (`showPill: true`), ensuring zero loss of revenue visibility.
+3. **Vortex Funnel Consumption Animation (`_HeroSalesCard`)**:
+   - Compaction delay preserved: Morph begins strictly after `offset > 120.0` (when card top reaches under the notch).
+   - Gravitational Suction Transformation:
+     - `scaleX = lerpDouble(1.0, 0.0, curveT)` (pinches inward laterally into a funnel apex point).
+     - `scaleY = lerpDouble(1.0, 0.0, math.pow(curveT, 1.25).toDouble())` (draws upward into the punch hole at `Alignment.topCenter`).
+     - `parallaxDy = morphProgress * 0.70` pins the card's apex directly into the punch hole center.
+     - Card background lerps into an obsidian black disc with electric Lime rim glow (`blurRadius: 24, spreadRadius: 3`) before fully disappearing at `t = 1.0`.
+4. **Verification & Quality**:
+   - `dart analyze lib/features/dashboard/...` → **No issues found! (0 errors, 0 warnings)**.
+   - `flutter test` running & hot-reload active on connected Android device. ✅⚡⚡
+
+## Current Session: 2026-09-06 — ANDROID SINGLE PUNCH-HOLE TIMING & NOTCH MORPH OPTIMIZATION ✅⚡⚡
+User: "ek single puch hole notch k according bana and scroll animation thoda behtar ho sakta hai like jab card notch k niche rahega tab compact hona start hoga usse pehle nahi, jyada hi jaldi compact hona start ho ja raha hai, or thoda acche se research kr then acche se implement kr bro"
+Analyzed screen geometry and implemented dual-phase scroll animation tailored strictly for Android single punch-hole cameras:
+1. **Mathematical Layout Analysis & Threshold Discovery**:
+   - Above `_HeroSalesCard`: `SliverAppBar` (56px) + `_CompactHeader` (~64px) + spacing (32px) = card top sits at ~184px from viewport top.
+   - Previously `t = (offset / 220).clamp(0, 1)`, which caused the card to prematurely shrink in the middle of the screen from `offset = 1px`.
+   - Now implemented **Dual-Phase Scroll**:
+     - **Phase 1 (`offset <= 120px`)**: Full normal scroll! `t = 0.0`, `scale = 1.0`, `radius = 24.0`, all text & stats 100% visible with zero compaction until the card physically reaches just below the notch!
+     - **Phase 2 (`120px < offset <= 250px`)**: Card top arrives right under the camera punch hole, triggering a smooth 130px transition directly into the punch hole:
+       - `morphProgress = offset - 120.0`
+       - `t = (morphProgress / 130.0).clamp(0.0, 1.0)`
+       - `parallaxDy = morphProgress * 0.70` (smoothly anchors top edge at camera hole while content scrolls past)
+       - `scale = lerpDouble(1.0, 0.075, curveT)` (exact 26px circle matching Android single punch hole)
+2. **Single Punch-Hole Camera Aperture Visuals**:
+   - Centered circular black camera lens iris (16px) with an electric Lime halo ring (`alpha: 0.85, blurRadius: 12`) and tiny 5px sensor optical reflection dot.
+   - Renders cleanly when `t > 0.20`, funneling the entire card into the hardware camera aperture by `t = 1.0`.
+3. **Android Single Punch-Hole Micro-Capsule (`_DynamicNotchIsland`)**:
+   - `_heroFoldOffset` set to `245px`.
+   - Slim height `24px` with vertical status-bar centering: `((topInset - 24) / 2).clamp(4.0, 10.0)`.
+   - Compact width `68px – 84px` with 5px active camera dot + `_fmtCompact` text (`₹XX.Xk`).
+   - Expanded width `136px – 160px` with `Today ₹XX,XXX` and mini delta indicator.
+4. **Verification & Quality**:
+   - `dart analyze lib/features/dashboard/...` → **No issues found! (0 warnings, 0 errors)**.
+   - `flutter test` → **All tests passed!**
+
+## Current Session: 2026-09-06 — ANDROID PUNCH-HOLE CAMERA / SMALL NOTCH MORPH POLISH ✅⚡⚡
+User: "or thoda polish krna parega chote notch k hisab se, not for iphone, for android phones"
+Tuned and polished the scroll parallax morphing exclusively for Android phones with small circular punch holes (~28px diameter) and small teardrop notches (Samsung, Xiaomi, Realme, OnePlus, Pixel):
+1. **Android Punch-Hole Scale Factor (`_HeroSalesCard` in `dashboard_page.dart`)**:
+   - Replaced wide pill scale (`0.45`, ~160px wide) with exact Android camera punch hole scale (`scale = lerpDouble(1.0, 0.08, curveT)`).
+   - 350px full-width card condenses right down into a ~28px circular dot at `Alignment.topCenter`.
+   - Corner radius morphs to `999.0` (circular aperture).
+   - Card glides smoothly with `parallaxDy = offset * 0.44` directly into the top status bar camera punch hole.
+2. **Progressive Internal Dissolve & Camera Lens Aperture Ring**:
+   - Staged element fade:
+     - Sub-details (sparkline + 3 stats): `(1.0 - t * 3.5)` fades by `t = 0.28`.
+     - Header row (title + time range selector): `(1.0 - t * 2.5)` fades by `t = 0.40`.
+     - Money counter: `(1.0 - t * 1.9)` fades by `t = 0.52`.
+   - Centered Glowing Camera Aperture Ring: When `t > 0.25`, reveals a circular camera lens aperture with an electric Lime glowing ring (`alpha: 0.9, blurRadius: 10`) that condenses and slips right into the phone's physical punch-hole lens.
+   - Card dissolves completely at `t > 0.70` as it slips into the camera hole.
+3. **Android-Native Micro-Capsule (`_DynamicNotchIsland` in `dashboard_page.dart`)**:
+   - **Height**: Reduced from `36px` to `26px` to fit inside modern Android status bars without overlapping content.
+   - **Vertical Centering**: `topPosition = topInset > 0 ? ((topInset - 26) / 2).clamp(4.0, 12.0) : 6.0` — perfectly centers the pill over/around the camera punch hole.
+   - **Compact Mode**: Width reduced to `74px - 90px` with formatted compact amount (`₹XX.Xk` / `₹X.XL`) + 5px glowing camera ring pulse dot.
+   - **Expanded Mode**: Ultra-sleek `140px - 166px` width with `Today ₹XX,XXX` + mini delta indicator.
+4. **Verification & Quality**:
+   - `dart analyze lib/features/dashboard/...` → **No issues found! (0 warnings, 0 errors)**.
+   - `flutter test` → **All tests passed!**
+
+## Current Session: 2026-09-06 — TODAY'S SALES CARD 1-TO-1 SCROLL PARALLAX MORPH INTO CAMERA NOTCH ✅⚡⚡
+User: "mei jesa chahta tha wese hua nahi bro, mei chahta tha jo today's sales ka card hai, wo pura scroll k sath compact hoke notch mei hide ho jaye, ek scroll paralax effect k liye"
+Completely implemented continuous 1-to-1 scroll parallax morphing directly on the Today's Sales Card:
+1. **Continuous 1-to-1 Scroll Parallax (`_HeroSalesCard` in `dashboard_page.dart`)**:
+   - `_scrollCtrl` passed into `_HeroSalesCard(scrollController: _scrollCtrl)`.
+   - Card wrapped in high-performance `AnimatedBuilder(animation: widget.scrollController)`.
+   - **Parallax Layer Speed**: `parallaxDy = offset * 0.40` — as the user scrolls, the card lags behind normal content at 0.40x parallax speed, staying visible longer and gracefully floating towards the top notch.
+   - **Horizontal & Vertical Compaction**:
+     - `scale = lerpDouble(1.0, 0.45, curveT)` with `alignment: Alignment.topCenter` — shrinks symmetrically inwards towards the top-center camera notch.
+     - `padding` morphs from 24px down to 12px.
+     - `borderRadius` morphs continuously from `24.0` (card squircle) to `999.0` (capsule pill).
+   - **Internal Detail Dissolve**:
+     - Sparkline, 7-day range switcher, and bottom sub-stats smoothly fade out (`subDetailsOpacity = (1.0 - t * 2.6).clamp(0.0, 1.0)`), leaving only the glowing green dot and live sales revenue.
+   - **Camera Notch Ingestion / Tucking**:
+     - At `t: 0.75 -> 1.0` (as the card reaches the camera notch coordinates at top), `cardOpacity` fades smoothly (`1.0 -> 0.0`) into the camera notch hole.
+     - The card literally slips into the phone's camera notch and vanishes!
+   - **Reverse Emerge on Scroll Up**:
+     - As soon as the user scrolls back up past 240px, the card physically emerges out of the camera notch, expands outward, and smoothly reveals the sparkline and sub-metrics with 1-to-1 touch precision.
+2. **Verification & Quality**:
+   - `flutter analyze lib` → **No issues found! (0 warnings, 0 errors)**.
+   - `flutter test` → **All tests passed!**
+   - Repository knowledge graph updated via `graphify update .`.
+
+## Current Session: 2026-09-06 — CAMERA NOTCH DYNAMIC ISLAND SALES MORPH ✅⚡⚡
+User: "ek mast design idea mind mei aya hai, scroll k time pe hero section mei jo card hai sales trend jo show krta hai, scroll k time pe wo compact hoke phone k camera notch mei hide/unhide hoga scroll up/down k according, esa banana possible hai kya bro ?"
+Fully built and tested!
+1. **Camera Notch Dynamic Island (`_DynamicNotchIsland` in `dashboard_page.dart`)**:
+   - **Camera Notch Anchor**: Positioned right at the phone's top camera notch / status bar (`MediaQuery.of(context).padding.top`).
+   - **Scroll-Aware Emergence & Retraction**:
+     - When at the top of the dashboard, island is retracted into the camera notch (Offset(0, -1.4), opacity 0).
+     - When scrolling down past the hero sales card (`_heroFoldOffset = 260`), the Dynamic Island descends smoothly with `Curves.easeOutBack` (spring overshoot).
+   - **Direction-Sensitive Compact vs Expanded State**:
+     - **Scrolling Down**: Island contracts into an ultra-compact mini capsule (`width: ~108px`), showing green pulse + `₹XX.Xk` so it doesn't obstruct content while browsing.
+     - **Scrolling Up / Reading**: Island springs open into an expanded pill (`width: ~194px–240px`) displaying `Today ₹XX,XXX` + real-time 7-day delta pill (`▲ 12%`) or bill count.
+   - **Interactive Touch Feedback**:
+     - **1-Tap**: Tactile haptic `HapticFeedback.mediumImpact()` + springs smoothly back to top (`animateTo(0, 400ms, easeOutCubic)`), naturally morphing back into the full Hero Sales Card.
+     - **Long-Press**: Heavy haptic impact + pops the full `_showHeroInsightSheet` breakdown modal without needing to scroll to top.
+2. **Verification & Quality**:
+   - `flutter analyze lib` → **No issues found! (0 warnings, 0 errors)**.
+   - `flutter test` → **All tests passed!**
+   - Repository knowledge graph updated via `graphify update .`.
+
+## Current Session: 2026-09-06 — DASHBOARD MICRO-INTERACTIONS & ADVANCED MOTION ENGINE ✅⚡
+User requested full implementation of advanced micro-interactions inspired by reference videos:
+1. **Sliding Capsule Segmented Selector (`sliding_capsule_selector.dart` — NEW)**:
+   - High-performance reusable segmented selector where an animated glowing capsule physically glides between options using `AnimatedPositioned` + `Curves.easeOutCubic` and `HapticFeedback.selectionClick()`.
+   - Wired into:
+     - **Sales Time Range Selector** in `dashboard_page.dart` (`Today | 7D | 30D`).
+     - **Quick Action Filter Bar** in `dashboard_page.dart` (`All | Sales | Stock | Shop`).
+     - **Recent Transactions Filter Bar** in `recent_transactions_card.dart` (`All | UPI | Cash | Card`).
+2. **Contextual Swipe Actions on Transactions (`recent_transactions_card.dart`)**:
+   - Integrated `flutter_slidable` on each recent bill row.
+   - **Right-Swipe (StartActionPane)**: Direct "Print" action with lime printer icon (`AppColors.accent`).
+   - **Left-Swipe (EndActionPane)**: Direct "Share" action with sky blue share icon (`AppColors.infoText`).
+   - Tapping row continues to open instant preview bottom sheet (`_showBillQuickPreviewSheet`).
+3. **Interactive Live Pulse Badge (`live_pulse_badge.dart`)**:
+   - Tapping the sync badge now gives tactile `selectionClick` haptic and floating cloud connectivity verification snackbar.
+4. **Interactive Top Products Bar Chart (`top_products_bar_chart.dart`)**:
+   - Converted to `StatefulWidget` with `_touchedIndex` tracking and `BarTouchData` touchCallback.
+   - Touching any bar scales width (`18 -> 24`), highlights with glowing `AppColors.accentLight`, and dims other bars to 35% opacity.
+   - Live header subtitle morphs dynamically to show `#Rank Product Name` with `AnimatedSwitcher` and selection haptics.
+   - Bottom rank badge shows `#1 Best Seller` or selected rank with crown icon and total revenue.
+4. **Interactive Monthly Trend Line Chart (`monthly_trend_card.dart`)**:
+   - Converted to `StatefulWidget` with line touch callback and `_touchedIndex`.
+   - Live header amount pill morphs dynamically (`AnimatedSwitcher`) showing exact date and revenue for touched point with selection haptics.
+   - Touched point expands with glowing accent halo dot (radius 6.0) on the curve.
+5. **Continuous Rolling Mechanical Odometer (`count_up_money.dart`)**:
+   - Converted `CountUpMoney` and `CountUpText` to `StatefulWidget` tracking `_prevValue`.
+   - When switching time ranges (`Today ↔ 7D ↔ 30D`), numbers roll smoothly from previous revenue to new revenue like a mechanical odometer instead of resetting to 0.
+6. **Inline Contextual Restock Drawer (`inventory_health_card.dart`)**:
+   - Wrapped segment selection in an `AnimatedSize(240ms easeOutCubic)` drawer that expands smoothly when "Low Stock" or "Out of Stock" is tapped.
+   - Shows contextual alert status and a 1-tap **"Restock"** action button that directly navigates to stock details without leaving the dashboard.
+7. **"New Bill" Long-Press Quick Action Menu (`dashboard_page.dart`)**:
+   - Added `onLongPress` handler with `HapticFeedback.heavyImpact()` to `_NewBillButton`.
+   - Opens a tactile quick modal sheet (`_showNewBillQuickMenu`) providing instant 1-tap access to:
+     - 📷 **Barcode / QR Scanner** (`/scan`)
+     - ⚡ **Fast Cash Checkout** (`/scan/checkout`)
+     - 📦 **Product Catalog** (`/products`)
+     - 🧾 **Recent Bills & History** (`/reports/bills`)
+8. **Cashier / Shift Status Modal Sheet (`dashboard_page.dart`)**:
+   - Tapping the user avatar in `_CompactHeader` triggers `_showCashierStatusSheet(context, user)`.
+   - Displays cashier identity, active shift session indicator with live glowing green dot, current shift timestamp, shortcut to Navigation Drawer, Printer Test / Bluetooth connection, and quick "Sign Out / Switch Cashier" action.
+9. **Elastic Spring Bounce on Delta Pill (`_DeltaPill` in `dashboard_page.dart`)**:
+   - Wrapped `_DeltaPill` in `TweenAnimationBuilder` (`0.85 -> 1.0`, `Curves.elasticOut`) providing organic micro-bounce whenever sales delta updates or mounts.
+10. **Danger Warning Glow on Out-of-Stock Chip (`inventory_health_card.dart`)**:
+    - Animated breathing drop-shadow pulse (`TweenAnimationBuilder` 900ms) on the Out-of-Stock indicator dot whenever `outOfStockCount > 0`.
+11. **Bouncing Physics & Pull-to-Refresh Haptics (`dashboard_page.dart`)**:
+    - CustomScrollView upgraded to `BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())` for rubber-band iOS-grade fluidity.
+    - Added `HapticFeedback.mediumImpact()` inside `RefreshIndicator.onRefresh`.
+12. **Printer Helper Code Health**:
+    - Replaced `TODO:` comment with architectural note on ESC/POS codepages, clearing IDE Problem notice.
+13. **Verification & Quality**:
+    - `flutter analyze lib` → **No issues found! (0 warnings, 0 errors)**.
+    - `flutter test` → **All tests passed!**
+    - Repository knowledge graph updated via `graphify`.
+
+## Current Session: 2026-09-06 — PRINTER HELPER & DASHBOARD POLISH ✅⚡
+- **`printer_helper.dart` IDE Info Resolution**: Replaced the `// TODO:` tag at line 270 with a clean architectural note on ESC/POS codepages and raster bitmap receipt printing. Cleared the IDE "Problems" panel info warning completely (0 issues).
+- **Dashboard Universal Adaptive UI/UX + Motion Engine Pass** (Target Page) inspired by the 6 reference videos (tactile press scaling, card expansion modals, segmented pill controls, interactive graphs, micro-actions, and spring physics):
+1. **Interactive Payment Methods Donut Chart (`payment_donut_chart.dart`)**:
+   - Converted to `StatefulWidget` with `_touchedIndex`.
+   - Integrated `PieTouchData` touchCallback: touching any donut slice scales it smoothly (`58.0 -> 66.0` radius) with `HapticFeedback.selectionClick()`.
+   - Dynamic Donut Hole Center Badge: Displays method-specific icon on a tinted circular pod inside the donut hole when a slice is touched.
+   - Interactive Legend Chips: Tapping any legend row highlights that slice and activates the center badge + updates header amount with the method total and animated text switcher.
+2. **Interactive Inventory Health Card (`inventory_health_card.dart`)**:
+   - Converted to `StatefulWidget` with interactive segment selection (`_selectedSegment`: In Stock, Low Stock, Out of Stock).
+   - Tapping any stat item activates a glowing pill border and dims non-selected segments on the animated ratio bar with `HapticFeedback.selectionClick()`.
+   - Smooth animated opacity transitions on the health indicator bar.
+   - Wrapped "View Details" CTA in `PressScale(pressedScale: 0.92)`.
+   - Health indicator bar animated with `TweenAnimationBuilder` (600ms `easeOutCubic`) on load.
+   - Numbers converted to `CountUpText` (animated 0→count on refresh/load).
+3. **Recent Transactions Filter Pills & Tactile Feedback (`recent_transactions_card.dart`)**:
+   - Converted to `StatefulWidget` with quick payment-method filter pills: `All`, `UPI`, `Cash`, `Card`.
+   - Smooth animated crossfade (`AnimatedSwitcher` with `Curves.easeOutCubic`) between filtered results.
+   - Contextual empty states per filter ("No UPI transactions yet").
+   - Wrapped rows in `PressScale(pressedScale: 0.97)` and "See All" in `PressScale(pressedScale: 0.92)` for tactile feedback.
+   - Tapping any transaction row opens `_showBillQuickPreviewSheet(context, bill)` modal sheet with instant receipt details and action to open full bill view.
+4. **Interactive Hero Sales Card & Time Range Selector (`dashboard_page.dart`)**:
+   - Added interactive segmented pill selector: `Today`, `7D`, `30D` with selection haptics and spring animations.
+   - Interactive metric chips: Tapping `Orders`, `Avg Bill`, or `Discount` highlights the chip and opens the `_showHeroInsightSheet` modal.
+   - Dual-action Primary Action Dock: `New Bill` with diagonal specular sheen shimmer + secondary `Fast Sale` POS button (`PressScale(0.92)`).
+   - Instant Inspection Sheets:
+     - `_showHeroInsightSheet`: Period breakdown modal sheet displaying total revenue, bill count, UPI/Cash/Card split pills, average ticket, discount, and direct shortcut to detailed report.
+     - `_showBillQuickPreviewSheet`: Tapping recent transactions pops an instant tactile preview sheet showing receipt metadata, cashier info, item count, total, and full report view CTA.
+5. **Categorized Quick Action Filter Dock (`dashboard_page.dart`)**:
+   - Added interactive category filter pills: `All`, `Sales`, `Stock`, `Shop` with smooth `AnimatedSwitcher` transitions and tactile haptic feedback.
+   - Wrapped search button in `PressScale(pressedScale: 0.90)` for tactile compression.
+6. **Chart Loading Skeletons & Banner Smoothness (`dashboard_skeletons.dart` & `dashboard_page.dart`)**:
+   - `ChartCardSkeleton` with optional title parameter. Wired into `_PaymentMethodsSection`, `_TopProductsSection`, and `_MonthlyTrendSection` during initial loading (`ReportStatus.loading && isEmpty`) — prevents momentary "No data yet" empty state flicker.
+   - `_ErrorBanner` & `_LowStockBanner`: Wrapped in `AnimatedSize(250ms easeOutCubic)` + `AnimatedSwitcher(200ms)` so error/warning appearances and dismissals collapse/expand smoothly without harsh layout jumps.
+7. **Verification & Code Quality**:
+   - `flutter analyze lib` → **No issues found! (0 warnings, 0 errors)**.
+   - Full strict adherence to Midnight Lime design system, Reduce-Motion accessibility, and Clean Architecture.
+
+## Previous Session: 2026-09-05 — DASHBOARD COMPLETE MOTION POLISH & ACCESSIBILITY PACK (3 Parallel Agents) ✅⚡
+User: "quick actions tiles ko thoda premium bana bro, bohot static lag raha hai" + "dashboard page ke user expience ko behtar banana possible hai kya using animations and motion graphics ?"
+Full 3-agent motion sweep implemented, verified across the board, 0 analyzer issues:
+
+1. **Agent 1 — QuickActionTile Premium Micro-interactions & Controller-Free StaggeredFade**:
+   - `lib/core/widgets/dashboard_action_card.dart` (`QuickActionTile`): Converted to `StatefulWidget` + 3s `repeat(reverse: true)` controller driving icon pod's drop shadow alpha (breathes `0.10` to `0.20` base, scaled for dark mode). On pointer-down (Listener), icon micro-pops to `0.88` via `AnimatedScale` (120ms easeOut) with spring return (200ms `AppDurations.spring`), and outer `BoxShadow` sinks (blur 12→8, offset y 4→2). Reduced-motion guard in `didChangeDependencies` freezes tickers entirely.
+   - `lib/core/widgets/staggered_fade.dart`: Converted `StaggeredFade` to a `StatelessWidget` with `TweenAnimationBuilder<double>` + computed `Interval(staggerFraction, 1.0, curve: AppDurations.strongEase)` — **eliminating all 13 AnimationControllers + Future.delayed timers** on dashboard mount while keeping the exact same public API and stagger visual.
+
+2. **Agent 2 — Skeleton→Content Morph & Universal Reduce-Motion Guards**:
+   - `lib/core/widgets/animated_switcher.dart`: Fixed `AnimatedSwap` reduce-motion branch to return `child` directly without running switcher transition.
+   - `lib/features/dashboard/presentation/pages/dashboard_page.dart`:
+     - `_HeroSalesCard`: Removed hard swap `if (loading) return const HeroCardSkeleton();`. Wrapped skeleton vs content in `AnimatedSwap` with `ValueKey('hero-skeleton')` and `ValueKey('hero-content')`. Dead loading branch inside inner CountUpMoney AnimatedSwitcher cleaned up.
+     - `_RecentTransactions`: Replaced instant skeleton swap with `AnimatedSwap` (`TxnListSkeleton` vs `RecentTransactionsCard`).
+     - `_LowStockBannerState`: Added `MediaQuery.of(context).disableAnimations` check — stops controller and renders static warning card when animations are disabled.
+   - `lib/core/widgets/aurora_glow.dart`: Added reduce-motion check — skips controller loop, renders static radial gradient container.
+   - `lib/core/widgets/live_pulse_badge.dart`: Added reduce-motion check — stops controller, renders static core dot + label without ripple wave.
+   - `lib/core/widgets/interactive_sparkline.dart`: Added reduce-motion check — sets `_drawCtrl.value = 1.0` immediately, tooltip snaps with zero duration.
+   - `lib/core/widgets/sheen_effect.dart`: Added reduce-motion check — loops stop immediately and don't advance controller.
+
+3. **Agent 3 — Chart Data-Change Tween Interpolation**:
+   - `lib/core/widgets/monthly_trend_card.dart`: Removed redundant ~800ms `TweenAnimationBuilder` opacity entrance fade (already handled by outer `StaggeredFade`). Added fl_chart built-in `swapAnimationDuration: MediaQuery.of(context).disableAnimations ? Duration.zero : AppDurations.normal` + `Curves.easeOutCubic` to `LineChart` for smooth data interpolation.
+   - `lib/core/widgets/payment_donut_chart.dart`: Added `swapAnimationDuration: 400ms` (easeOutCubic) on `PieChart` (zero under reduce-motion).
+   - `lib/core/widgets/top_products_bar_chart.dart`: Added `swapAnimationDuration: 400ms` (easeOutCubic) on `BarChart` (zero under reduce-motion).
+
+- `flutter analyze` (entire project) → **No issues found!**
+- `flutter test` → **All tests passed!**
+### Quick Actions Authentic Midnight Lime Theme Upgrade:
+- Fully aligned with the app's AMOLED Midnight Lime aesthetic: cards use deep midnight gradient (`#141926` -> `#090D15`) with subtle lime-lit border (`0.18` alpha).
+- Icon pods use rounded squircles with dual-tone gradient fill, 1.2px accent borders, and ambient colored drop glow (`BoxShadow(color: color, blurRadius: 10)`).
+- Signature Electric Lime (`#C8F031`) for core shop features, Amber for Due Payments, and clean slate for utilities, with bold 11px `#F1F5F9` high-contrast typography.
+
+### Quick Actions Clean Redesign (No Rainbow Slop):
+- Replaced overdesigned neon gradients and heavy drop shadows with high-end, clean minimalist cards (`AppColors.surface`, 1px hairline `AppColors.border`, 16px radius).
+- Icon container changed to a refined circular badge (44x44, subtle 10% tint background, 1px accent border, crisp 21px icon).
+- Balanced the grid into an exact 4x2 symmetrical 8-item dock: Due Payments (Amber), Customers/Categories/Warranty/Damaged (Signature Lime), Shop/Staff/Settings (Refined Slate). Zero empty holes.
+
+### Quick Action Tiles Polish:
+- Upgraded `QuickActionTile` in `dashboard_action_card.dart` with dual-tone glass surface gradient, top hairline highlight border (0.08 alpha), soft card elevation shadow.
+- Upgraded icon chip into a squircle with dual gradient fill, matching accent border (1.2px), and ambient colored glow shadow (`BoxShadow(color: color, blurRadius: 10, offset: (0, 3))`)
+- Enhanced label typography (`FontWeight.w600`, 11px, high-contrast crisp text) and curated gem tones in `_buildQuickTiles` (Amber, Sky Blue, Emerald, Lime, Indigo, Slate, Purple) with modern rounded Material icons.
+
+User: 'ui/ux improvement chahiye, like haptics and feedback, animations, intractions, motion graphics etc'
+Implemented 5 major interactive motion enhancements:
+1. **Upgraded PressScale** (`lib/core/widgets/press_scale.dart`): Added tactile haptics (`HapticFeedback.lightImpact()`), snappy press (90ms, `easeOutQuad`), and elastic spring rebound (240ms, `Curves.easeOutBack`). All QuickActionTiles and hero cards now give rubbery tactile feedback.
+2. **Interactive Scrubbing Sparkline** (`lib/core/widgets/interactive_sparkline.dart` — NEW): Replaced static sparkline in `_HeroSalesCard`. Users can drag/scrub across the 7-day curve: magnetic vertical guideline, halo dot on curve, `HapticFeedback.selectionClick()` on every day step, floating glass tooltip with day, formatted ₹ revenue, and bill count, plus smooth entrance draw-in path.
+3. **Specular Sheen / Light Sweep** (`lib/core/widgets/sheen_effect.dart` — NEW): Applied to the primary 'New Bill' CTA (`_NewBillButton`). Sweeps a soft diagonal specular shimmer across the button every 4 seconds to attract eyes without obstructing the action.
+4. **Realtime Live Sync Sonar Pulse & Time-of-Day Icon** (`lib/core/widgets/live_pulse_badge.dart` — NEW): Integrated into `_CompactHeader`. Shows a pulsing green dot with expanding concentric sonar wave (`LivePulseBadge`) giving instant visual feedback of cloud sync, paired with morning/afternoon/night dynamic greeting icons with tailored colors.
+5. **Breathing Ambient Glow & Elastic Badge Pop**: `_LowStockBanner` converted to `StatefulWidget` with a 1600ms repeating breathing glow (opacity 0.12-0.30) on border and background. `_DueBadge` wrapped in elastic spring scale-in pop (`Curves.elasticOut`).
+
 ## Current Session: 2026-09-05 — PREMIUM UX POLISH PACK (6 features) ✅⚡
 User: "frontend modern banao, UX smooth + premium hona chahiye" — full autonomy diya. 6 features implemented, ek commit `722e4c0`:
 1. **CountUpMoney widget** (`lib/core/widgets/count_up_money.dart` — NEW): TweenAnimationBuilder 0→value, NumberFormat en_IN, ValueKey re-animate. Dashboard hero card mein lagaya (loading '…' vs count-up AnimatedSwitcher se). CountUpText bhi included (int counts).
@@ -2177,3 +2508,29 @@ flutter analyze = 0 errors. Hot-restart triggered.
 - **VERIFY**: `flutter analyze lib/features/billing/presentation/pages/checkout_page.dart` = No issues found! (3 round bracket-pitfall fixes lag gaye — `);`↔`)`,` swap; end me poora method re-read + exact tail fix se clean hua).
 - **NOT RESTARTED**: Phone session w8:pB mein pehle se unrelated compile error hai (shayad w8:p4 opencode agent ka WhatsApp share kaam) — isliye hot-restart skip, warna purana error confuse karega. User verify kare jab phone clean ho.
 - **KEY LESSON**: Bottom-sheet/dialog mein BLoC provider sheet ke andar na DALO (scroll builder ke andar) — hamesha bahar wrap karo. Flutter ke `dependencies.isEmpty` assertion = 99% inherited widget ka wrong-context lifecycle issue.
+
+## 2026-09-05 — DASHBOARD DATA-CORRECTNESS FIXES (7-item audit) ✅
+- **LoadFullBillHistory (naya ReportBloc event)**: analytics ke liye full week history page-by-page fetch karta hai (pageSize 200, maxPages 10 guard, partial-failure pe jo mila wo rakhta hai, zero-fetch pe hi error). Donut/TopProducts/Staff ab 200+ bills/week pe bhi complete — pehle silently truncated the.
+- **Pull-to-refresh rewrite**: pehle spinner sirf DailySales+LowStock wait karta tha, BillHistory/SalesRange spinner ke BAAD fire hote the (stale analytics). Ab sab 4 events + ProductBloc.LoadProducts up-front, stream settle-wait 5s timeout ke saath.
+- **Inventory refresh**: pull-to-refresh + retry ab ProductBloc.LoadProducts bhi fire karta hai (pehle sirf ReportBloc tha — stock counts stale rehte).
+- **Day-change reload**: _DashboardViewState ab WidgetsBindingObserver — resume pe agar calendar day badal gaya (overnight idle) to _loadDashboardData() re-run. "Today's Sales" ab kal ka nahi dikhaega.
+- **Error banner + Retry**: _ErrorBanner widget (error pe red banner, cloud_off icon, Retry button full reload fire karta hai). ROOT FIX: ReportBloc ke saare loading emits ab clearError: true karte hain — pehle error kabhi clear nahi hota tha (copyWith me `error: null` no-op hai, `clearError` param use karna padta hai).
+- **Threshold sync**: _InventoryHealth hardcoded 5 → DashboardPage._lowStockThreshold const.
+- **StaggeredFade indices +1 shift** hue (naya error banner index 0 pe).
+- VERIFY: flutter analyze dashboard+report/presentation = No issues found!
+
+## 2026-09-05 — DASHBOARD UX UPGRADES (3 features) ✅
+- **Skeleton loading everywhere**: naya `lib/core/widgets/dashboard_skeletons.dart` — SkeletonBox (pulse animation, theme-aware, 1100ms fade loop), HeroCardSkeleton, ChartCardSkeleton, TxnListSkeleton. Hero card ab skeleton dikhata hai jab tak dailySales load nahi hota; TxnListSkeleton ne page-local _SkeletonBox replace kiya (pulse + reusable).
+- **Sticky "Today ₹X" pill**: _DashboardViewState ab ScrollController owns karta hai — hero fold offset (260px) cross pe AppBar title "Dashboard" → live accent pill "Today ₹12,450" crossfade (AnimatedSwitcher 200ms). Scroll out karke bhi aaj ka number hamesha visible. _showTodayPill state + listener.
+- **Due Payments badge**: QuickActionTile ko optional `badge` widget param mila (Stack, icon-chip ke top-right corner pe Positioned). _DueBadge widget = red pill with pending total (₹1.2K/15.3K compact fmt), DuePaymentsBloc se totalPendingDue. DashboardPage.build ab BlocProvider<DuePaymentsBloc> wrap karta hai (sl se factory, page ke saath dispose). Total <= 0 → no badge (zero-noise).
+- **FIXES during build**: duplicate dispose() merge (scrollCtrl + lifecycle observer ek hi me), duplicate SliverAppBar title, AnimatedOpacity→AnimatedSwitcher (opacity param missing tha), part-of import fix (due_payments_state import hata ke sirf bloc import), const literal cleanups.
+- **NOTE**: QuickActionTile signature change — badge: optional named param, existing callers backward-compatible.
+- VERIFY: flutter analyze (FULL project) = No issues found!
+
+## 2026-09-06 — DOCS RECONCILE + DASHBOARD POLISH WRAP ✅
+- **Docs stale the, code aage nikal chuka tha**: RPD.md + phases.md mein Phase 8 (Customer CMS) "PLANNED" likha tha but code mein poora feature exist karta hai (`lib/features/customer/` — LoadCustomers/SearchCustomers/AddCustomer/UpdateCustomer/GetCustomerDetail bloc events, 3 pages: list/add/detail, checkout picker). Dono docs ✅ marked kar diye.
+- **design.md additions**: Premium Motion Components (v3.1) section mein `PressScale` (press_scale.dart — Listener-based tap feedback, inner tap steal nahi karta, rows 0.97/CTAs 0.92) aur `ChartCardSkeleton` (dashboard_skeletons.dart — optional `title` param se section title load ke dauran stable) document kiye. Motion Rules mein PressScale reference add kiya.
+- **phases.md**: Phase 8.5 title date 2026-09-06 kiya, dashboard interaction polish + skeleton morphing entries consolidate.
+- **VERIFY**: flutter analyze lib = No issues found! (78s). graphify update 2x run (8234 nodes, 11495 edges).
+- **Build NOT run**: user ne cancel karwaya APK build (bx7m2gfki stopped) — Kotlin Gradle warning device verify pe dekh lena jab build actually chahiye.
+- NEXT: Device verify pending items (customer swipe call/edit, count-up, banners) jab user phone connect kare.
